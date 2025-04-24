@@ -15,6 +15,7 @@ interface InputFieldProps {
   sx?: object;
   children?: React.ReactNode;
   select?: boolean;
+  name?: string;
 }
 
 export const InputField = ({
@@ -29,9 +30,11 @@ export const InputField = ({
   sx,
   children,
   select = false,
+  name,
 }: InputFieldProps) => {
   return (
     <TextField
+      name={name}
       id={id}
       type={type}
       label={label}

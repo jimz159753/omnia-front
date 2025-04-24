@@ -15,7 +15,6 @@ export const TabContext = createContext({
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Clients");
 
-  console.log("activeTab", activeTab);
   return (
     <StyledGrid container>
       <Header />

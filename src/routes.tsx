@@ -2,6 +2,10 @@ import { useContext } from "react";
 import { TabContext } from "./app/page";
 import Clients from "./Pages/Clients";
 import { TabNames } from "./components/constants";
+import Events from "./Pages/Events";
+import Analytics from "./Pages/Analytics";
+import Vouchers from "./Pages/Vouchers";
+import Discounts from "./Pages/Discounts";
 
 export const Routes = () => {
   const { activeTab } = useContext(TabContext);
@@ -10,13 +14,13 @@ export const Routes = () => {
     case TabNames.Clients:
       return <Clients />;
     case TabNames.Events:
-      return <div>Events</div>;
+      return <Events />;
     case TabNames.Analytics:
-      return <div>Analytics</div>;
+      return <Analytics />;
     case TabNames.Vouchers:
-      return <div>Vouchers</div>;
+      return <Vouchers />;
     case TabNames.Discounts:
-      return <div>Discounts</div>;
+      return <Discounts />;
     default:
       return <div>Not found</div>;
   }
