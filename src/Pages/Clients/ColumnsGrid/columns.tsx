@@ -29,11 +29,16 @@ export const columns: GridColDef<IRow>[] = [
   {
     field: "staff",
     headerName: "Staff",
+    width: 60,
+  },
+  {
+    field: "paymentMethod",
+    headerName: "Payment Method",
     width: 150,
   },
   {
-    field: "payment_method",
-    headerName: "Payment Method",
+    field: "amount",
+    headerName: "Amount",
     width: 150,
   },
 ];

@@ -1,7 +1,7 @@
 import { Container, Grid, styled } from "@mui/material";
 
 export const StyledGrid = styled(Grid)(() => ({
-  backgroundColor: "#F1F1F1",
+  backgroundColor: "#ffffff",
   display: "flex",
   flexDirection: "column",
 }));

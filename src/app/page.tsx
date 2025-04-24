@@ -7,9 +7,12 @@ import Header from "@/components/Header";
 import { createContext, useState } from "react";
 import { Routes } from "@/routes";
 
-export const TabContext = createContext({
+export const TabContext = createContext<{
+  activeTab: string;
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+}>({
   activeTab: "clients",
-  setActiveTab: (tab: string) => {},
+  setActiveTab: () => {},
 });
 
 export default function Home() {
@@ -21,7 +24,7 @@ export default function Home() {
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         <Grid display="flex">
           <SideBar userInfo={userInfo} items={items} />
-          <Grid size={10} sx={{ backgroundColor: "#F1F1F1", height: "100vh" }}>
+          <Grid size={10} sx={{ backgroundColor: "#F1F1F1", height: "100vh", borderRadius: '8px 0 0 0' }}>
             <StyledContainer>
               <Routes />
             </StyledContainer>

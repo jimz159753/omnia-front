@@ -51,3 +51,14 @@ export const paymentMethods = [
   { id: 2, name: "Bank Transfer" },
   { id: 3, name: "Cash" },
 ]
+
+export interface IClientForm {
+  id?: number;
+  createdAt?: string;
+  name: string;
+  phone: string;
+  email: string;
+  staff: string;
+  paymentMethod: string;
+  amount: number;
+}

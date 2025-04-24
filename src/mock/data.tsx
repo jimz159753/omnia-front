@@ -1,4 +1,4 @@
-import { IMenuItem, IUserInfo } from "@/components/constants";
+import { IClientForm, IMenuItem, IUserInfo } from "@/components/constants";
 
 export const userInfo: IUserInfo = {
   name: "Minerva",
@@ -30,15 +30,16 @@ export const items: IMenuItem[] = [
   },
 ];
 
-export const clients = [
+export const clients: IClientForm[] = [
   {
     id: 1,
     phone: "331234567",
     name: "Jon",
     email: "jon@gmail.com",
     staff: "Staff",
-    payment_method: "Bank Transfer",
+    paymentMethod: "Credit Card",
     createdAt: "2023-10-01",
+    amount: 100,
   },
   {
     id: 2,
@@ -46,8 +47,9 @@ export const clients = [
     name: "Cersei",
     email: "cersei@gmail.com",
     staff: "Staff",
-    payment_method: "PayPal",
+    paymentMethod: "PayPal",
     createdAt: "2023-10-02",
+    amount: 0,
   },
   {
     id: 3,
@@ -55,8 +57,9 @@ export const clients = [
     name: "Jaime",
     email: "jaime@gmail.com",
     staff: "Staff",
-    payment_method: "Credit Card",
+    paymentMethod: "Credit Card",
     createdAt: "2023-10-03",
+    amount: 0,
   },
   {
     id: 4,
@@ -64,8 +67,9 @@ export const clients = [
     name: "Arya",
     email: "aria@gmail.com",
     staff: "Staff",
-    payment_method: "Cash",
+    paymentMethod: "Cash",
     createdAt: "2023-10-04",
+    amount: 0,
   },
   {
     id: 5,
@@ -73,26 +77,9 @@ export const clients = [
     name: "Arya",
     email: "aria2@gmail.com",
     staff: "Staff",
-    payment_method: "Credit Card",
+    paymentMethod: "Credit Card",
     createdAt: "2023-10-05",
-  },
-  {
-    id: 6,
-    phone: "331234567",
-    name: "Daenerys",
-    email: "daenerys@gmail.com",
-    staff: "Staff",
-    payment_method: "Cash",
-    createdAt: "2023-10-06",
-  },
-  {
-    id: 7,
-    phone: "331234567",
-    name: "Raul",
-    email: "raul@gmail.com",
-    staff: "Staff",
-    payment_method: "Cash",
-    createdAt: "2023-10-07",
+    amount: 0,
   },
 ];
 
