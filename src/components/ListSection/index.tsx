@@ -1,19 +1,17 @@
-import { List } from '@mui/material'
+import { MenuList } from '@mui/material'
 import React from 'react'
 import ItemSection from './ItemSection';
+import { IMenuItem } from '../constants';
 
 interface ListSectionProps {
-    items: Array<{
-        icon: React.ReactNode;
-        title: string;
-    }>
+    items: IMenuItem[];
 }
 
 const ListSection = ({ items }: ListSectionProps) => {
   return (
-    <List>
+    <MenuList>
       {items.map((item, index) => <ItemSection key={index} icon={item.icon} title={item.title} />)}
-    </List>
+    </MenuList>
   )
 }
 

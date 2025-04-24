@@ -1,8 +1,3 @@
-import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
-import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
-import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
-import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
-import DiscountOutlinedIcon from '@mui/icons-material/DiscountOutlined';
 import { IMenuItem, IUserInfo } from '@/components/constants';
 
 export const userInfo: IUserInfo = {
@@ -14,57 +9,33 @@ export const userInfo: IUserInfo = {
   
 export const items: IMenuItem[] = [
     {
-      icon: (
-        <GroupOutlinedIcon
-          color="disabled"
-          sx={{ height: "30px", width: "30px" }}
-        />
-      ),
+      icon: 'mdi-light:account',
       title: "Clients",
     },
-    {
-      icon: (
-        <CalendarMonthOutlinedIcon
-          color="disabled"
-          sx={{ height: "30px", width: "30px" }}
-        />
-      ),
-      title: "Events",
-    },
-    {
-      icon: (
-        <LeaderboardOutlinedIcon
-          color="disabled"
-          sx={{ height: "30px", width: "30px" }}
-        />
-      ),
-      title: "Analytics",
-    },
-    {
-      icon: (
-        <ConfirmationNumberOutlinedIcon
-          color="disabled"
-          sx={{ height: "30px", width: "30px" }}
-        />
-      ),
-      title: "Vouchers",
-    },
-    {
-      icon: (
-        <DiscountOutlinedIcon
-          color="disabled"
-          sx={{ height: "30px", width: "30px" }}
-        />
-      ),
-      title: "Discounts",
-    },
+      {
+        icon: 'mdi-light:calendar',
+        title: "Events",
+      },
+      {
+        icon: 'material-symbols-light:finance-mode-outline-rounded',
+        title: "Analytics",
+      },
+      {
+        icon: 'material-symbols-light:confirmation-number-outline',
+        title: "Vouchers",
+      },
+      {
+        icon: 'mdi-light:tag',
+        title: "Discounts",
+      },
   ];
   
 export const rows = [
-    { id: 1, lastName: "Snow", firstName: "Jon", age: 14 },
-    { id: 2, lastName: "Lannister", firstName: "Cersei", age: 31 },
-    { id: 3, lastName: "Lannister", firstName: "Jaime", age: 31 },
-    { id: 4, lastName: "Stark", firstName: "Arya", age: 11 },
-    { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-    { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
+    { id: 1, phone: "331234567", name: "Jon", email: 'jon@gmail.com', staff: "Staff", payment_method: "Bank Transfer" },
+    { id: 2, phone: "331234567", name: "Cersei", email: 'cersei@gmail.com', staff: "Staff", payment_method: "PayPal" },
+    { id: 3, phone: "331234567", name: "Jaime", email: 'jaime@gmail.com', staff: "Staff", payment_method: "Credit Card" },
+    { id: 4, phone: "331234567", name: "Arya", email: 'aria@gmail.com', staff: "Staff", payment_method: "Cash" },
+    { id: 5, phone: "331234567", name: "Arya", email: 'aria2@gmail.com', staff: "Staff", payment_method: "Credit Card" },
+    { id: 6, phone: "331234567", name: "Daenerys", email: 'daenerys@gmail.com', staff: "Staff", payment_method: "Cash" },
+    { id: 7, phone: "331234567", name: 'Raul', email: 'raul@gmail.com', staff: "Staff", payment_method: "Cash" },
   ];

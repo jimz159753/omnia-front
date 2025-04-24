@@ -1,4 +1,10 @@
-import { Container, styled } from "@mui/material";
+import { Container, Grid, styled } from "@mui/material";
+
+export const StyledGrid = styled(Grid)(() => ({
+  backgroundColor: "#F1F1F1",
+  display: "flex",
+  flexDirection: "column",
+}));
 
 export const StyledContainer = styled(Container)(() => ({
   display: "flex",

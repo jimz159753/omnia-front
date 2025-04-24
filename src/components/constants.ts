@@ -1,5 +1,3 @@
-import React from "react";
-
 export enum Variant {
   filled = "filled",
   outlined = "outlined",
@@ -15,5 +13,19 @@ export interface IUserInfo {
 
 export interface IMenuItem {
   title: string;
-  icon: React.ReactNode;
+  icon: string;
+}
+
+export const paymentMethods = [
+  { id: 1, name: "Credit Card" },
+  { id: 2, name: "Bank Transfer" },
+  { id: 3, name: "Cash" },
+]
+
+export enum TabNames {
+  Clients = "Clients",
+  Events = "Events",
+  Analytics = "Analytics",
+  Vouchers = "Vouchers",
+  Discounts = "Discounts",
 }

@@ -1,6 +1,6 @@
-import { Box, styled } from "@mui/material";
+import { Box, FormControl, styled } from "@mui/material";
 
-export const StyledBoxContainer = styled(Box)(() => ({
+export const StyledFormControl = styled(FormControl)(() => ({
   padding: '20px',
   backgroundColor: "#fff",
   display: "flex",

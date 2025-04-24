@@ -13,6 +13,8 @@ interface InputFieldProps {
   id?: string;
   required?: boolean;
   sx?: object;
+  children?: React.ReactNode;
+  select?: boolean;
 }
 
 export const InputField = ({
@@ -25,6 +27,8 @@ export const InputField = ({
   id,
   required = false,
   sx,
+  children,
+  select = false,
 }: InputFieldProps) => {
   return (
     <TextField
@@ -37,6 +41,9 @@ export const InputField = ({
       fullWidth={fullWidth}
       required={required}
       sx={sx}
-    />
+      select={select}
+    >
+      {children}
+    </TextField>
   );
 };

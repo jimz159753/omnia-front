@@ -1,23 +1,23 @@
-import { ListItem } from "@mui/material";
+import { ListItemIcon } from "@mui/material";
 import React from "react";
-import { StyledButton, StyledTypography } from "./ListSection.styles";
+import { StyledMenuItem, StyledTypography } from "./ListSection.styles";
+import { Icon } from "@iconify/react";
+import { TabContext } from "@/app/page";
 
 interface ItemSectionProps {
-  icon: React.ReactNode;
+  icon: string;
   title: string;
 }
 
 const ItemSection = ({ icon, title }: ItemSectionProps) => {
+  const { activeTab, setActiveTab } = React.useContext(TabContext);
   return (
-    <ListItem sx={{ padding: "0px", margin: "0px" }}>
-      <StyledButton
-        startIcon={icon}
-      >
-        <StyledTypography variant="body1">
-          {title}
-        </StyledTypography>
-      </StyledButton>
-    </ListItem>
+    <StyledMenuItem onClick={() => setActiveTab(title)} sx={{ backgroundColor: activeTab === title ? "#E5E5E5" : "white" }}>
+      <ListItemIcon>
+        <Icon icon={icon} width="35" height="35" color="gray" />
+      </ListItemIcon>
+      <StyledTypography variant="body1">{title}</StyledTypography>
+    </StyledMenuItem>
   );
 };
 

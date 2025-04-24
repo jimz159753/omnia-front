@@ -2,38 +2,38 @@ import { GridColDef } from "@mui/x-data-grid";
 
 export interface IRow {
   id: number;
-  lastName: string;
-  firstName: string;
-  age: number | null;
+  name: string;
+  phone: string;
+  email: string;
+  staff: string;
+  payment_method: string;
 }
 
 export const columns: GridColDef<IRow>[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
-    field: "firstName",
-    headerName: "First name",
+    field: "name",
+    headerName: "Name",
     width: 150,
-    editable: true,
   },
   {
-    field: "lastName",
-    headerName: "Last name",
+    field: "phone",
+    headerName: "Phone",
     width: 150,
-    editable: true,
   },
   {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 110,
-    editable: true,
+    field: "email",
+    headerName: "Email",
+    width: 150,
   },
   {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    field: "staff",
+    headerName: "Staff",
+    width: 150,
+  },
+  {
+    field: "payment_method",
+    headerName: "Payment Method",
+    width: 150,
   },
 ];

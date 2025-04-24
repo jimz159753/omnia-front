@@ -1,6 +1,6 @@
-import { Button, styled, Typography } from "@mui/material";
+import { MenuItem, styled, Typography } from "@mui/material";
 
-export const StyledButton = styled(Button)(() => ({
+export const StyledMenuItem = styled(MenuItem)(() => ({
   padding: "20px 25%",
   width: "100%",
   gap: "15px",
