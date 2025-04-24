@@ -3,7 +3,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Omnia",
+  title: "Omnia"
 };
 
 export default function RootLayout({

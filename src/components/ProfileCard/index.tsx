@@ -10,7 +10,7 @@ interface ProfileCardProps {
 
 export const ProfileCard = ({imgSrc, name, email}: ProfileCardProps) => {
   return (
-    <Box sx={{ display: "flex", padding: '20px', gap: '20px', marginY: '50px' }}>
+    <Box sx={{ display: "flex", padding: '20px', gap: '20px' }}>
       <CustomAvatar
         src={imgSrc}
         alt="Omnia"
