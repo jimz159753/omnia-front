@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { TabContext } from "./app/page";
 import Clients from "./Pages/Clients";
-import { TabNames } from "./components/constants";
+import { TabNames } from "./constants";
 import Events from "./Pages/Events";
 import Analytics from "./Pages/Analytics";
 import Vouchers from "./Pages/Vouchers";

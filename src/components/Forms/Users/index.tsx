@@ -1,4 +1,4 @@
-import { IClientForm, paymentMethods, Variant } from "@/components/constants";
+import { IClientForm, paymentMethods, Variant } from "@/constants";
 import { InputField } from "@/components/ui/InputField";
 import { Box, Button, MenuItem, Typography } from "@mui/material";
 import {

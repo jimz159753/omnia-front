@@ -1,4 +1,4 @@
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid-pro";
 
 export interface IRow {
   id: number;
@@ -12,6 +12,11 @@ export interface IRow {
 export const columns: GridColDef<IRow>[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
+    field: "eventName",
+    headerName: "Event Name",
+    width: 150,
+  },
+  {
     field: "title",
     headerName: "Title",
     width: 150,
@@ -22,13 +27,8 @@ export const columns: GridColDef<IRow>[] = [
     width: 150,
   },
   {
-    field: "url",
-    headerName: "URL",
-    width: 150,
-  },
-  {
-    field: "date",
-    headerName: "Date",
+    field: "length",
+    headerName: "Duration",
     width: 150,
   },
   {

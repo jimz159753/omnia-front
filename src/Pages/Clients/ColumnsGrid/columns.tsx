@@ -10,7 +10,6 @@ export interface IRow {
 }
 
 export const columns: GridColDef<IRow>[] = [
-  { field: "id", headerName: "ID", width: 90 },
   {
     field: "name",
     headerName: "Name",

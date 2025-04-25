@@ -1,6 +1,6 @@
 import { ProfileCard } from "../ProfileCard";
 import ListSection from "../ListSection";
-import { IMenuItem, IUserInfo } from "../constants";
+import { IMenuItem, IUserInfo } from "../../constants";
 import { StyledGrid } from "./SideBar.styles";
 
 interface SideBarProps {

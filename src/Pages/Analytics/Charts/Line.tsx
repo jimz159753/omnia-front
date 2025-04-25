@@ -1,5 +1,5 @@
 import { LineChart } from "@mui/x-charts/LineChart";
-import { rooms, xLabels } from "@/components/constants";
+import { rooms, xLabels } from "@/constants";
 
 const Line = () => {
   return (

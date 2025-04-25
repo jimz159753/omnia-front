@@ -1,22 +1,49 @@
-import GeneticDataGrid from '@/components/GeneticDataGrid';
-import { columns } from '@/Pages/Events/ColumnsGrid/columns';
-import { events } from '@/mock/data';
-import { Grid } from '@mui/material';
-import { GridColDef, GridValidRowModel } from '@mui/x-data-grid';
-import React from 'react'
-import EventForm from '@/components/Forms/Event';
+import GeneticDataGrid from "@/components/GeneticDataGrid";
+import { columns } from "@/Pages/Events/ColumnsGrid/columns";
+import { Grid } from "@mui/material";
+import { GridColDef, GridValidRowModel } from "@mui/x-data-grid-pro";
+import React, { useEffect, useState } from "react";
+import EventForm from "@/components/Forms/Event";
+import PanelContent from "./PanelContent";
+import { IEventType } from "@/constants";
+import { getEventTypes } from "@/api/services/cal";
 
-const Events = () => <Grid container spacing={2} sx={{ marginTop: "20px", width: "100%" }}>
-<Grid size={8}>
-  <GeneticDataGrid
-    sx={{ borderRadius: "8px", border: "1px solid #ccc" }}
-    data={events}
-    columns={columns as GridColDef<GridValidRowModel>[]}
-  />
-</Grid>
-<Grid size={4}>
-  <EventForm />
-</Grid>
-</Grid>
+const Events = () => {
+  const [events, setEvents] = useState<IEventType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetchEventTypes()
+  }, [])
+
+  const fetchEventTypes = async () => {
+    const res = await getEventTypes();
+    const eventTypes = res.data.eventTypeGroups[0].eventTypes
+    setEvents(eventTypes)
+    setIsLoading(false)
+  }
+
+  const handleExpland = () => {
+    console.log("collapsed");
+  };
+
+  return (
+    <Grid container spacing={2} sx={{ marginTop: "20px", width: "100%" }}>
+      <Grid size={8}>
+        <GeneticDataGrid
+          loading={isLoading}
+          sx={{ borderRadius: "8px", border: "1px solid #ccc" }}
+          data={events}
+          columns={columns as GridColDef<GridValidRowModel>[]}
+          getDetailPanelContent={PanelContent}
+          onDetailPanelExpandedRowIdsChange={handleExpland}
+        />
+      </Grid>
+      <Grid size={4}>
+        <EventForm />
+      </Grid>
+    </Grid>
+  );
+};
 
 export default Events;

@@ -24,7 +24,14 @@ export default function Home() {
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         <Grid display="flex">
           <SideBar userInfo={userInfo} items={items} />
-          <Grid size={10} sx={{ backgroundColor: "#F1F1F1", height: "100vh", borderRadius: '8px 0 0 0' }}>
+          <Grid
+            size={10}
+            sx={{
+              backgroundColor: "#F1F1F1",
+              height: "100vh",
+              borderRadius: "8px 0 0 0",
+            }}
+          >
             <StyledContainer>
               <Routes />
             </StyledContainer>

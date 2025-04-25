@@ -1,4 +1,4 @@
-import { IClientForm, IMenuItem, IUserInfo } from "@/components/constants";
+import { IClientForm, IMenuItem, IUserInfo } from "@/constants";
 
 export const userInfo: IUserInfo = {
   name: "Minerva",

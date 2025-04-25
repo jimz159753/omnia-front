@@ -1,4 +1,4 @@
-import { paymentMethods, Variant } from "@/components/constants";
+import { paymentMethods, Variant } from "@/constants";
 import { InputField } from "@/components/ui/InputField";
 import {
   Button,

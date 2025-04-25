@@ -62,3 +62,12 @@ export interface IClientForm {
   paymentMethod: string;
   amount: number;
 }
+
+export interface IEventType {
+  id: string;
+  eventName: string;
+  title: string;
+  description: string;
+  length: string;
+  price: number;
+}
