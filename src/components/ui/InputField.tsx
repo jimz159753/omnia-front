@@ -22,7 +22,7 @@ interface InputFieldProps {
 export const InputField = ({
   label,
   fullWidth = false,
-  defaultValue = '',
+  defaultValue,
   onChange,
   placeholder,
   type,

@@ -17,13 +17,13 @@ const Events = () => {
   }, [])
 
   const fetchEventTypes = async () => {
-    const res = await getEventTypes();
-    const eventTypes = res.data.eventTypeGroups[0].eventTypes
+    const data = await getEventTypes();
+    const eventTypes = data.eventTypeGroups[0].eventTypes
     setEvents(eventTypes)
     setIsLoading(false)
   }
 
-  const handleExpland = () => {
+  const handleExpand = () => {
     console.log("collapsed");
   };
 
@@ -36,7 +36,7 @@ const Events = () => {
           data={events}
           columns={columns as GridColDef<GridValidRowModel>[]}
           getDetailPanelContent={PanelContent}
-          onDetailPanelExpandedRowIdsChange={handleExpland}
+          onDetailPanelExpandedRowIdsChange={handleExpand}
         />
       </Grid>
       <Grid size={4}>

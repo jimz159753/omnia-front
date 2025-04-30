@@ -1,12 +1,9 @@
-import { AxiosResponse } from "axios";
 import axiosClient from "../config";
+import { IEventTypeResponse } from "@/constants";
 
-const getEventTypes = (): Promise<AxiosResponse> => {
-  return axiosClient.get("/event-types", {
-    params: {
-      username: "prueba140992",
-    },
-  }).then(res => res.data);
+const getEventTypes = async () => {
+   const response = await axiosClient.get<IEventTypeResponse>("/event-type")
+   return response.data.data;
 };
 
 export { getEventTypes };
