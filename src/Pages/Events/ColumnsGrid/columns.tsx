@@ -14,17 +14,17 @@ export const columns: GridColDef<IRow>[] = [
   {
     field: "eventName",
     headerName: "Event Name",
-    width: 150,
+    width: 250,
   },
   {
     field: "title",
     headerName: "Title",
-    width: 150,
+    width: 250,
   },
   {
     field: "description",
     headerName: "Description",
-    width: 150,
+    width: 250,
   },
   {
     field: "length",

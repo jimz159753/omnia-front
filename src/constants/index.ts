@@ -197,3 +197,66 @@ export interface IEventType {
   safeDescription?: string;
   userIds: number[];
 }
+
+// Bookings
+
+export interface IBookingResponse {
+  status: string;
+  data: IBooking[];
+}
+
+export interface IBooking {
+  id: number;
+  uid: string;
+  title: string;
+  description: string;
+  hosts: Host[];
+  status: 'accepted' | 'pending' | 'rejected' | 'cancelled'; // Add other possible statuses if needed
+  start: string; // ISO 8601 date string
+  end: string; // ISO 8601 date string
+  duration: number;
+  eventTypeId: number;
+  eventType: {
+    id: number;
+    slug: string;
+  };
+  meetingUrl: string;
+  location: string;
+  absentHost: boolean;
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
+  metadata: Record<string, unknown>;
+  rating: number | null;
+  icsUid: string;
+  attendees: Attendee[];
+  guests: unknown[]; // Could be more specific if guest structure is known
+  bookingFieldsResponses: {
+    email: string;
+    name: string;
+    guests: unknown[]; // Could be more specific
+    notes: string;
+    title: string;
+    location: {
+      value: string;
+      optionValue: string;
+    };
+    [key: string]: unknown; // For additional dynamic fields
+  };
+}
+
+interface Host {
+  id: number;
+  name: string;
+  email: string;
+  username: string;
+  timeZone: string;
+}
+
+interface Attendee {
+  name: string;
+  email: string;
+  timeZone: string;
+  language: string;
+  absent: boolean;
+  phoneNumber?: string; // Optional as it wasn't in your example
+}

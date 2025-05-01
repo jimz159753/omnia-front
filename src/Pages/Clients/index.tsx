@@ -1,4 +1,4 @@
-import UserForm from "@/components/Forms/Users";
+import ClientForm from "@/components/Forms/Client";
 import GeneticDataGrid from "@/components/GeneticDataGrid";
 import { columns } from "@/Pages/Clients/ColumnsGrid/columns";
 import { clients } from "@/mock/data";
@@ -36,18 +36,12 @@ const Clients = () => {
 
   return (
     <Grid container spacing={2} sx={{ marginTop: "20px", width: "100%" }}>
-      <Grid size={8}>
+      <Grid size={12}>
         <GeneticDataGrid
+          loading={false}
           sx={{ borderRadius: "8px", border: "1px solid #ccc" }}
           data={data}
           columns={columns as GridColDef<GridValidRowModel>[]}
-        />
-      </Grid>
-      <Grid size={4}>
-        <UserForm
-          setForm={setForm}
-          form={form}
-          handleAddClient={handleAddClient}
         />
       </Grid>
     </Grid>

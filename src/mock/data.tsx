@@ -1,4 +1,5 @@
 import { IClientForm, IMenuItem, IUserInfo } from "@/constants";
+import { EventInput } from "@fullcalendar/core/index.js";
 
 export const userInfo: IUserInfo = {
   name: "Minerva",
@@ -83,59 +84,26 @@ export const clients: IClientForm[] = [
   },
 ];
 
-export const events = [
+
+export const events: EventInput[] = [
   {
-    id: 1,
-    title: "Event 1",
-    createdAt: "2023-10-01",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 1",
+    title: 'Team Meeting',
+    start: new Date(),
+    end: new Date(),
+    extendedProps: {
+      id: 1,
+      name: 'Team Meeting',
+      description: 'Weekly team sync with product and engineering'
+    }
   },
   {
-    id: 2,
-    title: "Event 2",
-    createdAt: "2023-10-02",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 2",
-  },
-  {
-    id: 3,
-    title: "Event 3",
-    createdAt: "2023-10-03",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 3",
-  },
-  {
-    id: 4,
-    title: "Event 4",
-    createdAt: "2023-10-04",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 4",
-  },
-  {
-    id: 5,
-    title: "Event 5",
-    createdAt: "2023-10-05",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 5",
-  },
-  {
-    id: 6,
-    title: "Event 6",
-    createdAt: "2023-10-06",
-    date: "2023-10-01",
-    url: "http://espacioomnia.com/cal",
-    price: 500,
-    description: "Description 6",
-  },
+    title: 'Client Call',
+    start: '2025-04-15T10:30:00',
+    end: '2025-04-15T11:30:00',
+    extendedProps: {
+      id: 2,
+      name: 'Client Call',
+      description: 'Discuss project requirements with ABC Corp'
+    }
+  }
 ];

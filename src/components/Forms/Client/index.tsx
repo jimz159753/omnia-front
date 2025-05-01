@@ -5,15 +5,15 @@ import {
   StyledBoxButtonContainer,
   StyledBoxInputContainer,
   StyledFormControl,
-} from "./User.styles";
+} from "./Client.styles";
 
-interface UserFormProps {
+interface ClientFormProps {
   handleAddClient: (client: IClientForm) => void;
   form?: IClientForm;
   setForm?: React.Dispatch<React.SetStateAction<IClientForm>>;
 }
 
-const UserForm = ({ handleAddClient, form, setForm }: UserFormProps) => {
+const ClientForm = ({ handleAddClient, form, setForm }: ClientFormProps) => {
   const { name, phone, email, staff, paymentMethod, amount } = form || {};
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -124,4 +124,4 @@ const UserForm = ({ handleAddClient, form, setForm }: UserFormProps) => {
   );
 };
 
-export default UserForm;
+export default ClientForm;
