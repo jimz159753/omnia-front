@@ -1,0 +1,13 @@
+.event-class {
+  height: 50px;
+  width: 100%;
+  background-color: #1a252f;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.event-class:hover {
+  background-color: #1e2b37;
+}

@@ -4,22 +4,25 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import { Box } from '@mui/material'
 import { IBooking } from '@/constants'
 import { EventClickArg } from '@fullcalendar/core/index.js'
+import './FullCalendar.css'
 
 interface PanelContentProps {
   row: IBooking;
-  setSelectedBooking: (event: any) => void;
+  setSelectedBooking: (event: IBooking) => void;
   bookings: IBooking[];
+  setIsOpenModal: (isOpen: boolean) => void;
 }
 
-const PanelContent = ({row, setSelectedBooking, bookings}: PanelContentProps) => {
+const PanelContent = ({setSelectedBooking, bookings, setIsOpenModal}: PanelContentProps) => {
   const handleBookingClick = (info: EventClickArg) => {
-    console.log('info ', info)
-    setSelectedBooking(info.event._def.extendedProps)
+    setSelectedBooking(info.event._def.extendedProps as IBooking)
+    setIsOpenModal(true)
   }
 
   return (
     <Box padding={5}>
       <FullCalendar
+        eventClassNames='event-class'
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         events={bookings.map(booking => ({
@@ -34,6 +37,11 @@ const PanelContent = ({row, setSelectedBooking, bookings}: PanelContentProps) =>
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,dayGridWeek,dayGridDay'
+        }}
+        eventTimeFormat={{
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
         }}
       />
     </Box>
