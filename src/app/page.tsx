@@ -20,8 +20,8 @@ export default function Home() {
 
   return (
     <StyledGrid container>
-      <Header />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
+      <Header />
         <Grid display="flex">
           <SideBar userInfo={userInfo} items={items} />
           <Grid

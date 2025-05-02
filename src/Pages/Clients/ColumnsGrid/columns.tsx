@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/utils";
+import { Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
 export interface IRow {
@@ -7,6 +9,7 @@ export interface IRow {
   email: string;
   staff: string;
   payment_method: string;
+  amount: string;
 }
 
 export const columns: GridColDef<IRow>[] = [
@@ -39,5 +42,10 @@ export const columns: GridColDef<IRow>[] = [
     field: "amount",
     headerName: "Amount",
     width: 150,
+    renderCell: (params) => {
+      return (
+        <Typography>{formatCurrency(Number(params.row.amount)/100)}</Typography>
+      );
+    },
   },
 ];

@@ -38,7 +38,9 @@ export const columns: GridColDef<IRow>[] = [
     headerName: "Price",
     width: 150,
     renderCell: (params) => {
-      return <Typography>{formatCurrency(Number(params.row.price))}</Typography>;
+      return (
+        <Typography>{formatCurrency(Number(params.row.price)/100)}</Typography>
+      );
     },
   },
 ];
