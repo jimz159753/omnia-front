@@ -3,6 +3,7 @@ import { getToken } from "@/api/services";
 import { Box, Button, FormControl, TextField } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,12 +12,10 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // console.log(email, password);
     const data = new FormData(event.currentTarget as HTMLFormElement);
     const values = Object.fromEntries(data.entries());
     const token = await getToken(values.email as string, values.password as string);
-    console.log('token', token);
-    localStorage.setItem('token', token);
+    Cookies.set('token', token);
     push('/dashboard');
   };
 
