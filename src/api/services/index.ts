@@ -15,4 +15,12 @@ const getBookingsByEventTypeId = async (eventTypeIds: string) => {
   return response.data.data;
 };
 
-export { getEventTypes, getBookingsByEventTypeId };
+const getToken = async (email: string, password: string) => {
+  const response = await axiosClient.post("/auth/signin", {
+    email,
+    password,
+  });
+  return response.data.access_token;
+};
+
+export { getEventTypes, getBookingsByEventTypeId, getToken };

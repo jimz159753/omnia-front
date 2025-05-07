@@ -1,12 +1,11 @@
 import { useContext } from "react";
-import { TabContext } from "./app/page";
-import Clients from "./Pages/Clients";
-import { TabNames } from "./constants";
-import Events from "./Pages/Events";
-import Analytics from "./Pages/Analytics";
-import Vouchers from "./Pages/Vouchers";
-import Discounts from "./Pages/Discounts";
-
+import Clients from "./clients";
+import Events from "./events";
+import Analytics from "./analytics";
+import Vouchers from "./vouchers";
+import Discounts from "./discounts";
+import { TabContext } from "../dashboard/layout";
+import { TabNames } from "@/constants";
 export const Routes = () => {
   const { activeTab } = useContext(TabContext);
 
