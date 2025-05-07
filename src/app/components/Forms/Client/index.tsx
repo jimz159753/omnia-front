@@ -1,11 +1,11 @@
 import { IClientForm, paymentMethods, Variant } from "@/constants";
-import { InputField } from "@/components/ui/InputField";
 import { Box, Button, MenuItem, Typography } from "@mui/material";
 import {
   StyledBoxButtonContainer,
   StyledBoxInputContainer,
   StyledFormControl,
 } from "./Client.styles";
+import { InputField } from "../../ui/InputField";
 
 interface ClientFormProps {
   handleAddClient: (client: IClientForm) => void;

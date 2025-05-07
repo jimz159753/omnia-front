@@ -1,5 +1,5 @@
 "use client";
-import { getToken } from "@/api/services";
+import { login } from "@/api/services";
 import { Box, Button, FormControl, TextField } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -14,7 +14,8 @@ const Login = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget as HTMLFormElement);
     const values = Object.fromEntries(data.entries());
-    const token = await getToken(values.email as string, values.password as string);
+    const token = await login(values.email as string, values.password as string);
+    localStorage.setItem('token', token);
     Cookies.set('token', token);
     push('/dashboard');
   };
@@ -26,7 +27,13 @@ const Login = () => {
       alignItems="center"
       height="100vh"
     >
-      <FormControl component="form" onSubmit={handleSubmit}>
+      <FormControl component="form" onSubmit={handleSubmit} sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        width: '300px',
+        padding: 4,
+      }}>
         <TextField
           label="Email"
           type="email"
@@ -41,7 +48,16 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit">Login</Button>
+        <Button sx={{
+          width: '100%',
+          height: '40px',
+          borderRadius: '8px',
+          backgroundColor: '#000',
+          color: '#fff',
+          '&:hover': {
+            backgroundColor: '#000',
+          },
+        }} type="submit">Login</Button>
       </FormControl>
     </Box>
   );

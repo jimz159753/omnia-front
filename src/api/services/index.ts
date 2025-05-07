@@ -15,7 +15,7 @@ const getBookingsByEventTypeId = async (eventTypeIds: string) => {
   return response.data.data;
 };
 
-const getToken = async (email: string, password: string) => {
+const login = async (email: string, password: string) => {
   const response = await axiosClient.post("/auth/signin", {
     email,
     password,
@@ -23,4 +23,4 @@ const getToken = async (email: string, password: string) => {
   return response.data.access_token;
 };
 
-export { getEventTypes, getBookingsByEventTypeId, getToken };
+export { getEventTypes, getBookingsByEventTypeId, login };

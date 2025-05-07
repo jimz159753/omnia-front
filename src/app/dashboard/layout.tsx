@@ -19,10 +19,10 @@ export const TabContext = createContext<{
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Clients);
   return (
-    <StyledGrid container>
-      <TabContext.Provider value={{ activeTab, setActiveTab }}>
+    <TabContext.Provider value={{ activeTab, setActiveTab }}>
+      <StyledGrid>
         <Header />
-        <Grid display="flex">
+        <Grid display="flex" container>
           <SideBar userInfo={userInfo} items={items} />
           <Grid
             size={10}
@@ -37,8 +37,8 @@ const Dashboard = () => {
             </StyledContainer>
           </Grid>
         </Grid>
-      </TabContext.Provider>
-    </StyledGrid>
+      </StyledGrid>
+    </TabContext.Provider>
   );
 };
 
