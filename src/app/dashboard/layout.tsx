@@ -7,6 +7,10 @@ import { Routes } from "@/app/dashboard/routes";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import { TabNames } from "@/constants";
+import createCache from "@emotion/cache";
+import { CacheProvider } from "@emotion/react";
+
+const cache = createCache({ key: "css", prepend: true });
 
 export const TabContext = createContext<{
   activeTab: TabNames;
@@ -19,26 +23,28 @@ export const TabContext = createContext<{
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Clients);
   return (
-    <TabContext.Provider value={{ activeTab, setActiveTab }}>
-      <StyledGrid>
-        <Header />
-        <Grid display="flex" container>
-          <SideBar userInfo={userInfo} items={items} />
-          <Grid
-            size={10}
-            sx={{
-              backgroundColor: "#F1F1F1",
-              height: "100vh",
-              borderRadius: "8px 0 0 0",
-            }}
-          >
-            <StyledContainer>
-              <Routes />
-            </StyledContainer>
+    <CacheProvider value={cache}>
+      <TabContext.Provider value={{ activeTab, setActiveTab }}>
+        <StyledGrid>
+          <Header />
+          <Grid display="flex" container>
+            <SideBar userInfo={userInfo} items={items} />
+            <Grid
+              size={10}
+              sx={{
+                backgroundColor: "#F1F1F1",
+                height: "100vh",
+                borderRadius: "8px 0 0 0",
+              }}
+            >
+              <StyledContainer>
+                <Routes />
+              </StyledContainer>
+            </Grid>
           </Grid>
-        </Grid>
-      </StyledGrid>
-    </TabContext.Provider>
+        </StyledGrid>
+      </TabContext.Provider>
+    </CacheProvider>
   );
 };
 
