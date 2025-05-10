@@ -260,3 +260,22 @@ interface Attendee {
   absent: boolean;
   phoneNumber?: string; // Optional as it wasn't in your example
 }
+
+// Clients
+
+export interface IClient {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  checkin: string;
+  payments: IPayment[];
+}
+
+export interface IPayment {
+  id: number;
+  amount: number;
+  status: string;
+  createdAt: string;
+}
+

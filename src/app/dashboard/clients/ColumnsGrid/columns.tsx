@@ -1,5 +1,5 @@
-import { formatCurrency } from "@/utils";
-import { Typography } from "@mui/material";
+import { Variant, IPayment } from "@/constants";
+import { Button } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
 export interface IRow {
@@ -7,12 +7,11 @@ export interface IRow {
   name: string;
   phone: string;
   email: string;
-  staff: string;
-  payment_method: string;
   amount: string;
+  payments: IPayment[];
 }
 
-export const columns: GridColDef<IRow>[] = [
+export const columns = (callback: (id: number) => void): GridColDef<IRow>[] => [
   {
     field: "name",
     headerName: "Name",
@@ -29,22 +28,30 @@ export const columns: GridColDef<IRow>[] = [
     width: 150,
   },
   {
-    field: "staff",
-    headerName: "Staff",
-    width: 60,
+    field: "payments",
+    headerName: "Payments",
+    width: 150,
+    renderCell: (params) => (
+      <div>{params.row.payments[params.row.payments.length - 1].amount}</div>
+    ),
   },
   {
-    field: "paymentMethod",
-    headerName: "Payment Method",
+    field: "checkin",
+    headerName: "Checkin",
     width: 150,
   },
   {
-    field: "amount",
-    headerName: "Amount",
+    field: "actions",
+    headerName: "Actions",
     width: 150,
     renderCell: (params) => {
       return (
-        <Typography>{formatCurrency(Number(params.row.amount)/100)}</Typography>
+        <Button
+          onClick={() => callback(params.row.id)}
+          variant={Variant.outlined}
+        >
+          Checkin
+        </Button>
       );
     },
   },
