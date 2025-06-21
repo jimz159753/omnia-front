@@ -1,7 +1,7 @@
 import { MenuList } from '@mui/material'
 import React from 'react'
 import ItemSection from './ItemSection';
-import { IMenuItem } from '../../constants';
+import { IMenuItem } from '@/constants';
 
 interface ListSectionProps {
     items: IMenuItem[];

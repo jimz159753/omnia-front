@@ -6,5 +6,5 @@ interface CustomAvatarProps {
   sx?: object;
 }
 
-export const CustomAvatar = ({ src, alt, sx }: CustomAvatarProps) => <Avatar alt={alt} src={src} sx={sx}  />
+export const CustomAvatar = ({ src, alt, sx }: CustomAvatarProps) => <Avatar alt={alt} src={src} sx={sx} />
 

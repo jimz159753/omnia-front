@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 import React from "react";
-import { Variant } from "../../constants";
+import { Variant } from "@/constants";
 
 interface InputFieldProps {
   label: string;
