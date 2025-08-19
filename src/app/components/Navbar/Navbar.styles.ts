@@ -6,7 +6,13 @@ export const StyledNavbar = styled(Box)(() => ({
   justifyContent: "space-between",
   alignItems: "center",
   padding: "5px 10px",
-  backgroundColor: "#c7c3b7",
+  backgroundColor: "transparent",
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  zIndex: 1,
+  backdropFilter: "blur(10px)",
   color: "#ffffff",
 }));
 
