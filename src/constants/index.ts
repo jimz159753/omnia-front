@@ -279,8 +279,53 @@ export interface IPayment {
   createdAt: string;
 }
 
+export interface IService {
+  id: string;
+  label: string;
+  description: string;
+}
+
 export const navigationItems = [
   { id: "conocenos", label: "Conocenos" },
   { id: "servicios", label: "Servicios" },
   { id: "contacto", label: "Contacto" },
+];
+
+export const services: IService[] = [
+  {
+    id: "masajes",
+    label: "Masajes",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
+  {
+    id: "tarot",
+    label: "Tarot",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
+  {
+    id: "spa",
+    label: "Spa",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
+  {
+    id: "reiki",
+    label: "Reiki",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
+  {
+    id: "meditacion",
+    label: "Meditación",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
+  {
+    id: "psicologia",
+    label: "Psicológica",
+    description:
+      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+  },
 ];

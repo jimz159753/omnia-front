@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import About from "./components/About";
 
 export const metadata = {
   title: "Omnia",
@@ -14,6 +15,7 @@ export default function Home() {
     <div>
       <Navbar />
       <Hero />
+      <About />
     </div>
   );
 }

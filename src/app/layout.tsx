@@ -12,6 +12,16 @@ const cabinetGrotesk = localFont({
   variable: "--font-cabinet-grotesk",
 });
 
+const loraItalic = localFont({
+  src: "../../public/fonts/Lora-Italic.ttf",
+  variable: "--font-lora-italic",
+});
+
+const loraRegular = localFont({
+  src: "../../public/fonts/Lora-Regular.ttf",
+  variable: "--font-lora-regular",
+});
+
 export const metadata: Metadata = {
   title: "Omnia",
 };
@@ -22,7 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className={`${bigilla.className} ${cabinetGrotesk.className}`}>
+    <html
+      className={`${bigilla.variable} ${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

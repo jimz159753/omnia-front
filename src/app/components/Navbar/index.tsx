@@ -71,12 +71,13 @@ const Navbar = () => {
             right: 0,
             bottom: 0,
             backgroundColor: "rgba(0, 0, 0, 0.9)",
-            zIndex: 1000,
+            zIndex: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             gap: "30px",
+            height: "100vh",
           }}
         >
           <button

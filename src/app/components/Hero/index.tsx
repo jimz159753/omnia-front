@@ -4,15 +4,21 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import logo from "@/assets/images/omnia_hero_logo.webp";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText";
+
+gsap.registerPlugin(SplitText);
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const isMobile = useMediaQuery("(max-width: 600px)");
+  const logoRef = useRef<HTMLImageElement>(null);
   const videos = [
+    "/videos/odintsov.webm",
     "/videos/massage_spa.webm",
     "/videos/massage_face.webm",
-    "/videos/odintsov.webm",
+    "/videos/tarot.webm",
   ];
 
   const playNextVideo = () => {
@@ -41,32 +47,35 @@ const Hero = () => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.addEventListener("ended", playNextVideo);
-      videoRef.current.addEventListener("error", (e) => {
-        console.error("Video error:", e);
-      });
-      videoRef.current.addEventListener("loadstart", () => {
-        console.log("Video loading started");
-      });
-      videoRef.current.addEventListener("canplay", () => {
-        console.log("Video can play");
-      });
 
       return () => {
         if (videoRef.current) {
           videoRef.current.removeEventListener("ended", playNextVideo);
-          videoRef.current.removeEventListener("error", (e) => {
-            console.error("Video error:", e);
-          });
-          videoRef.current.removeEventListener("loadstart", () => {
-            console.log("Video loading started");
-          });
-          videoRef.current.removeEventListener("canplay", () => {
-            console.log("Video can play");
-          });
         }
       };
     }
   }, [currentVideoIndex]);
+
+  useGSAP(() => {
+    const splitText = new SplitText(".hero-logo-text", {
+      type: "words",
+    });
+
+    gsap.from(logoRef.current, {
+      opacity: 0,
+      scale: 0.5,
+      duration: 1.5,
+      ease: "power2.inOut",
+    });
+
+    gsap.from(splitText.words, {
+      y: 100,
+      opacity: 0,
+      stagger: 0.05,
+      duration: 0.8,
+      ease: "sine.inOut",
+    });
+  });
 
   return (
     <div
@@ -103,7 +112,6 @@ const Hero = () => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          zIndex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -111,20 +119,23 @@ const Hero = () => {
         }}
       >
         <Image
+          className="hero-logo"
+          ref={logoRef}
           src={logo}
           alt="logo"
           style={{
-            width: isMobile ? "100%" : "70%",
+            width: isMobile ? "100%" : "50%",
             height: "auto",
             objectFit: "contain",
           }}
         />
         <p
+          className="hero-logo-text"
           style={{
             color: "white",
-            fontSize: isMobile ? "30px" : "40px",
+            fontSize: isMobile ? "30px" : "50px",
             textAlign: "center",
-            fontFamily: "var(--font-bigilla)",
+            fontFamily: "var(--font-lora-italic)",
           }}
         >
           Centro Holístico y Desarrollo Del Ser
