@@ -11,19 +11,19 @@ export enum TabNames {
 // Charts
 
 export const rooms = {
-  firts: [1,2,3,4,5,6,7],
-  second: [3,12,23,3,15,16,17],
-  third: [11,32,23,14,15,26,37],
-  fourth: [10,21,13,24,15,26,17],
-}
+  firts: [1, 2, 3, 4, 5, 6, 7],
+  second: [3, 12, 23, 3, 15, 16, 17],
+  third: [11, 32, 23, 14, 15, 26, 37],
+  fourth: [10, 21, 13, 24, 15, 26, 17],
+};
 export const xLabels = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 // General
@@ -50,7 +50,7 @@ export const paymentMethods = [
   { id: 1, name: "Credit Card" },
   { id: 2, name: "Bank Transfer" },
   { id: 3, name: "Cash" },
-]
+];
 
 export interface IClientForm {
   id?: number;
@@ -211,7 +211,7 @@ export interface IBooking {
   title: string;
   description: string;
   hosts: Host[];
-  status: 'accepted' | 'pending' | 'rejected' | 'cancelled'; // Add other possible statuses if needed
+  status: "accepted" | "pending" | "rejected" | "cancelled"; // Add other possible statuses if needed
   start: string; // ISO 8601 date string
   end: string; // ISO 8601 date string
   duration: number;
@@ -279,3 +279,8 @@ export interface IPayment {
   createdAt: string;
 }
 
+export const navigationItems = [
+  { id: "conocenos", label: "Conocenos" },
+  { id: "servicios", label: "Servicios" },
+  { id: "contacto", label: "Contacto" },
+];
