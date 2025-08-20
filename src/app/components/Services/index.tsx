@@ -21,6 +21,7 @@ const Services = () => {
       ScrollTrigger.saveStyles(".services-title");
 
       const mm = gsap.matchMedia();
+      const cards = gsap.utils.toArray<HTMLElement>(".card-service");
 
       // Adjust 600px if your MUI `sm` is different.
       mm.add("(min-width: 600px)", () => {
@@ -29,7 +30,7 @@ const Services = () => {
           scrollTrigger: {
             trigger: ".services-container",
             start: "top top",
-            end: "bottom 30%",
+            end: "bottom 35%",
             scrub: true,
             pin: ".services-title",
             // Try true first; false can cause overlap/collapse depending on layout
@@ -45,16 +46,15 @@ const Services = () => {
       });
 
       // Your card reveals (run on all sizes)
-      const cards = gsap.utils.toArray<HTMLElement>(".card-service");
+
       cards.forEach((card) => {
         gsap.from(card, {
           x: 100,
           opacity: 0,
-          duration: 1,
           scrollTrigger: {
             trigger: card,
             start: "top 90%",
-            end: "bottom 70%",
+            end: "bottom 75%",
             scrub: true,
           },
         });

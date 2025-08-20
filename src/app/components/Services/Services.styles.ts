@@ -6,7 +6,7 @@ export const getAboutStyles = (theme: Theme, isMobile: boolean) => ({
     flexDirection: isMobile ? "column" : "row",
     gap: "100px",
     justifyContent: "space-between",
-    padding: "100px",
+    padding: isMobile ? "50px" : "100px",
   } as const,
 
   title: {
@@ -29,5 +29,7 @@ export const getAboutStyles = (theme: Theme, isMobile: boolean) => ({
     display: "flex",
     flexDirection: "column",
     gap: "30px",
+    overflow: "hidden",
+    maxWidth: "100%",
   } as const,
 });
