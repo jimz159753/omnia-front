@@ -5,24 +5,20 @@ import { services } from "@/constants";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMediaQuery, useTheme } from "@mui/material";
+import { getAboutStyles } from "./About.styles";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // Animation setup
   useGSAP(() => {
     const cards = gsap.utils.toArray(".card-about");
 
-    gsap.from(".about-title", {
-      scrollTrigger: {
-        trigger: ".about-container",
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-        pin: ".about-title",
-        pinSpacing: false,
-      },
-    });
-
+    // Animate cards with different trigger points for mobile vs desktop
     cards.forEach((card) => {
       gsap.from(card as Element, {
         x: 100,
@@ -30,52 +26,25 @@ const About = () => {
         duration: 1,
         scrollTrigger: {
           trigger: card as Element,
-          start: "top 90%",
-          end: "bottom top",
+          start: `top 90%`,
+          end: `bottom 70%`,
           scrub: true,
         },
       });
     });
   });
 
+  // Get styles from external file
+  const styles = getAboutStyles(theme, isMobile);
+
   return (
-    <section
-      className="about-container"
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "100px",
-        justifyContent: "space-between",
-        padding: "100px",
-      }}
-    >
-      <p
-        className="about-title"
-        style={{
-          width: "50%",
-          fontSize: "50px",
-          color: "#788D9A",
-          margin: "0px",
-          fontFamily: "var(--font-lora-regular)",
-        }}
-      >
+    <section className="about-container" style={styles.container}>
+      <p className="about-title" style={styles.title}>
         Donde la calma se convierte en camino
       </p>
-      <div
-        style={{
-          width: "50%",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "30px",
-          }}
-        >
+
+      <div style={styles.contentWrapper}>
+        <div style={styles.cardsContainer}>
           {services.map((service) => (
             <div key={service.id}>
               <CardAbout service={service} />
@@ -86,4 +55,5 @@ const About = () => {
     </section>
   );
 };
+
 export default About;

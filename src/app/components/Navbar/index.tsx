@@ -105,7 +105,7 @@ const Navbar = () => {
                 color: "white",
                 textDecoration: "none",
                 fontSize: "24px",
-                fontFamily: "var(--font-bigilla)",
+                fontFamily: "var(--font-cabinet-grotesk)",
                 transition: "color 0.3s ease",
               }}
               onMouseEnter={(e) =>
