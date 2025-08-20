@@ -12,29 +12,58 @@ gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Animation setup
   useGSAP(() => {
-    const cards = gsap.utils.toArray(".card-about");
+    const ctx = gsap.context(() => {
+      // if the element’s CSS changes across breakpoints,
+      // this prevents weird inline styles from sticking around
+      ScrollTrigger.saveStyles(".about-title");
 
-    // Animate cards with different trigger points for mobile vs desktop
-    cards.forEach((card) => {
-      gsap.from(card as Element, {
-        x: 100,
-        opacity: 0,
-        duration: 1,
-        scrollTrigger: {
-          trigger: card as Element,
-          start: `top 90%`,
-          end: `bottom 70%`,
-          scrub: true,
-        },
+      const mm = gsap.matchMedia();
+
+      // Adjust 600px if your MUI `sm` is different.
+      mm.add("(min-width: 600px)", () => {
+        // ✅ DESKTOP: pin the title
+        gsap.from(".about-title", {
+          scrollTrigger: {
+            trigger: ".about-container",
+            start: "top top",
+            end: "bottom 30%",
+            scrub: true,
+            pin: ".about-title",
+            // Try true first; false can cause overlap/collapse depending on layout
+            pinSpacing: true,
+            invalidateOnRefresh: true,
+            // markers: true, // uncomment to debug
+          },
+        });
+      });
+
+      mm.add("(max-width: 599px)", () => {
+        // 📱 MOBILE: no pin — nothing to set up here for the title
+      });
+
+      // Your card reveals (run on all sizes)
+      const cards = gsap.utils.toArray<HTMLElement>(".card-about");
+      cards.forEach((card) => {
+        gsap.from(card, {
+          x: 100,
+          opacity: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            end: "bottom 70%",
+            scrub: true,
+          },
+        });
       });
     });
-  });
 
-  // Get styles from external file
+    return () => ctx.revert(); // cleans up animations & ScrollTriggers on unmount/re-run
+  }, []);
+
   const styles = getAboutStyles(theme, isMobile);
 
   return (
