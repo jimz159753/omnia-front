@@ -1,9 +1,9 @@
 import { IService } from "@/constants";
 import React from "react";
 
-const CardAbout = ({ service }: { service: IService }) => (
+const CardService = ({ service }: { service: IService }) => (
   <div
-    className="card-about"
+    className="card-service"
     style={{
       width: "100%",
       display: "flex",
@@ -49,4 +49,4 @@ const CardAbout = ({ service }: { service: IService }) => (
   </div>
 );
 
-export default CardAbout;
+export default CardService;

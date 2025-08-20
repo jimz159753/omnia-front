@@ -329,3 +329,20 @@ export const services: IService[] = [
       "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
   },
 ];
+
+export const aboutImages = [
+  {
+    id: 1,
+    image: "https://images.pexels.com/photos/9032690/pexels-photo-9032690.jpeg",
+  },
+  {
+    id: 2,
+    image:
+      "https://images.pexels.com/photos/20431486/pexels-photo-20431486.jpeg",
+  },
+
+  {
+    id: 3,
+    image: "https://images.pexels.com/photos/6944357/pexels-photo-6944357.jpeg",
+  },
+];

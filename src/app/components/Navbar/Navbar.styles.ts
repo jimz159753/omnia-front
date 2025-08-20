@@ -1,7 +1,6 @@
 import { Box, styled } from "@mui/material";
 
 export const StyledNavbar = styled(Box)(() => ({
-  flexGrow: 1,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
