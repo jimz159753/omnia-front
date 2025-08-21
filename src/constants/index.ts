@@ -302,31 +302,31 @@ export const services: IService[] = [
     id: "tarot",
     label: "Tarot",
     description:
-      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+      "Más que una lectura de cartas, es un espacio de conexión contigo mismo, donde podrás encontrar claridad, orientación y nuevas perspectivas para tu vida.",
   },
   {
-    id: "spa",
-    label: "Spa",
+    id: "cosmetologia",
+    label: "Cosmetología",
     description:
-      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+      "Cada tratamiento está diseñado para realzar tu belleza natural mientras disfrutas de un momento de relajación y conexión contigo mismo. Utilizamos productos de calidad y, en algunos casos, naturales, buscando siempre un equilibrio entre salud, estética y bienestar integral.",
   },
   {
     id: "reiki",
     label: "Reiki",
     description:
-      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+      "A través de la imposición de manos, se canaliza energía vital para desbloquear, armonizar y revitalizar tu campo energético.",
   },
   {
     id: "meditacion",
     label: "Meditación",
     description:
-      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+      "Durante cada práctica aprenderás a observar tus pensamientos sin juicio, soltar tensiones y abrir espacio a la serenidad y la claridad. Nuestras sesiones son aptas tanto para principiantes como para personas con experiencia.",
   },
   {
-    id: "psicologia",
-    label: "Psicológica",
+    id: "terapias",
+    label: "Terapias",
     description:
-      "Liberación, descanso y presencia a través del tacto consciente. Nuestros masajes son una pausa para el cuerpo y una caricia para el alma.",
+      "Ofrecemos diferentes terapias alternativas que buscan armonizar tu energía, liberar bloqueos y acompañarte en tu camino de transformación personal.",
   },
 ];
 

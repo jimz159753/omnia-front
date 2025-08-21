@@ -32,7 +32,7 @@ const CardService = ({ service }: { service: IService }) => (
 
       <p
         style={{
-          fontSize: "16px",
+          fontSize: "18px",
           fontFamily: "var(--font-cabinet-grotesk)",
         }}
       >

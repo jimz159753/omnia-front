@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Services from "./components/Services";
 import About from "./components/About";
+import Space from "./components/Space";
 
 export const metadata = {
   title: "Omnia",
@@ -17,6 +18,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
+      <Space />
       <About />
     </>
   );

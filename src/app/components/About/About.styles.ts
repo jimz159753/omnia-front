@@ -18,7 +18,7 @@ export const aboutStyles = {
   description: {
     color: "#000",
     textAlign: "center" as const,
-    fontSize: "16px",
+    fontSize: "18px",
     fontFamily: "var(--font-cabinet-grotesk)",
   },
   carouselContainer: {

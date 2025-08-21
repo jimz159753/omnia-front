@@ -1,0 +1,98 @@
+export const spaceStyles = {
+  container: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "50px",
+    backgroundColor: "#86694B",
+    padding: "50px",
+    marginBottom: "50px",
+  },
+  title: {
+    width: "100%",
+    fontSize: "50px",
+    color: "#fff",
+    margin: "0px",
+    fontFamily: "var(--font-lora-regular)",
+    textAlign: "center" as const,
+  },
+  contentWrapper: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "20px",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row" as const,
+    gap: "20px",
+    height: "400px",
+    width: "100%",
+  },
+  card: {
+    border: "1px solid black",
+    borderRadius: "8px",
+    width: "100%",
+    height: "100%",
+  },
+  card40: {
+    flex: "40%",
+    borderRadius: "20px",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#B09172",
+  },
+  card60: {
+    flex: "60%",
+    borderRadius: "20px",
+    width: "100%",
+    height: "100%",
+  },
+  cardText: {
+    fontSize: "40px",
+    fontWeight: "normal",
+    color: "#fff",
+    margin: "0px",
+    fontFamily: "var(--font-lora-italic)",
+  },
+  cardTextContainer: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "20px",
+    padding: "50px",
+  },
+  cardTextDescription: {
+    fontSize: "18px",
+    color: "#fff",
+    margin: "0px",
+    fontFamily: "var(--font-cabinet-grotesk)",
+  },
+  space1: {
+    flex: "60%",
+    borderRadius: "20px",
+    width: "100%",
+    height: "100%",
+    backgroundImage:
+      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+    backgroundSize: "cover" as const,
+    backgroundPosition: "center" as const,
+  },
+  space2: {
+    flex: "60%",
+    borderRadius: "20px",
+    width: "100%",
+    height: "100%",
+    backgroundImage:
+      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+    backgroundSize: "cover" as const,
+    backgroundPosition: "center" as const,
+  },
+  space3: {
+    flex: "40%",
+    borderRadius: "20px",
+    width: "100%",
+    height: "100%",
+    backgroundImage:
+      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+    backgroundSize: "cover" as const,
+    backgroundPosition: "center" as const,
+  },
+};
