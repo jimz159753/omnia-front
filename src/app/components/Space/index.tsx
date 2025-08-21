@@ -4,6 +4,8 @@ import { spaceStyles } from "./Space.styles";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ImageCarousel } from "../ui/ImageCarousel";
+import { tagSpaces } from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,6 +41,7 @@ const Space = () => {
                   y áreas disponibles en renta, pensados para terapeutas, guías
                   y profesionales de la salud y el crecimiento personal.
                 </p>
+                <ImageCarousel tags={tagSpaces} />
               </div>
             </div>
             <div className="space-card" style={spaceStyles.space1} />

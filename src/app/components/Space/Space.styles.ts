@@ -34,16 +34,13 @@ export const spaceStyles = {
     height: "100%",
   },
   card40: {
-    flex: "40%",
+    width: "40%",
     borderRadius: "20px",
-    width: "100%",
     height: "100%",
     backgroundColor: "#B09172",
   },
   card60: {
-    flex: "60%",
     borderRadius: "20px",
-    width: "100%",
     height: "100%",
   },
   cardText: {
@@ -66,22 +63,20 @@ export const spaceStyles = {
     fontFamily: "var(--font-cabinet-grotesk)",
   },
   space1: {
-    flex: "60%",
+    width: "60%",
     borderRadius: "20px",
-    width: "100%",
     height: "100%",
     backgroundImage:
-      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+      "url(https://images.pexels.com/photos/4723114/pexels-photo-4723114.jpeg)",
     backgroundSize: "cover" as const,
     backgroundPosition: "center" as const,
   },
   space2: {
-    flex: "60%",
+    width: "60%",
     borderRadius: "20px",
-    width: "100%",
     height: "100%",
     backgroundImage:
-      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+      "url(https://images.pexels.com/photos/6015101/pexels-photo-6015101.jpeg)",
     backgroundSize: "cover" as const,
     backgroundPosition: "center" as const,
   },
@@ -91,7 +86,7 @@ export const spaceStyles = {
     width: "100%",
     height: "100%",
     backgroundImage:
-      "url(https://images.pexels.com/photos/6648550/pexels-photo-6648550.jpeg)",
+      "url(https://images.pexels.com/photos/4723158/pexels-photo-4723158.jpeg)",
     backgroundSize: "cover" as const,
     backgroundPosition: "center" as const,
   },

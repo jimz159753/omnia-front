@@ -346,3 +346,38 @@ export const aboutImages = [
     image: "https://images.pexels.com/photos/6944357/pexels-photo-6944357.jpeg",
   },
 ];
+
+export const tagSpaces = [
+  {
+    id: 1,
+    name: "tranquilidad",
+  },
+  {
+    id: 2,
+    name: "cuidado",
+  },
+  {
+    id: 3,
+    name: "recuperacion",
+  },
+  {
+    id: 4,
+    name: "paz",
+  },
+  {
+    id: 5,
+    name: "tempo",
+  },
+  {
+    id: 6,
+    name: "velocidad",
+  },
+  {
+    id: 7,
+    name: "equilibrio",
+  },
+  {
+    id: 8,
+    name: "momento",
+  },
+];

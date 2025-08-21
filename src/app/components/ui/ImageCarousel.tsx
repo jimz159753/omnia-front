@@ -9,16 +9,105 @@ interface ImageCarouselProps {
   altText?: string;
   autoPlay?: boolean;
   direction?: "left" | "right";
-  speed?: number; // Duration in seconds
+  speed?: number;
   tags?: {
     name: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
   }[];
   classNameCarousel?: string;
 }
 
-export const ImageCarousel = ({
+// Extracted styles
+const carouselStyles = {
+  container: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row" as const,
+    height: "100%",
+    overflow: "hidden",
+  },
+  marqueeContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row" as const,
+    gap: "16px",
+    height: "100%",
+  },
+  image: (isMobile: boolean) => ({
+    width: isMobile ? "300px" : "450px",
+    height: isMobile ? "200px" : "300px",
+    objectFit: "cover" as const,
+    borderRadius: "16px",
+    flexShrink: 0,
+  }),
+  tagContainer: {
+    width: "100px",
+    height: "100px",
+    objectFit: "cover" as const,
+    borderRadius: "16px",
+    backgroundColor: "#B09172",
+    flexShrink: 0,
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tagText: {
+    color: "#fff",
+    fontSize: "14px",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: "10px 10px",
+    borderRadius: "20px",
+    marginTop: "10px",
+    fontFamily: "var(--font-cabinet-grotesk)",
+    width: "85%",
+    textAlign: "center" as const,
+  },
+};
+
+// Reusable components
+const CarouselImage = ({
+  image,
+  altText,
+  index,
   isMobile,
+}: {
+  image: string;
+  altText: string;
+  index: number;
+  isMobile: boolean;
+}) => (
+  <Image
+    key={index}
+    src={image}
+    alt={`${altText} ${index + 1}`}
+    width={isMobile ? 300 : 450}
+    height={isMobile ? 200 : 300}
+    unoptimized
+    style={carouselStyles.image(isMobile)}
+  />
+);
+
+const CarouselTag = ({
+  tag,
+  index,
+  isDuplicate = false,
+}: {
+  tag: { name: string; icon?: React.ReactNode };
+  index: number;
+  isDuplicate?: boolean;
+}) => (
+  <div
+    key={isDuplicate ? `duplicate-${index}` : index}
+    style={carouselStyles.tagContainer}
+  >
+    {tag.icon}
+    <span style={carouselStyles.tagText}>{tag.name}</span>
+  </div>
+);
+
+export const ImageCarousel = ({
+  isMobile = false,
   images,
   altText = "carousel image",
   autoPlay = true,
@@ -37,38 +126,24 @@ export const ImageCarousel = ({
     const firstElement = container.firstElementChild as HTMLElement;
     if (!firstElement) return;
 
-    // Calculate width based on images or tags
-    let elementWidth: number;
-    let gap: number;
-    let totalWidth: number;
+    // Calculate dimensions
+    const elementWidth = firstElement.offsetWidth;
+    const gap = 16;
+    const totalWidth =
+      (elementWidth + gap) * (images?.length || tags?.length || 0);
 
-    if (images && images.length > 0) {
-      // If we have images, calculate based on image width
-      elementWidth = firstElement.offsetWidth;
-      gap = 16; // 4 * 4px (gap-4)
-      totalWidth = (elementWidth + gap) * images.length;
-    } else if (tags && tags.length > 0) {
-      // If we only have tags, calculate based on tag width
-      elementWidth = firstElement.offsetWidth;
-      gap = 16; // 4 * 4px (gap-4)
-      totalWidth = (elementWidth + gap) * tags.length;
-    } else {
-      return; // No content to animate
-    }
+    if (totalWidth === 0) return;
 
-    // Create infinite loop animation
+    // Create animation
     const tl = gsap.timeline({ repeat: -1 });
 
-    // Set direction based on prop and ensure infinite loop
     if (direction === "right") {
-      // For right direction, start from negative position and move to positive
       tl.set(container, { x: -totalWidth }).to(container, {
         x: 0,
         duration: speed,
         ease: "none",
       });
     } else {
-      // For left direction (default), move from 0 to negative
       tl.to(container, {
         x: -totalWidth,
         duration: speed,
@@ -79,114 +154,83 @@ export const ImageCarousel = ({
     animationRef.current = tl;
 
     return () => {
-      if (animationRef.current) {
-        animationRef.current.kill();
-      }
+      animationRef.current?.kill();
     };
   }, [autoPlay, images?.length, tags?.length, direction, speed]);
 
+  const renderImages = () => {
+    if (!images?.length) return null;
+
+    return (
+      <>
+        {images.map((image, index) => (
+          <CarouselImage
+            key={index}
+            image={image}
+            altText={altText}
+            index={index}
+            isMobile={isMobile}
+          />
+        ))}
+        {/* Duplicate for seamless loop */}
+        {images.map((image, index) => (
+          <CarouselImage
+            key={`duplicate-${index}`}
+            image={image}
+            altText={altText}
+            index={index}
+            isMobile={isMobile}
+          />
+        ))}
+      </>
+    );
+  };
+
+  const renderTags = () => {
+    if (!tags?.length) return null;
+
+    return (
+      <>
+        {tags.map((tag, index) => (
+          <CarouselTag key={index} tag={tag} index={index} />
+        ))}
+        {/* Multiple duplicates for seamless loop */}
+        {tags.map((tag, index) => (
+          <CarouselTag
+            key={`duplicate-1-${index}`}
+            tag={tag}
+            index={index}
+            isDuplicate
+          />
+        ))}
+        {tags.map((tag, index) => (
+          <CarouselTag
+            key={`duplicate-2-${index}`}
+            tag={tag}
+            index={index}
+            isDuplicate
+          />
+        ))}
+        {tags.map((tag, index) => (
+          <CarouselTag
+            key={`duplicate-3-${index}`}
+            tag={tag}
+            index={index}
+            isDuplicate
+          />
+        ))}
+      </>
+    );
+  };
+
   return (
     <div
-      className={`image-carousel ${classNameCarousel}`}
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "row",
-        height: "100%",
-        overflow: "hidden",
-      }}
+      className={`image-carousel ${classNameCarousel || ""}`}
+      style={carouselStyles.container}
     >
-      {/* Marquee Container */}
-      <div
-        ref={containerRef}
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          gap: "16px",
-          height: "100%",
-        }}
-      >
-        {images?.map((image, index) => (
-          <Image
-            key={index}
-            src={image}
-            alt={`${altText} ${index + 1}`}
-            width={isMobile ? 300 : 450}
-            height={isMobile ? 200 : 300}
-            unoptimized
-            style={{
-              width: isMobile ? "300px" : "450px",
-              height: isMobile ? "200px" : "300px",
-              objectFit: "cover",
-              borderRadius: "16px",
-              flexShrink: 0,
-            }}
-          />
-        ))}
-        {/* Duplicate images for seamless loop */}
-        {images?.map((image, index) => (
-          <Image
-            key={`duplicate-${index}`}
-            src={image}
-            alt={`${altText} ${index + 1}`}
-            width={isMobile ? 300 : 450}
-            height={isMobile ? 200 : 300}
-            unoptimized
-            style={{
-              width: isMobile ? "300px" : "450px",
-              height: isMobile ? "200px" : "300px",
-              objectFit: "cover",
-              borderRadius: "16px",
-              flexShrink: 0,
-            }}
-          />
-        ))}
-        {tags?.map((tag, index) => (
-          <div
-            key={index}
-            className="tag-item flex items-center gap-2 bg-black-100 text-white px-4 py-2 rounded-full flex-shrink-0 min-w-fit"
-          >
-            {tag.icon}
-            <span className="font-medium whitespace-nowrap text-gray-400">
-              {tag.name}
-            </span>
-          </div>
-        ))}
-        {/* Duplicate tags multiple times for seamless infinite loop */}
-        {tags?.map((tag, index) => (
-          <div
-            key={`duplicate-1-${index}`}
-            className="tag-item flex items-center gap-2 bg-black-100 text-white px-4 py-2 rounded-full flex-shrink-0 min-w-fit"
-          >
-            {tag.icon}
-            <span className="font-medium whitespace-nowrap text-gray-400">
-              {tag.name}
-            </span>
-          </div>
-        ))}
-        {tags?.map((tag, index) => (
-          <div
-            key={`duplicate-2-${index}`}
-            className="tag-item flex items-center gap-2 bg-black-100 text-white px-4 py-2 rounded-full flex-shrink-0 min-w-fit"
-          >
-            {tag.icon}
-            <span className="font-medium whitespace-nowrap text-gray-400">
-              {tag.name}
-            </span>
-          </div>
-        ))}
-        {tags?.map((tag, index) => (
-          <div
-            key={`duplicate-3-${index}`}
-            className="tag-item flex items-center gap-2 bg-black-100 text-white px-4 py-2 rounded-full flex-shrink-0 min-w-fit"
-          >
-            {tag.icon}
-            <span className="font-medium whitespace-nowrap text-gray-400">
-              {tag.name}
-            </span>
-          </div>
-        ))}
+      <div ref={containerRef} style={carouselStyles.marqueeContainer}>
+        {renderImages()}
+        {renderTags()}
       </div>
     </div>
   );
