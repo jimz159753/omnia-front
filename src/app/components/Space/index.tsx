@@ -1,15 +1,21 @@
 "use client";
 import React from "react";
-import { spaceStyles } from "./Space.styles";
+import { getSpaceStyles } from "./Space.styles";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ImageCarousel } from "../ui/ImageCarousel";
 import { tagSpaces } from "@/constants";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Space = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const styles = getSpaceStyles(isMobile);
+
   useGSAP(() => {
     gsap.from(".space-card", {
       opacity: 0,
@@ -20,21 +26,21 @@ const Space = () => {
         trigger: ".space-section",
         start: "top 50%",
         end: "bottom 50%",
-        toggleActions: "restart none restart",
+        toggleActions: "play",
       },
     });
   });
 
   return (
     <section className="space-section">
-      <div style={spaceStyles.container}>
-        <p style={spaceStyles.title}>Donde la magia pasa</p>
-        <div style={spaceStyles.contentWrapper}>
-          <div style={spaceStyles.row}>
-            <div className="space-card" style={spaceStyles.card40}>
-              <div style={spaceStyles.cardTextContainer}>
-                <p style={spaceStyles.cardText}>Nuestros espacios</p>
-                <p style={spaceStyles.cardTextDescription}>
+      <div style={styles.container}>
+        <p style={styles.title}>Donde la magia pasa</p>
+        <div style={styles.contentWrapper}>
+          <div style={styles.row}>
+            <div className="space-card" style={styles.card40}>
+              <div style={styles.cardTextContainer}>
+                <p style={styles.cardText}>Nuestros espacios</p>
+                <p style={styles.cardTextDescription}>
                   Un espacio diseñado para el bienestar integral, donde la
                   armonía, la energía y la tranquilidad se unen para ofrecer
                   experiencias transformadoras. Nuestra casa cuenta con cuartos
@@ -44,11 +50,11 @@ const Space = () => {
                 <ImageCarousel tags={tagSpaces} />
               </div>
             </div>
-            <div className="space-card" style={spaceStyles.space1} />
+            <div className="space-card" style={styles.space1} />
           </div>
-          <div style={spaceStyles.row}>
-            <div className="space-card" style={spaceStyles.space2} />
-            <div className="space-card" style={spaceStyles.space3} />
+          <div style={styles.row}>
+            <div className="space-card" style={styles.space2} />
+            <div className="space-card" style={styles.space3} />
           </div>
         </div>
       </div>
