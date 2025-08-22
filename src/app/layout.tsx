@@ -2,11 +2,6 @@ import { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 
-const bigilla = localFont({
-  src: "../../public/fonts/Bigilla.otf",
-  variable: "--font-bigilla",
-});
-
 const cabinetGrotesk = localFont({
   src: "../../public/fonts/CabinetGrotesk-Light.otf",
   variable: "--font-cabinet-grotesk",
@@ -33,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${bigilla.variable} ${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
+      className={`${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
     >
       <body>{children}</body>
     </html>

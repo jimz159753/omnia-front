@@ -370,7 +370,7 @@ export const tagSpaces = [
   },
   {
     id: 6,
-    name: "velocidad",
+    name: "calma",
   },
   {
     id: 7,
