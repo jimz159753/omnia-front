@@ -1,10 +1,12 @@
 import { Box, styled } from "@mui/material";
 
-export const StyledNavbar = styled(Box)(() => ({
+export const StyledNavbar = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "isMobile",
+})<{ isMobile: boolean }>(({ isMobile }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "5px 10px",
+  padding: isMobile ? "15px" : "8px 15px",
   backgroundColor: "transparent",
   position: "fixed",
   top: 0,

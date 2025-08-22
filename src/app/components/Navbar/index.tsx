@@ -25,7 +25,7 @@ const Navbar = () => {
   };
 
   return (
-    <StyledNavbar>
+    <StyledNavbar isMobile={isMobile}>
       <Image src={espacio_omnia} alt="omnia" width={200} height={32} priority />
 
       {/* Desktop Navigation */}
