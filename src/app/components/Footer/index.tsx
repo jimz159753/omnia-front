@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import {
   FooterContainer,
   FooterContent,
@@ -16,15 +16,60 @@ import {
 } from "./Footer.styles";
 import Image from "next/image";
 import omniaLogo from "../../../assets/images/espacio_omnia.webp";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 const Footer = () => {
+  const footerRef = useRef(null);
   const currentYear = new Date().getFullYear();
 
+  useGSAP(
+    () => {
+      // Set initial state
+      gsap.set(footerRef.current, { opacity: 0, y: 50 });
+      gsap.set(".footer-section", { opacity: 0, y: 30 });
+
+      // Main footer container animation
+      gsap.to(footerRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: footerRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // Staggered section animations
+      gsap.to(".footer-section", {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.inOut",
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: footerRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    },
+    { scope: footerRef }
+  );
+
   return (
-    <FooterContainer>
+    <FooterContainer ref={footerRef}>
       <FooterContent>
         {/* Company Information */}
-        <FooterSection>
+        <FooterSection className="footer-section">
           <FooterLogo>
             <Image src={omniaLogo} alt="Omnia" width={150} />
           </FooterLogo>
@@ -37,7 +82,7 @@ const Footer = () => {
         </FooterSection>
 
         {/* Services */}
-        <FooterSection>
+        <FooterSection className="footer-section">
           <FooterTitle>Nuestros Servicios</FooterTitle>
           <FooterList>
             <FooterListItem>
@@ -59,7 +104,7 @@ const Footer = () => {
         </FooterSection>
 
         {/* Quick Links */}
-        <FooterSection>
+        <FooterSection className="footer-section">
           <FooterTitle>Enlaces Rápidos</FooterTitle>
           <FooterList>
             <FooterListItem>
@@ -81,7 +126,7 @@ const Footer = () => {
         </FooterSection>
 
         {/* Contact Information */}
-        <FooterSection>
+        <FooterSection className="footer-section">
           <FooterTitle>Información de Contacto</FooterTitle>
           <FooterList>
             <FooterListItem>
@@ -108,7 +153,7 @@ const Footer = () => {
       </FooterContent>
 
       {/* Footer Bottom */}
-      <FooterBottom>
+      <FooterBottom className="footer-section">
         <Copyright>
           © {currentYear} Omnia. Todos los derechos reservados.
         </Copyright>

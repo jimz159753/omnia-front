@@ -19,14 +19,14 @@ const Space = () => {
   useGSAP(() => {
     gsap.from(".space-card", {
       opacity: 0,
-      duration: 1.2,
+      duration: 0.8,
       ease: "power2.inOut",
       stagger: 0.2,
       scrollTrigger: {
         trigger: ".space-section",
         start: "top 50%",
         end: "bottom 50%",
-        toggleActions: "play",
+        toggleActions: "play none none reverse",
       },
     });
   });
