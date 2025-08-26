@@ -15,7 +15,7 @@ import {
   FooterLogo,
 } from "./Footer.styles";
 import Image from "next/image";
-import omniaLogo from "../../../assets/images/espacio_omnia.webp";
+import omniaLogo from "@/assets/images/espacio_omnia.webp";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

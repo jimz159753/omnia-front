@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { getAboutStyles } from "./Services.styles";
-import CardService from "../card-service";
+import CardService from "../ui/CardService";
 
 gsap.registerPlugin(ScrollTrigger);
 
