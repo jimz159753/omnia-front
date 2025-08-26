@@ -2,7 +2,7 @@ import { ListItemIcon } from "@mui/material";
 import React from "react";
 import { StyledMenuItem, StyledTypography } from "./ListSection.styles";
 import { Icon } from "@iconify/react";
-import { TabContext } from "@/app/dashboard/layout";
+import { TabContext } from "@/app/(dashboard)/layout";
 import { TabNames } from "@/constants";
 
 interface ItemSectionProps {
@@ -13,9 +13,12 @@ interface ItemSectionProps {
 const ItemSection = ({ icon, title }: ItemSectionProps) => {
   const { activeTab, setActiveTab } = React.useContext(TabContext);
   const tabName = title as TabNames;
-  
+
   return (
-    <StyledMenuItem onClick={() => setActiveTab(tabName)} sx={{ backgroundColor: activeTab === tabName ? "#E5E5E5" : "white" }}>
+    <StyledMenuItem
+      onClick={() => setActiveTab(tabName)}
+      sx={{ backgroundColor: activeTab === tabName ? "#E5E5E5" : "white" }}
+    >
       <ListItemIcon>
         <Icon icon={icon} width="35" height="35" color="gray" />
       </ListItemIcon>

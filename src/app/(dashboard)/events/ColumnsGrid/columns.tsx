@@ -1,46 +1,27 @@
-import { formatCurrency } from "@/utils";
-import { Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid-pro";
+import { GridColDef } from "@mui/x-data-grid";
 
-export interface IRow {
+export interface Event {
   id: number;
-  title: string;
-  description: string;
-  url: string;
-  duration: string;
-  price: string;
+  name: string;
+  date: string;
+  status: string;
 }
 
-export const columns: GridColDef<IRow>[] = [
+export const columns: GridColDef<Event>[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
-    field: "eventName",
+    field: "name",
     headerName: "Event Name",
     width: 250,
   },
   {
-    field: "title",
-    headerName: "Title",
-    width: 250,
-  },
-  {
-    field: "description",
-    headerName: "Description",
-    width: 250,
-  },
-  {
-    field: "length",
-    headerName: "Duration",
+    field: "date",
+    headerName: "Date",
     width: 150,
   },
   {
-    field: "price",
-    headerName: "Price",
+    field: "status",
+    headerName: "Status",
     width: 150,
-    renderCell: (params) => {
-      return (
-        <Typography>{formatCurrency(Number(params.row.price)/100)}</Typography>
-      );
-    },
   },
 ];

@@ -8,31 +8,39 @@ import {
   Alert,
   Link,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading, isAuthenticated } = useAuth();
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      // Redirect will be handled by the useAuth hook
-    }
-  }, [isAuthenticated]);
+  const [success, setSuccess] = useState("");
+  const { register, isLoading } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
     try {
-      await login(email, password);
+      await register(email, password);
+      setSuccess("Registration successful! Redirecting to dashboard...");
+
+      // Clear form
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Login failed");
-      console.error("Login error:", error);
+      setError(error instanceof Error ? error.message : "Registration failed");
+      console.error("Registration error:", error);
     }
   };
 
@@ -55,12 +63,18 @@ const Login = () => {
         }}
       >
         <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-          Login
+          Register
         </Typography>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
+          </Alert>
+        )}
+
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
           </Alert>
         )}
 
@@ -81,6 +95,16 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={isLoading}
+          helperText="At least 8 characters with uppercase, lowercase, and number"
+        />
+        <TextField
+          label="Confirm Password"
+          type="password"
+          name="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          disabled={isLoading}
         />
         <Button
           sx={{
@@ -99,16 +123,16 @@ const Login = () => {
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? "Signing in..." : "Login"}
+          {isLoading ? "Creating account..." : "Register"}
         </Button>
 
         <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/register"
+            href="/login"
             sx={{ color: "#000", textDecoration: "underline" }}
           >
-            Register here
+            Login here
           </Link>
         </Typography>
       </FormControl>
@@ -116,4 +140,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

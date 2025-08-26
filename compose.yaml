@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - omnia_network
+    command: postgres -c listen_addresses='*'
+
+  app:
+    build:
+      context: .
+    image: nextjs-dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres"
+    depends_on:
+      - db
+    networks:
+      - omnia_network
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+        - action: sync+exec
+          path: package.json
+          target: /app/package.json
+          exec:
+            command: npm install
+
+volumes:
+  postgres_data:
+
+networks:
+  omnia_network:
+    driver: bridge

@@ -1,14 +1,16 @@
 "use client";
 import { StyledContainer, StyledGrid } from "@/app/page.styles";
-import { Grid } from "@mui/material";
-import { createContext, useState } from "react";
+import { Grid, Box } from "@mui/material";
+import { createContext, useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
-import { Routes } from "@/app/dashboard/routes";
-import Header from "../components/Header";
-import SideBar from "../components/SideBar";
+import { Routes } from "./routes";
+import Header from "../../components/Header";
+import SideBar from "../../components/SideBar";
 import { TabNames } from "@/constants";
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 const cache = createCache({ key: "css", prepend: true });
 
@@ -22,6 +24,35 @@ export const TabContext = createContext<{
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Clients);
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <div>Loading...</div>
+      </Box>
+    );
+  }
+
+  // Don't render dashboard if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <CacheProvider value={cache}>
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
