@@ -3,16 +3,13 @@ import Image from "next/image";
 import OmniaTitle from "@/assets/images/omnia_title.png";
 import { StyledGrid } from "./Header.styles";
 import { Box, Button, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const { user, logout } = useAuth();
-  const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
-    // Logout will handle the redirect automatically
   };
 
   return (

@@ -2,7 +2,7 @@ import { ListItemIcon } from "@mui/material";
 import React from "react";
 import { StyledMenuItem, StyledTypography } from "./ListSection.styles";
 import { Icon } from "@iconify/react";
-import { TabContext } from "@/app/(dashboard)/layout";
+import { TabContext } from "@/app/dashboard/layout";
 import { TabNames } from "@/constants";
 
 interface ItemSectionProps {
