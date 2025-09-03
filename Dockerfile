@@ -15,6 +15,10 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
+# Copy static assets for standalone build
+RUN cp -r .next/static .next/standalone/.next/static
+RUN cp -r public .next/standalone/public
+
 EXPOSE 3000
 
 # Use standalone server for production
