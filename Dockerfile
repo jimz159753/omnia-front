@@ -17,5 +17,5 @@ RUN npm run build
 
 EXPOSE 3000
 
-# Use start command for production instead of dev
-CMD ["npm", "run", "start"]
+# Use standalone server for production
+CMD ["node", ".next/standalone/server.js"]

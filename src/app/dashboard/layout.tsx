@@ -1,7 +1,7 @@
 "use client";
 import { StyledContainer, StyledGrid } from "@/app/page.styles";
 import { Grid, Box } from "@mui/material";
-import { createContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
 import { Routes } from "./routes";
 import Header from "../../components/Header";
@@ -11,16 +11,9 @@ import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { TabContext } from "@/contexts/TabContext";
 
 const cache = createCache({ key: "css", prepend: true });
-
-export const TabContext = createContext<{
-  activeTab: TabNames;
-  setActiveTab: React.Dispatch<React.SetStateAction<TabNames>>;
-}>({
-  activeTab: TabNames.Clients,
-  setActiveTab: () => {},
-});
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Clients);

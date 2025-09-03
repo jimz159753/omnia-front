@@ -4,7 +4,7 @@ import Events from "./events";
 import Analytics from "./analytics";
 import Vouchers from "./vouchers";
 import Discounts from "./discounts";
-import { TabContext } from "./layout";
+import { TabContext } from "@/contexts/TabContext";
 import { TabNames } from "@/constants";
 export const Routes = () => {
   const { activeTab } = useContext(TabContext);

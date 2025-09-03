@@ -22,6 +22,11 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres"
+      NEXTAUTH_SECRET: "your-random-secret-key"
+      NEXTAUTH_URL: "http://localhost:3000"
+      CAL_BASE_URL: "https://api.cal.com/v2"
+      CAL_BEARER_TOKEN: "cal_live_2d2c9e790385a392a1c58f4886964e74"
+      CAL_USERNAME: "prueba140992"
     depends_on:
       - db
     networks:

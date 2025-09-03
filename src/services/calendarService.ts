@@ -82,10 +82,14 @@ export interface CalendarServiceConfig {
 }
 
 class CalendarService {
-  private api: AxiosInstance;
-  private config: CalendarServiceConfig;
+  private api: AxiosInstance | null = null;
+  private config: CalendarServiceConfig | null = null;
 
-  constructor() {
+  private initialize() {
+    if (this.api && this.config) {
+      return; // Already initialized
+    }
+
     this.config = {
       baseURL: process.env.CAL_BASE_URL || "",
       bearerToken: process.env.CAL_BEARER_TOKEN || "",
@@ -141,12 +145,14 @@ class CalendarService {
   // Get all event types (Cal.com API)
   async getEvents(): Promise<CalendarEvent[]> {
     try {
+      this.initialize();
+
       // Check if we have valid configuration
-      if (!this.config.baseURL || !this.config.bearerToken) {
+      if (!this.config!.baseURL || !this.config!.bearerToken) {
         throw new Error("Calendar service not configured");
       }
 
-      const response = await this.api.get("/event-types", {
+      const response = await this.api!.get("/event-types", {
         headers: {
           "cal-api-version": "2024-08-14",
         },
@@ -164,7 +170,8 @@ class CalendarService {
   // Get event type by ID (Cal.com API)
   async getEventById(id: string): Promise<CalendarEvent> {
     try {
-      const response = await this.api.get(`/event-types/${id}`, {
+      this.initialize();
+      const response = await this.api!.get(`/event-types/${id}`, {
         headers: {
           "cal-api-version": "2024-08-14",
         },
@@ -179,7 +186,8 @@ class CalendarService {
   // Create new event type (Cal.com API)
   async createEvent(eventData: CreateEventRequest): Promise<CalendarEvent> {
     try {
-      const response = await this.api.post("/event-types", eventData, {
+      this.initialize();
+      const response = await this.api!.post("/event-types", eventData, {
         headers: {
           "cal-api-version": "2024-08-14",
         },
@@ -194,8 +202,9 @@ class CalendarService {
   // Update existing event type (Cal.com API)
   async updateEvent(eventData: UpdateEventRequest): Promise<CalendarEvent> {
     try {
+      this.initialize();
       const { id, ...updateData } = eventData;
-      const response = await this.api.put(`/event-types/${id}`, updateData, {
+      const response = await this.api!.put(`/event-types/${id}`, updateData, {
         headers: {
           "cal-api-version": "2024-08-14",
         },
@@ -210,7 +219,8 @@ class CalendarService {
   // Delete event type (Cal.com API)
   async deleteEvent(id: string): Promise<void> {
     try {
-      await this.api.delete(`/event-types/${id}`, {
+      this.initialize();
+      await this.api!.delete(`/event-types/${id}`, {
         headers: {
           "cal-api-version": "2024-08-14",
         },
