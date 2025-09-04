@@ -1,3 +1,7 @@
+import moon from "@/assets/images/moon.webp";
+import butterfly from "@/assets/images/butterfly.webp";
+import hand from "@/assets/images/hand.webp";
+
 // Tabs
 
 export enum TabNames {
@@ -379,5 +383,29 @@ export const tagSpaces = [
   {
     id: 8,
     name: "momento",
+  },
+];
+
+export const values = [
+  {
+    id: 1,
+    title: "Misión",
+    image: moon,
+    description:
+      "Promover el desarrollo integral de las personas mediante experiencias que unan mente, cuerpo y espíritu, construyendo una comunidad consciente y solidaria.",
+  },
+  {
+    id: 2,
+    title: "Visión",
+    image: butterfly,
+    description:
+      "Ser un referente en el desarrollo integral de las personas, ofreciendo experiencias que unan mente, cuerpo y espíritu en una comunidad consciente y solidaria.",
+  },
+  {
+    id: 3,
+    title: "Valores",
+    image: hand,
+    description:
+      "Solidaridad, empatía, integridad y armonía: los valores que nos guían para crear comunidad y transformación.",
   },
 ];

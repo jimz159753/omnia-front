@@ -4,6 +4,7 @@ import Services from "@/components/Services";
 import About from "@/components/About";
 import Space from "@/components/Space";
 import Footer from "@/components/Footer";
+import Values from "@/components/Values";
 
 export const metadata = {
   title: "Omnia",
@@ -18,6 +19,7 @@ export default function Home() {
     <>
       <Navbar />
       <Hero />
+      <Values />
       <Services />
       <Space />
       <About />

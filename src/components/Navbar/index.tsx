@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import espacio_omnia from "@/assets/images/espacio_omnia.webp";
 import { StyledNavbar, StyledUl } from "./Navbar.styles";
 import { navigationItems } from "@/constants";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 600px)");
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const { mounted: isClient, isMatch: isMobile } =
+    useSafeMediaQuery("(max-width: 600px)");
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
