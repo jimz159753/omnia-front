@@ -12,18 +12,18 @@ export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
   } as const,
 
   card: {
-    display: "grid",
+    display: "flex",
+    flexDirection: "column",
     gap: isMobile ? "20px" : "40px",
     alignItems: "center",
-    justifyContent: "center",
     textAlign: "center",
     padding: "32px",
     minHeight: "400px",
   } as const,
 
   image: {
-    width: "110px",
-    height: "110px",
+    width: "130px",
+    height: "130px",
     objectFit: "contain",
     display: "block",
     justifySelf: "center",

@@ -406,6 +406,6 @@ export const values = [
     title: "Valores",
     image: hand,
     description:
-      "Ser un referente en el desarrollo integral de las personas, ofreciendo experiencias que unan mente, cuerpo y espíritu en una comunidad consciente y solidaria.",
+      "ofreciendo experiencias que unan mente, cuerpo y espíritu en una comunidad consciente y solidaria.",
   },
 ];
