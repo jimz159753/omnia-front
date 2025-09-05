@@ -44,14 +44,13 @@ const Values = () => {
   return (
     <section style={styles.container}>
       {values.map((value) => (
-        <div key={value.id}>
-          <CardValue
-            title={value.title}
-            image={value.image}
-            description={value.description}
-            styles={styles}
-          />
-        </div>
+        <CardValue
+          key={value.id}
+          title={value.title}
+          image={value.image}
+          description={value.description}
+          styles={styles}
+        />
       ))}
     </section>
   );

@@ -19,7 +19,6 @@ const CardValue = ({ title, image, description, styles }: CardValueProps) => {
       <Image
         src={image}
         alt={title}
-        width={110}
         height={110}
         unoptimized
         style={styles.image}

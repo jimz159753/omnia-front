@@ -2,22 +2,21 @@ import { Theme } from "@mui/material";
 
 export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
   container: {
-    display: "flex",
-    flexDirection: isMobile ? "column" : "row",
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
     gap: isMobile ? "0" : "60px",
     justifyContent: "center",
-    alignItems: "center",
-    padding: isMobile ? "20px 20px" : "100px 20px",
+    alignItems: "start",
+    padding: isMobile ? "50px" : "100px",
     backgroundColor: "#fafafa",
   } as const,
 
   card: {
-    display: "flex",
-    flexDirection: "column",
+    display: "grid",
+    gap: isMobile ? "20px" : "40px",
     alignItems: "center",
     justifyContent: "center",
     textAlign: "center",
-    gap: "20px",
     padding: "32px",
     minHeight: "400px",
   } as const,
@@ -26,10 +25,13 @@ export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
     width: "110px",
     height: "110px",
     objectFit: "contain",
+    display: "block",
+    justifySelf: "center",
+    alignSelf: "center",
   } as const,
 
   title: {
-    fontSize: isMobile ? "24px" : "30px",
+    fontSize: isMobile ? "30px" : "50px",
     fontWeight: "normal",
     color: "#B09172",
     margin: "0",
@@ -39,7 +41,7 @@ export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
   } as const,
 
   description: {
-    fontSize: isMobile ? "14px" : "16px",
+    fontSize: isMobile ? "16px" : "18px",
     fontFamily: "var(--font-cabinet-grotesk)",
     color: "#6b7280",
     margin: "0",

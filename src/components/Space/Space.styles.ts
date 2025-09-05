@@ -17,7 +17,6 @@ export const getSpaceStyles = (isMobile: boolean) => ({
   },
   contentWrapper: {
     display: "flex",
-
     flexDirection: "column" as const,
     gap: isMobile ? "15px" : "20px",
   },
