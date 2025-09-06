@@ -218,10 +218,10 @@ const Footer = () => {
         </Copyright>
         <FooterList sx={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
           <FooterListItem>
-            <FooterLink href="/privacy">Política de Privacidad</FooterLink>
+            <FooterLink>Política de Privacidad</FooterLink>
           </FooterListItem>
           <FooterListItem>
-            <FooterLink href="/terms">Términos de Servicio</FooterLink>
+            <FooterLink>Términos de Servicio</FooterLink>
           </FooterListItem>
         </FooterList>
       </FooterBottom>
