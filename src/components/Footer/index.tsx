@@ -31,6 +31,20 @@ const Footer = () => {
   const footerRef = useRef(null);
   const currentYear = new Date().getFullYear();
 
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string
+  ) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   useGSAP(
     () => {
       // Set initial state
@@ -70,7 +84,7 @@ const Footer = () => {
   );
 
   return (
-    <FooterContainer ref={footerRef}>
+    <FooterContainer id="contacto" ref={footerRef}>
       <FooterContent>
         {/* Company Information */}
         <FooterSection className="footer-section">
@@ -128,19 +142,44 @@ const Footer = () => {
           <FooterTitle>Enlaces Rápidos</FooterTitle>
           <FooterList>
             <FooterListItem>
-              <FooterLink href="#home">Inicio</FooterLink>
+              <FooterLink
+                href="#home"
+                onClick={(e) => handleNavClick(e, "home")}
+              >
+                Inicio
+              </FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#about">Sobre Nosotros</FooterLink>
+              <FooterLink
+                href="#conocenos"
+                onClick={(e) => handleNavClick(e, "conocenos")}
+              >
+                Sobre Nosotros
+              </FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#space">Nuestro Espacio</FooterLink>
+              <FooterLink
+                href="#espacios"
+                onClick={(e) => handleNavClick(e, "espacios")}
+              >
+                Nuestro Espacio
+              </FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#appointments">Reservas</FooterLink>
+              <FooterLink
+                href="#eventos"
+                onClick={(e) => handleNavClick(e, "eventos")}
+              >
+                Reservas
+              </FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#contact">Contacto</FooterLink>
+              <FooterLink
+                href="#contacto"
+                onClick={(e) => handleNavClick(e, "contacto")}
+              >
+                Contacto
+              </FooterLink>
             </FooterListItem>
           </FooterList>
         </FooterSection>

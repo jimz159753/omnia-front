@@ -16,6 +16,7 @@ const Values = () => {
   if (!mounted) {
     return (
       <section
+        id="conocenos"
         style={{
           display: "flex",
           flexDirection: "row",
@@ -42,7 +43,7 @@ const Values = () => {
   const styles = getValuesStyles(theme, isMobile);
 
   return (
-    <section style={styles.container}>
+    <section id="conocenos" style={styles.container}>
       {values.map((value) => (
         <CardValue
           key={value.id}

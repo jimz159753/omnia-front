@@ -79,6 +79,7 @@ const Hero = () => {
 
   return (
     <div
+      id="home"
       style={{
         position: "relative",
         height: "100vh",

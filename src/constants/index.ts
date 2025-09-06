@@ -292,6 +292,8 @@ export interface IService {
 export const navigationItems = [
   { id: "conocenos", label: "Conocenos" },
   { id: "servicios", label: "Servicios" },
+  { id: "espacios", label: "Espacios" },
+  { id: "eventos", label: "Eventos" },
   { id: "contacto", label: "Contacto" },
 ];
 

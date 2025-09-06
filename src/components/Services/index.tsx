@@ -67,7 +67,11 @@ const Services = () => {
   const styles = getAboutStyles(theme, isMobile);
 
   return (
-    <section className="services-container" style={styles.container}>
+    <section
+      id="servicios"
+      className="services-container"
+      style={styles.container}
+    >
       <p className="services-title" style={styles.title}>
         Donde la calma se convierte en camino
       </p>

@@ -11,7 +11,11 @@ const About = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <section className="about-container" style={aboutStyles.container}>
+    <section
+      id="eventos"
+      className="about-container"
+      style={aboutStyles.container}
+    >
       <p
         className="about-title"
         style={{

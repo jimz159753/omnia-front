@@ -32,7 +32,7 @@ const Space = () => {
   });
 
   return (
-    <section className="space-section">
+    <section id="espacios" className="space-section">
       <div style={styles.container}>
         <p style={styles.title}>Donde la magia pasa</p>
         <div style={styles.contentWrapper}>

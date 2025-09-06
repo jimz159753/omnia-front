@@ -20,6 +20,6 @@ export const StyledNavbar = styled(Box, {
 export const StyledUl = styled(Box)(() => ({
   display: "flex",
   padding: 15,
-  width: "20%",
+  width: "30%",
   justifyContent: "space-between",
 }));

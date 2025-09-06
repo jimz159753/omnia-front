@@ -20,6 +20,21 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string
+  ) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+    closeMobileMenu();
+  };
+
   return (
     <StyledNavbar isMobile={isMobile}>
       <Image src={espacio_omnia} alt="omnia" width={200} height={32} priority />
@@ -37,6 +52,7 @@ const Navbar = () => {
                   fontFamily: "var(--font-cabinet-grotesk)",
                 }}
                 href={`#${item.id}`}
+                onClick={(e) => handleNavClick(e, item.id)}
               >
                 {item.label}
               </a>
@@ -101,7 +117,7 @@ const Navbar = () => {
             <a
               key={item.id}
               href={`#${item.id}`}
-              onClick={closeMobileMenu}
+              onClick={(e) => handleNavClick(e, item.id)}
               style={{
                 color: "white",
                 textDecoration: "none",
