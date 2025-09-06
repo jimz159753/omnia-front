@@ -13,12 +13,16 @@ import {
   FooterBottom,
   Copyright,
   FooterLogo,
+  SocialLink,
 } from "./Footer.styles";
 import Image from "next/image";
 import omniaLogo from "@/assets/images/espacio_omnia.webp";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import instagram from "@/assets/images/instagram.webp";
+import tiktok from "@/assets/images/tiktok.webp";
+import whatsapp from "@/assets/images/whatsapp.webp";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -78,7 +82,23 @@ const Footer = () => {
             servicios especializados en bienestar, masajes y terapias
             holísticas.
           </FooterText>
-          <SocialLinks>Social Media</SocialLinks>
+          <SocialLinks>
+            <SocialLink href="https://wa.me/+523333906945" target="_blank">
+              <Image src={whatsapp} alt="Whatsapp" width={24} height={24} />
+            </SocialLink>
+            <SocialLink
+              href="https://www.instagram.com/omniaespacio_"
+              target="_blank"
+            >
+              <Image src={instagram} alt="Instagram" width={24} height={24} />
+            </SocialLink>
+            <SocialLink
+              href="https://www.tiktok.com/@espacio.omnia"
+              target="_blank"
+            >
+              <Image src={tiktok} alt="Tiktok" width={24} height={24} />
+            </SocialLink>
+          </SocialLinks>
         </FooterSection>
 
         {/* Services */}
@@ -86,19 +106,19 @@ const Footer = () => {
           <FooterTitle>Nuestros Servicios</FooterTitle>
           <FooterList>
             <FooterListItem>
-              <FooterLink href="#services">Masajes Terapéuticos</FooterLink>
+              <FooterLink>Masajes Terapéuticos</FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#services">Terapias Holísticas</FooterLink>
+              <FooterLink>Terapias Holísticas</FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#services">Bienestar Integral</FooterLink>
+              <FooterLink>Bienestar Integral</FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#services">Spa & Relaxación</FooterLink>
+              <FooterLink>Spa & Relajación</FooterLink>
             </FooterListItem>
             <FooterListItem>
-              <FooterLink href="#services">Renta de espacios</FooterLink>
+              <FooterLink>Renta de espacios</FooterLink>
             </FooterListItem>
           </FooterList>
         </FooterSection>

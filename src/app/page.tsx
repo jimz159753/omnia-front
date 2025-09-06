@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import Values from "@/components/Values";
 
 export const metadata = {
-  title: "Omnia",
+  title: "Espacio Omnia",
   description: "Omnia",
   icons: {
     icon: "/favicon.ico",

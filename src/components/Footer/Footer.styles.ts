@@ -25,7 +25,7 @@ export const FooterContent = styled(Box)(() => ({
 export const FooterSection = styled(Box)(() => ({
   display: "flex",
   flexDirection: "column",
-  gap: "1rem",
+  justifyContent: "space-between",
 }));
 
 export const FooterTitle = styled(Box)(() => ({
@@ -54,7 +54,6 @@ export const FooterLink = styled("a")(() => ({
   display: "flex",
   alignItems: "center",
   gap: "0.5rem",
-  cursor: "pointer",
 }));
 
 export const FooterList = styled(Box)(() => ({
@@ -74,8 +73,12 @@ export const FooterListItem = styled(Box)(() => ({
 
 export const SocialLinks = styled(Box)(() => ({
   display: "flex",
-  gap: "1rem",
+  gap: "1.5rem",
   marginTop: "1rem",
+}));
+
+export const SocialLink = styled("a")(() => ({
+  cursor: "pointer",
 }));
 
 export const FooterBottom = styled(Box)(() => ({
