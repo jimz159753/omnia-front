@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import espacio_omnia from "@/assets/images/espacio_omnia.webp";
-import { StyledNavbar, StyledUl } from "./Navbar.styles";
+import { StyledUl } from "./Navbar.styles";
 import { navigationItems } from "@/constants";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
+import { Box } from "@mui/material";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,7 +37,22 @@ const Navbar = () => {
   };
 
   return (
-    <StyledNavbar isMobile={isMobile}>
+    <Box
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: isMobile ? "15px" : "8px 15px",
+        backgroundColor: "transparent",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1,
+        backdropFilter: "blur(10px)",
+        color: "#ffffff",
+      }}
+    >
       <Image src={espacio_omnia} alt="omnia" width={200} height={32} priority />
 
       {/* Desktop Navigation */}
@@ -137,7 +153,7 @@ const Navbar = () => {
           ))}
         </div>
       )}
-    </StyledNavbar>
+    </Box>
   );
 };
 
