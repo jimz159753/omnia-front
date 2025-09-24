@@ -7,6 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { getAboutStyles } from "./Services.styles";
 import CardService from "../ui/CardService";
+import Image from "next/image";
+import whatsapp from "@/assets/images/whatsapp.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,7 +32,7 @@ const Services = () => {
           scrollTrigger: {
             trigger: ".services-container",
             start: "top top",
-            end: "bottom 35%",
+            end: "bottom center",
             scrub: true,
             pin: ".services-title",
             // Try true first; false can cause overlap/collapse depending on layout
@@ -72,10 +74,17 @@ const Services = () => {
       className="services-container"
       style={styles.container}
     >
-      <p className="services-title" style={styles.title}>
-        Donde la calma se convierte en camino
-      </p>
-
+      <div className="services-title" style={styles.titleContainer}>
+        <p style={styles.title}>Donde la calma se convierte en camino</p>
+        <a
+          style={styles.buttonContact}
+          href="https://wa.me/+523333906945"
+          target="_blank"
+        >
+          <Image src={whatsapp} alt="Whatsapp" width={24} height={24} />
+          Reserva tu cita
+        </a>
+      </div>
       <div style={styles.contentWrapper}>
         <div style={styles.cardsContainer}>
           {services.map((service) => (

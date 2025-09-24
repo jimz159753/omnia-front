@@ -18,7 +18,6 @@ export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
     alignItems: "center",
     textAlign: "center",
     padding: "32px",
-    minHeight: "400px",
   } as const,
 
   image: {
