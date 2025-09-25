@@ -9,29 +9,18 @@ import { aboutStyles } from "./About.styles";
 const About = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const styles = aboutStyles(isMobile);
 
   return (
-    <section
-      id="eventos"
-      className="about-container"
-      style={aboutStyles.container}
-    >
-      <p
-        className="about-title"
-        style={{
-          ...aboutStyles.title,
-          fontSize: isMobile
-            ? aboutStyles.titleMobile.fontSize
-            : aboutStyles.title.fontSize,
-        }}
-      >
+    <section id="eventos" className="about-container" style={styles.container}>
+      <p className="about-title" style={styles.title}>
         Toque, energía, belleza y encuentros
       </p>
-      <p className="about-description" style={aboutStyles.description}>
+      <p className="about-description" style={styles.description}>
         Nuestro espacio está diseñado para que te sientas bienvenido, relajado y
         con la energía necesaria para enfrentar el día.
       </p>
-      <div style={aboutStyles.carouselContainer}>
+      <div style={styles.carouselContainer}>
         <ImageCarousel
           isMobile={isMobile}
           images={aboutImages.map((image) => image.image)}

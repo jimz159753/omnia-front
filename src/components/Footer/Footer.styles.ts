@@ -4,7 +4,6 @@ export const FooterContainer = styled(Box)(() => ({
   background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
   color: "#ffffff",
   padding: "4rem 0 2rem",
-  marginTop: "4rem",
   borderTop: "1px solid rgba(255, 255, 255, 0.1)",
 }));
 

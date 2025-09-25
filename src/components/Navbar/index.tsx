@@ -28,9 +28,16 @@ const Navbar = () => {
     e.preventDefault();
     const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({
+      // Get the navbar element to calculate its actual height
+      const navbar = document.querySelector("[data-navbar]") as HTMLElement;
+      const navbarHeight = navbar.offsetHeight;
+
+      const elementRect = element.getBoundingClientRect().top;
+      const offsetPosition = elementRect + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
         behavior: "smooth",
-        block: "start",
       });
     }
     closeMobileMenu();
@@ -38,18 +45,18 @@ const Navbar = () => {
 
   return (
     <Box
+      data-navbar
       style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         padding: isMobile ? "15px" : "8px 15px",
-        backgroundColor: "transparent",
+        background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1,
-        backdropFilter: "blur(10px)",
         color: "#ffffff",
       }}
     >

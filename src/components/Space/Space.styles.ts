@@ -5,7 +5,6 @@ export const getSpaceStyles = (isMobile: boolean) => ({
     gap: isMobile ? "30px" : "50px",
     backgroundColor: "#86694B",
     padding: isMobile ? "30px" : "50px",
-    marginBottom: isMobile ? "30px" : "50px",
   },
   title: {
     width: "100%",
