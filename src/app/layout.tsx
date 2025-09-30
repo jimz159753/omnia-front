@@ -30,7 +30,11 @@ export default function RootLayout({
     <html
       className={`${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
     >
-      <body>{children}</body>
+      <body
+        className={`${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

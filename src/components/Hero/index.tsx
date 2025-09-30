@@ -1,27 +1,29 @@
 "use client";
 import gsap from "gsap";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import logo from "@/assets/images/omnia_hero_logo.webp";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(SplitText);
 
+const videos = [
+  "/videos/odintsov.webm",
+  "/videos/massage_spa.webm",
+  "/videos/massage_face.webm",
+  "/videos/tarot.webm",
+];
+
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const isMobile = useMediaQuery("(max-width: 600px)");
+  const { mounted: isClient, isMatch: isMobile } =
+    useSafeMediaQuery("(max-width: 600px)");
   const logoRef = useRef<HTMLImageElement>(null);
-  const videos = [
-    "/videos/odintsov.webm",
-    "/videos/massage_spa.webm",
-    "/videos/massage_face.webm",
-    "/videos/tarot.webm",
-  ];
 
-  const playNextVideo = () => {
+  const playNextVideo = useCallback(() => {
     if (videoRef.current) {
       // Blur out current video
       gsap.to(videoRef.current, {
@@ -42,19 +44,18 @@ const Hero = () => {
         },
       });
     }
-  };
+  }, [currentVideoIndex]);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.addEventListener("ended", playNextVideo);
+    const currentVideo = videoRef.current;
+    if (currentVideo) {
+      currentVideo.addEventListener("ended", playNextVideo);
 
       return () => {
-        if (videoRef.current) {
-          videoRef.current.removeEventListener("ended", playNextVideo);
-        }
+        currentVideo.removeEventListener("ended", playNextVideo);
       };
     }
-  }, [currentVideoIndex]);
+  }, [currentVideoIndex, playNextVideo]);
 
   useGSAP(() => {
     const splitText = new SplitText(".hero-logo-text", {
@@ -125,7 +126,7 @@ const Hero = () => {
           src={logo}
           alt="logo"
           style={{
-            width: isMobile ? "100%" : "50%",
+            width: isClient && isMobile ? "100%" : "50%",
             height: "auto",
             objectFit: "contain",
           }}
@@ -134,7 +135,7 @@ const Hero = () => {
           className="hero-logo-text"
           style={{
             color: "white",
-            fontSize: isMobile ? "30px" : "50px",
+            fontSize: isClient && isMobile ? "30px" : "50px",
             textAlign: "center",
             fontFamily: "var(--font-lora-italic)",
           }}

@@ -83,7 +83,6 @@ const CarouselImage = ({
     alt={`${altText} ${index + 1}`}
     width={isMobile ? 300 : 450}
     height={isMobile ? 200 : 300}
-    unoptimized
     style={carouselStyles.image(isMobile)}
   />
 );

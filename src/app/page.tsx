@@ -23,8 +23,8 @@ export default function Home() {
       <Values />
       <Services />
       <Space />
-      <Calendar />
       <About />
+      <Calendar />
       <Footer />
     </>
   );
