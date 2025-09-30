@@ -1,6 +1,13 @@
 import moon from "@/assets/images/moon.webp";
 import butterfly from "@/assets/images/butterfly.webp";
 import hand from "@/assets/images/hand.webp";
+import frontdesk from "@/assets/images/frontdesk.webp";
+import cosmetology from "@/assets/images/cosmetology.webp";
+import massage from "@/assets/images/massage.webp";
+import mirrors from "@/assets/images/mirrors.webp";
+import plants from "@/assets/images/plants.webp";
+import products from "@/assets/images/products.webp";
+import yard from "@/assets/images/yard.webp";
 
 // Tabs
 
@@ -339,17 +346,32 @@ export const services: IService[] = [
 export const aboutImages = [
   {
     id: 1,
-    image: "https://images.pexels.com/photos/9032690/pexels-photo-9032690.jpeg",
+    image: frontdesk,
   },
   {
     id: 2,
-    image:
-      "https://images.pexels.com/photos/20431486/pexels-photo-20431486.jpeg",
+    image: cosmetology,
   },
 
   {
     id: 3,
-    image: "https://images.pexels.com/photos/6944357/pexels-photo-6944357.jpeg",
+    image: massage,
+  },
+  {
+    id: 4,
+    image: mirrors,
+  },
+  {
+    id: 5,
+    image: plants,
+  },
+  {
+    id: 6,
+    image: products,
+  },
+  {
+    id: 7,
+    image: yard,
   },
 ];
 

@@ -5,6 +5,7 @@ import About from "@/components/About";
 import Space from "@/components/Space";
 import Footer from "@/components/Footer";
 import Values from "@/components/Values";
+import Calendar from "@/components/Calendar";
 
 export const metadata = {
   title: "Espacio Omnia",
@@ -22,6 +23,7 @@ export default function Home() {
       <Values />
       <Services />
       <Space />
+      <Calendar />
       <About />
       <Footer />
     </>

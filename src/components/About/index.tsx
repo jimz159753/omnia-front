@@ -23,15 +23,15 @@ const About = () => {
       <div style={styles.carouselContainer}>
         <ImageCarousel
           isMobile={isMobile}
-          images={aboutImages.map((image) => image.image)}
+          images={aboutImages.map((image) => image.image.src)}
           direction="left"
-          speed={30}
+          speed={35}
         />
         <ImageCarousel
           isMobile={isMobile}
-          images={aboutImages.map((image) => image.image)}
+          images={aboutImages.map((image) => image.image.src)}
           direction="right"
-          speed={30}
+          speed={35}
         />
       </div>
     </section>
