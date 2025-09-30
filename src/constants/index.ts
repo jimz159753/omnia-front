@@ -430,6 +430,6 @@ export const values = [
     title: "Valores",
     image: hand,
     description:
-      "ofreciendo experiencias que unan mente, cuerpo y espíritu en una comunidad consciente y solidaria.",
+      "Una casa holística se guía por valores de equilibrio, sostenibilidad y bienestar, creando un espacio que nutre la mente, el cuerpo y el espíritu.",
   },
 ];
