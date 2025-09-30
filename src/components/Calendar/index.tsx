@@ -11,7 +11,7 @@ const Calendar: React.FC = () => {
 
   return (
     <section
-      id="cosmetologia"
+      id="reservas"
       className="calendar-container"
       style={styles.container}
     >

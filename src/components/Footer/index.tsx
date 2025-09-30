@@ -42,9 +42,19 @@ const Footer = () => {
     e.preventDefault();
     const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+      // Get the navbar element to calculate its actual height
+      const navbar = document.querySelector("[data-navbar]") as HTMLElement;
+      const navbarHeight = navbar ? navbar.offsetHeight : 80; // Fallback height
+
+      const elementRect = element.getBoundingClientRect().top;
+      const offsetPosition = elementRect + window.pageYOffset - navbarHeight;
+
+      // Use requestAnimationFrame for smoother animation
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: "smooth",
+        });
       });
     }
   };
@@ -158,7 +168,15 @@ const Footer = () => {
                 href="#conocenos"
                 onClick={(e) => handleNavClick(e, "conocenos")}
               >
-                Sobre Nosotros
+                Conocenos
+              </FooterLink>
+            </FooterListItem>
+            <FooterListItem>
+              <FooterLink
+                href="#servicios"
+                onClick={(e) => handleNavClick(e, "servicios")}
+              >
+                Servicios
               </FooterLink>
             </FooterListItem>
             <FooterListItem>
@@ -166,23 +184,15 @@ const Footer = () => {
                 href="#espacios"
                 onClick={(e) => handleNavClick(e, "espacios")}
               >
-                Nuestro Espacio
+                Espacios
               </FooterLink>
             </FooterListItem>
             <FooterListItem>
               <FooterLink
-                href="#eventos"
-                onClick={(e) => handleNavClick(e, "eventos")}
+                href="#reservas"
+                onClick={(e) => handleNavClick(e, "reservas")}
               >
                 Reservas
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink
-                href="#contacto"
-                onClick={(e) => handleNavClick(e, "contacto")}
-              >
-                Contacto
               </FooterLink>
             </FooterListItem>
           </FooterList>

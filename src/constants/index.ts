@@ -300,8 +300,7 @@ export const navigationItems = [
   { id: "conocenos", label: "Conocenos" },
   { id: "servicios", label: "Servicios" },
   { id: "espacios", label: "Espacios" },
-  { id: "eventos", label: "Eventos" },
-  { id: "cosmetologia", label: "Cosmetología" },
+  { id: "reservas", label: "Reservas" },
   { id: "contacto", label: "Contacto" },
 ];
 
