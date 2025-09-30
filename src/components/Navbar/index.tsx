@@ -7,7 +7,6 @@ import { StyledUl } from "./Navbar.styles";
 import { navigationItems } from "@/constants";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
 import { Box } from "@mui/material";
-import { smoothScrollTo } from "@/utils";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
