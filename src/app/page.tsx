@@ -7,14 +7,6 @@ import Footer from "@/components/Footer";
 import Values from "@/components/Values";
 import Calendar from "@/components/Calendar";
 
-export const metadata = {
-  title: "Espacio Omnia",
-  description: "Omnia",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
 export default function Home() {
   return (
     <>
