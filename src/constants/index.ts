@@ -301,6 +301,7 @@ export const navigationItems = [
   { id: "servicios", label: "Servicios" },
   { id: "espacios", label: "Espacios" },
   { id: "eventos", label: "Eventos" },
+  { id: "cosmetologia", label: "Cosmetología" },
   { id: "contacto", label: "Contacto" },
 ];
 

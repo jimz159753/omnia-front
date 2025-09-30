@@ -7,6 +7,7 @@ import { StyledUl } from "./Navbar.styles";
 import { navigationItems } from "@/constants";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
 import { Box } from "@mui/material";
+import { smoothScrollTo } from "@/utils";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,14 +31,17 @@ const Navbar = () => {
     if (element) {
       // Get the navbar element to calculate its actual height
       const navbar = document.querySelector("[data-navbar]") as HTMLElement;
-      const navbarHeight = navbar.offsetHeight;
+      const navbarHeight = navbar ? navbar.offsetHeight : 80; // Fallback height
 
       const elementRect = element.getBoundingClientRect().top;
       const offsetPosition = elementRect + window.pageYOffset - navbarHeight;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
+      // Use requestAnimationFrame for smoother animation
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: "smooth",
+        });
       });
     }
     closeMobileMenu();
