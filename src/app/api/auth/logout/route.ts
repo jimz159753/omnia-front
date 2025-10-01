@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
     const token = request.cookies.get("auth-token")?.value;
 
     if (token) {
-      // Logout the user (clear session)
-      auth.logout(token);
+      // Logout the user (JWT tokens are stateless, so we just clear the cookie)
+      auth.logout();
     }
 
     // Create response

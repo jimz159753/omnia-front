@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 import { hashPassword, validateEmail, validatePassword } from "@/utils/auth";
 
 export interface User {
@@ -16,11 +17,10 @@ export interface AuthResult {
   token?: string;
 }
 
-// Simple in-memory session store (in production, use Redis or database)
-const sessions = new Map<
-  string,
-  { userId: string; email: string; expires: number }
->();
+// JWT secret key (in production, use environment variable)
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_EXPIRES_IN = "24h";
 
 export const auth = {
   // Register a new user
@@ -100,8 +100,8 @@ export const auth = {
         return { success: false, error: "Invalid email or password" };
       }
 
-      // Create session token
-      const token = this.createSession(user.id, user.email);
+      // Create JWT token
+      const token = this.createToken(user.id, user.email);
 
       return {
         success: true,
@@ -119,37 +119,35 @@ export const auth = {
     }
   },
 
-  // Create a session
-  createSession(userId: string, email: string): string {
-    const token =
-      Math.random().toString(36).substring(2) + Date.now().toString(36);
-    const expires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
-    sessions.set(token, { userId, email, expires });
-
-    return token;
+  // Create a JWT token
+  createToken(userId: string, email: string): string {
+    return jwt.sign({ userId, email }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
   },
 
-  // Verify session token
-  verifySession(token: string): { userId: string; email: string } | null {
-    const session = sessions.get(token);
-
-    if (!session || session.expires < Date.now()) {
-      sessions.delete(token);
+  // Verify JWT token
+  verifyToken(token: string): { userId: string; email: string } | null {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as {
+        userId: string;
+        email: string;
+      };
+      return decoded;
+    } catch {
       return null;
     }
-
-    return { userId: session.userId, email: session.email };
   },
 
-  // Logout user
-  logout(token: string): void {
-    sessions.delete(token);
+  // Logout user (JWT tokens are stateless, so we just return success)
+  logout(): void {
+    // JWT tokens are stateless, so we don't need to do anything here
+    // The client should remove the token from cookies
   },
 
   // Get user by token
   async getUserByToken(token: string): Promise<User | null> {
-    const session = this.verifySession(token);
+    const session = this.verifyToken(token);
 
     if (!session) {
       return null;

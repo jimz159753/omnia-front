@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# JWT Secret for authentication tokens
+# In production, use a strong, randomly generated secret
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-12345
+```
+
+### Running the Development Server
+
 First, run the development server:
 
 ```bash
