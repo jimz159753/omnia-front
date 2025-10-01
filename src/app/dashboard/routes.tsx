@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import Clients from "./clients";
+import Sales from "./sales";
 import Events from "./events";
 import Analytics from "./analytics";
 import Vouchers from "./vouchers";
@@ -10,8 +10,8 @@ export const Routes = () => {
   const { activeTab } = useContext(TabContext);
 
   switch (activeTab) {
-    case TabNames.Clients:
-      return <Clients />;
+    case TabNames.Sales:
+      return <Sales />;
     case TabNames.Events:
       return <Events />;
     case TabNames.Analytics:

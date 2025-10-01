@@ -1,53 +1,25 @@
-import { IBooking } from "@/constants";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import {
-  DataGridPro,
-  GridValidRowModel,
-  GridColDef,
-  GridRowId,
-  GridCallbackDetails,
-} from "@mui/x-data-grid-pro";
+import { DataGrid, GridValidRowModel, GridColDef } from "@mui/x-data-grid";
 
-interface IGeneticDataGridProps<T> {
+interface IGeneticDataGridProps<T extends GridValidRowModel> {
   data: T[];
-  columns: GridColDef<GridValidRowModel>[];
+  columns: GridColDef<T>[];
   sx?: object;
-  getDetailPanelContent?: (params: {
-    row: IBooking;
-    id: GridRowId;
-    column?: GridColDef;
-  }) => React.ReactNode;
-  onDetailPanelExpandedRowIdsChange?: (
-    ids: Set<GridRowId>,
-    details: GridCallbackDetails
-  ) => void;
   loading: boolean;
-  detailPanelExpandedRowIds?: Set<GridRowId>;
 }
 
-const GeneticDataGrid = <T,>({
+const GeneticDataGrid = <T extends GridValidRowModel>({
   data,
   columns,
   sx,
-  getDetailPanelContent,
-  onDetailPanelExpandedRowIdsChange,
   loading,
-  detailPanelExpandedRowIds,
 }: IGeneticDataGridProps<T>) => {
   return (
-    <DataGridPro
+    <DataGrid
       loading={loading}
       sx={sx}
-      rows={data as IBooking[]}
-      columns={columns as GridColDef<IBooking>[]}
+      rows={data}
+      columns={columns}
       pageSizeOptions={[5]}
-      getDetailPanelContent={getDetailPanelContent}
-      slots={{
-        detailPanelExpandIcon: () => <Icon icon="mynaui:chevron-up" />,
-        detailPanelCollapseIcon: () => <Icon icon="mynaui:chevron-down" />,
-      }}
-      detailPanelExpandedRowIds={detailPanelExpandedRowIds}
-      onDetailPanelExpandedRowIdsChange={onDetailPanelExpandedRowIdsChange}
       disableRowSelectionOnClick
     />
   );

@@ -16,7 +16,7 @@ import { TabContext } from "@/contexts/TabContext";
 const cache = createCache({ key: "css", prepend: true });
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Clients);
+  const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Sales);
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -57,7 +57,7 @@ const Dashboard = () => {
               size={10}
               sx={{
                 backgroundColor: "#F1F1F1",
-                height: "100vh",
+                minHeight: "100vh",
                 borderRadius: "8px 0 0 0",
               }}
             >

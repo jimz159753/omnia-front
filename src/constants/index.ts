@@ -12,7 +12,7 @@ import yard from "@/assets/images/yard.webp";
 // Tabs
 
 export enum TabNames {
-  Clients = "Clients",
+  Sales = "Sales",
   Events = "Events",
   Analytics = "Analytics",
   Vouchers = "Vouchers",
@@ -433,3 +433,42 @@ export const values = [
       "Una casa holística se guía por valores de equilibrio, sostenibilidad y bienestar, creando un espacio que nutre la mente, el cuerpo y el espíritu.",
   },
 ];
+
+// Sales
+export interface ISales {
+  id: number;
+  date: string;
+  client: string;
+  product_id: string;
+  product_description: string;
+  unit: string;
+  unit_price: string;
+  total_price: string;
+  status: string;
+  pending_payment: string;
+  account: string;
+  seller: string;
+  type: string;
+  provider: string;
+  provider_payment: string;
+  omnia_income: string;
+  comment: string;
+  provider_status: string;
+  service: string;
+}
+
+export interface IExpenses {
+  id: number;
+  date: string;
+  description: string;
+  unit: string;
+  total: string;
+  status: string;
+  payment_account: string;
+  account: string;
+  type: string;
+  provider: string;
+  provider_payment: string;
+  provider_status: string;
+  service: string;
+}

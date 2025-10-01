@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
@@ -12,8 +12,15 @@ COPY . .
 # Generate Prisma client with correct binary targets
 RUN npx prisma generate
 
-# Build the application
-RUN npm run build
+# Development stage
+FROM base AS development
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+# Production stage
+FROM base AS production
+# Build the application (skip Prisma migration during build)
+RUN npx next build
 
 # Copy static assets for standalone build
 RUN cp -r .next/static .next/standalone/.next/static
