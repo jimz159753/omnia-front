@@ -31,11 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      className={`${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
-    >
+    <html lang="en">
       <body
         className={`${cabinetGrotesk.variable} ${loraItalic.variable} ${loraRegular.variable}`}
+        suppressHydrationWarning={true}
       >
         {children}
       </body>

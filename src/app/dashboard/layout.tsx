@@ -1,6 +1,5 @@
 "use client";
-import { StyledContainer, StyledGrid } from "@/app/page.styles";
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, Container } from "@mui/material";
 import { useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
 import { Routes } from "./routes";
@@ -12,6 +11,7 @@ import { CacheProvider } from "@emotion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { TabContext } from "@/contexts/TabContext";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cache = createCache({ key: "css", prepend: true });
 
@@ -36,7 +36,7 @@ const Dashboard = () => {
         alignItems="center"
         height="100vh"
       >
-        <div>Loading...</div>
+        <CircularProgress color="inherit" />
       </Box>
     );
   }
@@ -49,7 +49,14 @@ const Dashboard = () => {
   return (
     <CacheProvider value={cache}>
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
-        <StyledGrid>
+        <Grid
+          sx={{
+            backgroundColor: "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
+          }}
+        >
           <Header />
           <Grid display="flex" container>
             <SideBar userInfo={userInfo} items={items} />
@@ -61,12 +68,23 @@ const Dashboard = () => {
                 borderRadius: "8px 0 0 0",
               }}
             >
-              <StyledContainer>
+              <Container
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "stretch",
+                  margin: 0,
+                  padding: 2,
+                  minHeight: "auto",
+                  "&.MuiContainer-root": { maxWidth: "100vw" },
+                }}
+              >
                 <Routes />
-              </StyledContainer>
+              </Container>
             </Grid>
           </Grid>
-        </StyledGrid>
+        </Grid>
       </TabContext.Provider>
     </CacheProvider>
   );

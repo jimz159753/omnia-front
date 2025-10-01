@@ -6,6 +6,6 @@ export const TabContext = createContext<{
   activeTab: TabNames;
   setActiveTab: React.Dispatch<React.SetStateAction<TabNames>>;
 }>({
-  activeTab: TabNames.Clients,
+  activeTab: TabNames.Sales,
   setActiveTab: () => {},
 });
