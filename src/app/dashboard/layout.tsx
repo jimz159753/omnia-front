@@ -1,19 +1,14 @@
 "use client";
-import { Grid, Box, Container } from "@mui/material";
 import { useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
-import { Routes } from "./routes";
+// import { Routes } from "./routes";
 import Header from "../../components/Header";
 import SideBar from "../../components/SideBar";
 import { TabNames } from "@/constants";
-import createCache from "@emotion/cache";
-import { CacheProvider } from "@emotion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { TabContext } from "@/contexts/TabContext";
-import CircularProgress from "@mui/material/CircularProgress";
-
-const cache = createCache({ key: "css", prepend: true });
+import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Sales);
@@ -30,14 +25,9 @@ const Dashboard = () => {
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress color="inherit" />
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <CustomLoadingSpinner />
+      </div>
     );
   }
 
@@ -47,46 +37,19 @@ const Dashboard = () => {
   }
 
   return (
-    <CacheProvider value={cache}>
-      <TabContext.Provider value={{ activeTab, setActiveTab }}>
-        <Grid
-          sx={{
-            backgroundColor: "#ffffff",
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "100vh",
-          }}
-        >
-          <Header />
-          <Grid display="flex" container>
-            <SideBar userInfo={userInfo} items={items} />
-            <Grid
-              size={10}
-              sx={{
-                backgroundColor: "#F1F1F1",
-                minHeight: "100vh",
-                borderRadius: "8px 0 0 0",
-              }}
-            >
-              <Container
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                  alignItems: "stretch",
-                  margin: 0,
-                  padding: 2,
-                  minHeight: "auto",
-                  "&.MuiContainer-root": { maxWidth: "100vw" },
-                }}
-              >
-                <Routes />
-              </Container>
-            </Grid>
-          </Grid>
-        </Grid>
-      </TabContext.Provider>
-    </CacheProvider>
+    <TabContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex">
+          <SideBar userInfo={userInfo} items={items} />
+          <div className="flex-1">
+            <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
+              {/* <Routes /> */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </TabContext.Provider>
   );
 };
 

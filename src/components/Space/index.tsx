@@ -6,8 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ImageCarousel } from "../ui/ImageCarousel";
 import { tagSpaces } from "@/constants";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme, useMediaQuery } from "@/hooks/useCustomMediaQuery";
 
 gsap.registerPlugin(ScrollTrigger);
 

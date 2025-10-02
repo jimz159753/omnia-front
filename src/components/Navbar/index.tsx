@@ -3,10 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import espacio_omnia from "@/assets/images/espacio_omnia.webp";
-import { StyledUl } from "./Navbar.styles";
 import { navigationItems } from "@/constants";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
-import { Box } from "@mui/material";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -47,7 +45,7 @@ const Navbar = () => {
   };
 
   return (
-    <Box
+    <nav
       data-navbar
       style={{
         display: "flex",
@@ -63,11 +61,26 @@ const Navbar = () => {
         color: "#ffffff",
       }}
     >
-      <Image src={espacio_omnia} alt="omnia" width={200} height={32} priority />
+      {/* Logo */}
+      <Image
+        src={espacio_omnia}
+        alt="Espacio Omnia"
+        width={200}
+        height={32}
+        priority
+      />
 
       {/* Desktop Navigation */}
       {!isMobile && isClient && (
-        <StyledUl>
+        <ul
+          style={{
+            display: "flex",
+            padding: 15,
+            width: "30%",
+            justifyContent: "space-between",
+            margin: 0,
+          }}
+        >
           {navigationItems.map((item) => (
             <li key={item.id} style={{ listStyle: "none" }}>
               <a
@@ -84,7 +97,7 @@ const Navbar = () => {
               </a>
             </li>
           ))}
-        </StyledUl>
+        </ul>
       )}
 
       {/* Mobile Menu Button */}
@@ -163,7 +176,7 @@ const Navbar = () => {
           ))}
         </div>
       )}
-    </Box>
+    </nav>
   );
 };
 

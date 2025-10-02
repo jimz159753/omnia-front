@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useTheme } from "@mui/material";
+import { useTheme } from "@/hooks/useCustomMediaQuery";
 import CardValue from "../ui/CardValue";
 import { values } from "@/constants";
 import { getValuesStyles } from "./Values.styles";
@@ -33,14 +33,14 @@ const Values = () => {
             title={value.title}
             image={value.image}
             description={value.description}
-            styles={getValuesStyles(theme, false)}
+            styles={getValuesStyles(null, false)}
           />
         ))}
       </section>
     );
   }
 
-  const styles = getValuesStyles(theme, isMobile);
+  const styles = getValuesStyles(null, isMobile);
 
   return (
     <section id="conocenos" style={styles.container}>

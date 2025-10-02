@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Cal from "@calcom/embed-react";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { calendarStyles } from "./Calendar.styles";
 
 const Calendar: React.FC = () => {

@@ -1,15 +1,10 @@
 "use client";
-import {
-  Box,
-  Button,
-  FormControl,
-  TextField,
-  Typography,
-  Alert,
-  Link,
-} from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { CustomInput } from "@/components/ui/CustomInput";
+import { CustomButton } from "@/components/ui/CustomButton";
+import { CustomAlert } from "@/components/ui/CustomAlert";
+import Link from "next/link";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -37,34 +32,13 @@ const Login = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-    >
-      <FormControl
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          width: "300px",
-          padding: 4,
-        }}
-      >
-        <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-          Login
-        </Typography>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h1 className="login-title">Login</h1>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        {error && <CustomAlert severity="error">{error}</CustomAlert>}
 
-        <TextField
+        <CustomInput
           label="Email"
           type="email"
           name="email"
@@ -73,7 +47,7 @@ const Login = () => {
           required
           disabled={isLoading}
         />
-        <TextField
+        <CustomInput
           label="Password"
           type="password"
           name="password"
@@ -82,37 +56,18 @@ const Login = () => {
           required
           disabled={isLoading}
         />
-        <Button
-          sx={{
-            width: "100%",
-            height: "40px",
-            borderRadius: "8px",
-            backgroundColor: "#000",
-            color: "#fff",
-            "&:hover": {
-              backgroundColor: "#000",
-            },
-            "&:disabled": {
-              backgroundColor: "#ccc",
-            },
-          }}
-          type="submit"
-          disabled={isLoading}
-        >
+        <CustomButton type="submit" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Login"}
-        </Button>
+        </CustomButton>
 
-        <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+        <p className="login-text">
           Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            sx={{ color: "#000", textDecoration: "underline" }}
-          >
+          <Link href="/register" className="login-link">
             Register here
           </Link>
-        </Typography>
-      </FormControl>
-    </Box>
+        </p>
+      </form>
+    </div>
   );
 };
 

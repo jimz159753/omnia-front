@@ -1,7 +1,6 @@
 import { ProfileCard } from "../ProfileCard";
 import ListSection from "../ListSection";
 import { IMenuItem, IUserInfo } from "@/constants";
-import { StyledGrid } from "./SideBar.styles";
 
 interface SideBarProps {
   userInfo: IUserInfo;
@@ -11,10 +10,10 @@ interface SideBarProps {
 const SideBar = ({ items, userInfo }: SideBarProps) => {
   const { name, email, imgSrc } = userInfo;
   return (
-    <StyledGrid size={2}>
+    <div className="w-64 bg-white shadow-lg h-screen sticky top-0 flex flex-col">
       <ProfileCard name={name} imgSrc={imgSrc} email={email} />
       <ListSection items={items} />
-    </StyledGrid>
+    </div>
   );
 };
 

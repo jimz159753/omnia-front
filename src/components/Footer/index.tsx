@@ -1,20 +1,5 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import {
-  FooterContainer,
-  FooterContent,
-  FooterSection,
-  FooterTitle,
-  FooterText,
-  FooterLink,
-  FooterList,
-  FooterListItem,
-  SocialLinks,
-  FooterBottom,
-  Copyright,
-  FooterLogo,
-  SocialLink,
-} from "./Footer.styles";
 import Image from "next/image";
 import omniaLogo from "@/assets/images/espacio_omnia.webp";
 import { useGSAP } from "@gsap/react";
@@ -98,148 +83,187 @@ const Footer = () => {
   );
 
   return (
-    <FooterContainer id="contacto" ref={footerRef}>
-      <FooterContent>
+    <footer
+      id="contacto"
+      ref={footerRef}
+      style={{
+        background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+        color: "#ffffff",
+        padding: "4rem 0 2rem",
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+      }}
+    >
+      <div className="footer-container">
         {/* Company Information */}
-        <FooterSection className="footer-section">
-          <FooterLogo>
+        <div className="footer-section">
+          <div className="footer-logo">
             <Image src={omniaLogo} alt="Omnia" width={150} />
-          </FooterLogo>
-          <FooterText>
+          </div>
+          <p className="footer-text">
             Descubre el poder de la transformación personal a través de nuestros
             servicios especializados en bienestar, masajes y terapias
             holísticas.
-          </FooterText>
-          <SocialLinks>
-            <SocialLink href="https://wa.me/+523333906945" target="_blank">
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "1.5rem",
+              marginTop: "1rem",
+            }}
+          >
+            <a
+              style={{ cursor: "pointer" }}
+              href="https://wa.me/+523333906945"
+              target="_blank"
+            >
               <Image src={whatsapp} alt="Whatsapp" width={24} height={24} />
-            </SocialLink>
-            <SocialLink
+            </a>
+            <a
+              style={{ cursor: "pointer" }}
               href="https://www.instagram.com/omniaespacio_"
               target="_blank"
             >
               <Image src={instagram} alt="Instagram" width={24} height={24} />
-            </SocialLink>
-            <SocialLink
+            </a>
+            <a
+              style={{ cursor: "pointer" }}
               href="https://www.tiktok.com/@espacio.omnia"
               target="_blank"
             >
               <Image src={tiktok} alt="Tiktok" width={24} height={24} />
-            </SocialLink>
-          </SocialLinks>
-        </FooterSection>
+            </a>
+          </div>
+        </div>
 
         {/* Services */}
-        <FooterSection className="footer-section">
-          <FooterTitle>Nuestros Servicios</FooterTitle>
-          <FooterList>
-            <FooterListItem>
-              <FooterLink>Masajes Terapéuticos</FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink>Terapias Holísticas</FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink>Bienestar Integral</FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink>Spa & Relajación</FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink>Renta de espacios</FooterLink>
-            </FooterListItem>
-          </FooterList>
-        </FooterSection>
+        <div className="footer-section">
+          <div className="footer-title">Nuestros Servicios</div>
+          <div className="footer-list">
+            <div className="footer-list-item">
+              <a className="footer-link" href="#masajes">
+                Masajes Terapéuticos
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a className="footer-link" href="#terapias">
+                Terapias Holísticas
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a className="footer-link" href="#bienestar">
+                Bienestar Integral
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a className="footer-link" href="#spa">
+                Spa & Relajación
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a className="footer-link" href="#renta">
+                Renta de espacios
+              </a>
+            </div>
+          </div>
+        </div>
 
         {/* Quick Links */}
-        <FooterSection className="footer-section">
-          <FooterTitle>Enlaces Rápidos</FooterTitle>
-          <FooterList>
-            <FooterListItem>
-              <FooterLink
+        <div className="footer-section">
+          <div className="footer-title">Enlaces Rápidos</div>
+          <div className="footer-list">
+            <div className="footer-list-item">
+              <a
+                className="footer-link"
                 href="#home"
                 onClick={(e) => handleNavClick(e, "home")}
               >
                 Inicio
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a
+                className="footer-link"
                 href="#conocenos"
                 onClick={(e) => handleNavClick(e, "conocenos")}
               >
                 Conocenos
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a
+                className="footer-link"
                 href="#servicios"
                 onClick={(e) => handleNavClick(e, "servicios")}
               >
                 Servicios
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a
+                className="footer-link"
                 href="#espacios"
                 onClick={(e) => handleNavClick(e, "espacios")}
               >
                 Espacios
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <a
+                className="footer-link"
                 href="#reservas"
                 onClick={(e) => handleNavClick(e, "reservas")}
               >
                 Reservas
-              </FooterLink>
-            </FooterListItem>
-          </FooterList>
-        </FooterSection>
+              </a>
+            </div>
+          </div>
+        </div>
 
         {/* Contact Information */}
-        <FooterSection className="footer-section">
-          <FooterTitle>Información de Contacto</FooterTitle>
-          <FooterList>
-            <FooterListItem>
-              <FooterText>
+        <div className="footer-section">
+          <div className="footer-title">Información de Contacto</div>
+          <div className="footer-list">
+            <div className="footer-list-item">
+              <p className="footer-text">
                 Calle Prisciliano Sanchez #762
                 <br />
                 Col. Americana, 44160
-              </FooterText>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterLink href="https://wa.me/+523333906945">
+              </p>
+            </div>
+            <div className="footer-list-item">
+              <a className="footer-link" href="https://wa.me/+523333906945">
                 +52 (33) 33906945
-              </FooterLink>
-            </FooterListItem>
-            <FooterListItem>
-              <FooterText>
+              </a>
+            </div>
+            <div className="footer-list-item">
+              <p className="footer-text">
                 Lun - Sáb: 9:00 AM - 8:00 PM
                 <br />
                 Domingo: Cerrado
-              </FooterText>
-            </FooterListItem>
-          </FooterList>
-        </FooterSection>
-      </FooterContent>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Footer Bottom */}
-      <FooterBottom className="footer-section">
-        <Copyright>
+      <div className="footer-bottom footer-section">
+        <div className="footer-copyright">
           © {currentYear} Omnia. Todos los derechos reservados.
-        </Copyright>
-        <FooterList sx={{ display: "flex", flexDirection: "row", gap: "2rem" }}>
-          <FooterListItem>
-            <FooterLink>Política de Privacidad</FooterLink>
-          </FooterListItem>
-          <FooterListItem>
-            <FooterLink>Términos de Servicio</FooterLink>
-          </FooterListItem>
-        </FooterList>
-      </FooterBottom>
-    </FooterContainer>
+        </div>
+        <div
+          className="footer-list"
+          style={{ display: "flex", flexDirection: "row", gap: "2rem" }}
+        >
+          <div className="footer-list-item">
+            <p className="footer-text">Política de Privacidad</p>
+          </div>
+          <div className="footer-list-item">
+            <p className="footer-text">Términos de Servicio</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 

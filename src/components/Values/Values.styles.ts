@@ -1,6 +1,4 @@
-import { Theme } from "@mui/material";
-
-export const getValuesStyles = (theme: Theme, isMobile: boolean) => ({
+export const getValuesStyles = (theme: any, isMobile: boolean) => ({
   container: {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",

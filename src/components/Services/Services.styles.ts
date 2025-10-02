@@ -1,6 +1,4 @@
-import { Theme } from "@mui/material";
-
-export const getAboutStyles = (theme: Theme, isMobile: boolean) => ({
+export const getAboutStyles = (theme: any, isMobile: boolean) => ({
   container: {
     display: "flex",
     flexDirection: isMobile ? "column" : "row",

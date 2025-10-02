@@ -2,8 +2,7 @@
 import React from "react";
 import { ImageCarousel } from "../ui/ImageCarousel";
 import { aboutImages } from "@/constants";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme, useMediaQuery } from "@/hooks/useCustomMediaQuery";
 import { aboutStyles } from "./About.styles";
 
 const About = () => {

@@ -1,25 +1,29 @@
-import { Grid, Typography } from "@mui/material";
 import React from "react";
 import { CustomAvatar } from "../ui/CustomAvatar";
+import { CustomTypography } from "../ui/CustomTypography";
 
 interface ProfileCardProps {
   imgSrc: string;
-    name: string;
-    email: string;
+  name: string;
+  email: string;
 }
 
-export const ProfileCard = ({imgSrc, name, email}: ProfileCardProps) => {
+export const ProfileCard = ({ imgSrc, name, email }: ProfileCardProps) => {
   return (
-    <Grid sx={{ display: "flex", flexDirection: "row", padding: '20px', gap: '20px' }}>
+    <div className="flex items-center p-6 border-b border-gray-200">
       <CustomAvatar
         src={imgSrc}
         alt="Omnia"
-        sx={{ width: 60, height: 60 }}
+        className="w-15 h-15 rounded-full"
       />
-      <Grid>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{name}</Typography>
-        <Typography variant="body2" sx={{ color: 'gray' }}>{email}</Typography>
-      </Grid>
-    </Grid>
+      <div className="ml-4">
+        <CustomTypography variant="h6" className="font-bold text-gray-900">
+          {name}
+        </CustomTypography>
+        <CustomTypography variant="body2" className="text-gray-500 text-sm">
+          {email}
+        </CustomTypography>
+      </div>
+    </div>
   );
 };

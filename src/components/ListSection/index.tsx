@@ -1,18 +1,19 @@
-import { MenuList } from '@mui/material'
-import React from 'react'
-import ItemSection from './ItemSection';
-import { IMenuItem } from '@/constants';
+import React from "react";
+import ItemSection from "./ItemSection";
+import { IMenuItem } from "@/constants";
 
 interface ListSectionProps {
-    items: IMenuItem[];
+  items: IMenuItem[];
 }
 
 const ListSection = ({ items }: ListSectionProps) => {
   return (
-    <MenuList>
-      {items.map((item, index) => <ItemSection key={index} icon={item.icon} title={item.title} />)}
-    </MenuList>
-  )
-}
+    <ul className="flex-1 py-4">
+      {items.map((item, index) => (
+        <ItemSection key={index} icon={item.icon} title={item.title} />
+      ))}
+    </ul>
+  );
+};
 
 export default ListSection;

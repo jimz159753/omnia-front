@@ -4,7 +4,7 @@ import { services } from "@/constants";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { getAboutStyles } from "./Services.styles";
 import CardService from "../ui/CardService";
 import Image from "next/image";
@@ -66,7 +66,7 @@ const Services = () => {
     return () => ctx.revert(); // cleans up animations & ScrollTriggers on unmount/re-run
   }, []);
 
-  const styles = getAboutStyles(theme, isMobile);
+  const styles = getAboutStyles(null, isMobile);
 
   return (
     <section

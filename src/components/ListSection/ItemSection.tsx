@@ -1,6 +1,5 @@
-import { ListItemIcon } from "@mui/material";
 import React from "react";
-import { StyledMenuItem, StyledTypography } from "./ListSection.styles";
+import { CustomTypography } from "../ui/CustomTypography";
 import { Icon } from "@iconify/react";
 import { TabContext } from "@/contexts/TabContext";
 import { TabNames } from "@/constants";
@@ -13,17 +12,31 @@ interface ItemSectionProps {
 const ItemSection = ({ icon, title }: ItemSectionProps) => {
   const { activeTab, setActiveTab } = React.useContext(TabContext);
   const tabName = title as TabNames;
+  const isActive = activeTab === tabName;
 
   return (
-    <StyledMenuItem
-      onClick={() => setActiveTab(tabName)}
-      sx={{ backgroundColor: activeTab === tabName ? "#E5E5E5" : "white" }}
-    >
-      <ListItemIcon>
-        <Icon icon={icon} width="35" height="35" color="gray" />
-      </ListItemIcon>
-      <StyledTypography variant="body1">{title}</StyledTypography>
-    </StyledMenuItem>
+    <li className="px-4 py-2">
+      <button
+        className={`w-full flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
+          isActive
+            ? "bg-gray-100 text-blue-600 shadow-sm"
+            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+        }`}
+        onClick={() => setActiveTab(tabName)}
+      >
+        <div className="flex items-center justify-center w-9 h-9 mr-3">
+          <Icon
+            icon={icon}
+            width="24"
+            height="24"
+            color={isActive ? "#2563eb" : "#6b7280"}
+          />
+        </div>
+        <CustomTypography variant="body1" className="font-medium text-left">
+          {title}
+        </CustomTypography>
+      </button>
+    </li>
   );
 };
 

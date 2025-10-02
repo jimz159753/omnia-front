@@ -1,15 +1,10 @@
 "use client";
-import {
-  Box,
-  Button,
-  FormControl,
-  TextField,
-  Typography,
-  Alert,
-  Link,
-} from "@mui/material";
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { CustomInput } from "@/components/ui/CustomInput";
+import { CustomButton } from "@/components/ui/CustomButton";
+import { CustomAlert } from "@/components/ui/CustomAlert";
+import Link from "next/link";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -45,40 +40,15 @@ const Register = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-    >
-      <FormControl
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          width: "300px",
-          padding: 4,
-        }}
-      >
-        <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-          Register
-        </Typography>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h1 className="login-title">Register</h1>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        {error && <CustomAlert severity="error">{error}</CustomAlert>}
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
+        {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
-        <TextField
+        <CustomInput
           label="Email"
           type="email"
           name="email"
@@ -87,7 +57,7 @@ const Register = () => {
           required
           disabled={isLoading}
         />
-        <TextField
+        <CustomInput
           label="Password"
           type="password"
           name="password"
@@ -97,7 +67,7 @@ const Register = () => {
           disabled={isLoading}
           helperText="At least 8 characters with uppercase, lowercase, and number"
         />
-        <TextField
+        <CustomInput
           label="Confirm Password"
           type="password"
           name="confirmPassword"
@@ -106,37 +76,18 @@ const Register = () => {
           required
           disabled={isLoading}
         />
-        <Button
-          sx={{
-            width: "100%",
-            height: "40px",
-            borderRadius: "8px",
-            backgroundColor: "#000",
-            color: "#fff",
-            "&:hover": {
-              backgroundColor: "#000",
-            },
-            "&:disabled": {
-              backgroundColor: "#ccc",
-            },
-          }}
-          type="submit"
-          disabled={isLoading}
-        >
+        <CustomButton type="submit" disabled={isLoading}>
           {isLoading ? "Creating account..." : "Register"}
-        </Button>
+        </CustomButton>
 
-        <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+        <p className="login-text">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            sx={{ color: "#000", textDecoration: "underline" }}
-          >
+          <Link href="/login" className="login-link">
             Login here
           </Link>
-        </Typography>
-      </FormControl>
-    </Box>
+        </p>
+      </form>
+    </div>
   );
 };
 
