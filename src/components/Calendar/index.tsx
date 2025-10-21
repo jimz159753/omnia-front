@@ -29,11 +29,10 @@ const Calendar: React.FC = () => {
       style={styles.container}
     >
       <div style={styles.headerContainer}>
-        <p style={styles.title}>Cosmetología</p>
+        <p style={styles.title}>Reserva tu cita</p>
         <p style={styles.subtitle}>
-          Agenda tu cita. Cada tratamiento está diseñado para realzar tu belleza
-          natural mientras disfrutas de un momento de relajación y conexión
-          contigo mismo.
+          Para cualquier consulta, reserva tu cita a través de nuestro
+          calendario.
         </p>
       </div>
       <ImageCarousel

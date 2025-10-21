@@ -55,7 +55,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
           {images.length > 1 && (
             <>
               <ChevronLeft
-                className="absolute top-1/2 text-white p-2 rounded-full z-10"
+                className="absolute top-1/2 text-white p-2 rounded-full z-10 cursor-pointer"
                 style={{
                   left: "15px",
                 }}
@@ -65,7 +65,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
               />
 
               <ChevronRight
-                className="absolute top-1/2 text-white p-2 rounded-full z-10"
+                className="absolute top-1/2 text-white p-2 rounded-full z-10 cursor-pointer"
                 style={{
                   right: "15px",
                 }}
