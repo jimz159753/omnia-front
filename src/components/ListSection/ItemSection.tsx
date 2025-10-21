@@ -1,8 +1,8 @@
 import React from "react";
 import { CustomTypography } from "../ui/CustomTypography";
-import { Icon } from "@iconify/react";
 import { TabContext } from "@/contexts/TabContext";
 import { TabNames } from "@/constants";
+import { ArrowRight } from "akar-icons";
 
 interface ItemSectionProps {
   icon: string;
@@ -25,12 +25,7 @@ const ItemSection = ({ icon, title }: ItemSectionProps) => {
         onClick={() => setActiveTab(tabName)}
       >
         <div className="flex items-center justify-center w-9 h-9 mr-3">
-          <Icon
-            icon={icon}
-            width="24"
-            height="24"
-            color={isActive ? "#2563eb" : "#6b7280"}
-          />
+          <ArrowRight />
         </div>
         <CustomTypography variant="body1" className="font-medium text-left">
           {title}

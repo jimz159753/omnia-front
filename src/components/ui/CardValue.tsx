@@ -16,13 +16,7 @@ interface CardValueProps {
 const CardValue = ({ title, image, description, styles }: CardValueProps) => {
   return (
     <div style={styles.card}>
-      <Image
-        src={image}
-        alt={title}
-        height={110}
-        unoptimized
-        style={styles.image}
-      />
+      <Image src={image} alt={title} height={110} style={styles.image} />
       <h2 style={styles.title}>{title}</h2>
       <p style={styles.description}>{description}</p>
     </div>
