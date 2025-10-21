@@ -2,9 +2,9 @@ import Image from "next/image";
 interface CustomAvatarProps {
   src: string;
   alt: string;
-  sx?: object;
+  className?: string;
 }
 
-export const CustomAvatar = ({ src, alt, sx }: CustomAvatarProps) => (
-  <Image alt={alt} src={src} style={sx} />
+export const CustomAvatar = ({ src, alt, className }: CustomAvatarProps) => (
+  <Image alt={alt} src={src} className={className} />
 );
