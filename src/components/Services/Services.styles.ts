@@ -1,4 +1,4 @@
-export const getAboutStyles = (theme: any, isMobile: boolean) => ({
+export const getAboutStyles = (_theme: unknown, isMobile: boolean) => ({
   container: {
     display: "flex",
     flexDirection: isMobile ? "column" : "row",
