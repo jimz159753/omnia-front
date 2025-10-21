@@ -25,7 +25,6 @@ const Services = () => {
       const mm = gsap.matchMedia();
       const cards = gsap.utils.toArray<HTMLElement>(".card-service");
 
-      // Adjust 600px if your MUI `sm` is different.
       mm.add("(min-width: 600px)", () => {
         // ✅ DESKTOP: pin the title
         gsap.from(".services-title", {
@@ -35,10 +34,8 @@ const Services = () => {
             end: "bottom center",
             scrub: true,
             pin: ".services-title",
-            // Try true first; false can cause overlap/collapse depending on layout
             pinSpacing: false,
             invalidateOnRefresh: true,
-            // markers: true, // uncomment to debug
           },
         });
       });

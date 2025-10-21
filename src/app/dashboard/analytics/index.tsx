@@ -1,10 +1,5 @@
-import Line from "./Charts/Line";
-
-
 const Analytics = () => {
-  return (
-    <Line />
-  );
+  return <div>Analytics</div>;
 };
 
 export default Analytics;
