@@ -9,7 +9,7 @@ interface ItemSectionProps {
   title: string;
 }
 
-const ItemSection = ({ icon, title }: ItemSectionProps) => {
+const ItemSection = ({ title }: ItemSectionProps) => {
   const { activeTab, setActiveTab } = React.useContext(TabContext);
   const tabName = title as TabNames;
   const isActive = activeTab === tabName;
