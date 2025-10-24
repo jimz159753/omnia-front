@@ -8,7 +8,7 @@ interface ListSectionProps {
 
 const ListSection = ({ items }: ListSectionProps) => {
   return (
-    <ul className="flex-1 py-4">
+    <ul className="flex-1">
       {items.map((item, index) => (
         <ItemSection key={index} icon={item.icon} title={item.title} />
       ))}

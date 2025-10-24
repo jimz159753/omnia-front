@@ -8,10 +8,10 @@ interface SideBarProps {
 }
 
 const SideBar = ({ items, userInfo }: SideBarProps) => {
-  const { name, email, imgSrc } = userInfo;
+  const { name, imgSrc } = userInfo;
   return (
     <div className="w-64 bg-white shadow-lg h-screen sticky top-0 flex flex-col">
-      <ProfileCard name={name} imgSrc={imgSrc} email={email} />
+      <ProfileCard name={name} imgSrc={imgSrc} />
       <ListSection items={items} />
     </div>
   );

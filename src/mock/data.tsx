@@ -1,31 +1,32 @@
 import { IMenuItem, IUserInfo } from "@/constants";
+import { AlignBottom, Calendar, Percentage, Tag, Ticket } from "akar-icons";
 
 export const userInfo: IUserInfo = {
-  name: "Minerva",
-  email: "mnrvbecerra@gmail.com",
+  name: "Luis Jimenez",
+  email: "luisjc140992@gmail.com",
   imgSrc:
-    "https://images.unsplash.com/photo-1529995049601-ef63465a463f?q=80&w=2704&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg?semt=ais_hybrid&w=740&q=80",
 };
 
 export const items: IMenuItem[] = [
   {
-    icon: "mdi-light:credit-card",
+    icon: () => <Tag size={24} />,
     title: "Sales",
   },
   {
-    icon: "mdi-light:calendar",
+    icon: () => <Calendar size={24} />,
     title: "Events",
   },
   {
-    icon: "material-symbols-light:finance-mode-outline-rounded",
+    icon: () => <AlignBottom size={24} />,
     title: "Analytics",
   },
   {
-    icon: "material-symbols-light:confirmation-number-outline",
+    icon: () => <Ticket size={24} />,
     title: "Vouchers",
   },
   {
-    icon: "mdi-light:tag",
+    icon: () => <Percentage size={24} />,
     title: "Discounts",
   },
 ];

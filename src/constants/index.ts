@@ -53,8 +53,8 @@ export interface IUserInfo {
 }
 
 export interface IMenuItem {
+  icon: React.FC<{ size?: number }>;
   title: string;
-  icon: string;
 }
 
 export interface IService {
