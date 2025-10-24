@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
-// import { Routes } from "./routes";
+import { Routes } from "./routes";
 import Header from "../../components/Header";
 import SideBar from "../../components/SideBar";
 import { TabNames } from "@/constants";
@@ -44,7 +44,7 @@ const Dashboard = () => {
           <SideBar userInfo={userInfo} items={items} />
           <div className="flex-1">
             <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
-              {/* <Routes /> */}
+              <Routes />
             </div>
           </div>
         </div>
