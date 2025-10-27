@@ -127,7 +127,7 @@ const Footer = () => {
             </a>
             <a
               style={{ cursor: "pointer" }}
-              href="https://www.tiktok.com/@espacio.omnia"
+              href="https://www.tiktok.com/@omniaespacio"
               target="_blank"
             >
               <Image src={tiktok} alt="Tiktok" width={24} height={24} />
