@@ -116,21 +116,39 @@ const Footer = () => {
               href="https://wa.me/+523333906945"
               target="_blank"
             >
-              <Image src={whatsapp} alt="Whatsapp" width={24} height={24} />
+              <Image
+                src={whatsapp}
+                alt="Whatsapp"
+                width={24}
+                height={24}
+                style={{ height: "24px" }}
+              />
             </a>
             <a
               style={{ cursor: "pointer" }}
               href="https://www.instagram.com/omniaespacio_"
               target="_blank"
             >
-              <Image src={instagram} alt="Instagram" width={24} height={24} />
+              <Image
+                src={instagram}
+                alt="Instagram"
+                width={24}
+                height={24}
+                style={{ height: "24px" }}
+              />
             </a>
             <a
               style={{ cursor: "pointer" }}
               href="https://www.tiktok.com/@omniaespacio"
               target="_blank"
             >
-              <Image src={tiktok} alt="Tiktok" width={24} height={24} />
+              <Image
+                src={tiktok}
+                alt="Tiktok"
+                width={24}
+                height={24}
+                style={{ height: "24px" }}
+              />
             </a>
           </div>
         </div>

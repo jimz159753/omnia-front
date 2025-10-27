@@ -48,7 +48,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
             alt={`Image ${currentIndex + 1}`}
             width={isMobile ? 500 : 800}
             height={isMobile ? 500 : 800}
-            className="w-full w-full h-64 object-cover select-none"
+            className="w-[600px] h-full object-cover select-none"
           />
 
           {/* Navigation Arrows */}
@@ -61,7 +61,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                 }}
                 onClick={goToPrevious}
                 color="black"
-                size={24}
+                size={40}
               />
 
               <ChevronRight
@@ -71,7 +71,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                 }}
                 onClick={goToNext}
                 color="black"
-                size={24}
+                size={40}
               />
             </>
           )}
