@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/app/(root)/Footer";
 
 export const metadata: Metadata = {
   title: "Espacio Omnia",
@@ -26,7 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>{children}</body>
+      <body suppressHydrationWarning={true}>
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

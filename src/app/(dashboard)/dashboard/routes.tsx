@@ -6,6 +6,7 @@ import Vouchers from "./vouchers";
 import Discounts from "./discounts";
 import { TabContext } from "@/contexts/TabContext";
 import { TabNames } from "@/constants";
+
 export const Routes = () => {
   const { activeTab } = useContext(TabContext);
 

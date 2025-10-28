@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ImageCarousel } from "../ui/ImageCarousel";
+import { ImageCarousel } from "../../../components/ui/ImageCarousel";
 import { aboutImages } from "@/constants";
 import { useTheme, useMediaQuery } from "@/hooks/useCustomMediaQuery";
 import { aboutStyles } from "./About.styles";

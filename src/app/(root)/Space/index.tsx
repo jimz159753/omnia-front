@@ -4,7 +4,7 @@ import { getSpaceStyles } from "./Space.styles";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ImageCarousel } from "../ui/ImageCarousel";
+import { ImageCarousel } from "../../../components/ui/ImageCarousel";
 import { tagSpaces } from "@/constants";
 import { useTheme, useMediaQuery } from "@/hooks/useCustomMediaQuery";
 

@@ -1,17 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
-import { Routes } from "./routes";
-import Header from "../../components/Header";
-import SideBar from "../../components/SideBar";
+import Header from "@/components/Header";
+import SideBar from "@/components/SideBar";
 import { TabNames } from "@/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { TabContext } from "@/contexts/TabContext";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Sales);
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Analytics);
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -44,13 +47,11 @@ const Dashboard = () => {
           <SideBar userInfo={userInfo} items={items} />
           <div className="flex-1">
             <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
-              <Routes />
+              {children}
             </div>
           </div>
         </div>
       </div>
     </TabContext.Provider>
   );
-};
-
-export default Dashboard;
+}

@@ -1,23 +1,19 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import About from "@/components/About";
-import Space from "@/components/Space";
-import Footer from "@/components/Footer";
-import Values from "@/components/Values";
+import Hero from "@/app/(root)/Hero";
+import Services from "@/app/(root)/Services";
+import About from "@/app/(root)/About";
+import Space from "@/app/(root)/Space";
+import Values from "@/app/(root)/Values";
 import Calendar from "@/components/Calendar";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
       <Hero />
       <Values />
       <Services />
       <Space />
       <About />
       <Calendar />
-      <Footer />
     </>
   );
 }

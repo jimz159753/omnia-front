@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useTheme } from "@/hooks/useCustomMediaQuery";
-import CardValue from "../ui/CardValue";
+import CardValue from "../../../components/ui/CardValue";
 import { values } from "@/constants";
 import { getValuesStyles } from "./Values.styles";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";

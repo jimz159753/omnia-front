@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { getAboutStyles } from "./Services.styles";
-import CardService from "../ui/CardService";
+import CardService from "../../../components/ui/CardService";
 import Image from "next/image";
 import whatsapp from "@/assets/images/whatsapp.webp";
 

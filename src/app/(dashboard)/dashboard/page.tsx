@@ -1,6 +1,6 @@
 "use client";
-import Dashboard from "./layout";
+import { Routes } from "./routes";
 
 export default function DashboardPage() {
-  return <Dashboard />;
+  return <Routes />;
 }
