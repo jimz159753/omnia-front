@@ -10,16 +10,16 @@ export const userInfo: IUserInfo = {
 
 export const items: IMenuItem[] = [
   {
+    icon: () => <AlignBottom size={24} />,
+    title: "Analytics",
+  },
+  {
     icon: () => <Tag size={24} />,
     title: "Sales",
   },
   {
     icon: () => <Calendar size={24} />,
     title: "Events",
-  },
-  {
-    icon: () => <AlignBottom size={24} />,
-    title: "Analytics",
   },
   {
     icon: () => <Ticket size={24} />,

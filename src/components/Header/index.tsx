@@ -2,6 +2,7 @@
 import Image from "next/image";
 import OmniaTitle from "@/assets/images/omnia_title.png";
 import { useAuth } from "@/hooks/useAuth";
+import { SignOut } from "akar-icons";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -23,12 +24,14 @@ const Header = () => {
         </div>
 
         {user && (
-          <div className="flex items-center gap-6">
-            <p className="text-sm text-cabinet-grotesk tracking-wide text-blue-500">
+          <>
+            <p className="text-sm text-cabinet-grotesk tracking-wide">
               Welcome, {user.email}
             </p>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
+            <button onClick={handleLogout}>
+              <SignOut strokeWidth={1.5} className="text-rose-600" />
+            </button>
+          </>
         )}
       </div>
     </div>

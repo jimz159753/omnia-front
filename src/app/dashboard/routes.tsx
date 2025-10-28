@@ -10,12 +10,12 @@ export const Routes = () => {
   const { activeTab } = useContext(TabContext);
 
   switch (activeTab) {
+    case TabNames.Analytics:
+      return <Analytics />;
     case TabNames.Sales:
       return <Sales />;
     case TabNames.Events:
       return <Events />;
-    case TabNames.Analytics:
-      return <Analytics />;
     case TabNames.Vouchers:
       return <Vouchers />;
     case TabNames.Discounts:
