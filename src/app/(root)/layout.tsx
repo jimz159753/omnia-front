@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import "@/app/globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/app/(root)/Footer";
 
 export const metadata: Metadata = {
   title: "Espacio Omnia",
@@ -25,8 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+    </>
   );
 }
