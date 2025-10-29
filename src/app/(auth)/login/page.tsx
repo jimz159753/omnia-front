@@ -5,6 +5,8 @@ import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import Link from "next/link";
+import Image from "next/image";
+import omniaLogo from "@/assets/images/omnia_logo.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,8 +37,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Login</h1>
+          <div className="text-center flex flex-col items-center justify-center gap-4">
+            <Image src={omniaLogo} alt="Logo" width={200} height={200} />
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
