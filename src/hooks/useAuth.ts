@@ -56,9 +56,12 @@ export const useAuth = () => {
         throw new Error(data.message || "Login failed");
       }
 
+      // Update authentication state
       setUser(data.user);
       setIsAuthenticated(true);
-      router.push("/dashboard");
+
+      // Use replace instead of push to avoid back button issues
+      router.replace("/dashboard/analytics");
       return { success: true };
     } catch (error) {
       throw error;

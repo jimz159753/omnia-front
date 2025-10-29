@@ -44,8 +44,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const Analytics = () => {
-  console.log("Analytics page loaded successfully");
-
   return (
     <Card>
       <CardHeader>
