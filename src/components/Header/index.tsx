@@ -12,7 +12,7 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-white flex items-center px-8 py-6 shadow-soft border-b border-sky-950 sticky top-0 z-50 w-full">
+    <div className="bg-white flex items-center px-8 py-6 shadow-soft sticky top-0 z-50 w-full">
       <div className="flex justify-between items-center w-full">
         <div className="flex items-center">
           <Image

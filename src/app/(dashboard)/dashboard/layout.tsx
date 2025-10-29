@@ -1,12 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { items, userInfo } from "@/mock/data";
 import Header from "@/components/Header";
 import SideBar from "@/components/SideBar";
-import { TabNames } from "@/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { TabContext } from "@/contexts/TabContext";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
 export default function DashboardLayout({
@@ -14,7 +12,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeTab, setActiveTab] = useState<TabNames>(TabNames.Analytics);
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -40,18 +37,16 @@ export default function DashboardLayout({
   }
 
   return (
-    <TabContext.Provider value={{ activeTab, setActiveTab }}>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="flex">
-          <SideBar userInfo={userInfo} items={items} />
-          <div className="flex-1">
-            <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
-              {children}
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="flex">
+        <SideBar userInfo={userInfo} items={items} />
+        <div className="flex-1">
+          <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
+            {children}
           </div>
         </div>
       </div>
-    </TabContext.Provider>
+    </div>
   );
 }
