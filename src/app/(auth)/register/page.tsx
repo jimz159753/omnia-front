@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
@@ -13,6 +14,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { register, isLoading } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,6 +35,7 @@ const Register = () => {
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      router.push("/dashboard");
     } catch (error) {
       setError(error instanceof Error ? error.message : "Registration failed");
       console.error("Registration error:", error);
