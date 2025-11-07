@@ -1,30 +1,22 @@
+"use client";
+
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
-import { PrismaClient } from "@/generated/prisma";
+import { useInventory } from "@/hooks/useInventory";
 
-const prisma = new PrismaClient();
+const Inventory = () => {
+  const { data, loading, pagination, handlePageChange, handleSearch } =
+    useInventory();
 
-async function getInventory() {
-  try {
-    const inventory = await prisma.inventory.findMany({
-      include: {
-        category: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    return inventory;
-  } catch (error) {
-    console.error("Error fetching inventory:", error);
-    return [];
-  } finally {
-    await prisma.$disconnect();
+  if (loading && data.length === 0) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">Loading inventory...</p>
+        </div>
+      </div>
+    );
   }
-}
-
-const Inventory = async () => {
-  const data = await getInventory();
 
   return (
     <div className="container mx-auto py-10">
@@ -39,6 +31,10 @@ const Inventory = async () => {
         data={data}
         searchKey="name"
         searchPlaceholder="Search by name..."
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        loading={loading}
       />
     </div>
   );

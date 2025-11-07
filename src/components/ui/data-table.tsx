@@ -5,12 +5,9 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
-  ColumnFiltersState,
-  getFilteredRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -22,11 +19,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+interface PaginationInfo {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string;
   searchPlaceholder?: string;
+  pagination?: PaginationInfo;
+  onPageChange?: (page: number) => void;
+  onSearch?: (search: string) => void;
+  loading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -34,44 +42,57 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   searchPlaceholder = "Search...",
+  pagination,
+  onPageChange,
+  onSearch,
+  loading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [searchValue, setSearchValue] = React.useState("");
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters,
     },
+    manualPagination: true,
+    pageCount: pagination?.totalPages ?? -1,
   });
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchValue(value);
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      onSearch?.(value);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  };
 
   return (
     <div className="space-y-4">
-      {searchKey && (
+      {searchKey && onSearch && (
         <div className="flex items-center justify-between">
           <input
             placeholder={searchPlaceholder}
-            value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
+            value={searchValue}
+            onChange={handleSearchChange}
             className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       )}
-      <div className="rounded-md border">
+      <div className="rounded-md border relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        )}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -121,22 +142,41 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-between py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} row(s) total.
+          {pagination ? (
+            <>
+              Showing {(pagination.page - 1) * pagination.pageSize + 1} to{" "}
+              {Math.min(
+                pagination.page * pagination.pageSize,
+                pagination.total
+              )}{" "}
+              of {pagination.total} results (Page {pagination.page} of{" "}
+              {pagination.totalPages})
+            </>
+          ) : (
+            `${data.length} row(s) total.`
+          )}
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center space-x-2">
           <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPageChange?.(pagination!.page - 1)}
+            disabled={!pagination || pagination.page <= 1 || loading}
             className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPageChange?.(pagination!.page + 1)}
+            disabled={
+              !pagination || pagination.page >= pagination.totalPages || loading
+            }
             className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            title={`Page: ${pagination?.page}, Total: ${
+              pagination?.totalPages
+            }, Disabled: ${
+              !pagination || pagination.page >= pagination.totalPages || loading
+            }`}
           >
             Next
           </button>

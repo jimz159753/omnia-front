@@ -1,11 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Inventory, Category } from "@/generated/prisma";
+import { Inventory, Category, SubCategory } from "@/generated/prisma";
 
-// Extended type to include the category relation
+// Extended type to include the category and subcategory relations
 export type InventoryWithCategory = Inventory & {
-  category: Category;
+  category: Category & {
+    subCategory: SubCategory | null;
+  };
 };
 
 export const columns: ColumnDef<InventoryWithCategory>[] = [
@@ -34,6 +36,13 @@ export const columns: ColumnDef<InventoryWithCategory>[] = [
     header: "Category",
     cell: ({ row }) => {
       return row.original.category?.name || "N/A";
+    },
+  },
+  {
+    accessorKey: "subCategory.name",
+    header: "SubCategory",
+    cell: ({ row }) => {
+      return row.original.category?.subCategory?.name || "N/A";
     },
   },
   {
@@ -85,4 +94,3 @@ export const columns: ColumnDef<InventoryWithCategory>[] = [
     },
   },
 ];
-
