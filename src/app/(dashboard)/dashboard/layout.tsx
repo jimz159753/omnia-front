@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { items, userInfo } from "@/mock/data";
+import { items, userInfo } from "@/constants";
 import Header from "@/components/Header";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/hooks/useAuth";

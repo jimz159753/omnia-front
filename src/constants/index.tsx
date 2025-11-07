@@ -8,11 +8,12 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
+import { AlignBottom, Calendar, Percentage, Tag, Ticket } from "akar-icons";
 
 // Tabs
 
 export enum TabNames {
-  Sales = "Sales",
+  Inventory = "Inventory",
   Events = "Events",
   Analytics = "Analytics",
   Vouchers = "Vouchers",
@@ -62,6 +63,38 @@ export interface IService {
   label: string;
   description: string;
 }
+
+// User Info and Menu Items
+
+export const userInfo: IUserInfo = {
+  name: "Luis Jimenez",
+  email: "luisjc140992@gmail.com",
+  imgSrc:
+    "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg?semt=ais_hybrid&w=740&q=80",
+};
+
+export const items: IMenuItem[] = [
+  {
+    icon: () => <AlignBottom size={24} />,
+    title: "Analytics",
+  },
+  {
+    icon: () => <Tag size={24} />,
+    title: "Inventory",
+  },
+  {
+    icon: () => <Calendar size={24} />,
+    title: "Events",
+  },
+  {
+    icon: () => <Ticket size={24} />,
+    title: "Vouchers",
+  },
+  {
+    icon: () => <Percentage size={24} />,
+    title: "Discounts",
+  },
+];
 
 export const navigationItems = [
   { id: "conocenos", label: "Conocenos" },

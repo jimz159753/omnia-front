@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -15,11 +15,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Inventory {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  stock        Int
+  price        Float
+  categoryId   String
+  category     Category @relation("InventoryCategory", fields: [categoryId], references: [id])
+  code         String
+  providerCost Float
+  order        Order?   @relation("OrderInventory")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  inventory     Inventory[]   @relation("InventoryCategory")
+  subCategories SubCategory[] @relation("CategorySubCategory")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model SubCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  categoryId  String
+  category    Category @relation("CategorySubCategory", fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Seller {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  order       Order?   @relation("OrderSeller")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Provider {
+  id          String   @id @default(uuid())
+  name        String
+  ownerName   String
+  description String
+  order       Order?   @relation("OrderProvider")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PaymentMethod {
+  id          String   @id @default(uuid())
+  name        String
+  status      Boolean
+  account     String
+  description String
+  order       Order?   @relation("OrderPaymentMethod")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id                    String        @id @default(uuid())
+  clientName            String
+  units                 Int
+  inventoryId           String        @unique
+  inventory             Inventory     @relation("OrderInventory", fields: [inventoryId], references: [id])
+  sellerId              String        @unique
+  seller                Seller        @relation("OrderSeller", fields: [sellerId], references: [id])
+  providerId            String        @unique
+  provider              Provider      @relation("OrderProvider", fields: [providerId], references: [id])
+  paymentMethodId       String        @unique
+  paymentMethod         PaymentMethod @relation("OrderPaymentMethod", fields: [paymentMethodId], references: [id])
+  providerPaymentStatus String
+  realIncome            Float
+  description           String
+  totalPrice            Float
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 }

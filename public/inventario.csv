@@ -1,0 +1,366 @@
+,,,,,,,
+Código,Descripción,Costo proveedor,Precio Venta,Piezas disponibles,Proveedor,Categoria,Subcategoria
+TS01,Tres Cosas para ti: Preguntas aisladas,,$300.00,,Wushcraft,Tarot,Tarot
+TS02,"Situación: pasado, presente, futuro",,$300.00,,Wushcraft,Tarot,Tarot
+TS03,6 cartas desarrollo de situacion,,$500.00,,Wushcraft,Tarot,Tarot
+TS04,8 cartas cerrando ciclos,,$650.00,,Wushcraft,Tarot,Tarot
+TS05,12 cartas analizando tu año,,$800.00,,Wushcraft,Tarot,Tarot
+CT01,Arcanos Menores Mensualidad,$624.75,$833.00,,Wushcraft,Curso/Taller,Tarot
+CT02,Arcanos Mayores Mensualidad,$666.00,$888.00,,Wushcraft,Curso/Taller,Tarot
+CS01,Facial Piel Porcelana,$325.00,$650.00,,Paula Valencia,Cosmetologia,Facial
+CS02,Facial Hidratante,$225.00,$450.00,,Paula Valencia,Cosmetologia,Facial
+CS03,Facial Limpieza profunda,$225.00,$450.00,,Paula Valencia,Cosmetologia,Facial
+CS04,Facial Básico,$199.50,$399.00,,Paula Valencia,Cosmetologia,Facial
+CS05,Facial Detox,$225.00,$450.00,,Paula Valencia,Cosmetologia,Facial
+CS06,Facial Piel Sensible,$225.00,$450.00,,Paula Valencia,Cosmetologia,Facial
+CS07,Facial Piel Porcelana Paq. 3 Sesiones,$825.00,"$1,650.00",,Paula Valencia,Cosmetologia,Facial
+CS08,Facial Hidratante Paq. 3 Sesiones,$600.00,"$1,200.00",,Paula Valencia,Cosmetologia,Facial
+CS09,Facial Limpieza profunda Paq. 3 Sesiones,$600.00,"$1,200.00",,Paula Valencia,Cosmetologia,Facial
+CS10,Facial Básico Paq. 3 Sesiones,$523.50,"$1,047.00",,Paula Valencia,Cosmetologia,Facial
+CS11,Facial Detox Paq. 3 Sesiones,$600.00,"$1,200.00",,Paula Valencia,Cosmetologia,Facial
+CS12,Facial Piel Sensible Paq. 3 Sesiones,$600.00,"$1,200.00",,Paula Valencia,Cosmetologia,Facial
+CS13,Anticelulitico,$225.00,$450.00,,Paula Valencia,Cosmetologia,Corporales
+CS14,Reductivo ,$225.00,$450.00,,Paula Valencia,Cosmetologia,Corporales
+CS15,Reafirmante,$225.00,$450.00,,Paula Valencia,Cosmetologia,Corporales
+CS16,Aplicación Mesoterapia,$100.00,$200.00,,Paula Valencia,Cosmetologia,Corporales
+CS17,Anticelulitico Paq. 10 sesiones,"$1,750.00","$3,500.00",,Paula Valencia,Cosmetologia,Corporales
+CS18,Reductivo Paq. 10 sesiones,"$1,750.00","$3,500.00",,Paula Valencia,Cosmetologia,Corporales
+CS19,Reafirmante Paq. 10 sesiones,"$1,750.00","$3,500.00",,Paula Valencia,Cosmetologia,Corporales
+CS20,Clásicas,$360.00,$450.00,,Paula Valencia,Cosmetologia,Pestañas
+CS21,Hibridas,$440.00,$550.00,,Paula Valencia,Cosmetologia,Pestañas
+CS22,Volumen ,$520.00,$650.00,,Paula Valencia,Cosmetologia,Pestañas
+CS23,"Volumen Griego, Tecnologico, hawaiano",$520.00,$650.00,,Paula Valencia,Cosmetologia,Pestañas
+CS24,Efecto Wispie,$440.00,$550.00,,Paula Valencia,Cosmetologia,Pestañas
+CS25,Retoque Clásicas,$280.00,$350.00,,Paula Valencia,Cosmetologia,Pestañas
+CS26,Retoque Hibridas,$360.00,$450.00,,Paula Valencia,Cosmetologia,Pestañas
+CS27,Retoque Volumen ,$440.00,$550.00,,Paula Valencia,Cosmetologia,Pestañas
+CS28,"Retoque Volumen Griego, Tecnologico, hawaiano",$440.00,$550.00,,Paula Valencia,Cosmetologia,Pestañas
+CS29,Retoque Efecto Wispie,$360.00,$450.00,,Paula Valencia,Cosmetologia,Pestañas
+CS30,Planchado,$224.00,$280.00,,Paula Valencia,Cosmetologia,Diseños de Cejas
+CS31,Planchado + Henna,$319.20,$399.00,,Paula Valencia,Cosmetologia,Diseños de Cejas
+CS32,Peptonas,"$4,914.00","$7,020.00",,Paula Valencia,Cosmetologia,Peptonas
+CS33,Promo Peptonas,"$4,176.90","$5,967.00",,Paula Valencia,Cosmetologia,Peptonas
+CS34,Eliminación de verrugas Individual,$140.00,$200.00,,Paula Valencia,Cosmetologia,Eliminacion
+CS35,Micropuntura estrías 1 sesion,$525.00,$750.00,,Paula Valencia,Cosmetologia,Eliminacion
+CS36,Eliminación de verrugas Tres,$350.00,$500.00,,Paula Valencia,Cosmetologia,Eliminacion
+CS37,Micropuntura estrías 3 sesiones,"$1,435.00","$2,050.00",,Paula Valencia,Cosmetologia,Eliminacion
+CS38,Eliminación de verrugas Seis,$700.00,"$1,000.00",,Paula Valencia,Cosmetologia,Eliminacion
+CS39,Micropuntura estrías 6 sesiones,"$2,905.00","$4,150.00",,Paula Valencia,Cosmetologia,Eliminacion
+CS40,"Piernas, axila, bikini","$4,249.15","$8,498.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS41,Brasileño y axila,"$3,399.15","$6,798.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS42,"Brasileño, intergluteo, media pierna","$3,399.15","$6,798.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS43,Brazo y axila,"$3,399.15","$6,798.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS44,"Piernas, axila, brasileño","$4,249.15","$8,498.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS45,Cuerpo completo,"$5,949.15","$11,898.30",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS46,"Piernas, axila, bikini Des. Especial","$2,499.50","$4,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS47,Brasileño y axila Des. Especial,"$1,999.50","$3,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS48,"Brasileño, intergluteo, media pierna  Des. Especial","$1,999.50","$3,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS49,Brazo y axila  Des. Especial,"$1,999.50","$3,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS50,"Piernas, axila, brasileño  Des. Especial","$2,499.50","$4,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS51,Cuerpo completo Des. Especial,"$3,499.50","$6,999.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS52,Bigote,$125.00,$250.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS53,Media cara,$175.00,$350.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS54,Patillas,$125.00,$250.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS55,Barbilla,$125.00,$250.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS56,Dedos pie o manos,$125.00,$250.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS57,Axila,$175.00,$350.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS58,Línea alba,$175.00,$350.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS59,Intergluteo,$175.00,$350.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS60,Bikini,$225.00,$450.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS61,Brasileño,$250.00,$500.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS62,Pecho,$250.00,$500.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS63,Espalda,$275.00,$550.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS64,Media pierna,$225.00,$450.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS65,Brazos,$175.00,$350.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS66,Pierna Completa,$275.00,$550.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS67,Abdomen,$250.00,$500.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS68,Media espalda,$250.00,$500.00,,Paula Valencia,Cosmetologia,Depilacion Laser
+CS69,Bigote Paq. 10 sesiones,$800.00,"$1,600.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS70,Media cara Paq. 10 sesiones,$937.50,"$1,875.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS71,Patillas Paq. 10 sesiones,$750.00,"$1,500.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS72,Barbilla Paq. 10 sesiones,$750.00,"$1,500.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS73,Dedos pie o manos Paq. 10 sesiones,$750.00,"$1,500.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS74,Axila Paq. 10 sesiones,$937.50,"$1,875.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS75,Línea alba Paq. 10 sesiones,$937.50,"$1,875.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS76,Intergluteo Paq. 10 sesiones,"$1,125.00","$2,250.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS77,Bikini Paq. 10 sesiones,"$1,312.50","$2,625.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS78,Brasileño Paq. 10 sesiones,"$1,687.50","$3,375.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS79,Pecho Paq. 10 sesiones,"$1,687.50","$3,375.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS80,Espalda Paq. 10 sesiones,"$1,875.00","$3,750.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS81,Media pierna Paq. 10 sesiones,"$1,500.00","$3,000.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS82,Brazos Paq. 10 sesiones,"$1,125.00","$2,250.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS83,Pierna Completa Paq. 10 sesiones,"$1,875.00","$3,750.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS84,Abdomen Paq. 10 sesiones,"$1,687.50","$3,375.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+CS85,Media espalda Paq. 10 sesiones,"$1,687.50","$3,375.00",,Paula Valencia,Cosmetologia,Depilacion Laser
+OR02,Anillo Luna Chico,$210.00,$249.12,,Oracula,Producto,Joyeria
+OR05,Anillo Serpiente chico,$290.00,$344.02,,Oracula,Producto,Joyeria
+OR06,Anillo Murciélago,$520.00,$616.87,,Oracula,Producto,Joyeria
+OR07,Anillo Fantasma,$640.00,$759.22,,Oracula,Producto,Joyeria
+OR09,Anillo La Garza,$470.00,$557.55,,Oracula,Producto,Joyeria
+OR10,Anillo El Escorpion,$470.00,$557.55,,Oracula,Producto,Joyeria
+OR11,Anillo Piedra Luna Estrella,$710.00,$842.26,,Oracula,Producto,Joyeria
+OR12,Anillo Flor de Loto,$320.00,$379.61,,Oracula,Producto,Joyeria
+OR13,Anillo Midi Cruz,$120.00,$142.35,,Oracula,Producto,Joyeria
+OR15,Collar Estrella,$550.00,$652.46,,Oracula,Producto,Joyeria
+OR16,Collar Cuarzo Natural,$350.00,$415.20,,Oracula,Producto,Joyeria
+OR17,Séptum,$210.00,$249.12,,Oracula,Producto,Joyeria
+OR20,Aretes Loto Chakras Sencillos,$240.00,$284.71,,Oracula,Producto,Joyeria
+OR21,Aretitos Serpiente,$110.00,$130.49,,Oracula,Producto,Joyeria
+OR23,Aretitos Luna,$110.00,$130.49,,Oracula,Producto,Joyeria
+OR25,Anillo espada abierto jaspe,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR26,Anillo espada #5.5 malaquita,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR28,Collar espada chico coral,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR31,Aretes espadas mini,$240.00,$284.71,,Oracula,Producto,Joyeria
+OR32,Bolsas de lona,$40.00,$47.45,,Oracula,Producto,Joyeria
+OR33,Pañuelos orácula blanco,$180.00,$213.53,,Oracula,Producto,Joyeria
+OR35,Collar sombrero,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR36,Color caldero,$890.00,"$1,055.79",,Oracula,Producto,Joyeria
+OR37,Collar cuervo,$910.00,"$1,079.52",,Oracula,Producto,Joyeria
+OR39,Aretes jaspe,$590.00,$699.91,,Oracula,Producto,Joyeria
+OR40,Anillo bola de cristal,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR42,Anillo 3 piedras,$820.00,$972.75,,Oracula,Producto,Joyeria
+OR43,Pulsera polilla,$350.00,$415.20,,Oracula,Producto,Joyeria
+OR44,Pulsera calabaza,$350.00,$415.20,,Oracula,Producto,Joyeria
+OR45,Aretes espada zirconia,$610.00,$723.63,,Oracula,Producto,Joyeria
+OR46,Collar chakras,$260.00,$308.43,,Oracula,Producto,Joyeria
+OR47,Anillo folium,$640.00,$759.22,,Oracula,Producto,Joyeria
+OR48,Aretes flor loto,$350.00,$415.20,,Oracula,Producto,Joyeria
+OR49,Pulsera tejida roja,$110.00,$130.49,,Oracula,Producto,Joyeria
+OR50,Pulsera tejida verde,$110.00,$130.49,,Oracula,Producto,Joyeria
+OR51,Nostril luna,$110.00,$130.49,,Oracula,Producto,Joyeria
+OR52,Nostril flor,$200.00,$237.26,,Oracula,Producto,Joyeria
+OR53,Tote,$90.00,$106.77,,Oracula,Producto,Joyeria
+OR54,Nostril Espiral,$110.00,$130.49,,Oracula,Producto,Joyeria
+Om01,Incienso copal etiqueta dorada,$35.00,$52.50,,Omnia,Producto,Esoterico
+Om02,Incienso combinado,$26.00,$45.50,,Omnia,Producto,Esoterico
+Om03,Portaincienso metal,$22.00,$40.26,,Omnia,Producto,Esoterico
+Om04,Portaincienso madera,$21.00,$35.70,,Omnia,Producto,Esoterico
+Om05,Perfumero corazón,$80.00,$120.00,,Omnia,Producto,Esoterico
+Om06,Perfumero amatista,$95.00,$199.50,,Omnia,Producto,Esoterico
+Om07,Perfumero ojo de tigre,$80.00,$120.00,,Omnia,Producto,Esoterico
+Om08,Perfumero pidra luna,$80.00,$120.00,,Omnia,Producto,Esoterico
+Om09,Piramide orgonita,$70.00,$105.00,,Omnia,Producto,Esoterico
+Om10,Rodillo cuarzo,$23.00,$92.00,,Omnia,Producto,Cosmetologico
+Om11,Guasha cuarzo,$23.00,$50.60,,Omnia,Producto,Cosmetologico
+Om12,Obelisco piedra,$55.00,$105.60,,Omnia,Producto,Esoterico
+Om14,Dije Ojo Turco,$10.00,$15.00,,Omnia,Producto,Esoterico
+Om15,Incienso Himalaya Jasmine,$10.00,$35.00,,Omnia,Producto,Esoterico
+Om16,Incienso Yogic Meditation,$14.00,$35.00,,Omnia,Producto,Esoterico
+Om17,Portaincienso loto,$23.00,$80.50,,Omnia,Producto,Esoterico
+Om18,Portaincienso circulo,$34.00,$102.00,,Omnia,Producto,Esoterico
+Om19,Aceite para masaje,$45.00,$99.00,,Omnia,Producto,Cosmetologico
+Om20,Portaincienso ceramica japones,$30.00,$90.00,,Omnia,Producto,Esoterico
+Om21,Portaincienso circular ceramica,$33.00,$102.30,,Omnia,Producto,Esoterico
+Om22,Renta Consultorio Agua,$0.00,$90.00,,Omnia,Renta de Espacio,Renta de Espacio
+Om23,Renta Consultorio Fuego,$0.00,$90.00,,Omnia,Renta de Espacio,Renta de Espacio
+Om24,Renta Consultorio Tierra,$0.00,$90.00,,Omnia,Renta de Espacio,Renta de Espacio
+Om25,Renta Salon Aire,$0.00,$100.00,,Omnia,Renta de Espacio,Renta de Espacio
+Om26,Vela Intencionada,$0.00,$111.00,,Omnia,Producto,Esoterico
+Moon03,Tónico capilar de romero y algas marinas,$110.00,$172.26,,Moonspell,Producto,Cosmetologico
+Moon04,Tónico facial rosas y flor de tilo,$130.00,$203.58,,Moonspell,Producto,Cosmetologico
+Moon05,Vela ritual Luna llena (Clementine),$250.00,$391.50,,Moonspell,Producto,Velas
+Moon06,Vela ritual Luna nueva (Jazmin),$250.00,$391.50,,Moonspell,Producto,Velas
+Ayl01,Vela Cubo Bola,$60.00,$81.00,,Lucerna,Producto,Velas
+Ayl02,Vela Cubo Corazón,$60.00,$81.00,,Lucerna,Producto,Velas
+Ayl03,Vela Esfera Bolitas,$40.00,$54.00,,Lucerna,Producto,Velas
+Ayl04,Doble Cilindro,$60.00,$81.00,,Lucerna,Producto,Velas
+Ayl05,Esfera Espiral Grande,$75.00,$101.25,,Lucerna,Producto,Velas
+Ayl06,Carrusel Chico,$50.00,$67.50,,Lucerna,Producto,Velas
+Ayl07,Carrusel Grande Yeso,$80.00,$108.00,,Lucerna,Producto,Velas
+Ayl08,Chico Varios Yeso,$50.00,$67.50,,Lucerna,Producto,Velas
+Ayl09,Rosa Yeso,$80.00,$108.00,,Lucerna,Producto,Velas
+Ayl10,Arcoiris largo,$65.00,$87.75,,Lucerna,Producto,Velas
+Ayl11,Calavera,$80.00,$108.00,,Lucerna,Producto,Velas
+Ayl12,Hojitas Grande Yeso,$80.00,$108.00,,Lucerna,Producto,Velas
+Ayl13,Terrario Grande Yeso,$85.00,$114.75,,Lucerna,Producto,Velas
+Ayl14,Portavelas,$30.00,$40.50,,Lucerna,Producto,Decoración
+Ayl15,Corazón ,$60.00,$81.00,,Lucerna,Producto,Velas
+Ayl16,Corazon pastel,$60.00,$81.00,,Lucerna,Producto,Velas
+Ayl17,Concha ceramica,$95.00,$128.25,,Lucerna,Producto,Velas
+LA01,Café Labrador Grano,$155.00,$179.00,,Labrador,Producto,Café
+LA02,Café Labrador Molido,$155.00,$179.00,,Labrador,Producto,Café
+A11,arracada huesito 2.0,$66.60,$94.00,,Indi,Producto,Joyeria
+A21,gargantilla dorada estrellas 3d,$117.00,$164.00,,Indi,Producto,Joyeria
+AC04,eslabon cuadrado zirconia colores,$32.40,$46.00,,Indi,Producto,Joyeria
+AC112,Pulsera acero,$80.00,$112.00,,Indi,Producto,Joyeria
+AC113,arete moño perla,$44.00,$64.00,,Indi,Producto,Joyeria
+AC114,arete 2 gotas cruzadas,$40.00,$58.00,,Indi,Producto,Joyeria
+AC116,arete acero flor grande perla,$44.00,$64.00,,Indi,Producto,Joyeria
+AC121,arete 3 lineas diagonal,$40.00,$58.00,,Indi,Producto,Joyeria
+AC124,arracada lisa plata mediana,$47.00,$69.00,,Indi,Producto,Joyeria
+AC129,anillo plata corazones,$68.00,$99.00,,Indi,Producto,Joyeria
+AC13,Cadena negra,$72.00,$101.00,,Indi,Producto,Joyeria
+AC130,churumbela acero dorado,$62.00,$90.00,,Indi,Producto,Joyeria
+AC19,"broquel acero flor hawaiana, manita, mariposa",$9.00,$13.00,,Indi,Producto,Joyeria
+AC219,anillo acero plata 2 rectangulos,$68.00,$99.00,,Indi,Producto,Joyeria
+AC22,broquel perlita,$11.70,$17.00,,Indi,Producto,Joyeria
+AC220,anillo fin de semana acero 3 colores,$56.00,$82.00,,Indi,Producto,Joyeria
+AC223,pulsera trenza 3 colores,$87.00,$114.00,,Indi,Producto,Joyeria
+AC224,pulsera guia hojas negra,$65.00,$85.00,,Indi,Producto,Joyeria
+AC225,Arete rombo colgando,$98.00,$143.00,,Indi,Producto,Joyeria
+AC226,Arete grande circulos con hoyos colfando,$98.00,$143.00,,Indi,Producto,Joyeria
+AC228,arracada gorda dorada,$87.00,$127.00,,Indi,Producto,Joyeria
+AC26,esclava eslabon cuadrado planchado,$55.80,$79.00,,Indi,Producto,Joyeria
+AC35,arete perla aro abollado colgando,$49.50,$70.00,,Indi,Producto,Joyeria
+AC38,arracada lisa dorada chica,$19.80,$28.00,,Indi,Producto,Joyeria
+AC43,esclava 4 hileras planchad,$67.50,$95.00,,Indi,Producto,Joyeria
+AC44,pulsera trenza  dorado,$61.20,$86.00,,Indi,Producto,Joyeria
+AC45,pulsera planchada dorada,$36.92,$52.00,,Indi,Producto,Joyeria
+AC57,arracada Hexagonal dorada,$61.20,$86.00,,Indi,Producto,Joyeria
+AC58,arracada media dorada,$61.20,$86.00,,Indi,Producto,Joyeria
+AC62,cola de rata bicolor,$36.00,$51.00,,Indi,Producto,Joyeria
+AC82,cadena torsal ligera plata,$34.02,$48.00,,Indi,Producto,Joyeria
+AC98,arete duro,$57.60,$81.00,,Indi,Producto,Joyeria
+BI48,pulsera zirconia colores,$14.40,$21.00,,Indi,Producto,Joyeria
+BI49,pulsera tenis mediana,$25.20,$36.00,,Indi,Producto,Joyeria
+CH05,dije gota dorada,$75.60,$106.00,,Indi,Producto,Joyeria
+CH06,dije estrella verde,$64.80,$91.00,,Indi,Producto,Joyeria
+CH100,arracadas rosas,$104.40,$147.00,,Indi,Producto,Joyeria
+CH101,arete cuadrado aboyado,$61.20,$86.00,,Indi,Producto,Joyeria
+CH103,arete concha,$79.20,$111.00,,Indi,Producto,Joyeria
+CH105,pulsera eslabones bicolor,$72.00,$101.00,,Indi,Producto,Joyeria
+CH106,mariposa gde y chica,$75.60,$106.00,,Indi,Producto,Joyeria
+CH108,dije girasol zirconia,$86.40,$121.00,,Indi,Producto,Joyeria
+CH11,dije cuarzo azul,$52.20,$74.00,,Indi,Producto,Joyeria
+CH110,gargantilla dije estrella azul en el cntro,$84.60,$119.00,,Indi,Producto,Joyeria
+CH120,anillo 3 conchitas dorados,$44.00,$64.00,,Indi,Producto,Joyeria
+CH122,Arete circulo /medio circulo,$99.00,$144.00,,Indi,Producto,Joyeria
+CH125,anillo abrazo dorado,$35.00,$51.00,,Indi,Producto,Joyeria
+CH126,anillo estrella doble bicolor,$80.00,$116.00,,Indi,Producto,Joyeria
+CH131,arete corazon colgante,$80.00,$116.00,,Indi,Producto,Joyeria
+CH132,cadena basica dije estrella circulo,$68.00,$99.00,,Indi,Producto,Joyeria
+CH134,cadena dije timon perlas,$56.00,$82.00,,Indi,Producto,Joyeria
+CH135,cadena punto y coma dije meditacion zirconia,$56.00,$82.00,,Indi,Producto,Joyeria
+CH136,pulsera cadena c/ bolitas,$20.00,$29.00,,Indi,Producto,Joyeria
+CH137,pulsera eslavones dije sol,$50.00,$73.00,,Indi,Producto,Joyeria
+CH138,cadena quebrada dije gota abulon rosa,$88.00,$128.00,,Indi,Producto,Joyeria
+CH14,dije cimariposa rosa,$82.80,$116.00,,Indi,Producto,Joyeria
+CH140,cadena dije cuadrado zirconia mini,$83.00,$121.00,,Indi,Producto,Joyeria
+CH141,cadena bolita dije medalla luna y estrella,$87.00,$127.00,,Indi,Producto,Joyeria
+CH143,cadena dije cara lisa,$41.00,$60.00,,Indi,Producto,Joyeria
+CH145,cadena perla corazon con ojito,$78.00,$114.00,,Indi,Producto,Joyeria
+CH147,gargantilla conchitas de mar,$100.00,$145.00,,Indi,Producto,Joyeria
+CH148,gargantilla perlas y cristales de colores,$69.00,$101.00,,Indi,Producto,Joyeria
+CH149,Anillo cadena,$35.00,$51.00,,Indi,Producto,Joyeria
+CH15,circulo micropave negro,$86.40,$121.00,,Indi,Producto,Joyeria
+CH151,Anillo olanes delgado,$35.00,$51.00,,Indi,Producto,Joyeria
+CH152,Anillo Bolas dorado,$91.00,$132.00,,Indi,Producto,Joyeria
+CH153,Anillo lineas bolitas plata,$91.00,$132.00,,Indi,Producto,Joyeria
+CH154,anillo curvas,$69.00,$101.00,,Indi,Producto,Joyeria
+CH155,Anillo curva Rodio,$47.00,$69.00,,Indi,Producto,Joyeria
+CH156,cadena bolitas dije perrito,$65.00,$95.00,,Indi,Producto,Joyeria
+CH17,arete medio sol zirconia,$55.80,$79.00,,Indi,Producto,Joyeria
+CH186,cadena bolasgrandes dije sol,$80.00,$116.00,,Indi,Producto,Joyeria
+CH20,broquel uña #4,$11.70,$17.00,,Indi,Producto,Joyeria
+CH201,gargantilla bolita cristal transparente y bolita dorada dije margarita morado,$90.00,$131.00,,Indi,Producto,Joyeria
+CH202,Choker rombo con perla,$90.00,$131.00,,Indi,Producto,Joyeria
+CH203,"Cadena cola de rata, bola blanca y dorada dije medalla con flor",$90.00,$131.00,,Indi,Producto,Joyeria
+CH204,Cadena barbada ojos de tigre colgando,$90.00,$131.00,,Indi,Producto,Joyeria
+CH205,cadena cristal dije circulo media zirconia,$94.00,$132.00,,Indi,Producto,Joyeria
+CH206,"gargatilla mitad cadena matiposas blancas, mitad cristal dona rosa",$90.00,$131.00,,Indi,Producto,Joyeria
+CH207,Choker piedras colores,$90.00,$131.00,,Indi,Producto,Joyeria
+CH208,gargantilla flores de colores colgando,$90.00,$131.00,,Indi,Producto,Joyeria
+CH209,"cadena dije charm delfin, concha y estrella",$112.00,$163.00,,Indi,Producto,Joyeria
+CH21,broquel nudos,$30.60,$43.00,,Indi,Producto,Joyeria
+CH210,cadena perla y cristal negro,$94.00,$137.00,,Indi,Producto,Joyeria
+CH211,collar cristales colores con dije onix negro,$90.00,$131.00,,Indi,Producto,Joyeria
+CH212,Cadena dije candado y llave trebol mini,$90.00,$131.00,,Indi,Producto,Joyeria
+CH213,cadena cubana mini con 3 corazones colgando,$90.00,$131.00,,Indi,Producto,Joyeria
+CH214,cadena dije liebre,$54.00,$79.00,,Indi,Producto,Joyeria
+CH215,"cadena punto y coma, dije astilla zirconia",$76.00,$111.00,,Indi,Producto,Joyeria
+CH216,anillo zirconia cuadrada verde,$62.00,$90.00,,Indi,Producto,Joyeria
+CH217,anillo zirconias de colores,$87.00,$127.00,,Indi,Producto,Joyeria
+CH218,anillo ovalo con donita de zirconia,$52.00,$76.00,,Indi,Producto,Joyeria
+CH22,gargantilla carta 3 de espadas (corazon con espadas),$99.00,$139.00,,Indi,Producto,Joyeria
+CH222,pulsera chapa torsal grusa,$138.00,$180.00,,Indi,Producto,Joyeria
+CH227,arete cadena 2 eslavones,$74.00,$108.00,,Indi,Producto,Joyeria
+CH23,broquel circulo espiral,$36.00,$51.00,,Indi,Producto,Joyeria
+CH26,dije minimalista piedra en el centro,$81.00,$114.00,,Indi,Producto,Joyeria
+CH27,torsal chapa de oro,$97.20,$137.00,,Indi,Producto,Joyeria
+CH28,dije cactus,$72.00,$101.00,,Indi,Producto,Joyeria
+CH34,dije te amo varios idiomas,$81.00,$114.00,,Indi,Producto,Joyeria
+CH36,Gargantilla luna amigas,$114.30,$161.00,,Indi,Producto,Joyeria
+CH39,corazon gigante bi color colgante,$86.40,$121.00,,Indi,Producto,Joyeria
+CH42,dije hongo zirconia,$66.60,$94.00,,Indi,Producto,Joyeria
+CH43,cadena prlas negras y dije corazon madre perla,$133.20,$187.00,,Indi,Producto,Joyeria
+CH46,pulsera eslabones con charm de la suerte,$93.60,$132.00,,Indi,Producto,Joyeria
+CH52,dije mano de fatima con zirconia rosa,$78.66,$111.00,,Indi,Producto,Joyeria
+CH59,arete Hoja dorada,$61.20,$86.00,,Indi,Producto,Joyeria
+CH64,dije media estrella zirconia rosa,$144.00,$202.00,,Indi,Producto,Joyeria
+CH65,conciencia torsal,$45.90,$65.00,,Indi,Producto,Joyeria
+CH66,arete minimalista corazon,$55.80,$79.00,,Indi,Producto,Joyeria
+CH67,anillo concha,$46.80,$66.00,,Indi,Producto,Joyeria
+CH69,cadena barbada delgada,$50.40,$71.00,,Indi,Producto,Joyeria
+CH74,arete media flor alambre,$73.80,$104.00,,Indi,Producto,Joyeria
+CH75,conciencia lisa corazon,$25.20,$36.00,,Indi,Producto,Joyeria
+CH81,conciencia perlas,$27.90,$40.00,,Indi,Producto,Joyeria
+CH87,pulsera hilo dije mini,$21.87,$31.00,,Indi,Producto,Joyeria
+CH90,gargantilla estrellitas colgantes,$64.80,$91.00,,Indi,Producto,Joyeria
+CH91,letra globo,$55.80,$79.00,,Indi,Producto,Joyeria
+CH92,pulsera hilo flor ojo,$15.48,$22.00,,Indi,Producto,Joyeria
+CH95,arete 3 ovalo minimalista,$86.40,$121.00,,Indi,Producto,Joyeria
+CH96,arracadas dobladillos,$90.00,$126.00,,Indi,Producto,Joyeria
+PM27,pulsera frijol abollado,$66.60,$94.00,,Indi,Producto,Joyeria
+PN111,pulsera piedra volcanica,$40.00,$56.00,,Indi,Producto,Joyeria
+PN221,pulsera piedra volcanica,$40.00,$56.00,,Indi,Producto,Joyeria
+RO159,gargantilla dije Koala plata,$50.00,$73.00,,Indi,Producto,Joyeria
+RO24,Broquel corazon rodio,$30.60,$43.00,,Indi,Producto,Joyeria
+RO71,conciencia plata lisa,$45.00,$63.00,,Indi,Producto,Joyeria
+RO97,arracada mini,$46.80,$66.00,,Indi,Producto,Joyeria
+CH247,collar piedra multicolor y dije liebre,$97.00,$141.00,,Indi,Producto,Joyeria
+CH246,gargantilla agata azul dije cola de ballena,$89.00,$130.00,,Indi,Producto,Joyeria
+CH245,gargantilla mariposas blancas,$108.00,$157.00,,Indi,Producto,Joyeria
+CH244,"gargantilla rombo perlas dije abanico zirconia, perla en medio",$86.00,$125.00,,Indi,Producto,Joyeria
+CH243,gargantilla cristales con dije de bota,$108.00,$157.00,,Indi,Producto,Joyeria
+CH242,cadena torsal con dije gota grande rosa,$67.00,$98.00,,Indi,Producto,Joyeria
+RO241,"cadena cola de rata dije charm corazon, zirconia y arbol",$91.00,$132.00,,Indi,Producto,Joyeria
+CH240,cadena rectangulo con dijes de cuadros zirconia colores,$140.00,$203.00,,Indi,Producto,Joyeria
+CH239,pulsera mariposas blancas,$44.00,$64.00,,Indi,Producto,Joyeria
+CH238,anillo malla café,$62.00,$90.00,,Indi,Producto,Joyeria
+CH237,anillo flor,$54.00,$79.00,,Indi,Producto,Joyeria
+CH236,anillo sol,$54.00,$79.00,,Indi,Producto,Joyeria
+RO235,anillo plata zirconias,$69.00,$101.00,,Indi,Producto,Joyeria
+AC233,arracada 3 lineas interlazadas,$46.00,$67.00,,Indi,Producto,Joyeria
+CH232,arete bicolor concha dorada,$79.00,$115.00,,Indi,Producto,Joyeria
+CH231,arete cadena colgante con donita de agata azul,$40.00,$58.00,,Indi,Producto,Joyeria
+CH230,arete cadenas colgando agata colores neutros,$40.00,$58.00,,Indi,Producto,Joyeria
+AC229,"arete pinza de cangrejo, caracol colgando",$62.00,$90.00,,Indi,Producto,Joyeria
+Bre01,péndulo karmak (liso),$150.00,$202.50,,íizax,Producto,Esoterico
+Bre02,péndulo isis (circulitos),$150.00,$202.50,,íizax,Producto,Esoterico
+Bre03,Pendulo osiris ,$150.00,$202.50,,íizax,Producto,Esoterico
+Bre04,Flores de Bach Rescate,$80.00,$108.00,,íizax,Producto,Herbolaria
+Bre05,FB Rescate Mascotas,$80.00,$108.00,,íizax,Producto,Herbolaria
+Bre06,Brisa luz interior,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre07,Brisa bendición,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre08,Brisa cuatro arcangeles,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre09,Brisa chakras,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre10,Brisa despertar espiritual,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre11,Agua florida,$100.00,$135.00,,íizax,Producto,Herbolaria
+Bre12,Carbon,$40.00,$54.00,,íizax,Producto,Esoterico
+Bre13,Sahumadores,$130.00,$200.20,,íizax,Producto,Esoterico
+Bre14,Salvia 23 cm,$100.00,$135.00,,íizax,Producto,Esoterico
+Bre15,Salvia 11 cm,$80.00,$108.00,,íizax,Producto,Esoterico
+Bre16,Palo Santo,$17.00,$22.00,,íizax,Producto,Esoterico
+MS01,Relajante medio cuerpo,$240.00,$400.00,,Esther Masajista,Masaje,Masajes
+MS02,Relajante cuerpo completo,$330.00,$550.00,,Esther Masajista,Masaje,Masajes
+MS03,Descontracturante,$330.00,$550.00,,Esther Masajista,Masaje,Masajes
+MS04,Descontracturante + Ventosas,$360.00,$600.00,,Esther Masajista,Masaje,Masajes
+MS05,Piedras Calientes,$360.00,$600.00,,Esther Masajista,Masaje,Masajes
+MS06,Linfatico,$330.00,$550.00,,Esther Masajista,Masaje,Masajes
+MS07,Masaje Rebozo,$360.00,$600.00,,Esther Masajista,Masaje,Masajes
+MS08,Reflexologia Podal,$240.00,$400.00,,Esther Masajista,Masaje,Masajes
+CY01,Clase Yoga Ashtanga Suelta,$200.00,$250.00,,Carla Yoga,Curso/Taller,Yoga
+CY02,Clase Yoga Ashtanga 4 clases,,,,Carla Yoga,Curso/Taller,Yoga
+CY03,Clase Yoga Ashtanga 8 clases,$800.00,"$1,000.00",,Carla Yoga,Curso/Taller,Yoga
+RS01,Reiki Usui,,$540.00,,,Reiki,Reiki
+RS02,Reiki + Vendaje Neuromuscular,,$660.00,,,Reiki,Reiki
+RS03,Reiki + Homeopatia,,$660.00,,,Reiki,Reiki
+RS04,Acupuntura Tibetana,,$480.00,,,Reiki,Reiki
+RS05,Bioquantum,,$540.00,,,Reiki,Reiki
+RS06,Registros Akashicos,,$636.00,,,Reiki,Reiki
+RS07,Flores de Bach,,$450.00,,,Reiki,Reiki
+RS08,Pendulo (Radistecia),,$770.00,,,Reiki,Reiki
+RS09,Medicina Elfica,,$540.00,,,Reiki,Reiki
+RS10,Reiki Arboreo,,$540.00,,,Reiki,Reiki
+RS11,Alineación Chakras,,$450.00,,,Reiki,Reiki
+Om27,Evento,,,,Omnia,Evento,Evento
