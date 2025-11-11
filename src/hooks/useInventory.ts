@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
+import { useDebounce } from "./useDebounce";
 
 interface PaginationInfo {
   page: number;
@@ -18,6 +19,7 @@ export const useInventory = () => {
     totalPages: 0,
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const fetchInventory = async (page: number, search: string = "") => {
     setLoading(true);
@@ -42,24 +44,25 @@ export const useInventory = () => {
     }
   };
 
+  // Fetch when debounced search changes (including initial load)
   useEffect(() => {
-    fetchInventory(1, "");
+    fetchInventory(1, debouncedSearchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [debouncedSearchQuery]);
 
   const handlePageChange = (newPage: number) => {
-    fetchInventory(newPage, searchQuery);
+    fetchInventory(newPage, debouncedSearchQuery);
   };
 
   const handleSearch = (search: string) => {
     setSearchQuery(search);
-    fetchInventory(1, search);
   };
 
   return {
     data,
     loading,
     pagination,
+    searchQuery,
     handlePageChange,
     handleSearch,
   };

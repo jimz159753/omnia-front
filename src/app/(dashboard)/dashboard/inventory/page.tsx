@@ -3,10 +3,23 @@
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { useInventory } from "@/hooks/useInventory";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const Inventory = () => {
-  const { data, loading, pagination, handlePageChange, handleSearch } =
-    useInventory();
+  const {
+    data,
+    loading,
+    pagination,
+    searchQuery,
+    handlePageChange,
+    handleSearch,
+  } = useInventory();
 
   if (loading && data.length === 0) {
     return (
@@ -19,24 +32,27 @@ const Inventory = () => {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-        <p className="text-muted-foreground">
+    <Card>
+      <CardHeader>
+        <CardTitle>Inventory</CardTitle>
+        <CardDescription>
           Manage your inventory and stock levels
-        </p>
-      </div>
-      <DataTable
-        columns={columns}
-        data={data}
-        searchKey="name"
-        searchPlaceholder="Search by name..."
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        loading={loading}
-      />
-    </div>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <DataTable
+          columns={columns}
+          data={data}
+          searchKey="name"
+          searchPlaceholder="Search by name..."
+          searchValue={searchQuery}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+          loading={loading}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

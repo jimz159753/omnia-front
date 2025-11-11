@@ -31,6 +31,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchKey?: string;
   searchPlaceholder?: string;
+  searchValue?: string;
   pagination?: PaginationInfo;
   onPageChange?: (page: number) => void;
   onSearch?: (search: string) => void;
@@ -42,13 +43,13 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   searchPlaceholder = "Search...",
+  searchValue = "",
   pagination,
   onPageChange,
   onSearch,
   loading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [searchValue, setSearchValue] = React.useState("");
 
   const table = useReactTable({
     data,
@@ -65,14 +66,7 @@ export function DataTable<TData, TValue>({
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    setSearchValue(value);
-
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      onSearch?.(value);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
+    onSearch?.(value);
   };
 
   return (

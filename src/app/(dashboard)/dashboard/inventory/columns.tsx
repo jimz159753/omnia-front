@@ -2,6 +2,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Inventory, Category, SubCategory } from "@/generated/prisma";
+import { MoreHorizontalFill } from "akar-icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash2 } from "lucide-react";
 
 // Extended type to include the category and subcategory relations
 export type InventoryWithCategory = Inventory & {
@@ -91,6 +99,45 @@ export const columns: ColumnDef<InventoryWithCategory>[] = [
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"));
       return <div>{date.toLocaleDateString("es-MX")}</div>;
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+              <MoreHorizontalFill className="w-4 h-4 cursor-pointer" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                console.log("Update item:", item);
+                // TODO: Implement update functionality
+              }}
+              className="cursor-pointer"
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Update
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log("Delete item:", item);
+                // TODO: Implement delete functionality
+              }}
+              className="cursor-pointer text-red-600 focus:text-red-600"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
     },
   },
 ];
