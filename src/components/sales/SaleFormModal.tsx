@@ -13,6 +13,8 @@ import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { Sale } from "@/generated/prisma";
+import { saleSchema } from "@/lib/validations/sales";
+import { z } from "zod";
 
 interface SaleFormModalProps {
   open: boolean;
@@ -57,6 +59,7 @@ export function SaleFormModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Populate form when modal opens
   useEffect(() => {
@@ -134,6 +137,7 @@ export function SaleFormModal({
         totalPrice: totalPrice.toFixed(2),
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.units, formData.unitPrice]);
 
   // Auto-calculate final price when total price or discount changes
@@ -152,6 +156,7 @@ export function SaleFormModal({
         finalPrice: finalPrice.toFixed(2),
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.totalPrice, formData.hasDiscount, formData.discountPercentage]);
 
   // Auto-calculate real income considering card payment fee (5%)
@@ -169,6 +174,7 @@ export function SaleFormModal({
         realIncome: realIncome.toFixed(2),
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.finalPrice, formData.cardPayment]);
 
   const handleChange = (
@@ -184,40 +190,59 @@ export function SaleFormModal({
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const ErrorMessage = ({ field }: { field: string }) => {
+    return fieldErrors[field] ? (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors[field]}</p>
+    ) : null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setFieldErrors({});
     setLoading(true);
 
     try {
+      // Validate form data with Zod
+      const validatedData = saleSchema.parse(formData);
+
       const payload = {
-        date: new Date(formData.date).toISOString(),
-        client: formData.client,
-        code: formData.code,
-        description: formData.description,
-        units: parseInt(formData.units),
-        unitPrice: parseFloat(formData.unitPrice),
-        totalPrice: parseFloat(formData.totalPrice),
-        hasDiscount: formData.hasDiscount,
-        discountPercentage: formData.discountPercentage
-          ? parseFloat(formData.discountPercentage)
+        date: new Date(validatedData.date).toISOString(),
+        client: validatedData.client,
+        code: validatedData.code,
+        description: validatedData.description,
+        units: parseInt(validatedData.units),
+        unitPrice: parseFloat(validatedData.unitPrice),
+        totalPrice: parseFloat(validatedData.totalPrice),
+        hasDiscount: validatedData.hasDiscount,
+        discountPercentage: validatedData.discountPercentage
+          ? parseFloat(validatedData.discountPercentage)
           : null,
-        finalPrice: parseFloat(formData.finalPrice),
-        cardPayment: formData.cardPayment,
-        realIncome: parseFloat(formData.realIncome),
-        paymentStatus: formData.paymentStatus,
-        paymentMethod: formData.paymentMethod,
-        account: formData.account,
-        seller: formData.seller,
-        category: formData.category,
-        subCategory: formData.subCategory || null,
-        provider: formData.provider,
-        providerCost: parseFloat(formData.providerCost),
-        providerPaymentStatus: formData.providerPaymentStatus,
-        comments: formData.comments || null,
+        finalPrice: parseFloat(validatedData.finalPrice),
+        cardPayment: validatedData.cardPayment,
+        realIncome: parseFloat(validatedData.realIncome),
+        paymentStatus: validatedData.paymentStatus,
+        paymentMethod: validatedData.paymentMethod,
+        account: validatedData.account,
+        seller: validatedData.seller,
+        category: validatedData.category,
+        subCategory: validatedData.subCategory || null,
+        provider: validatedData.provider,
+        providerCost: parseFloat(validatedData.providerCost),
+        providerPaymentStatus: validatedData.providerPaymentStatus,
+        comments: validatedData.comments || null,
         ...(isEditMode && { id: item.id }),
       };
 
@@ -245,7 +270,19 @@ export function SaleFormModal({
         onSuccess?.();
       }, 1500);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      if (error instanceof z.ZodError) {
+        // Handle Zod validation errors
+        const errors: Record<string, string> = {};
+        error.issues.forEach((err: z.ZodIssue) => {
+          if (err.path[0]) {
+            errors[err.path[0].toString()] = err.message;
+          }
+        });
+        setFieldErrors(errors);
+        setError("Please fix the validation errors below");
+      } else {
+        setError(error instanceof Error ? error.message : "An error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -284,37 +321,47 @@ export function SaleFormModal({
                 required
                 className="custom-input"
               />
+              <ErrorMessage field="date" />
             </div>
 
-            <CustomInput
-              label="Client"
-              name="client"
-              value={formData.client}
-              onChange={handleChange}
-              required
-              placeholder="Enter client name"
-            />
+            <div>
+              <CustomInput
+                label="Client"
+                name="client"
+                value={formData.client}
+                onChange={handleChange}
+                required
+                placeholder="Enter client name"
+              />
+              <ErrorMessage field="client" />
+            </div>
           </div>
 
           {/* Code and Description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CustomInput
-              label="Code"
-              name="code"
-              value={formData.code}
-              onChange={handleChange}
-              required
-              placeholder="Enter code (e.g., OM25)"
-            />
+            <div>
+              <CustomInput
+                label="Code"
+                name="code"
+                value={formData.code}
+                onChange={handleChange}
+                required
+                placeholder="Enter code (e.g., OM25)"
+              />
+              <ErrorMessage field="code" />
+            </div>
 
-            <CustomInput
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              placeholder="Enter description"
-            />
+            <div>
+              <CustomInput
+                label="Description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                placeholder="Enter description"
+              />
+              <ErrorMessage field="description" />
+            </div>
           </div>
 
           {/* Units, Unit Price, Total Price */}
@@ -335,6 +382,7 @@ export function SaleFormModal({
                 step="1"
                 className="custom-input"
               />
+              <ErrorMessage field="units" />
             </div>
 
             <div className="custom-input-container">
@@ -353,6 +401,7 @@ export function SaleFormModal({
                 step="0.01"
                 className="custom-input"
               />
+              <ErrorMessage field="unitPrice" />
             </div>
 
             <div className="custom-input-container">
@@ -372,6 +421,7 @@ export function SaleFormModal({
                 className="custom-input bg-gray-50"
                 readOnly
               />
+              <ErrorMessage field="totalPrice" />
             </div>
           </div>
 
@@ -528,43 +578,55 @@ export function SaleFormModal({
 
           {/* Seller and Category */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <CustomInput
-              label="Seller"
-              name="seller"
-              value={formData.seller}
-              onChange={handleChange}
-              required
-              placeholder="Enter seller name"
-            />
+            <div>
+              <CustomInput
+                label="Seller"
+                name="seller"
+                value={formData.seller}
+                onChange={handleChange}
+                required
+                placeholder="Enter seller name"
+              />
+              <ErrorMessage field="seller" />
+            </div>
 
-            <CustomInput
-              label="Category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              placeholder="Enter category"
-            />
+            <div>
+              <CustomInput
+                label="Category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                placeholder="Enter category"
+              />
+              <ErrorMessage field="category" />
+            </div>
 
-            <CustomInput
-              label="Sub Category"
-              name="subCategory"
-              value={formData.subCategory}
-              onChange={handleChange}
-              placeholder="Enter sub category (optional)"
-            />
+            <div>
+              <CustomInput
+                label="Sub Category"
+                name="subCategory"
+                value={formData.subCategory}
+                onChange={handleChange}
+                placeholder="Enter sub category (optional)"
+              />
+              <ErrorMessage field="subCategory" />
+            </div>
           </div>
 
           {/* Provider Information */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <CustomInput
-              label="Provider"
-              name="provider"
-              value={formData.provider}
-              onChange={handleChange}
-              required
-              placeholder="Enter provider name"
-            />
+            <div>
+              <CustomInput
+                label="Provider"
+                name="provider"
+                value={formData.provider}
+                onChange={handleChange}
+                required
+                placeholder="Enter provider name"
+              />
+              <ErrorMessage field="provider" />
+            </div>
 
             <div className="custom-input-container">
               <label htmlFor="providerCost" className="custom-input-label">
@@ -582,6 +644,7 @@ export function SaleFormModal({
                 step="0.01"
                 className="custom-input"
               />
+              <ErrorMessage field="providerCost" />
             </div>
 
             <div className="custom-input-container">
@@ -603,6 +666,7 @@ export function SaleFormModal({
                 <option value="Pendiente">Pendiente</option>
                 <option value="Pagado">Pagado</option>
               </select>
+              <ErrorMessage field="providerPaymentStatus" />
             </div>
           </div>
 

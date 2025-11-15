@@ -14,6 +14,8 @@ import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { Category } from "@/generated/prisma";
 import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
+import { inventorySchema } from "@/lib/validations/inventory";
+import { z } from "zod";
 
 interface InventoryFormModalProps {
   open: boolean;
@@ -50,6 +52,7 @@ export function InventoryFormModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Fetch categories and populate form when modal opens
   useEffect(() => {
@@ -109,10 +112,16 @@ export function InventoryFormModal({
     e.preventDefault();
     setError("");
     setSuccess("");
+    setFieldErrors({});
     setLoading(true);
 
     try {
-      const payload = isEditMode ? { ...formData, id: item.id } : formData;
+      // Validate form data with Zod
+      const validatedData = inventorySchema.parse(formData);
+
+      const payload = isEditMode
+        ? { ...validatedData, id: item.id }
+        : validatedData;
 
       const response = await fetch("/api/inventory", {
         method: isEditMode ? "PUT" : "POST",
@@ -140,7 +149,19 @@ export function InventoryFormModal({
         onSuccess?.();
       }, 1500);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      if (error instanceof z.ZodError) {
+        // Handle Zod validation errors
+        const errors: Record<string, string> = {};
+        error.issues.forEach((err: z.ZodIssue) => {
+          if (err.path[0]) {
+            errors[err.path[0].toString()] = err.message;
+          }
+        });
+        setFieldErrors(errors);
+        setError("Please fix the validation errors below");
+      } else {
+        setError(error instanceof Error ? error.message : "An error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -165,23 +186,33 @@ export function InventoryFormModal({
           {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CustomInput
-              label="Code"
-              name="code"
-              value={formData.code}
-              onChange={handleChange}
-              required
-              placeholder="Enter item code"
-            />
+            <div>
+              <CustomInput
+                label="Code"
+                name="code"
+                value={formData.code}
+                onChange={handleChange}
+                required
+                placeholder="Enter item code"
+              />
+              {fieldErrors.code && (
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.code}</p>
+              )}
+            </div>
 
-            <CustomInput
-              label="Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Enter item name"
-            />
+            <div>
+              <CustomInput
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="Enter item name"
+              />
+              {fieldErrors.name && (
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+              )}
+            </div>
           </div>
 
           <div className="custom-input-container">
@@ -198,6 +229,11 @@ export function InventoryFormModal({
               className="custom-input min-h-[80px]"
               rows={3}
             />
+            {fieldErrors.description && (
+              <p className="text-red-500 text-sm mt-1">
+                {fieldErrors.description}
+              </p>
+            )}
           </div>
 
           <div className="custom-input-container">
@@ -220,6 +256,11 @@ export function InventoryFormModal({
                 </option>
               ))}
             </select>
+            {fieldErrors.categoryId && (
+              <p className="text-red-500 text-sm mt-1">
+                {fieldErrors.categoryId}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -239,6 +280,9 @@ export function InventoryFormModal({
                 step="1"
                 className="custom-input"
               />
+              {fieldErrors.stock && (
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.stock}</p>
+              )}
             </div>
 
             <div className="custom-input-container">
@@ -257,6 +301,9 @@ export function InventoryFormModal({
                 step="0.01"
                 className="custom-input"
               />
+              {fieldErrors.price && (
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.price}</p>
+              )}
             </div>
 
             <div className="custom-input-container">
@@ -275,6 +322,11 @@ export function InventoryFormModal({
                 step="0.01"
                 className="custom-input"
               />
+              {fieldErrors.providerCost && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors.providerCost}
+                </p>
+              )}
             </div>
           </div>
 
