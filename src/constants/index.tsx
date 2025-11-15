@@ -8,14 +8,22 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
-import { AlignBottom, Calendar, Percentage, Tag, Ticket } from "akar-icons";
+import {
+  AlignBottom,
+  Calendar,
+  Percentage,
+  ShoppingBag,
+  Tag,
+  Ticket,
+} from "akar-icons";
 
 // Tabs
 
 export enum TabNames {
+  Analytics = "Analytics",
+  Sales = "Sales",
   Inventory = "Inventory",
   Events = "Events",
-  Analytics = "Analytics",
   Vouchers = "Vouchers",
   Discounts = "Discounts",
 }
@@ -77,6 +85,10 @@ export const items: IMenuItem[] = [
   {
     icon: () => <AlignBottom size={24} />,
     title: "Analytics",
+  },
+  {
+    icon: () => <ShoppingBag size={24} />,
+    title: "Sales",
   },
   {
     icon: () => <Tag size={24} />,
