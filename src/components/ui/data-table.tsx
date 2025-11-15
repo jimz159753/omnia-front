@@ -36,6 +36,8 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onSearch?: (search: string) => void;
   loading?: boolean;
+  onAddNew?: () => void;
+  addButtonLabel?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -48,6 +50,8 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onSearch,
   loading = false,
+  onAddNew,
+  addButtonLabel = "Add Item",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -79,6 +83,14 @@ export function DataTable<TData, TValue>({
             onChange={handleSearchChange}
             className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {onAddNew && (
+            <button
+              onClick={onAddNew}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {addButtonLabel}
+            </button>
+          )}
         </div>
       )}
       <div className="rounded-md border relative">

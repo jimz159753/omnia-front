@@ -62,3 +62,60 @@ export async function GET(request: NextRequest) {
     await prisma.$disconnect();
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, description, stock, price, categoryId, code, providerCost } =
+      body;
+
+    // Validate required fields
+    if (
+      !name ||
+      !description ||
+      stock === undefined ||
+      price === undefined ||
+      !categoryId ||
+      !code ||
+      providerCost === undefined
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Create inventory item
+    const inventory = await prisma.inventory.create({
+      data: {
+        name,
+        description,
+        stock: parseInt(stock),
+        price: parseFloat(price),
+        categoryId,
+        code,
+        providerCost: parseFloat(providerCost),
+      },
+      include: {
+        category: {
+          include: {
+            subCategory: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { data: inventory, message: "Inventory created successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating inventory:", error);
+    return NextResponse.json(
+      { error: "Failed to create inventory" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}

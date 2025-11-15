@@ -58,6 +58,10 @@ export const useInventory = () => {
     setSearchQuery(search);
   };
 
+  const refetch = () => {
+    fetchInventory(pagination.page, debouncedSearchQuery);
+  };
+
   return {
     data,
     loading,
@@ -65,5 +69,6 @@ export const useInventory = () => {
     searchQuery,
     handlePageChange,
     handleSearch,
+    refetch,
   };
 };
