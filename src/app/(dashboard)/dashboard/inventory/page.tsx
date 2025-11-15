@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
+import { getColumns, InventoryWithCategory } from "./columns";
 import { useInventory } from "@/hooks/useInventory";
 import {
   Card,
@@ -12,9 +12,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { InventoryFormModal } from "@/components/inventory/InventoryFormModal";
+import { DeleteConfirmDialog } from "@/components/inventory/DeleteConfirmDialog";
 
 const Inventory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<InventoryWithCategory | null>(
+    null
+  );
+  const [deletingItem, setDeletingItem] =
+    useState<InventoryWithCategory | null>(null);
   const {
     data,
     loading,
@@ -37,7 +43,45 @@ const Inventory = () => {
 
   const handleAddNewSuccess = () => {
     refetch();
+    setEditingItem(null);
   };
+
+  const handleUpdate = (item: InventoryWithCategory) => {
+    setEditingItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (item: InventoryWithCategory) => {
+    setDeletingItem(item);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingItem) return;
+
+    const response = await fetch(`/api/inventory?id=${deletingItem.id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to delete inventory item");
+    }
+
+    refetch();
+    setDeletingItem(null);
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      setEditingItem(null);
+    }
+  };
+
+  const columns = getColumns({
+    onUpdate: handleUpdate,
+    onDelete: handleDelete,
+  });
 
   return (
     <>
@@ -59,7 +103,10 @@ const Inventory = () => {
             onPageChange={handlePageChange}
             onSearch={handleSearch}
             loading={loading}
-            onAddNew={() => setIsModalOpen(true)}
+            onAddNew={() => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }}
             addButtonLabel="Add Inventory"
           />
         </CardContent>
@@ -67,8 +114,16 @@ const Inventory = () => {
 
       <InventoryFormModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleModalClose}
         onSuccess={handleAddNewSuccess}
+        item={editingItem}
+      />
+
+      <DeleteConfirmDialog
+        open={!!deletingItem}
+        onOpenChange={(open) => !open && setDeletingItem(null)}
+        onConfirm={handleDeleteConfirm}
+        itemName={deletingItem?.name || ""}
       />
     </>
   );

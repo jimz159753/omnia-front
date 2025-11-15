@@ -18,7 +18,15 @@ export type InventoryWithCategory = Inventory & {
   };
 };
 
-export const columns: ColumnDef<InventoryWithCategory>[] = [
+interface GetColumnsParams {
+  onUpdate: (item: InventoryWithCategory) => void;
+  onDelete: (item: InventoryWithCategory) => void;
+}
+
+export const getColumns = ({
+  onUpdate,
+  onDelete,
+}: GetColumnsParams): ColumnDef<InventoryWithCategory>[] => [
   {
     accessorKey: "code",
     header: "Code",
@@ -116,20 +124,14 @@ export const columns: ColumnDef<InventoryWithCategory>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => {
-                console.log("Update item:", item);
-                // TODO: Implement update functionality
-              }}
+              onClick={() => onUpdate(item)}
               className="cursor-pointer"
             >
               <Pencil className="mr-2 h-4 w-4" />
               Update
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
-                console.log("Delete item:", item);
-                // TODO: Implement delete functionality
-              }}
+              onClick={() => onDelete(item)}
               className="cursor-pointer text-red-600 focus:text-red-600"
             >
               <Trash2 className="mr-2 h-4 w-4" />

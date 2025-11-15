@@ -13,11 +13,13 @@ import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { Category } from "@/generated/prisma";
+import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
 
 interface InventoryFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  item?: InventoryWithCategory | null;
 }
 
 interface CategoryWithSubCategory extends Category {
@@ -31,7 +33,10 @@ export function InventoryFormModal({
   open,
   onOpenChange,
   onSuccess,
+  item,
 }: InventoryFormModalProps) {
+  const isEditMode = !!item;
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -46,12 +51,36 @@ export function InventoryFormModal({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch categories when modal opens
+  // Fetch categories and populate form when modal opens
   useEffect(() => {
     if (open) {
       fetchCategories();
+
+      // Populate form with item data if editing
+      if (item) {
+        setFormData({
+          name: item.name,
+          description: item.description,
+          stock: item.stock.toString(),
+          price: item.price.toString(),
+          categoryId: item.categoryId,
+          code: item.code,
+          providerCost: item.providerCost.toString(),
+        });
+      } else {
+        // Reset form if creating new item
+        setFormData({
+          name: "",
+          description: "",
+          stock: "",
+          price: "",
+          categoryId: "",
+          code: "",
+          providerCost: "",
+        });
+      }
     }
-  }, [open]);
+  }, [open, item]);
 
   const fetchCategories = async () => {
     try {
@@ -83,31 +112,27 @@ export function InventoryFormModal({
     setLoading(true);
 
     try {
+      const payload = isEditMode ? { ...formData, id: item.id } : formData;
+
       const response = await fetch("/api/inventory", {
-        method: "POST",
+        method: isEditMode ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create inventory");
+        throw new Error(
+          errorData.error ||
+            `Failed to ${isEditMode ? "update" : "create"} inventory`
+        );
       }
 
-      setSuccess("Inventory item created successfully!");
-
-      // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        stock: "",
-        price: "",
-        categoryId: "",
-        code: "",
-        providerCost: "",
-      });
+      setSuccess(
+        `Inventory item ${isEditMode ? "updated" : "created"} successfully!`
+      );
 
       // Close modal and refresh data
       setTimeout(() => {
@@ -125,9 +150,13 @@ export function InventoryFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Inventory Item</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Update Inventory Item" : "Add Inventory Item"}
+          </DialogTitle>
           <DialogDescription>
-            Fill in the details to add a new inventory item.
+            {isEditMode
+              ? "Update the details of the inventory item."
+              : "Fill in the details to add a new inventory item."}
           </DialogDescription>
         </DialogHeader>
 
@@ -259,7 +288,13 @@ export function InventoryFormModal({
               Cancel
             </CustomButton>
             <CustomButton type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Item"}
+              {loading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                ? "Update Item"
+                : "Create Item"}
             </CustomButton>
           </DialogFooter>
         </form>

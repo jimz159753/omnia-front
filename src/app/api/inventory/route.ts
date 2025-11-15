@@ -119,3 +119,117 @@ export async function POST(request: NextRequest) {
     await prisma.$disconnect();
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const {
+      id,
+      name,
+      description,
+      stock,
+      price,
+      categoryId,
+      code,
+      providerCost,
+    } = body;
+
+    // Validate required fields
+    if (!id) {
+      return NextResponse.json(
+        { error: "Inventory ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if inventory exists
+    const existingInventory = await prisma.inventory.findUnique({
+      where: { id },
+    });
+
+    if (!existingInventory) {
+      return NextResponse.json(
+        { error: "Inventory item not found" },
+        { status: 404 }
+      );
+    }
+
+    // Update inventory item
+    const inventory = await prisma.inventory.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        stock: parseInt(stock),
+        price: parseFloat(price),
+        categoryId,
+        code,
+        providerCost: parseFloat(providerCost),
+      },
+      include: {
+        category: {
+          include: {
+            subCategory: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { data: inventory, message: "Inventory updated successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating inventory:", error);
+    return NextResponse.json(
+      { error: "Failed to update inventory" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = request.nextUrl;
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Inventory ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if inventory exists
+    const existingInventory = await prisma.inventory.findUnique({
+      where: { id },
+    });
+
+    if (!existingInventory) {
+      return NextResponse.json(
+        { error: "Inventory item not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete inventory item
+    await prisma.inventory.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { message: "Inventory deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting inventory:", error);
+    return NextResponse.json(
+      { error: "Failed to delete inventory" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
