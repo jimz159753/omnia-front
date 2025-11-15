@@ -19,8 +19,8 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
       <Link
         className={`w-full flex items-center px-4 py-3 transition-all duration-200 ${
           isActive
-            ? "bg-gray-100 text-blue-600 shadow-sm"
-            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+            ? "bg-gray-100 text-[#06334A] shadow-sm"
+            : "text-gray-700 hover:bg-gray-50 hover:text-[#06334A]"
         }`}
         href={`/dashboard/${tabName.toLowerCase()}`}
       >
