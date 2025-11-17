@@ -111,34 +111,36 @@ export const getColumns = ({
   },
   {
     accessorKey: "actions",
-    header: "Actions",
+    header: () => <div className="text-center">Actions</div>,
     cell: ({ row }) => {
       const item = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-              <MoreHorizontalFill className="w-4 h-4 cursor-pointer" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => onUpdate(item)}
-              className="cursor-pointer"
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Update
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(item)}
-              className="cursor-pointer text-red-600 focus:text-red-600"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                <MoreHorizontalFill className="w-4 h-4 cursor-pointer" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onUpdate(item)}
+                className="cursor-pointer"
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Update
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDelete(item)}
+                className="cursor-pointer text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       );
     },
   },

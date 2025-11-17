@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,8 @@ import {
 import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
-import { Category } from "@/generated/prisma";
 import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
-import { inventorySchema } from "@/lib/validations/inventory";
-import { z } from "zod";
+import { useInventoryForm } from "@/hooks/useInventoryForm";
 
 interface InventoryFormModalProps {
   open: boolean;
@@ -24,148 +21,23 @@ interface InventoryFormModalProps {
   item?: InventoryWithCategory | null;
 }
 
-interface CategoryWithSubCategory extends Category {
-  subCategory: {
-    id: string;
-    name: string;
-  } | null;
-}
-
 export function InventoryFormModal({
   open,
   onOpenChange,
   onSuccess,
   item,
 }: InventoryFormModalProps) {
-  const isEditMode = !!item;
-
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    stock: "",
-    price: "",
-    categoryId: "",
-    code: "",
-    providerCost: "",
-  });
-  const [categories, setCategories] = useState<CategoryWithSubCategory[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
-  // Fetch categories and populate form when modal opens
-  useEffect(() => {
-    if (open) {
-      fetchCategories();
-
-      // Populate form with item data if editing
-      if (item) {
-        setFormData({
-          name: item.name,
-          description: item.description,
-          stock: item.stock.toString(),
-          price: item.price.toString(),
-          categoryId: item.categoryId,
-          code: item.code,
-          providerCost: item.providerCost.toString(),
-        });
-      } else {
-        // Reset form if creating new item
-        setFormData({
-          name: "",
-          description: "",
-          stock: "",
-          price: "",
-          categoryId: "",
-          code: "",
-          providerCost: "",
-        });
-      }
-    }
-  }, [open, item]);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/categories");
-      if (!response.ok) {
-        throw new Error("Failed to fetch categories");
-      }
-      const result = await response.json();
-      setCategories(result.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      setError("Failed to load categories");
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setFieldErrors({});
-    setLoading(true);
-
-    try {
-      // Validate form data with Zod
-      const validatedData = inventorySchema.parse(formData);
-
-      const payload = isEditMode
-        ? { ...validatedData, id: item.id }
-        : validatedData;
-
-      const response = await fetch("/api/inventory", {
-        method: isEditMode ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error ||
-            `Failed to ${isEditMode ? "update" : "create"} inventory`
-        );
-      }
-
-      setSuccess(
-        `Inventory item ${isEditMode ? "updated" : "created"} successfully!`
-      );
-
-      // Close modal and refresh data
-      setTimeout(() => {
-        onOpenChange(false);
-        onSuccess?.();
-      }, 1500);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        // Handle Zod validation errors
-        const errors: Record<string, string> = {};
-        error.issues.forEach((err: z.ZodIssue) => {
-          if (err.path[0]) {
-            errors[err.path[0].toString()] = err.message;
-          }
-        });
-        setFieldErrors(errors);
-        setError("Please fix the validation errors below");
-      } else {
-        setError(error instanceof Error ? error.message : "An error occurred");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    isEditMode,
+    formData,
+    categories,
+    loading,
+    error,
+    success,
+    fieldErrors,
+    handleChange,
+    handleSubmit,
+  } = useInventoryForm({ open, item, onSuccess, onOpenChange });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
