@@ -23,115 +23,97 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Inventory {
-  id           String   @id @default(uuid())
-  name         String
-  description  String
-  stock        Int
-  price        Float
-  categoryId   String
-  category     Category @relation("InventoryCategory", fields: [categoryId], references: [id])
-  code         String
-  providerCost Float
-  order        Order?   @relation("OrderInventory")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Ticket {
+  id        String   @id @default(uuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  amount    Float
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  instagram String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
 }
 
 model Category {
   id          String       @id @default(uuid())
   name        String
   description String
-  inventory   Inventory[]  @relation("InventoryCategory")
+  products    Product[]    @relation("ProductCategory")
   subCategory SubCategory? @relation("CategorySubCategory")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  services    Service[]    @relation("ServiceCategory")
 }
 
 model SubCategory {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   description String
-  categoryId  String   @unique
-  category    Category @relation("CategorySubCategory", fields: [categoryId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Seller {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  order       Order?   @relation("OrderSeller")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  categoryId  String    @unique
+  category    Category  @relation("CategorySubCategory", fields: [categoryId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  services    Service[] @relation("ServiceSubCategory")
+  products    Product[] @relation("ProductSubCategory")
 }
 
 model Provider {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   ownerName   String
   description String
-  order       Order?   @relation("OrderProvider")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
 }
 
-model PaymentMethod {
-  id          String   @id @default(uuid())
-  name        String
-  status      Boolean
-  account     String
-  description String
-  order       Order?   @relation("OrderPaymentMethod")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Product {
+  id            String      @id @default(uuid())
+  image         String
+  sku           String
+  name          String
+  description   String
+  price         Float
+  categoryId    String
+  category      Category    @relation("ProductCategory", fields: [categoryId], references: [id])
+  subCategoryId String
+  subCategory   SubCategory @relation("ProductSubCategory", fields: [subCategoryId], references: [id])
+  stock         Int
+  cost          Float
+  providerId    String
+  provider      Provider    @relation(fields: [providerId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  tickets       Ticket[]
 }
 
-model Order {
-  id                    String        @id @default(uuid())
-  clientName            String
-  units                 Int
-  inventoryId           String        @unique
-  inventory             Inventory     @relation("OrderInventory", fields: [inventoryId], references: [id])
-  sellerId              String        @unique
-  seller                Seller        @relation("OrderSeller", fields: [sellerId], references: [id])
-  providerId            String        @unique
-  provider              Provider      @relation("OrderProvider", fields: [providerId], references: [id])
-  paymentMethodId       String        @unique
-  paymentMethod         PaymentMethod @relation("OrderPaymentMethod", fields: [paymentMethodId], references: [id])
-  providerPaymentStatus String
-  realIncome            Float
-  description           String
-  totalPrice            Float
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
-}
-
-model Sale {
-  id                    String   @id @default(uuid())
-  date                  DateTime
-  client                String
-  code                  String
-  description           String
-  units                 Int
-  unitPrice             Float
-  totalPrice            Float
-  hasDiscount           Boolean  @default(false)
-  discountPercentage    Float?
-  finalPrice            Float
-  cardPayment           Boolean  @default(false)
-  realIncome            Float
-  paymentStatus         String
-  paymentMethod         String
-  account               String
-  seller                String
-  category              String
-  subCategory           String?
-  provider              String
-  providerCost          Float
-  providerPaymentStatus String
-  comments              String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+model Service {
+  id            String      @id @default(uuid())
+  image         String
+  name          String
+  categoryId    String
+  category      Category    @relation("ServiceCategory", fields: [categoryId], references: [id])
+  subCategoryId String
+  subCategory   SubCategory @relation("ServiceSubCategory", fields: [subCategoryId], references: [id])
+  duration      Int
+  description   String
+  price         Float
+  commission    Float
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  tickets       Ticket[]
 }

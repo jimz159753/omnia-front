@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Category } from "@/generated/prisma";
-import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
-import { inventorySchema } from "@/lib/validations/inventory";
+import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
+import { productSchema } from "@/lib/validations/product";
 import { z } from "zod";
 
 interface CategoryWithSubCategory extends Category {
@@ -11,19 +11,19 @@ interface CategoryWithSubCategory extends Category {
   } | null;
 }
 
-interface UseInventoryFormProps {
+interface UseProductFormProps {
   open: boolean;
-  item?: InventoryWithCategory | null;
+  item?: ProductWithCategory | null;
   onSuccess?: () => void;
   onOpenChange: (open: boolean) => void;
 }
 
-export function useInventoryForm({
+export function useProductForm({
   open,
   item,
   onSuccess,
   onOpenChange,
-}: UseInventoryFormProps) {
+}: UseProductFormProps) {
   const isEditMode = !!item;
 
   const [formData, setFormData] = useState({
@@ -32,8 +32,8 @@ export function useInventoryForm({
     stock: "",
     price: "",
     categoryId: "",
-    code: "",
-    providerCost: "",
+    sku: "",
+    cost: "",
   });
   const [categories, setCategories] = useState<CategoryWithSubCategory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,8 +54,8 @@ export function useInventoryForm({
           stock: item.stock.toString(),
           price: item.price.toString(),
           categoryId: item.categoryId,
-          code: item.code,
-          providerCost: item.providerCost.toString(),
+          sku: item.sku,
+          cost: item.cost.toString(),
         });
       } else {
         // Reset form if creating new item
@@ -65,8 +65,8 @@ export function useInventoryForm({
           stock: "",
           price: "",
           categoryId: "",
-          code: "",
-          providerCost: "",
+          sku: "",
+          cost: "",
         });
       }
     }
@@ -104,13 +104,13 @@ export function useInventoryForm({
 
     try {
       // Validate form data with Zod
-      const validatedData = inventorySchema.parse(formData);
+      const validatedData = productSchema.parse(formData);
 
       const payload = isEditMode
         ? { ...validatedData, id: item.id }
         : validatedData;
 
-      const response = await fetch("/api/inventory", {
+      const response = await fetch("/api/products", {
         method: isEditMode ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,12 +122,12 @@ export function useInventoryForm({
         const errorData = await response.json();
         throw new Error(
           errorData.error ||
-            `Failed to ${isEditMode ? "update" : "create"} inventory`
+            `Failed to ${isEditMode ? "update" : "create"} product`
         );
       }
 
       setSuccess(
-        `Inventory item ${isEditMode ? "updated" : "created"} successfully!`
+        `Product ${isEditMode ? "updated" : "created"} successfully!`
       );
 
       // Close modal and refresh data
@@ -166,3 +166,4 @@ export function useInventoryForm({
     handleSubmit,
   };
 }
+

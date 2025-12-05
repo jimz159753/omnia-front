@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const inventorySchema = z.object({
+export const productSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
@@ -22,16 +22,17 @@ export const inventorySchema = z.object({
       message: "Price must be a non-negative number",
     }),
   categoryId: z.string().min(1, "Category is required"),
-  code: z
+  sku: z
     .string()
-    .min(1, "Code is required")
-    .max(50, "Code must be less than 50 characters"),
-  providerCost: z
+    .min(1, "SKU is required")
+    .max(50, "SKU must be less than 50 characters"),
+  cost: z
     .string()
-    .min(1, "Provider cost is required")
+    .min(1, "Cost is required")
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-      message: "Provider cost must be a non-negative number",
+      message: "Cost must be a non-negative number",
     }),
 });
 
-export type InventoryFormData = z.infer<typeof inventorySchema>;
+export type ProductFormData = z.infer<typeof productSchema>;
+

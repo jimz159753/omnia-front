@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import "@/app/globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Espacio Omnia",
@@ -26,7 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>{children}</body>
+      <body suppressHydrationWarning={true}>
+        {children}
+        <Toaster richColors position="bottom-right" />
+      </body>
     </html>
   );
 }

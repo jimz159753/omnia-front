@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Inventory, Category, SubCategory } from "@/generated/prisma";
+import { Product, Category, SubCategory } from "@/generated/prisma";
 import { MoreHorizontalFill } from "akar-icons";
 import {
   DropdownMenu,
@@ -12,24 +12,24 @@ import {
 import { Pencil, Trash2 } from "lucide-react";
 
 // Extended type to include the category and subcategory relations
-export type InventoryWithCategory = Inventory & {
+export type ProductWithCategory = Product & {
   category: Category & {
     subCategory: SubCategory | null;
   };
 };
 
 interface GetColumnsParams {
-  onUpdate: (item: InventoryWithCategory) => void;
-  onDelete: (item: InventoryWithCategory) => void;
+  onUpdate: (item: ProductWithCategory) => void;
+  onDelete: (item: ProductWithCategory) => void;
 }
 
 export const getColumns = ({
   onUpdate,
   onDelete,
-}: GetColumnsParams): ColumnDef<InventoryWithCategory>[] => [
+}: GetColumnsParams): ColumnDef<ProductWithCategory>[] => [
   {
-    accessorKey: "code",
-    header: "Code",
+    accessorKey: "sku",
+    header: "SKU",
   },
   {
     accessorKey: "name",
@@ -90,10 +90,10 @@ export const getColumns = ({
     },
   },
   {
-    accessorKey: "providerCost",
-    header: "Provider Cost",
+    accessorKey: "cost",
+    header: "Cost",
     cell: ({ row }) => {
-      const cost = parseFloat(row.getValue("providerCost"));
+      const cost = parseFloat(row.getValue("cost"));
       const formatted = new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
@@ -145,3 +145,4 @@ export const getColumns = ({
     },
   },
 ];
+

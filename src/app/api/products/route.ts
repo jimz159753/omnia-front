@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 
-const prisma = new PrismaClient();
+type PrismaWithProduct = PrismaClient & {
+  product: any;
+};
+
+const prisma = new PrismaClient() as PrismaWithProduct;
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,17 +21,17 @@ export async function GET(request: NextRequest) {
       ? {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
-            { code: { contains: search, mode: "insensitive" as const } },
+            { sku: { contains: search, mode: "insensitive" as const } },
             { description: { contains: search, mode: "insensitive" as const } },
           ],
         }
       : {};
 
     // Get total count for pagination
-    const total = await prisma.inventory.count({ where });
+    const total = await prisma.product.count({ where });
 
     // Get paginated data
-    const inventory = await prisma.inventory.findMany({
+    const products = await prisma.product.findMany({
       where,
       include: {
         category: {
@@ -44,7 +48,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      data: inventory,
+      data: products,
       pagination: {
         page,
         pageSize,
@@ -53,21 +57,18 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching inventory:", error);
+    console.error("Error fetching products:", error);
     return NextResponse.json(
-      { error: "Failed to fetch inventory" },
+      { error: "Failed to fetch products" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, stock, price, categoryId, code, providerCost } =
-      body;
+    const { name, description, stock, price, categoryId, sku, cost } = body;
 
     // Validate required fields
     if (
@@ -76,8 +77,8 @@ export async function POST(request: NextRequest) {
       stock === undefined ||
       price === undefined ||
       !categoryId ||
-      !code ||
-      providerCost === undefined
+      !sku ||
+      cost === undefined
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -85,16 +86,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create inventory item
-    const inventory = await prisma.inventory.create({
+    // Create product
+    const product = await prisma.product.create({
       data: {
         name,
         description,
         stock: parseInt(stock),
         price: parseFloat(price),
         categoryId,
-        code,
-        providerCost: parseFloat(providerCost),
+        sku,
+        cost: parseFloat(cost),
+        image: "", // Default empty image
+        providerId: "", // Will need to be updated when provider functionality is added
       },
       include: {
         category: {
@@ -106,56 +109,42 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { data: inventory, message: "Inventory created successfully" },
+      { data: product, message: "Product created successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating inventory:", error);
+    console.error("Error creating product:", error);
     return NextResponse.json(
-      { error: "Failed to create inventory" },
+      { error: "Failed to create product" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      id,
-      name,
-      description,
-      stock,
-      price,
-      categoryId,
-      code,
-      providerCost,
-    } = body;
+    const { id, name, description, stock, price, categoryId, sku, cost } = body;
 
     // Validate required fields
     if (!id) {
       return NextResponse.json(
-        { error: "Inventory ID is required" },
+        { error: "Product ID is required" },
         { status: 400 }
       );
     }
 
-    // Check if inventory exists
-    const existingInventory = await prisma.inventory.findUnique({
+    // Check if product exists
+    const existingProduct = await prisma.product.findUnique({
       where: { id },
     });
 
-    if (!existingInventory) {
-      return NextResponse.json(
-        { error: "Inventory item not found" },
-        { status: 404 }
-      );
+    if (!existingProduct) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Update inventory item
-    const inventory = await prisma.inventory.update({
+    // Update product
+    const product = await prisma.product.update({
       where: { id },
       data: {
         name,
@@ -163,8 +152,8 @@ export async function PUT(request: NextRequest) {
         stock: parseInt(stock),
         price: parseFloat(price),
         categoryId,
-        code,
-        providerCost: parseFloat(providerCost),
+        sku,
+        cost: parseFloat(cost),
       },
       include: {
         category: {
@@ -176,17 +165,15 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { data: inventory, message: "Inventory updated successfully" },
+      { data: product, message: "Product updated successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating inventory:", error);
+    console.error("Error updating product:", error);
     return NextResponse.json(
-      { error: "Failed to update inventory" },
+      { error: "Failed to update product" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -197,39 +184,34 @@ export async function DELETE(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Inventory ID is required" },
+        { error: "Product ID is required" },
         { status: 400 }
       );
     }
 
-    // Check if inventory exists
-    const existingInventory = await prisma.inventory.findUnique({
+    // Check if product exists
+    const existingProduct = await prisma.product.findUnique({
       where: { id },
     });
 
-    if (!existingInventory) {
-      return NextResponse.json(
-        { error: "Inventory item not found" },
-        { status: 404 }
-      );
+    if (!existingProduct) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Delete inventory item
-    await prisma.inventory.delete({
+    // Delete product
+    await prisma.product.delete({
       where: { id },
     });
 
     return NextResponse.json(
-      { message: "Inventory deleted successfully" },
+      { message: "Product deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting inventory:", error);
+    console.error("Error deleting product:", error);
     return NextResponse.json(
-      { error: "Failed to delete inventory" },
+      { error: "Failed to delete product" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

@@ -11,22 +11,22 @@ import {
 import { CustomInput } from "@/components/ui/CustomInput";
 import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
-import { InventoryWithCategory } from "@/app/(dashboard)/dashboard/inventory/columns";
-import { useInventoryForm } from "@/hooks/useInventoryForm";
+import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
+import { useProductForm } from "@/hooks/useProductForm";
 
-interface InventoryFormModalProps {
+interface ProductFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  item?: InventoryWithCategory | null;
+  item?: ProductWithCategory | null;
 }
 
-export function InventoryFormModal({
+export function ProductFormModal({
   open,
   onOpenChange,
   onSuccess,
   item,
-}: InventoryFormModalProps) {
+}: ProductFormModalProps) {
   const {
     isEditMode,
     formData,
@@ -37,19 +37,19 @@ export function InventoryFormModal({
     fieldErrors,
     handleChange,
     handleSubmit,
-  } = useInventoryForm({ open, item, onSuccess, onOpenChange });
+  } = useProductForm({ open, item, onSuccess, onOpenChange });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditMode ? "Update Inventory Item" : "Add Inventory Item"}
+            {isEditMode ? "Update Product" : "Add Product"}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? "Update the details of the inventory item."
-              : "Fill in the details to add a new inventory item."}
+              ? "Update the details of the product."
+              : "Fill in the details to add a new product."}
           </DialogDescription>
         </DialogHeader>
 
@@ -60,15 +60,15 @@ export function InventoryFormModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <CustomInput
-                label="Code"
-                name="code"
-                value={formData.code}
+                label="SKU"
+                name="sku"
+                value={formData.sku}
                 onChange={handleChange}
                 required
-                placeholder="Enter item code"
+                placeholder="Enter SKU"
               />
-              {fieldErrors.code && (
-                <p className="text-red-500 text-sm mt-1">{fieldErrors.code}</p>
+              {fieldErrors.sku && (
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.sku}</p>
               )}
             </div>
 
@@ -79,7 +79,7 @@ export function InventoryFormModal({
                 value={formData.name}
                 onChange={handleChange}
                 required
-                placeholder="Enter item name"
+                placeholder="Enter product name"
               />
               {fieldErrors.name && (
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
@@ -97,7 +97,7 @@ export function InventoryFormModal({
               value={formData.description}
               onChange={handleChange}
               required
-              placeholder="Enter item description"
+              placeholder="Enter product description"
               className="custom-input min-h-[80px]"
               rows={3}
             />
@@ -179,14 +179,14 @@ export function InventoryFormModal({
             </div>
 
             <div className="custom-input-container">
-              <label htmlFor="providerCost" className="custom-input-label">
-                Provider Cost<span className="required-asterisk">*</span>
+              <label htmlFor="cost" className="custom-input-label">
+                Cost<span className="required-asterisk">*</span>
               </label>
               <input
-                id="providerCost"
+                id="cost"
                 type="number"
-                name="providerCost"
-                value={formData.providerCost}
+                name="cost"
+                value={formData.cost}
                 onChange={handleChange}
                 required
                 placeholder="0.00"
@@ -194,9 +194,9 @@ export function InventoryFormModal({
                 step="0.01"
                 className="custom-input"
               />
-              {fieldErrors.providerCost && (
+              {fieldErrors.cost && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors.providerCost}
+                  {fieldErrors.cost}
                 </p>
               )}
             </div>
@@ -217,8 +217,8 @@ export function InventoryFormModal({
                   ? "Updating..."
                   : "Creating..."
                 : isEditMode
-                ? "Update Item"
-                : "Create Item"}
+                ? "Update Product"
+                : "Create Product"}
             </CustomButton>
           </DialogFooter>
         </form>
@@ -226,3 +226,4 @@ export function InventoryFormModal({
     </Dialog>
   );
 }
+

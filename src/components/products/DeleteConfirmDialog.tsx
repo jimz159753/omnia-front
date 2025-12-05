@@ -36,7 +36,7 @@ export function DeleteConfirmDialog({
       onOpenChange(false);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to delete item"
+        error instanceof Error ? error.message : "Failed to delete product"
       );
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ export function DeleteConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete Inventory Item</DialogTitle>
+          <DialogTitle>Delete Product</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete <strong>{itemName}</strong>? This
             action cannot be undone.
@@ -78,3 +78,4 @@ export function DeleteConfirmDialog({
     </Dialog>
   );
 }
+

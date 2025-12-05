@@ -22,7 +22,7 @@ import {
 export enum TabNames {
   Analytics = "Analytics",
   Sales = "Sales",
-  Inventory = "Inventory",
+  Products = "Products",
   Events = "Events",
   Vouchers = "Vouchers",
   Discounts = "Discounts",
@@ -92,7 +92,7 @@ export const items: IMenuItem[] = [
   },
   {
     icon: () => <Tag size={24} />,
-    title: "Inventory",
+    title: "Products",
   },
   {
     icon: () => <Calendar size={24} />,

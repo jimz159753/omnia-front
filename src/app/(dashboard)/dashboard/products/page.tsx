@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
-import { getColumns, InventoryWithCategory } from "./columns";
-import { useInventory } from "@/hooks/useInventory";
+import { getColumns, ProductWithCategory } from "./columns";
+import { useProducts } from "@/hooks/useProducts";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { InventoryFormModal } from "@/components/inventory/InventoryFormModal";
-import { DeleteConfirmDialog } from "@/components/inventory/DeleteConfirmDialog";
+import { ProductFormModal } from "@/components/products/ProductFormModal";
+import { DeleteConfirmDialog } from "@/components/products/DeleteConfirmDialog";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import {
   BoxIcon,
@@ -22,13 +22,13 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 
-const Inventory = () => {
+const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<InventoryWithCategory | null>(
+  const [editingItem, setEditingItem] = useState<ProductWithCategory | null>(
     null
   );
   const [deletingItem, setDeletingItem] =
-    useState<InventoryWithCategory | null>(null);
+    useState<ProductWithCategory | null>(null);
   const {
     data,
     loading,
@@ -37,7 +37,7 @@ const Inventory = () => {
     handlePageChange,
     handleSearch,
     refetch,
-  } = useInventory();
+  } = useProducts();
 
   if (loading && data.length === 0) {
     return (
@@ -54,25 +54,25 @@ const Inventory = () => {
     setEditingItem(null);
   };
 
-  const handleUpdate = (item: InventoryWithCategory) => {
+  const handleUpdate = (item: ProductWithCategory) => {
     setEditingItem(item);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (item: InventoryWithCategory) => {
+  const handleDelete = (item: ProductWithCategory) => {
     setDeletingItem(item);
   };
 
   const handleDeleteConfirm = async () => {
     if (!deletingItem) return;
 
-    const response = await fetch(`/api/inventory?id=${deletingItem.id}`, {
+    const response = await fetch(`/api/products?id=${deletingItem.id}`, {
       method: "DELETE",
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to delete inventory item");
+      throw new Error(errorData.error || "Failed to delete product");
     }
 
     refetch();
@@ -122,9 +122,9 @@ const Inventory = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-6xl font-normal">Inventory</CardTitle>
+              <CardTitle className="text-6xl font-normal">Products</CardTitle>
               <CardDescription className="text-xl font-normal">
-                Manage your inventory and stock levels
+                Manage your products and stock levels
               </CardDescription>
             </div>
             <button
@@ -135,7 +135,7 @@ const Inventory = () => {
               className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
-              Add Inventory
+              Add Product
             </button>
           </div>
         </CardHeader>
@@ -169,7 +169,7 @@ const Inventory = () => {
         </CardContent>
       </Card>
 
-      <InventoryFormModal
+      <ProductFormModal
         open={isModalOpen}
         onOpenChange={handleModalClose}
         onSuccess={handleAddNewSuccess}
@@ -186,4 +186,5 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+export default Products;
+
