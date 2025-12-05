@@ -1,11 +1,17 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { items } from "@/constants";
 import Header from "@/components/Header";
 import SideBar from "@/components/SideBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function DashboardLayout({
   children,
@@ -14,6 +20,7 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -40,12 +47,19 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="flex">
-        <SideBar items={items} />
+        <SideBar items={items} setIsDialogOpen={setIsDialogOpen} />
         <div className="flex-1">
           <div className="flex flex-col justify-start items-stretch m-0 p-4 min-h-auto max-w-full">
             {children}
           </div>
         </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Service</DialogTitle>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

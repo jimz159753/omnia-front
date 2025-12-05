@@ -29,7 +29,7 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
         >
           <Icon size={24} />
         </div>
-        <p className="text-sm text-left">{title}</p>
+        <p className="text-sm">{title}</p>
       </Link>
     </li>
   );
