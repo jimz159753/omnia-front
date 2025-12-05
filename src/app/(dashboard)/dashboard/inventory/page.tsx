@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { InventoryFormModal } from "@/components/inventory/InventoryFormModal";
 import { DeleteConfirmDialog } from "@/components/inventory/DeleteConfirmDialog";
+import { PlusIcon } from "lucide-react";
 
 const Inventory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,10 +88,24 @@ const Inventory = () => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Inventory</CardTitle>
-          <CardDescription>
-            Manage your inventory and stock levels
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-6xl font-normal">Inventory</CardTitle>
+              <CardDescription className="text-xl font-normal">
+                Manage your inventory and stock levels
+              </CardDescription>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItem(null);
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Add Inventory
+            </button>
+          </div>
         </CardHeader>
         <CardContent>
           <DataTable
@@ -103,11 +118,6 @@ const Inventory = () => {
             onPageChange={handlePageChange}
             onSearch={handleSearch}
             loading={loading}
-            onAddNew={() => {
-              setEditingItem(null);
-              setIsModalOpen(true);
-            }}
-            addButtonLabel="Add Inventory"
           />
         </CardContent>
       </Card>

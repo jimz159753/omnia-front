@@ -14,6 +14,14 @@ import {
 import { Sale } from "@/generated/prisma";
 import { SaleFormModal } from "@/components/sales/SaleFormModal";
 import { DeleteConfirmDialog } from "@/components/sales/DeleteConfirmDialog";
+import {
+  DollarSignIcon,
+  HandCoinsIcon,
+  PackageIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  UserIcon,
+} from "lucide-react";
 
 const Sales = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +37,31 @@ const Sales = () => {
     handleSearch,
     refetch,
   } = useSales();
+
+  const squareCards = [
+    {
+      title: "Total of products",
+      value: "100",
+      icon: <ShoppingBagIcon className="w-4 h-4" />,
+    },
+
+    {
+      title: "Total of orders",
+      value: "100",
+      icon: <PackageIcon className="w-4 h-4" />,
+    },
+
+    {
+      title: "Total of clients",
+      value: "100",
+      icon: <UserIcon className="w-4 h-4" />,
+    },
+    {
+      title: "Total of sales",
+      value: "100",
+      icon: <HandCoinsIcon className="w-4 h-4" />,
+    },
+  ];
 
   if (loading && data.length === 0) {
     return (
@@ -86,12 +119,41 @@ const Sales = () => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Sales</CardTitle>
-          <CardDescription>
-            Track and manage your sales transactions
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-6xl font-normal">Sales</CardTitle>
+              <CardDescription className="text-xl font-normal">
+                Track and manage your sales transactions
+              </CardDescription>
+            </div>
+            <button
+              onClick={() => {
+                setEditingItem(null);
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Add Sale
+            </button>
+          </div>
         </CardHeader>
         <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {squareCards.map((card) => (
+              <Card className="bg-brand-500/10" key={card.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {card.title}
+                  </CardTitle>
+                  {card.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{card.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
           <DataTable
             columns={columns}
             data={data}
@@ -102,11 +164,6 @@ const Sales = () => {
             onPageChange={handlePageChange}
             onSearch={handleSearch}
             loading={loading}
-            onAddNew={() => {
-              setEditingItem(null);
-              setIsModalOpen(true);
-            }}
-            addButtonLabel="Add Sale"
           />
         </CardContent>
       </Card>

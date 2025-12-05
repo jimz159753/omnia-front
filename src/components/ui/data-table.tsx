@@ -18,6 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
+import { SearchIcon } from "lucide-react";
 
 interface PaginationInfo {
   page: number;
@@ -36,8 +38,6 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onSearch?: (search: string) => void;
   loading?: boolean;
-  onAddNew?: () => void;
-  addButtonLabel?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,8 +50,6 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onSearch,
   loading = false,
-  onAddNew,
-  addButtonLabel = "Add Item",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -76,31 +74,26 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {searchKey && onSearch && (
-        <div className="flex items-center justify-between">
-          <input
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={handleSearchChange}
-            className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {onAddNew && (
-            <button
-              onClick={onAddNew}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {addButtonLabel}
-            </button>
-          )}
+        <div className="flex items-end justify-end w-full">
+          <div className="relative max-w-sm">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+            />
+          </div>
         </div>
       )}
       <div className="rounded-md border relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <CustomLoadingSpinner size={48} />
           </div>
         )}
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-brand-500/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
