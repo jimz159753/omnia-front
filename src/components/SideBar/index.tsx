@@ -1,17 +1,16 @@
-import { ProfileCard } from "../ProfileCard";
 import ListSection from "../ListSection";
-import { IMenuItem, IUserInfo } from "@/constants";
+import { IMenuItem } from "@/constants";
 
 interface SideBarProps {
-  userInfo: IUserInfo;
   items: IMenuItem[];
 }
 
-const SideBar = ({ items, userInfo }: SideBarProps) => {
-  const { name, imgSrc } = userInfo;
+const SideBar = ({ items }: SideBarProps) => {
   return (
-    <div className="w-64 bg-white shadow-lg h-screen sticky top-0 flex flex-col">
-      <ProfileCard name={name} imgSrc={imgSrc} />
+    <div className="w-32 bg-white shadow-lg h-screen sticky top-0 flex flex-col items-center gap-4 mt-16">
+      <button className="bg-brand-500 text-white px-4 py-2 rounded-md font-bold text-2xl w-12 h-12 flex items-center justify-center">
+        +
+      </button>
       <ListSection items={items} />
     </div>
   );

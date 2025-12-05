@@ -11,27 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  DownloadIcon,
   HandCoinsIcon,
   PackageIcon,
   ShoppingBagIcon,
   UserIcon,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
@@ -43,21 +28,54 @@ const Sales = () => {
     searchQuery,
     handlePageChange,
     handleSearch,
-    refetch,
-    products,
-    services,
-    createTicket,
   } = useTickets();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    clientId: "",
-    productId: "",
-    serviceId: "",
-    amount: "",
-    status: "",
-  });
+  const exportToCSV = () => {
+    if (data.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    // Define CSV headers
+    const headers = [
+      "Date",
+      "Client",
+      "Product",
+      "Service",
+      "Amount",
+      "Status",
+    ];
+
+    // Convert data to CSV rows
+    const rows = data.map((ticket) => [
+      new Date(ticket.createdAt).toLocaleDateString("es-MX"),
+      ticket.client.name,
+      ticket.product.name,
+      ticket.service.name,
+      ticket.amount.toFixed(2),
+      ticket.status,
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `tickets_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const squareCards = [
     {
@@ -84,34 +102,6 @@ const Sales = () => {
 
   const columns = getColumns();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    const success = await createTicket({
-      ...formData,
-      amount: Number(formData.amount),
-    });
-    setSubmitting(false);
-    if (success) {
-      setIsModalOpen(false);
-      setFormData({
-        clientId: "",
-        productId: "",
-        serviceId: "",
-        amount: "",
-        status: "",
-      });
-      refetch();
-    }
-  };
-
   if (loading && data.length === 0) {
     return (
       <div className="container mx-auto py-10">
@@ -134,10 +124,12 @@ const Sales = () => {
               </CardDescription>
             </div>
             <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+              onClick={exportToCSV}
+              disabled={loading || data.length === 0}
+              className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
             >
-              Add Ticket
+              <DownloadIcon className="w-4 h-4" />
+              Export to CSV
             </button>
           </div>
         </CardHeader>
@@ -170,146 +162,6 @@ const Sales = () => {
           />
         </CardContent>
       </Card>
-
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Ticket</DialogTitle>
-            <DialogDescription>
-              Create a new ticket with the required details.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label
-                  htmlFor="clientId"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Client ID
-                </label>
-                <input
-                  id="clientId"
-                  name="clientId"
-                  value={formData.clientId}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="productId"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Product
-                </label>
-                <Select
-                  value={formData.productId}
-                  onValueChange={(value: string) =>
-                    setFormData((prev) => ({ ...prev, productId: value }))
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select product" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label
-                  htmlFor="serviceId"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Service ID
-                </label>
-                <Select
-                  value={formData.serviceId}
-                  onValueChange={(value: string) =>
-                    setFormData((prev) => ({ ...prev, serviceId: value }))
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="amount"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Amount
-                </label>
-                <input
-                  id="amount"
-                  name="amount"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="status"
-                className="text-sm font-medium text-gray-700"
-              >
-                Status
-              </label>
-              <input
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                placeholder="e.g. open, in-progress, closed"
-                required
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
-
-            <DialogFooter className="gap-2">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                disabled={submitting}
-                className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {submitting ? "Saving..." : "Add Ticket"}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

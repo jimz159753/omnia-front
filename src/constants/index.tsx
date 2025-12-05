@@ -8,15 +8,7 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
-import {
-  AlignBottom,
-  Calendar,
-  Percentage,
-  ShoppingBag,
-  Tag,
-  Ticket,
-  Leaf,
-} from "akar-icons";
+import { AlignBottom, Calendar, ShoppingBag, Tag, Leaf } from "akar-icons";
 
 // Tabs
 
@@ -26,8 +18,6 @@ export enum TabNames {
   Products = "Products",
   Services = "Services",
   Events = "Events",
-  Vouchers = "Vouchers",
-  Discounts = "Discounts",
 }
 
 // Charts
@@ -57,12 +47,6 @@ export enum Variant {
   contained = "contained",
 }
 
-export interface IUserInfo {
-  name: string;
-  email: string;
-  imgSrc: string;
-}
-
 export interface IMenuItem {
   icon: React.FC<{ size?: number }>;
   title: string;
@@ -75,13 +59,6 @@ export interface IService {
 }
 
 // User Info and Menu Items
-
-export const userInfo: IUserInfo = {
-  name: "Luis Jimenez",
-  email: "luisjc140992@gmail.com",
-  imgSrc:
-    "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg?semt=ais_hybrid&w=740&q=80",
-};
 
 export const items: IMenuItem[] = [
   {
@@ -103,14 +80,6 @@ export const items: IMenuItem[] = [
   {
     icon: () => <Calendar size={24} />,
     title: "Events",
-  },
-  {
-    icon: () => <Ticket size={24} />,
-    title: "Vouchers",
-  },
-  {
-    icon: () => <Percentage size={24} />,
-    title: "Discounts",
   },
 ];
 

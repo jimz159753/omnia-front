@@ -17,15 +17,17 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
   return (
     <li>
       <Link
-        className={`w-full flex items-center px-4 py-3 transition-all duration-200 ${
-          isActive
-            ? "bg-gray-100 text-[#06334A] shadow-sm"
-            : "text-gray-700 hover:bg-gray-50 hover:text-[#06334A]"
-        }`}
+        className="w-full flex flex-col items-center px-4 py-3 transition-all duration-200"
         href={`/dashboard/${tabName.toLowerCase()}`}
       >
-        <div className="flex items-center justify-center w-9 h-9 mr-3">
-          <Icon />
+        <div
+          className={`flex items-center justify-center w-12 h-12 rounded-md ${
+            isActive
+              ? "bg-gray-200 text-[#06334A] shadow-sm"
+              : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
+          }`}
+        >
+          <Icon size={24} />
         </div>
         <p className="text-sm text-left">{title}</p>
       </Link>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Ticket } from "@/generated/prisma";
+import { Ticket, Client, Product, Service } from "@/generated/prisma";
 import { useDebounce } from "./useDebounce";
 
 interface PaginationInfo {
@@ -10,8 +10,14 @@ interface PaginationInfo {
   totalPages: number;
 }
 
+type TicketWithRelations = Ticket & {
+  client: Client;
+  product: Product;
+  service: Service;
+};
+
 export const useTickets = () => {
-  const [data, setData] = useState<Ticket[]>([]);
+  const [data, setData] = useState<TicketWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
   const [services, setServices] = useState<{ id: string; name: string }[]>([]);
@@ -138,4 +144,3 @@ export const useTickets = () => {
     createTicket,
   };
 };
-

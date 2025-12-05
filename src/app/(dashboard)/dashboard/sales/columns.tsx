@@ -11,6 +11,13 @@ type TicketWithRelations = Ticket & {
 
 export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
   {
+    accessorKey: "id",
+    header: "Ticket #",
+    cell: ({ row }) => {
+      return <div>{row.original.id}</div>;
+    },
+  },
+  {
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => {

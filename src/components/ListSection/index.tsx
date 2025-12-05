@@ -8,7 +8,7 @@ interface ListSectionProps {
 
 const ListSection = ({ items }: ListSectionProps) => {
   return (
-    <ul className="flex-1">
+    <ul className="flex flex-col gap-2">
       {items.map((item, index) => (
         <ItemSection key={index} icon={item.icon} title={item.title} />
       ))}
