@@ -22,6 +22,8 @@ export const productSchema = z.object({
       message: "Price must be a non-negative number",
     }),
   categoryId: z.string().min(1, "Category is required"),
+  subCategoryId: z.string().min(1, "Subcategory is required"),
+  providerId: z.string().min(1, "Provider is required"),
   sku: z
     .string()
     .min(1, "SKU is required")
@@ -32,6 +34,7 @@ export const productSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
       message: "Cost must be a non-negative number",
     }),
+  image: z.string().optional(),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;

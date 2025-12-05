@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
 
-type PrismaWithProduct = PrismaClient & {
-  product: any;
-};
-
-const prisma = new PrismaClient() as PrismaWithProduct;
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,6 +35,8 @@ export async function GET(request: NextRequest) {
             subCategory: true,
           },
         },
+        subCategory: true,
+        provider: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -68,15 +66,28 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, stock, price, categoryId, sku, cost } = body;
+    const {
+      name,
+      description,
+      stock,
+      price,
+      categoryId,
+      subCategoryId,
+      providerId,
+      sku,
+      cost,
+      image = "",
+    } = body;
 
-    // Validate required fields
+    // Validate required fields for schema constraints
     if (
       !name ||
       !description ||
       stock === undefined ||
       price === undefined ||
       !categoryId ||
+      !subCategoryId ||
+      !providerId ||
       !sku ||
       cost === undefined
     ) {
@@ -86,18 +97,65 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate foreign keys before attempting create
+    const [category, subCategory, provider] = await Promise.all([
+      prisma.category.findUnique({ where: { id: categoryId } }),
+      prisma.subCategory.findUnique({ where: { id: subCategoryId } }),
+      prisma.provider.findUnique({ where: { id: providerId } }),
+    ]);
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Invalid category. Please select an existing category." },
+        { status: 400 }
+      );
+    }
+
+    if (!subCategory || subCategory.categoryId !== categoryId) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid subcategory. Ensure it exists and belongs to the selected category.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!provider) {
+      return NextResponse.json(
+        { error: "Invalid provider. Please select an existing provider." },
+        { status: 400 }
+      );
+    }
+
+    const parsedStock = Number.parseInt(stock);
+    const parsedPrice = Number.parseFloat(price);
+    const parsedCost = Number.parseFloat(cost);
+
+    if (
+      Number.isNaN(parsedStock) ||
+      Number.isNaN(parsedPrice) ||
+      Number.isNaN(parsedCost)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid numeric values for stock, price, or cost" },
+        { status: 400 }
+      );
+    }
+
     // Create product
     const product = await prisma.product.create({
       data: {
         name,
         description,
-        stock: parseInt(stock),
-        price: parseFloat(price),
+        stock: parsedStock,
+        price: parsedPrice,
         categoryId,
+        subCategoryId,
+        providerId,
         sku,
-        cost: parseFloat(cost),
-        image: "", // Default empty image
-        providerId: "", // Will need to be updated when provider functionality is added
+        cost: parsedCost,
+        image,
       },
       include: {
         category: {
@@ -105,6 +163,8 @@ export async function POST(request: NextRequest) {
             subCategory: true,
           },
         },
+        subCategory: true,
+        provider: true,
       },
     });
 
@@ -114,6 +174,12 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating product:", error);
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: `Failed to create product: ${error.message}` },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
       { error: "Failed to create product" },
       { status: 500 }
@@ -124,12 +190,55 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, description, stock, price, categoryId, sku, cost } = body;
+    const {
+      id,
+      name,
+      description,
+      stock,
+      price,
+      categoryId,
+      subCategoryId,
+      providerId,
+      sku,
+      cost,
+      image = "",
+    } = body;
 
-    // Validate required fields
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !name ||
+      !description ||
+      stock === undefined ||
+      price === undefined ||
+      !categoryId ||
+      !subCategoryId ||
+      !providerId ||
+      !sku ||
+      cost === undefined
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const parsedStock = Number.parseInt(stock);
+    const parsedPrice = Number.parseFloat(price);
+    const parsedCost = Number.parseFloat(cost);
+
+    if (
+      Number.isNaN(parsedStock) ||
+      Number.isNaN(parsedPrice) ||
+      Number.isNaN(parsedCost)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid numeric values for stock, price, or cost" },
         { status: 400 }
       );
     }
@@ -143,17 +252,51 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    // Validate foreign keys before update
+    const [category, subCategory, provider] = await Promise.all([
+      prisma.category.findUnique({ where: { id: categoryId } }),
+      prisma.subCategory.findUnique({ where: { id: subCategoryId } }),
+      prisma.provider.findUnique({ where: { id: providerId } }),
+    ]);
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Invalid category. Please select an existing category." },
+        { status: 400 }
+      );
+    }
+
+    if (!subCategory || subCategory.categoryId !== categoryId) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid subcategory. Ensure it exists and belongs to the selected category.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!provider) {
+      return NextResponse.json(
+        { error: "Invalid provider. Please select an existing provider." },
+        { status: 400 }
+      );
+    }
+
     // Update product
     const product = await prisma.product.update({
       where: { id },
       data: {
         name,
         description,
-        stock: parseInt(stock),
-        price: parseFloat(price),
+        stock: parsedStock,
+        price: parsedPrice,
         categoryId,
+        subCategoryId,
+        providerId,
         sku,
-        cost: parseFloat(cost),
+        cost: parsedCost,
+        image,
       },
       include: {
         category: {
@@ -161,6 +304,8 @@ export async function PUT(request: NextRequest) {
             subCategory: true,
           },
         },
+        subCategory: true,
+        provider: true,
       },
     });
 
@@ -170,6 +315,12 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error updating product:", error);
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: `Failed to update product: ${error.message}` },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
       { error: "Failed to update product" },
       { status: 500 }

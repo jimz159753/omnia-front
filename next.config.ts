@@ -1,8 +1,4 @@
-import withNextIntl from "next-intl/plugin";
 import type { NextConfig } from "next";
-
-// Vinculas el plugin a tu archivo de configuración.
-const withIntl = withNextIntl("./next-intl.config.ts");
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -14,5 +10,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Exportas el plugin envolviendo tu configuración
-export default withIntl(nextConfig);
+export default nextConfig;

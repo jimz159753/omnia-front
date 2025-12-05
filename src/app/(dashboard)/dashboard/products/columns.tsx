@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Product, Category, SubCategory } from "@/generated/prisma";
+import { Product, Category, SubCategory, Provider } from "@/generated/prisma";
 import { MoreHorizontalFill } from "akar-icons";
 import {
   DropdownMenu,
@@ -16,6 +16,8 @@ export type ProductWithCategory = Product & {
   category: Category & {
     subCategory: SubCategory | null;
   };
+  subCategory: SubCategory | null;
+  provider: Provider | null;
 };
 
 interface GetColumnsParams {

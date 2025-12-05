@@ -3,6 +3,26 @@ import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const categoryId = searchParams.get("categoryId") || undefined;
+
+    const subCategories = await prisma.subCategory.findMany({
+      where: categoryId ? { categoryId } : undefined,
+      orderBy: { name: "asc" },
+    });
+
+    return NextResponse.json({ data: subCategories });
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch subcategories" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();

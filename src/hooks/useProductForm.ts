@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Category } from "@/generated/prisma";
+import { Category, SubCategory, Provider } from "@/generated/prisma";
 import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
 import { productSchema } from "@/lib/validations/product";
 import { z } from "zod";
@@ -32,10 +32,15 @@ export function useProductForm({
     stock: "",
     price: "",
     categoryId: "",
+    subCategoryId: "",
+    providerId: "",
     sku: "",
     cost: "",
+    image: "",
   });
   const [categories, setCategories] = useState<CategoryWithSubCategory[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -45,6 +50,8 @@ export function useProductForm({
   useEffect(() => {
     if (open) {
       fetchCategories();
+      fetchSubCategories();
+      fetchProviders();
 
       // Populate form with item data if editing
       if (item) {
@@ -54,8 +61,11 @@ export function useProductForm({
           stock: item.stock.toString(),
           price: item.price.toString(),
           categoryId: item.categoryId,
+          subCategoryId: item.subCategoryId,
+          providerId: item.providerId,
           sku: item.sku,
           cost: item.cost.toString(),
+          image: item.image ?? "",
         });
       } else {
         // Reset form if creating new item
@@ -65,8 +75,11 @@ export function useProductForm({
           stock: "",
           price: "",
           categoryId: "",
+          subCategoryId: "",
+          providerId: "",
           sku: "",
           cost: "",
+          image: "",
         });
       }
     }
@@ -86,13 +99,55 @@ export function useProductForm({
     }
   };
 
+  const fetchSubCategories = async () => {
+    try {
+      const response = await fetch("/api/subcategories");
+      if (!response.ok) {
+        throw new Error("Failed to fetch subcategories");
+      }
+      const result = await response.json();
+      setSubCategories(result.data);
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+      setError("Failed to load subcategories");
+    }
+  };
+
+  const fetchProviders = async () => {
+    try {
+      const response = await fetch("/api/providers");
+      if (!response.ok) {
+        throw new Error("Failed to fetch providers");
+      }
+      const result = await response.json();
+      setProviders(result.data);
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+      setError("Failed to load providers");
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      if (name === "categoryId") {
+        return { ...prev, categoryId: value, subCategoryId: "" };
+      }
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => {
+      if (name === "categoryId") {
+        return { ...prev, categoryId: value, subCategoryId: "" };
+      }
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,6 +217,9 @@ export function useProductForm({
     error,
     success,
     fieldErrors,
+    handleSelectChange,
+    subCategories,
+    providers,
     handleChange,
     handleSubmit,
   };

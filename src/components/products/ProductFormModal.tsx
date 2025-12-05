@@ -11,6 +11,13 @@ import {
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
 import { useProductForm } from "@/hooks/useProductForm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductFormModalProps {
   open: boolean;
@@ -29,11 +36,14 @@ export function ProductFormModal({
     isEditMode,
     formData,
     categories,
+    subCategories,
+    providers,
     loading,
     error,
     success,
     fieldErrors,
     handleChange,
+    handleSelectChange,
     handleSubmit,
   } = useProductForm({ open, item, onSuccess, onOpenChange });
 
@@ -51,13 +61,16 @@ export function ProductFormModal({
           </DialogDescription>
         </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && <CustomAlert severity="error">{error}</CustomAlert>}
           {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="sku" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="sku"
+                className="text-sm font-medium text-gray-700"
+              >
                 SKU
               </label>
               <input
@@ -75,7 +88,10 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-gray-700"
+              >
                 Name
               </label>
               <input
@@ -118,28 +134,25 @@ export function ProductFormModal({
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="categoryId"
-              className="text-sm font-medium text-gray-700"
-            >
+            <label className="text-sm font-medium text-gray-700">
               Category<span className="text-red-500">*</span>
             </label>
-            <select
-              id="categoryId"
-              name="categoryId"
+            <Select
               value={formData.categoryId}
-              onChange={handleChange}
-              required
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              onValueChange={(value) => handleSelectChange("categoryId", value)}
             >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                  {category.subCategory && ` - ${category.subCategory.name}`}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                    {category.subCategory && ` - ${category.subCategory.name}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {fieldErrors.categoryId && (
               <p className="text-red-500 text-sm mt-1">
                 {fieldErrors.categoryId}
@@ -147,9 +160,72 @@ export function ProductFormModal({
             )}
           </div>
 
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Subcategory<span className="text-red-500">*</span>
+            </label>
+            <Select
+              value={formData.subCategoryId}
+              onValueChange={(value) =>
+                handleSelectChange("subCategoryId", value)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a subcategory" />
+              </SelectTrigger>
+              <SelectContent>
+                {subCategories
+                  .filter(
+                    (sub) =>
+                      !formData.categoryId ||
+                      sub.categoryId === formData.categoryId
+                  )
+                  .map((sub) => (
+                    <SelectItem key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            {fieldErrors.subCategoryId && (
+              <p className="text-red-500 text-sm mt-1">
+                {fieldErrors.subCategoryId}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Provider<span className="text-red-500">*</span>
+            </label>
+            <Select
+              value={formData.providerId}
+              onValueChange={(value) => handleSelectChange("providerId", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a provider" />
+              </SelectTrigger>
+              <SelectContent>
+                {providers.map((provider) => (
+                  <SelectItem key={provider.id} value={provider.id}>
+                    {provider.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {fieldErrors.providerId && (
+              <p className="text-red-500 text-sm mt-1">
+                {fieldErrors.providerId}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label htmlFor="stock" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="stock"
+                className="text-sm font-medium text-gray-700"
+              >
                 Stock<span className="text-red-500">*</span>
               </label>
               <input
@@ -170,7 +246,10 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="price" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="price"
+                className="text-sm font-medium text-gray-700"
+              >
                 Price<span className="text-red-500">*</span>
               </label>
               <input
@@ -191,7 +270,10 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="cost" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="cost"
+                className="text-sm font-medium text-gray-700"
+              >
                 Cost<span className="text-red-500">*</span>
               </label>
               <input
@@ -210,6 +292,26 @@ export function ProductFormModal({
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.cost}</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="image"
+              className="text-sm font-medium text-gray-700"
+            >
+              Image URL
+            </label>
+            <input
+              id="image"
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+            {fieldErrors.image && (
+              <p className="text-red-500 text-sm mt-1">{fieldErrors.image}</p>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -240,4 +342,3 @@ export function ProductFormModal({
     </Dialog>
   );
 }
-
