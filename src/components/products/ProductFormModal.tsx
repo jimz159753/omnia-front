@@ -8,8 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CustomInput } from "@/components/ui/CustomInput";
-import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
 import { useProductForm } from "@/hooks/useProductForm";
@@ -53,33 +51,41 @@ export function ProductFormModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           {error && <CustomAlert severity="error">{error}</CustomAlert>}
           {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <CustomInput
-                label="SKU"
+            <div className="space-y-2">
+              <label htmlFor="sku" className="text-sm font-medium text-gray-700">
+                SKU
+              </label>
+              <input
+                id="sku"
                 name="sku"
                 value={formData.sku}
                 onChange={handleChange}
                 required
                 placeholder="Enter SKU"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {fieldErrors.sku && (
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.sku}</p>
               )}
             </div>
 
-            <div>
-              <CustomInput
-                label="Name"
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                Name
+              </label>
+              <input
+                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
                 placeholder="Enter product name"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {fieldErrors.name && (
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
@@ -87,9 +93,12 @@ export function ProductFormModal({
             </div>
           </div>
 
-          <div className="custom-input-container">
-            <label htmlFor="description" className="custom-input-label">
-              Description<span className="required-asterisk">*</span>
+          <div className="space-y-2">
+            <label
+              htmlFor="description"
+              className="text-sm font-medium text-gray-700"
+            >
+              Description<span className="text-red-500">*</span>
             </label>
             <textarea
               id="description"
@@ -98,7 +107,7 @@ export function ProductFormModal({
               onChange={handleChange}
               required
               placeholder="Enter product description"
-              className="custom-input min-h-[80px]"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
               rows={3}
             />
             {fieldErrors.description && (
@@ -108,9 +117,12 @@ export function ProductFormModal({
             )}
           </div>
 
-          <div className="custom-input-container">
-            <label htmlFor="categoryId" className="custom-input-label">
-              Category<span className="required-asterisk">*</span>
+          <div className="space-y-2">
+            <label
+              htmlFor="categoryId"
+              className="text-sm font-medium text-gray-700"
+            >
+              Category<span className="text-red-500">*</span>
             </label>
             <select
               id="categoryId"
@@ -118,7 +130,7 @@ export function ProductFormModal({
               value={formData.categoryId}
               onChange={handleChange}
               required
-              className="custom-input"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -136,9 +148,9 @@ export function ProductFormModal({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="custom-input-container">
-              <label htmlFor="stock" className="custom-input-label">
-                Stock<span className="required-asterisk">*</span>
+            <div className="space-y-2">
+              <label htmlFor="stock" className="text-sm font-medium text-gray-700">
+                Stock<span className="text-red-500">*</span>
               </label>
               <input
                 id="stock"
@@ -150,16 +162,16 @@ export function ProductFormModal({
                 placeholder="0"
                 min="0"
                 step="1"
-                className="custom-input"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {fieldErrors.stock && (
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.stock}</p>
               )}
             </div>
 
-            <div className="custom-input-container">
-              <label htmlFor="price" className="custom-input-label">
-                Price<span className="required-asterisk">*</span>
+            <div className="space-y-2">
+              <label htmlFor="price" className="text-sm font-medium text-gray-700">
+                Price<span className="text-red-500">*</span>
               </label>
               <input
                 id="price"
@@ -171,16 +183,16 @@ export function ProductFormModal({
                 placeholder="0.00"
                 min="0"
                 step="0.01"
-                className="custom-input"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {fieldErrors.price && (
                 <p className="text-red-500 text-sm mt-1">{fieldErrors.price}</p>
               )}
             </div>
 
-            <div className="custom-input-container">
-              <label htmlFor="cost" className="custom-input-label">
-                Cost<span className="required-asterisk">*</span>
+            <div className="space-y-2">
+              <label htmlFor="cost" className="text-sm font-medium text-gray-700">
+                Cost<span className="text-red-500">*</span>
               </label>
               <input
                 id="cost"
@@ -192,26 +204,28 @@ export function ProductFormModal({
                 placeholder="0.00"
                 min="0"
                 step="0.01"
-                className="custom-input"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {fieldErrors.cost && (
-                <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors.cost}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{fieldErrors.cost}</p>
               )}
             </div>
           </div>
 
-          <DialogFooter>
-            <CustomButton
+          <DialogFooter className="gap-2">
+            <button
               type="button"
               onClick={() => onOpenChange(false)}
               disabled={loading}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+              className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
             >
               Cancel
-            </CustomButton>
-            <CustomButton type="submit" disabled={loading}>
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
               {loading
                 ? isEditMode
                   ? "Updating..."
@@ -219,7 +233,7 @@ export function ProductFormModal({
                 : isEditMode
                 ? "Update Product"
                 : "Create Product"}
-            </CustomButton>
+            </button>
           </DialogFooter>
         </form>
       </DialogContent>

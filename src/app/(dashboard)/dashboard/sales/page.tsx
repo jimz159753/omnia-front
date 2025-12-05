@@ -24,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
 import { useState } from "react";
 import {
   Select,
@@ -47,6 +46,7 @@ const Sales = () => {
     refetch,
     products,
     services,
+    createTicket,
   } = useTickets();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,21 +94,12 @@ const Sales = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    try {
-      const response = await fetch("/api/tickets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create ticket");
-      }
-
-      toast.success("Ticket created successfully");
+    const success = await createTicket({
+      ...formData,
+      amount: Number(formData.amount),
+    });
+    setSubmitting(false);
+    if (success) {
       setIsModalOpen(false);
       setFormData({
         clientId: "",
@@ -118,13 +109,6 @@ const Sales = () => {
         status: "",
       });
       refetch();
-    } catch (error) {
-      console.error("Error creating ticket:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create ticket"
-      );
-    } finally {
-      setSubmitting(false);
     }
   };
 

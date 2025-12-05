@@ -68,6 +68,39 @@ export const useTickets = () => {
     fetchTickets(page, debouncedSearchQuery);
   };
 
+  const createTicket = async (payload: {
+    clientId: string;
+    productId: string;
+    serviceId: string;
+    amount: number;
+    status: string;
+  }) => {
+    try {
+      const response = await fetch("/api/tickets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create ticket");
+      }
+
+      toast.success("Ticket created successfully");
+      await fetchTickets(page, debouncedSearchQuery);
+      return true;
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create ticket"
+      );
+      return false;
+    }
+  };
+
   // Load dropdown options once
   useEffect(() => {
     const loadOptions = async () => {
@@ -102,6 +135,7 @@ export const useTickets = () => {
     handlePageChange,
     handleSearch,
     refetch,
+    createTicket,
   };
 };
 
