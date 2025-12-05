@@ -7,8 +7,9 @@ export const productSchema = z.object({
     .max(100, "Name must be less than 100 characters"),
   description: z
     .string()
-    .min(1, "Description is required")
-    .max(500, "Description must be less than 500 characters"),
+    .max(500, "Description must be less than 500 characters")
+    .optional()
+    .or(z.literal("")),
   stock: z
     .string()
     .min(1, "Stock is required")
@@ -21,20 +22,21 @@ export const productSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
       message: "Price must be a non-negative number",
     }),
-  categoryId: z.string().min(1, "Category is required"),
-  subCategoryId: z.string().min(1, "Subcategory is required"),
+  categoryId: z.string().optional().or(z.literal("")),
+  subCategoryId: z.string().optional().or(z.literal("")),
   providerId: z.string().min(1, "Provider is required"),
   sku: z
     .string()
-    .min(1, "SKU is required")
-    .max(50, "SKU must be less than 50 characters"),
+    .max(50, "SKU must be less than 50 characters")
+    .optional()
+    .or(z.literal("")),
   cost: z
     .string()
     .min(1, "Cost is required")
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
       message: "Cost must be a non-negative number",
     }),
-  image: z.string().optional(),
+  image: z.string().optional().or(z.literal("")),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;

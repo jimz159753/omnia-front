@@ -90,14 +90,13 @@ export function ServiceFormModal({
               htmlFor="description"
               className="text-sm font-medium text-gray-700"
             >
-              Description<span className="text-red-500">*</span>
+              Description
             </label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              required
               placeholder="Enter service description"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
               rows={3}
@@ -111,12 +110,11 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Category<span className="text-red-500">*</span>
+              Category
             </label>
             <Select
               value={formData.categoryId}
               onValueChange={(value) => handleSelectChange("categoryId", value)}
-              required
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a category" />
@@ -138,14 +136,13 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Subcategory<span className="text-red-500">*</span>
+              Subcategory
             </label>
             <Select
               value={formData.subCategoryId}
               onValueChange={(value) =>
                 handleSelectChange("subCategoryId", value)
               }
-              required
               disabled={!formData.categoryId}
             >
               <SelectTrigger>

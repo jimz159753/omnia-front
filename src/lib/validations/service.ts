@@ -7,8 +7,9 @@ export const serviceSchema = z.object({
     .max(100, "Name must be less than 100 characters"),
   description: z
     .string()
-    .min(1, "Description is required")
-    .max(500, "Description must be less than 500 characters"),
+    .max(500, "Description must be less than 500 characters")
+    .optional()
+    .or(z.literal("")),
   price: z
     .string()
     .min(1, "Price is required")
@@ -27,9 +28,9 @@ export const serviceSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Duration must be a positive number (minutes)",
     }),
-  categoryId: z.string().min(1, "Category is required"),
-  subCategoryId: z.string().min(1, "Subcategory is required"),
-  image: z.string().optional(),
+  categoryId: z.string().optional().or(z.literal("")),
+  subCategoryId: z.string().optional().or(z.literal("")),
+  image: z.string().optional().or(z.literal("")),
 });
 
 export type ServiceFormData = z.infer<typeof serviceSchema>;

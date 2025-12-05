@@ -2,14 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Service, Category, SubCategory } from "@/generated/prisma";
-import { MoreHorizontalFill } from "akar-icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, MoreHorizontal } from "lucide-react";
 
 // Extended type to include the category and subcategory relations
 export type ServiceWithRelations = Service & {
@@ -131,7 +130,7 @@ export const getColumns = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                <MoreHorizontalFill className="w-4 h-4 cursor-pointer" />
+                <MoreHorizontal className="w-4 h-4 cursor-pointer" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

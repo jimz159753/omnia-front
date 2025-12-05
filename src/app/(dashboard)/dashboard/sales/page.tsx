@@ -118,8 +118,8 @@ const Sales = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-6xl font-normal">Sales</CardTitle>
-              <CardDescription className="text-xl font-normal">
+              <CardTitle className="text-4xl font-normal">Sales</CardTitle>
+              <CardDescription className="font-normal">
                 Track and review your support tickets
               </CardDescription>
             </div>

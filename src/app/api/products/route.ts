@@ -79,53 +79,58 @@ export async function POST(request: NextRequest) {
       image = "",
     } = body;
 
-    // Validate required fields for schema constraints
+    // Validate required fields
     if (
       !name ||
-      !description ||
       stock === undefined ||
       price === undefined ||
-      !categoryId ||
-      !subCategoryId ||
       !providerId ||
-      !sku ||
       cost === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: name, stock, price, provider, cost" },
         { status: 400 }
       );
     }
 
-    // Validate foreign keys before attempting create
-    const [category, subCategory, provider] = await Promise.all([
-      prisma.category.findUnique({ where: { id: categoryId } }),
-      prisma.subCategory.findUnique({ where: { id: subCategoryId } }),
-      prisma.provider.findUnique({ where: { id: providerId } }),
-    ]);
-
-    if (!category) {
-      return NextResponse.json(
-        { error: "Invalid category. Please select an existing category." },
-        { status: 400 }
-      );
-    }
-
-    if (!subCategory || subCategory.categoryId !== categoryId) {
-      return NextResponse.json(
-        {
-          error:
-            "Invalid subcategory. Ensure it exists and belongs to the selected category.",
-        },
-        { status: 400 }
-      );
-    }
-
+    // Validate provider (required)
+    const provider = await prisma.provider.findUnique({ where: { id: providerId } });
     if (!provider) {
       return NextResponse.json(
         { error: "Invalid provider. Please select an existing provider." },
         { status: 400 }
       );
+    }
+
+    // Validate category if provided
+    if (categoryId) {
+      const category = await prisma.category.findUnique({ where: { id: categoryId } });
+      if (!category) {
+        return NextResponse.json(
+          { error: "Invalid category. Please select an existing category." },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate subcategory if provided
+    if (subCategoryId) {
+      const subCategory = await prisma.subCategory.findUnique({ where: { id: subCategoryId } });
+      if (!subCategory) {
+        return NextResponse.json(
+          { error: "Invalid subcategory. Please select an existing subcategory." },
+          { status: 400 }
+        );
+      }
+      if (categoryId && subCategory.categoryId !== categoryId) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid subcategory. Ensure it belongs to the selected category.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const parsedStock = Number.parseInt(stock);
@@ -147,13 +152,13 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name,
-        description,
+        description: description || "",
         stock: parsedStock,
         price: parsedPrice,
-        categoryId,
-        subCategoryId,
+        categoryId: categoryId || null,
+        subCategoryId: subCategoryId || null,
         providerId,
-        sku,
+        sku: sku || "",
         cost: parsedCost,
         image,
       },
@@ -211,38 +216,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (
-      !name ||
-      !description ||
-      stock === undefined ||
-      price === undefined ||
-      !categoryId ||
-      !subCategoryId ||
-      !providerId ||
-      !sku ||
-      cost === undefined
-    ) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const parsedStock = Number.parseInt(stock);
-    const parsedPrice = Number.parseFloat(price);
-    const parsedCost = Number.parseFloat(cost);
-
-    if (
-      Number.isNaN(parsedStock) ||
-      Number.isNaN(parsedPrice) ||
-      Number.isNaN(parsedCost)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid numeric values for stock, price, or cost" },
-        { status: 400 }
-      );
-    }
-
     // Check if product exists
     const existingProduct = await prisma.product.findUnique({
       where: { id },
@@ -252,35 +225,61 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Validate foreign keys before update
-    const [category, subCategory, provider] = await Promise.all([
-      prisma.category.findUnique({ where: { id: categoryId } }),
-      prisma.subCategory.findUnique({ where: { id: subCategoryId } }),
-      prisma.provider.findUnique({ where: { id: providerId } }),
-    ]);
+    const parsedStock = stock !== undefined ? Number.parseInt(stock) : undefined;
+    const parsedPrice = price !== undefined ? Number.parseFloat(price) : undefined;
+    const parsedCost = cost !== undefined ? Number.parseFloat(cost) : undefined;
 
-    if (!category) {
+    if (
+      (parsedStock !== undefined && Number.isNaN(parsedStock)) ||
+      (parsedPrice !== undefined && Number.isNaN(parsedPrice)) ||
+      (parsedCost !== undefined && Number.isNaN(parsedCost))
+    ) {
       return NextResponse.json(
-        { error: "Invalid category. Please select an existing category." },
+        { error: "Invalid numeric values for stock, price, or cost" },
         { status: 400 }
       );
     }
 
-    if (!subCategory || subCategory.categoryId !== categoryId) {
-      return NextResponse.json(
-        {
-          error:
-            "Invalid subcategory. Ensure it exists and belongs to the selected category.",
-        },
-        { status: 400 }
-      );
+    // Validate provider if provided (required field)
+    if (providerId) {
+      const provider = await prisma.provider.findUnique({ where: { id: providerId } });
+      if (!provider) {
+        return NextResponse.json(
+          { error: "Invalid provider. Please select an existing provider." },
+          { status: 400 }
+        );
+      }
     }
 
-    if (!provider) {
-      return NextResponse.json(
-        { error: "Invalid provider. Please select an existing provider." },
-        { status: 400 }
-      );
+    // Validate category if provided (optional)
+    if (categoryId) {
+      const category = await prisma.category.findUnique({ where: { id: categoryId } });
+      if (!category) {
+        return NextResponse.json(
+          { error: "Invalid category. Please select an existing category." },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate subcategory if provided (optional)
+    if (subCategoryId) {
+      const subCategory = await prisma.subCategory.findUnique({ where: { id: subCategoryId } });
+      if (!subCategory) {
+        return NextResponse.json(
+          { error: "Invalid subcategory. Please select an existing subcategory." },
+          { status: 400 }
+        );
+      }
+      if (categoryId && subCategory.categoryId !== categoryId) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid subcategory. Ensure it belongs to the selected category.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Update product
@@ -288,13 +287,13 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         name,
-        description,
+        description: description || "",
         stock: parsedStock,
         price: parsedPrice,
-        categoryId,
-        subCategoryId,
+        categoryId: categoryId || null,
+        subCategoryId: subCategoryId || null,
         providerId,
-        sku,
+        sku: sku || "",
         cost: parsedCost,
         image,
       },

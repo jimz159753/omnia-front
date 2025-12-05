@@ -122,27 +122,45 @@ const Products = () => {
     onDelete: handleDelete,
   });
 
+  // Calculate statistics from products data
+  const totalProducts = pagination.total || 0;
+  const lowStockItems = data.filter((product) => product.stock <= 10).length;
+  const warehouseValue = data.reduce(
+    (sum, product) => sum + product.stock * product.cost,
+    0
+  );
+  const totalValue = data.reduce(
+    (sum, product) => sum + product.stock * product.price,
+    0
+  );
+
   const squareCards = [
     {
       title: "Total Products",
-      value: "100",
+      value: totalProducts.toString(),
       icon: <ShoppingBagIcon className="w-4 h-4" />,
     },
 
     {
       title: "Low Stock Items",
-      value: "10",
+      value: lowStockItems.toString(),
       icon: <BoxIcon className="w-4 h-4" />,
     },
 
     {
-      title: "Categories",
-      value: "15",
+      title: "Warehouse Value",
+      value: new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }).format(warehouseValue),
       icon: <PackageIcon className="w-4 h-4" />,
     },
     {
       title: "Total Value",
-      value: "$25,000",
+      value: new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }).format(totalValue),
       icon: <TrendingUpIcon className="w-4 h-4" />,
     },
   ];
@@ -171,8 +189,8 @@ const Products = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-6xl font-normal">Products</CardTitle>
-              <CardDescription className="text-xl font-normal">
+              <CardTitle className="text-4xl font-normal">Products</CardTitle>
+              <CardDescription className="font-normal">
                 Manage your products and stock levels
               </CardDescription>
             </div>

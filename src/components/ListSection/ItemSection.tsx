@@ -16,21 +16,31 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
 
   return (
     <li>
-      <Link
-        className="w-full flex flex-col items-center px-4 py-3 transition-all duration-200"
-        href={`/dashboard/${tabName.toLowerCase()}`}
-      >
-        <div
-          className={`flex items-center justify-center w-12 h-12 rounded-md ${
-            isActive
-              ? "bg-gray-200 text-[#06334A] shadow-sm"
-              : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
-          }`}
+      {title !== "line" ? (
+        <Link
+          className="w-full flex flex-col items-center px-4 py-3 transition-all duration-200 group"
+          href={`/dashboard/${tabName.toLowerCase()}`}
         >
-          <Icon size={24} />
-        </div>
-        <p className="text-sm">{title}</p>
-      </Link>
+          <div
+            className={`flex items-center justify-center w-12 h-12 rounded-md ${
+              isActive
+                ? "bg-gray-200 text-[#06334A] shadow-sm"
+                : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
+            }`}
+          >
+            <div
+              className={`${
+                title === "Settings" ? "group-hover:animate-spin" : ""
+              }`}
+            >
+              <Icon size={24} />
+            </div>
+          </div>
+          <p className="text-sm">{title}</p>
+        </Link>
+      ) : (
+        <div className="mx-auto mt-4 border-b border-gray-300 w-12" />
+      )}
     </li>
   );
 };

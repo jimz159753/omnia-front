@@ -78,12 +78,9 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (
       !name ||
-      !description ||
       price === undefined ||
       commission === undefined ||
-      duration === undefined ||
-      !categoryId ||
-      !subCategoryId
+      duration === undefined
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -91,47 +88,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate that category exists
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
-    });
-    if (!category) {
-      return NextResponse.json(
-        { error: "Invalid category. Please select an existing category." },
-        { status: 400 }
-      );
+    // Validate that category exists (if provided)
+    if (categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        return NextResponse.json(
+          { error: "Invalid category. Please select an existing category." },
+          { status: 400 }
+        );
+      }
     }
 
-    // Validate that subcategory exists and belongs to the category
-    const subCategory = await prisma.subCategory.findUnique({
-      where: { id: subCategoryId },
-    });
-    if (!subCategory) {
-      return NextResponse.json(
-        { error: "Invalid subcategory. Please select an existing subcategory." },
-        { status: 400 }
-      );
-    }
-    if (subCategory.categoryId !== categoryId) {
-      return NextResponse.json(
-        {
-          error:
-            "The selected subcategory does not belong to the selected category.",
-        },
-        { status: 400 }
-      );
+    // Validate that subcategory exists and belongs to the category (if provided)
+    if (subCategoryId) {
+      const subCategory = await prisma.subCategory.findUnique({
+        where: { id: subCategoryId },
+      });
+      if (!subCategory) {
+        return NextResponse.json(
+          { error: "Invalid subcategory. Please select an existing subcategory." },
+          { status: 400 }
+        );
+      }
+      if (categoryId && subCategory.categoryId !== categoryId) {
+        return NextResponse.json(
+          {
+            error:
+              "The selected subcategory does not belong to the selected category.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Create service
     const service = await prisma.service.create({
       data: {
         name,
-        description,
+        description: description || "",
         price: parseFloat(price),
         commission: parseFloat(commission),
         duration: parseInt(duration),
-        categoryId,
-        subCategoryId,
+        categoryId: categoryId || null,
+        subCategoryId: subCategoryId || null,
         image: image || "",
       },
       include: {
@@ -233,13 +234,13 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         name,
-        description,
+        description: description || "",
         price: price !== undefined ? parseFloat(price) : undefined,
         commission: commission !== undefined ? parseFloat(commission) : undefined,
         duration: duration !== undefined ? parseInt(duration) : undefined,
-        categoryId,
-        subCategoryId,
-        image,
+        categoryId: categoryId || null,
+        subCategoryId: subCategoryId || null,
+        image: image || "",
       },
       include: {
         category: {

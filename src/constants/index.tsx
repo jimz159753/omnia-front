@@ -8,7 +8,13 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
-import { AlignBottom, Calendar, ShoppingBag, Tag, Leaf } from "akar-icons";
+import {
+  Briefcase,
+  CheckCheck,
+  Home,
+  Settings,
+  ShoppingCart,
+} from "lucide-react";
 
 // Tabs
 
@@ -17,7 +23,6 @@ export enum TabNames {
   Sales = "Sales",
   Products = "Products",
   Services = "Services",
-  Events = "Events",
 }
 
 // Charts
@@ -62,24 +67,28 @@ export interface IService {
 
 export const items: IMenuItem[] = [
   {
-    icon: () => <AlignBottom size={24} />,
+    icon: () => <Home size={24} />,
     title: "Analytics",
   },
   {
-    icon: () => <ShoppingBag size={24} />,
+    icon: () => <CheckCheck size={24} />,
     title: "Sales",
   },
   {
-    icon: () => <Tag size={24} />,
+    icon: () => <ShoppingCart size={24} />,
     title: "Products",
   },
   {
-    icon: () => <Leaf size={24} />,
+    icon: () => <Briefcase size={24} />,
     title: "Services",
   },
   {
-    icon: () => <Calendar size={24} />,
-    title: "Events",
+    icon: () => null,
+    title: "line",
+  },
+  {
+    icon: () => <Settings size={24} />,
+    title: "Settings",
   },
 ];
 

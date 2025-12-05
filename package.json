@@ -26,7 +26,6 @@
     "@tanstack/react-query": "^5.62.13",
     "@tanstack/react-table": "^8.21.3",
     "@types/bcryptjs": "^2.4.6",
-    "akar-icons": "^1.9.31",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",

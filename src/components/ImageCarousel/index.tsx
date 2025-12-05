@@ -1,7 +1,7 @@
 "use client";
 
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
-import { ChevronLeft, ChevronRight } from "akar-icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 

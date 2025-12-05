@@ -105,11 +105,12 @@ const Services = () => {
     },
     {
       title: "Avg Duration",
-      value: data.length > 0
-        ? `${Math.round(
-            data.reduce((acc, s) => acc + s.duration, 0) / data.length
-          )} min`
-        : "0 min",
+      value:
+        data.length > 0
+          ? `${Math.round(
+              data.reduce((acc, s) => acc + s.duration, 0) / data.length
+            )} min`
+          : "0 min",
       icon: <ClockIcon className="w-4 h-4" />,
     },
     {
@@ -131,8 +132,8 @@ const Services = () => {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-6xl font-normal">Services</CardTitle>
-              <CardDescription className="text-xl font-normal">
+              <CardTitle className="text-4xl font-normal">Services</CardTitle>
+              <CardDescription className="font-normal">
                 Manage your services and offerings
               </CardDescription>
             </div>
@@ -196,4 +197,3 @@ const Services = () => {
 };
 
 export default Services;
-
