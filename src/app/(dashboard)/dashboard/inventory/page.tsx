@@ -13,7 +13,14 @@ import {
 } from "@/components/ui/card";
 import { InventoryFormModal } from "@/components/inventory/InventoryFormModal";
 import { DeleteConfirmDialog } from "@/components/inventory/DeleteConfirmDialog";
-import { PlusIcon } from "lucide-react";
+import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
+import {
+  BoxIcon,
+  PackageIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  TrendingUpIcon,
+} from "lucide-react";
 
 const Inventory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +43,7 @@ const Inventory = () => {
     return (
       <div className="container mx-auto py-10">
         <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading inventory...</p>
+          <CustomLoadingSpinner size={48} />
         </div>
       </div>
     );
@@ -84,6 +91,31 @@ const Inventory = () => {
     onDelete: handleDelete,
   });
 
+  const squareCards = [
+    {
+      title: "Total Products",
+      value: "100",
+      icon: <ShoppingBagIcon className="w-4 h-4" />,
+    },
+
+    {
+      title: "Low Stock Items",
+      value: "10",
+      icon: <BoxIcon className="w-4 h-4" />,
+    },
+
+    {
+      title: "Categories",
+      value: "15",
+      icon: <PackageIcon className="w-4 h-4" />,
+    },
+    {
+      title: "Total Value",
+      value: "$25,000",
+      icon: <TrendingUpIcon className="w-4 h-4" />,
+    },
+  ];
+
   return (
     <>
       <Card>
@@ -108,6 +140,21 @@ const Inventory = () => {
           </div>
         </CardHeader>
         <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {squareCards.map((card) => (
+              <Card className="bg-brand-500/10" key={card.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {card.title}
+                  </CardTitle>
+                  {card.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{card.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
           <DataTable
             columns={columns}
             data={data}

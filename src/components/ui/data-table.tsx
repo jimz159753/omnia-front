@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {searchKey && onSearch && (
-        <div className="flex items-end justify-end w-full">
+        <div className="flex items-center justify-end w-full">
           <div className="relative max-w-sm">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input

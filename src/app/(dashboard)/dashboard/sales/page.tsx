@@ -15,13 +15,14 @@ import { Sale } from "@/generated/prisma";
 import { SaleFormModal } from "@/components/sales/SaleFormModal";
 import { DeleteConfirmDialog } from "@/components/sales/DeleteConfirmDialog";
 import {
-  DollarSignIcon,
   HandCoinsIcon,
   PackageIcon,
   PlusIcon,
   ShoppingBagIcon,
   UserIcon,
 } from "lucide-react";
+
+import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
 const Sales = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,7 +68,7 @@ const Sales = () => {
     return (
       <div className="container mx-auto py-10">
         <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading sales...</p>
+          <CustomLoadingSpinner size={48} />
         </div>
       </div>
     );
