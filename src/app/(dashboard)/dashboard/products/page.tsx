@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns, ProductWithCategory } from "./columns";
 import { useProducts } from "@/hooks/useProducts";
+import { useProductMeta } from "@/hooks/useProductMeta";
 import {
   Card,
   CardContent,
@@ -22,7 +23,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
 import {
   BoxIcon,
   HandshakeIcon,
@@ -34,11 +34,6 @@ import {
 } from "lucide-react";
 
 const Products = () => {
-  type CategoryOption = {
-    id: string;
-    name: string;
-    subCategory?: { id: string; name: string } | null;
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ProductWithCategory | null>(
     null
@@ -46,24 +41,6 @@ const Products = () => {
   const [deletingItem, setDeletingItem] = useState<ProductWithCategory | null>(
     null
   );
-  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-  const [providerModalOpen, setProviderModalOpen] = useState(false);
-  const [subCategoryModalOpen, setSubCategoryModalOpen] = useState(false);
-  const [categoryForm, setCategoryForm] = useState({
-    name: "",
-    description: "",
-  });
-  const [providerForm, setProviderForm] = useState({
-    name: "",
-    ownerName: "",
-    description: "",
-  });
-  const [subCategoryForm, setSubCategoryForm] = useState({
-    name: "",
-    description: "",
-    categoryId: "",
-  });
-  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const {
     data,
     loading,
@@ -74,20 +51,24 @@ const Products = () => {
     refetch,
   } = useProducts();
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const res = await fetch("/api/categories");
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data.data || []);
-        }
-      } catch (error) {
-        console.error("Error loading categories:", error);
-      }
-    };
-    loadCategories();
-  }, []);
+  const {
+    categories,
+    providerModalOpen,
+    categoryModalOpen,
+    subCategoryModalOpen,
+    providerForm,
+    categoryForm,
+    subCategoryForm,
+    setProviderModalOpen,
+    setCategoryModalOpen,
+    setSubCategoryModalOpen,
+    setProviderForm,
+    setCategoryForm,
+    setSubCategoryForm,
+    handleCreateProvider,
+    handleCreateCategory,
+    handleCreateSubCategory,
+  } = useProductMeta();
 
   if (loading && data.length === 0) {
     return (
@@ -342,29 +323,7 @@ const Products = () => {
             </button>
             <button
               type="button"
-              onClick={async () => {
-                try {
-                  const res = await fetch("/api/providers", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(providerForm),
-                  });
-                  if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || "Failed to create provider");
-                  }
-                  toast.success("Provider created");
-                  setProviderModalOpen(false);
-                  setProviderForm({ name: "", ownerName: "", description: "" });
-                } catch (error) {
-                  console.error(error);
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : "Failed to create provider"
-                  );
-                }
-              }}
+              onClick={handleCreateProvider}
               className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
             >
               Save
@@ -432,31 +391,7 @@ const Products = () => {
             </button>
             <button
               type="button"
-              onClick={async () => {
-                try {
-                  const res = await fetch("/api/categories", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(categoryForm),
-                  });
-                  if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || "Failed to create category");
-                  }
-                  toast.success("Category created");
-                  setCategoryModalOpen(false);
-                  setCategoryForm({ name: "", description: "" });
-                  const updated = await res.json();
-                  setCategories((prev) => [...prev, updated.data]);
-                } catch (error) {
-                  console.error(error);
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : "Failed to create category"
-                  );
-                }
-              }}
+              onClick={handleCreateCategory}
               className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
             >
               Save
@@ -537,7 +472,7 @@ const Products = () => {
                 }
               >
                 <option value="">Select category</option>
-                {categories.map((cat: CategoryOption) => (
+                {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
@@ -555,35 +490,7 @@ const Products = () => {
             </button>
             <button
               type="button"
-              onClick={async () => {
-                try {
-                  const res = await fetch("/api/subcategories", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(subCategoryForm),
-                  });
-                  if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(
-                      err.error || "Failed to create subcategory"
-                    );
-                  }
-                  toast.success("Subcategory created");
-                  setSubCategoryModalOpen(false);
-                  setSubCategoryForm({
-                    name: "",
-                    description: "",
-                    categoryId: "",
-                  });
-                } catch (error) {
-                  console.error(error);
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : "Failed to create subcategory"
-                  );
-                }
-              }}
+              onClick={handleCreateSubCategory}
               className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
             >
               Save

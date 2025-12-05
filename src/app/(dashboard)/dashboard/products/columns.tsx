@@ -28,6 +28,28 @@ export const getColumns = ({
   onDelete,
 }: GetColumnsParams): ColumnDef<ProductWithCategory>[] => [
   {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => {
+      const src = row.getValue("image") as string;
+      return (
+        <div className="flex items-center justify-center">
+          {src ? (
+            <img
+              src={src}
+              alt={row.original.name}
+              className="h-10 w-10 rounded object-cover"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              N/A
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "sku",
     header: "SKU",
   },
@@ -52,13 +74,6 @@ export const getColumns = ({
     header: "Category",
     cell: ({ row }) => {
       return row.original.category?.name || "N/A";
-    },
-  },
-  {
-    accessorKey: "subCategory.name",
-    header: "SubCategory",
-    cell: ({ row }) => {
-      return row.original.category?.subCategory?.name || "N/A";
     },
   },
   {
