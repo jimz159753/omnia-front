@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Tag,
   Ticket,
+  Leaf,
 } from "akar-icons";
 
 // Tabs
@@ -23,6 +24,7 @@ export enum TabNames {
   Analytics = "Analytics",
   Sales = "Sales",
   Products = "Products",
+  Services = "Services",
   Events = "Events",
   Vouchers = "Vouchers",
   Discounts = "Discounts",
@@ -93,6 +95,10 @@ export const items: IMenuItem[] = [
   {
     icon: () => <Tag size={24} />,
     title: "Products",
+  },
+  {
+    icon: () => <Leaf size={24} />,
+    title: "Services",
   },
   {
     icon: () => <Calendar size={24} />,
