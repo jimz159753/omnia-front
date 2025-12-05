@@ -16,12 +16,48 @@ import {
   ShoppingBagIcon,
   UserIcon,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
 const Sales = () => {
-  const { data, loading, pagination, searchQuery, handlePageChange, handleSearch } =
-    useTickets();
+  const {
+    data,
+    loading,
+    pagination,
+    searchQuery,
+    handlePageChange,
+    handleSearch,
+    refetch,
+    products,
+    services,
+  } = useTickets();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    clientId: "",
+    productId: "",
+    serviceId: "",
+    amount: "",
+    status: "",
+  });
 
   const squareCards = [
     {
@@ -46,6 +82,52 @@ const Sales = () => {
     },
   ];
 
+  const columns = getColumns();
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/tickets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create ticket");
+      }
+
+      toast.success("Ticket created successfully");
+      setIsModalOpen(false);
+      setFormData({
+        clientId: "",
+        productId: "",
+        serviceId: "",
+        amount: "",
+        status: "",
+      });
+      refetch();
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create ticket"
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading && data.length === 0) {
     return (
       <div className="container mx-auto py-10">
@@ -56,47 +138,195 @@ const Sales = () => {
     );
   }
 
-  const columns = getColumns();
-
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-2">
-            <CardTitle className="text-6xl font-normal">Sales</CardTitle>
-            <CardDescription className="text-xl font-normal">
-              Track and review your support tickets
-            </CardDescription>
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-6xl font-normal">Sales</CardTitle>
+              <CardDescription className="text-xl font-normal">
+                Track and review your support tickets
+              </CardDescription>
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            >
+              Add Ticket
+            </button>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          {squareCards.map((card) => (
-            <Card className="bg-brand-500/10" key={card.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-                {card.icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{card.value}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <DataTable
-          columns={columns}
-          data={data}
-          searchKey="client"
-          searchPlaceholder="Search by client..."
-          searchValue={searchQuery}
-          pagination={pagination}
-          onPageChange={handlePageChange}
-          onSearch={handleSearch}
-          loading={loading}
-        />
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {squareCards.map((card) => (
+              <Card className="bg-brand-500/10" key={card.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {card.title}
+                  </CardTitle>
+                  {card.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{card.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <DataTable
+            columns={columns}
+            data={data}
+            searchKey="client"
+            searchPlaceholder="Search by client..."
+            searchValue={searchQuery}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            loading={loading}
+          />
+        </CardContent>
+      </Card>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Ticket</DialogTitle>
+            <DialogDescription>
+              Create a new ticket with the required details.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="clientId"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Client ID
+                </label>
+                <input
+                  id="clientId"
+                  name="clientId"
+                  value={formData.clientId}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="productId"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Product
+                </label>
+                <Select
+                  value={formData.productId}
+                  onValueChange={(value: string) =>
+                    setFormData((prev) => ({ ...prev, productId: value }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="serviceId"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Service ID
+                </label>
+                <Select
+                  value={formData.serviceId}
+                  onValueChange={(value: string) =>
+                    setFormData((prev) => ({ ...prev, serviceId: value }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="amount"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Amount
+                </label>
+                <input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="status"
+                className="text-sm font-medium text-gray-700"
+              >
+                Status
+              </label>
+              <input
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                placeholder="e.g. open, in-progress, closed"
+                required
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+
+            <DialogFooter className="gap-2">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                disabled={submitting}
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {submitting ? "Saving..." : "Add Ticket"}
+              </button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

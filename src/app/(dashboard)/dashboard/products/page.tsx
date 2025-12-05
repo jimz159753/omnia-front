@@ -16,6 +16,8 @@ import { DeleteConfirmDialog } from "@/components/products/DeleteConfirmDialog";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import {
   BoxIcon,
+  HandshakeIcon,
+  LayersIcon,
   PackageIcon,
   PlusIcon,
   ShoppingBagIcon,
@@ -27,8 +29,9 @@ const Products = () => {
   const [editingItem, setEditingItem] = useState<ProductWithCategory | null>(
     null
   );
-  const [deletingItem, setDeletingItem] =
-    useState<ProductWithCategory | null>(null);
+  const [deletingItem, setDeletingItem] = useState<ProductWithCategory | null>(
+    null
+  );
   const {
     data,
     loading,
@@ -116,6 +119,21 @@ const Products = () => {
     },
   ];
 
+  const buttons = [
+    {
+      title: "Providers",
+      icon: <HandshakeIcon className="w-4 h-4 text-black" />,
+    },
+    {
+      title: "Categories",
+      icon: <LayersIcon className="w-4 h-4 text-black" />,
+    },
+    {
+      title: "SubCategories",
+      icon: <LayersIcon className="w-4 h-4 text-black" />,
+    },
+  ];
+
   return (
     <>
       <Card>
@@ -140,6 +158,17 @@ const Products = () => {
           </div>
         </CardHeader>
         <CardContent>
+          <div className="flex gap-4 w-1/2 py-4">
+            {buttons.map((button) => (
+              <button
+                key={button.title}
+                className="w-fit border border-gray-300 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+              >
+                {button.icon}
+                <p className="text-black">{button.title}</p>
+              </button>
+            ))}
+          </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
             {squareCards.map((card) => (
               <Card className="bg-brand-500/10" key={card.title}>
@@ -187,4 +216,3 @@ const Products = () => {
 };
 
 export default Products;
-

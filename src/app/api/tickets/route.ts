@@ -69,3 +69,43 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { clientId, productId, serviceId, amount, status } = body;
+
+    if (!clientId || !productId || !serviceId || amount === undefined || !status) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const ticket = await prisma.ticket.create({
+      data: {
+        clientId,
+        productId,
+        serviceId,
+        amount: parseFloat(amount),
+        status,
+      },
+      include: {
+        client: true,
+        product: true,
+        service: true,
+      },
+    });
+
+    return NextResponse.json(
+      { data: ticket, message: "Ticket created successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    return NextResponse.json(
+      { error: "Failed to create ticket" },
+      { status: 500 }
+    );
+  }
+}
+

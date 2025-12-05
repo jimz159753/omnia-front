@@ -13,6 +13,8 @@ interface PaginationInfo {
 export const useTickets = () => {
   const [data, setData] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
+  const [services, setServices] = useState<{ id: string; name: string }[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     pageSize: 10,
@@ -66,11 +68,37 @@ export const useTickets = () => {
     fetchTickets(page, debouncedSearchQuery);
   };
 
+  // Load dropdown options once
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        const [prodRes, servRes] = await Promise.all([
+          fetch("/api/products?page=1&pageSize=100"),
+          fetch("/api/services?page=1&pageSize=100"),
+        ]);
+        if (prodRes.ok) {
+          const prodData = await prodRes.json();
+          setProducts(prodData.data || []);
+        }
+        if (servRes.ok) {
+          const servData = await servRes.json();
+          setServices(servData.data || []);
+        }
+      } catch (error) {
+        console.error("Error loading options:", error);
+        toast.error("No pudimos cargar productos/servicios.");
+      }
+    };
+    loadOptions();
+  }, []);
+
   return {
     data,
     loading,
     pagination,
     searchQuery,
+    products,
+    services,
     handlePageChange,
     handleSearch,
     refetch,
