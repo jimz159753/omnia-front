@@ -9,9 +9,12 @@ import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { CalendarIcon, ShoppingBagIcon, UserPlusIcon } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -21,6 +24,33 @@ export default function DashboardLayout({
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const toggleGroupItems = [
+    {
+      value: "appointment",
+      label: "New appointment",
+      icon: CalendarIcon,
+      className: "rounded-r-none border-r-0",
+      colorBg: "bg-blue-500/20",
+      iconColor: "text-blue-500",
+    },
+    {
+      value: "sale",
+      label: "New Sale",
+      icon: ShoppingBagIcon,
+      className: "rounded-none border-r-0",
+      colorBg: "bg-green-500/20",
+      iconColor: "text-green-500",
+    },
+    {
+      value: "client",
+      label: "New Client",
+      icon: UserPlusIcon,
+      className: "rounded-l-none",
+      colorBg: "bg-fuchsia-500/20",
+      iconColor: "text-fuchsia-500",
+    },
+  ];
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -56,8 +86,35 @@ export default function DashboardLayout({
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Service</DialogTitle>
+              <DialogTitle>Add New</DialogTitle>
+              <DialogDescription>
+                Choose the type of item you want to add.
+              </DialogDescription>
             </DialogHeader>
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              className="flex justify-center gap-0"
+            >
+              {toggleGroupItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <ToggleGroupItem
+                    key={item.value}
+                    value={item.value}
+                    aria-label={item.label}
+                    className={`${item.className} h-48 w-32 flex flex-col items-center justify-between py-10`}
+                  >
+                    <div
+                      className={`${item.colorBg} rounded-full h-14 w-14 flex items-center justify-center`}
+                    >
+                      <Icon className={`${item.iconColor} w-8 h-8`} />
+                    </div>
+                    {item.label}
+                  </ToggleGroupItem>
+                );
+              })}
+            </ToggleGroup>
           </DialogContent>
         </Dialog>
       </div>
