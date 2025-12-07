@@ -1,7 +1,7 @@
 "use client";
 
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -54,7 +54,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
           {/* Navigation Arrows */}
           {images.length > 1 && (
             <>
-              <ChevronLeft
+              <FiChevronLeft
                 className="absolute top-1/2 text-white p-2 rounded-full z-10 cursor-pointer"
                 style={{
                   left: "15px",
@@ -64,7 +64,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                 size={40}
               />
 
-              <ChevronRight
+              <FiChevronRight
                 className="absolute top-1/2 text-white p-2 rounded-full z-10 cursor-pointer"
                 style={{
                   right: "15px",

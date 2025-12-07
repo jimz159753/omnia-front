@@ -24,14 +24,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  BoxIcon,
-  HandshakeIcon,
-  LayersIcon,
-  PackageIcon,
-  PlusIcon,
-  ShoppingBagIcon,
-  TrendingUpIcon,
-} from "lucide-react";
+  FiBox,
+  FiPackage,
+  FiTrendingUp,
+  FiPlus,
+  FiLayers,
+  FiShoppingBag,
+  FiUsers,
+} from "react-icons/fi";
 
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -138,13 +138,13 @@ const Products = () => {
     {
       title: "Total Products",
       value: totalProducts.toString(),
-      icon: <ShoppingBagIcon className="w-4 h-4" />,
+      icon: <FiShoppingBag className="w-4 h-4" />,
     },
 
     {
       title: "Low Stock Items",
       value: lowStockItems.toString(),
-      icon: <BoxIcon className="w-4 h-4" />,
+      icon: <FiBox className="w-4 h-4" />,
     },
 
     {
@@ -153,7 +153,7 @@ const Products = () => {
         style: "currency",
         currency: "MXN",
       }).format(warehouseValue),
-      icon: <PackageIcon className="w-4 h-4" />,
+      icon: <FiPackage className="w-4 h-4" />,
     },
     {
       title: "Total Value",
@@ -161,24 +161,24 @@ const Products = () => {
         style: "currency",
         currency: "MXN",
       }).format(totalValue),
-      icon: <TrendingUpIcon className="w-4 h-4" />,
+      icon: <FiTrendingUp className="w-4 h-4" />,
     },
   ];
 
   const buttons = [
     {
       title: "Providers",
-      icon: <HandshakeIcon className="w-4 h-4 text-black" />,
+      icon: <FiUsers className="w-4 h-4 text-black" />,
       onClick: () => setProviderModalOpen(true),
     },
     {
       title: "Categories",
-      icon: <LayersIcon className="w-4 h-4 text-black" />,
+      icon: <FiLayers className="w-4 h-4 text-black" />,
       onClick: () => setCategoryModalOpen(true),
     },
     {
       title: "SubCategories",
-      icon: <LayersIcon className="w-4 h-4 text-black" />,
+      icon: <FiLayers className="w-4 h-4 text-black" />,
       onClick: () => setSubCategoryModalOpen(true),
     },
   ];
@@ -201,7 +201,7 @@ const Products = () => {
               }}
               className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
             >
-              <PlusIcon className="w-4 h-4" />
+              <FiPlus className="w-4 h-4" />
               Add Product
             </button>
           </div>

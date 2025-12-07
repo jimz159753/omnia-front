@@ -15,12 +15,12 @@ import { ServiceFormModal } from "@/components/services/ServiceFormModal";
 import { DeleteConfirmDialog } from "@/components/services/DeleteConfirmDialog";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import {
-  CalendarIcon,
-  ClockIcon,
-  DollarSignIcon,
-  PlusIcon,
-  SparklesIcon,
-} from "lucide-react";
+  FiCalendar,
+  FiClock,
+  FiDollarSign,
+  FiPlus,
+  FiZap,
+} from "react-icons/fi";
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,12 +96,12 @@ const Services = () => {
     {
       title: "Total Services",
       value: pagination.total.toString(),
-      icon: <SparklesIcon className="w-4 h-4" />,
+      icon: <FiZap className="w-4 h-4" />,
     },
     {
       title: "Active Services",
       value: data.length.toString(),
-      icon: <CalendarIcon className="w-4 h-4" />,
+      icon: <FiCalendar className="w-4 h-4" />,
     },
     {
       title: "Avg Duration",
@@ -111,7 +111,7 @@ const Services = () => {
               data.reduce((acc, s) => acc + s.duration, 0) / data.length
             )} min`
           : "0 min",
-      icon: <ClockIcon className="w-4 h-4" />,
+      icon: <FiClock className="w-4 h-4" />,
     },
     {
       title: "Avg Price",
@@ -122,7 +122,7 @@ const Services = () => {
               currency: "MXN",
             }).format(data.reduce((acc, s) => acc + s.price, 0) / data.length)
           : "$0.00",
-      icon: <DollarSignIcon className="w-4 h-4" />,
+      icon: <FiDollarSign className="w-4 h-4" />,
     },
   ];
 
@@ -144,7 +144,7 @@ const Services = () => {
               }}
               className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
             >
-              <PlusIcon className="w-4 h-4" />
+              <FiPlus className="w-4 h-4" />
               Add Service
             </button>
           </div>

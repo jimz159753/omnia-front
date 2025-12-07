@@ -11,12 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  DownloadIcon,
-  HandCoinsIcon,
-  PackageIcon,
-  ShoppingBagIcon,
-  UserIcon,
-} from "lucide-react";
+  FiDownload,
+  FiDollarSign,
+  FiPackage,
+  FiShoppingBag,
+  FiUser,
+} from "react-icons/fi";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
@@ -81,22 +81,22 @@ const Sales = () => {
     {
       title: "Tickets this week",
       value: "28",
-      icon: <ShoppingBagIcon className="w-4 h-4" />,
+      icon: <FiShoppingBag className="w-4 h-4" />,
     },
     {
       title: "Scheduled services",
       value: "14",
-      icon: <PackageIcon className="w-4 h-4" />,
+      icon: <FiPackage className="w-4 h-4" />,
     },
     {
       title: "Active clients",
       value: "42",
-      icon: <UserIcon className="w-4 h-4" />,
+      icon: <FiUser className="w-4 h-4" />,
     },
     {
       title: "Resolved tickets",
       value: "18",
-      icon: <HandCoinsIcon className="w-4 h-4" />,
+      icon: <FiDollarSign className="w-4 h-4" />,
     },
   ];
 
@@ -128,7 +128,7 @@ const Sales = () => {
               disabled={loading || data.length === 0}
               className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
             >
-              <DownloadIcon className="w-4 h-4" />
+              <FiDownload className="w-4 h-4" />
               Export to CSV
             </button>
           </div>

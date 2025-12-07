@@ -2,7 +2,7 @@
 import Image from "next/image";
 import OmniaTitle from "@/assets/images/omnia_title.png";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut } from "lucide-react";
+import { FiLogOut } from "react-icons/fi";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -29,7 +29,7 @@ const Header = () => {
               Welcome, {user.email}
             </p>
             <button onClick={handleLogout}>
-              <LogOut strokeWidth={1.5} className="text-rose-600" />
+              <FiLogOut className="text-rose-600 w-5 h-5" />
             </button>
           </>
         )}

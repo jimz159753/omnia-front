@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
-import { SearchIcon } from "lucide-react";
+import { FiSearch } from "react-icons/fi";
 
 interface PaginationInfo {
   page: number;
@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
       {searchKey && onSearch && (
         <div className="flex items-center justify-end w-full">
           <div className="relative max-w-sm">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               placeholder={searchPlaceholder}
               value={searchValue}

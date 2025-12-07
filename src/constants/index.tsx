@@ -8,13 +8,11 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
-import {
-  Briefcase,
-  CheckCheck,
-  Home,
-  Settings,
-  ShoppingCart,
-} from "lucide-react";
+import { CheckCheckIcon } from "@/components/CheckCheckIcon";
+import { ShoppingCartIcon } from "@/components/ShoppingCartIcon";
+import { BicepsFlexedIcon } from "@/components/BicepsFlexedIcon";
+import { SettingsIcon } from "@/components/SettingsIcon";
+import { HomeIcon } from "@/components/HouseIcon";
 
 // Tabs
 
@@ -67,19 +65,19 @@ export interface IService {
 
 export const items: IMenuItem[] = [
   {
-    icon: () => <Home size={24} />,
+    icon: () => <HomeIcon size={22} />,
     title: "Analytics",
   },
   {
-    icon: () => <CheckCheck size={24} />,
+    icon: () => <CheckCheckIcon size={22} />,
     title: "Sales",
   },
   {
-    icon: () => <ShoppingCart size={24} />,
+    icon: () => <ShoppingCartIcon size={22} />,
     title: "Products",
   },
   {
-    icon: () => <Briefcase size={24} />,
+    icon: () => <BicepsFlexedIcon size={22} />,
     title: "Services",
   },
   {
@@ -87,7 +85,7 @@ export const items: IMenuItem[] = [
     title: "line",
   },
   {
-    icon: () => <Settings size={24} />,
+    icon: () => <SettingsIcon size={22} />,
     title: "Settings",
   },
 ];

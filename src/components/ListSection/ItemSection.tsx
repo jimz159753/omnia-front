@@ -28,11 +28,7 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
                 : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
             }`}
           >
-            <div
-              className={`${
-                title === "Settings" ? "group-hover:animate-spin" : ""
-              }`}
-            >
+            <div>
               <Icon size={24} />
             </div>
           </div>

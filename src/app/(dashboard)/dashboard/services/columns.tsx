@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Pencil, Trash2, MoreHorizontal } from "lucide-react";
+import { FiEdit, FiTrash2, FiMoreHorizontal } from "react-icons/fi";
 
 // Extended type to include the category and subcategory relations
 export type ServiceWithRelations = Service & {
@@ -130,7 +130,7 @@ export const getColumns = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                <MoreHorizontal className="w-4 h-4 cursor-pointer" />
+                <FiMoreHorizontal className="w-4 h-4 cursor-pointer" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -138,14 +138,14 @@ export const getColumns = ({
                 onClick={() => onUpdate(item)}
                 className="cursor-pointer"
               >
-                <Pencil className="mr-2 h-4 w-4" />
+                <FiEdit className="mr-2 h-4 w-4" />
                 Update
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(item)}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <FiTrash2 className="mr-2 h-4 w-4" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
