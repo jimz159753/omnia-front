@@ -178,46 +178,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {pagination ? (
-            <>
-              Showing {(pagination.page - 1) * pagination.pageSize + 1} to{" "}
-              {Math.min(
-                pagination.page * pagination.pageSize,
-                pagination.total
-              )}{" "}
-              of {pagination.total} results (Page {pagination.page} of{" "}
-              {pagination.totalPages})
-            </>
-          ) : (
-            `${data.length} row(s) total.`
-          )}
-        </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => onPageChange?.(pagination!.page - 1)}
-            disabled={!pagination || pagination.page <= 1 || loading}
-            className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => onPageChange?.(pagination!.page + 1)}
-            disabled={
-              !pagination || pagination.page >= pagination.totalPages || loading
-            }
-            className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            title={`Page: ${pagination?.page}, Total: ${
-              pagination?.totalPages
-            }, Disabled: ${
-              !pagination || pagination.page >= pagination.totalPages || loading
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
