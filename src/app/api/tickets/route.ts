@@ -72,9 +72,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { clientId, productId, serviceId, amount, status } = body;
+    const { clientId, productId, serviceId, sellerId, amount, status, notes } = body;
 
-    if (!clientId || !productId || !serviceId || amount === undefined || !status) {
+    if (!clientId || !productId || !serviceId || !sellerId || amount === undefined || !status) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -86,13 +86,21 @@ export async function POST(request: NextRequest) {
         clientId,
         productId,
         serviceId,
+        sellerId,
         amount: parseFloat(amount),
         status,
+        notes: notes || "",
       },
       include: {
         client: true,
         product: true,
         service: true,
+        seller: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
       },
     });
 

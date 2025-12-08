@@ -13,6 +13,7 @@ import { ShoppingCartIcon } from "@/components/ShoppingCartIcon";
 import { BicepsFlexedIcon } from "@/components/BicepsFlexedIcon";
 import { SettingsIcon } from "@/components/SettingsIcon";
 import { HomeIcon } from "@/components/HouseIcon";
+import { FiUsers } from "react-icons/fi";
 
 // Tabs
 
@@ -21,6 +22,7 @@ export enum TabNames {
   Sales = "Sales",
   Products = "Products",
   Services = "Services",
+  Clients = "Clients",
 }
 
 // Charts
@@ -79,6 +81,10 @@ export const items: IMenuItem[] = [
   {
     icon: () => <BicepsFlexedIcon size={22} />,
     title: "Services",
+  },
+  {
+    icon: () => <FiUsers size={22} />,
+    title: "Clients",
   },
   {
     icon: () => null,

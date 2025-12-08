@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { AddNewDialog } from "@/components/dialogs/AddNewDialog";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
+import { SaleFormDialog } from "@/components/dialogs/SaleFormDialog";
 
 export default function DashboardLayout({
   children,
@@ -18,11 +19,14 @@ export default function DashboardLayout({
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isClientFormOpen, setIsClientFormOpen] = useState(false);
+  const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
   const handleAddNewSelect = (value: string) => {
     if (!value) return;
     setIsDialogOpen(false);
     if (value === "client") {
       setIsClientFormOpen(true);
+    } else if (value === "sale") {
+      setIsSaleFormOpen(true);
     }
   };
 
@@ -66,6 +70,12 @@ export default function DashboardLayout({
         <ClientFormDialog
           open={isClientFormOpen}
           onOpenChange={setIsClientFormOpen}
+          onSuccess={() => setIsDialogOpen(false)}
+        />
+
+        <SaleFormDialog
+          open={isSaleFormOpen}
+          onOpenChange={setIsSaleFormOpen}
           onSuccess={() => setIsDialogOpen(false)}
         />
       </div>

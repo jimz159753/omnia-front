@@ -2,6 +2,9 @@ FROM node:20-alpine AS base
 
 WORKDIR /app
 
+# Install OpenSSL for Prisma compatibility
+RUN apk add --no-cache openssl
+
 # Install dependencies including Prisma
 COPY package*.json ./
 RUN npm install

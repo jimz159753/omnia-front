@@ -12,7 +12,7 @@ import {
 
 interface ClientFormDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenckChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
@@ -26,14 +26,13 @@ export function ClientFormDialog({
     email: "",
     phone: "",
     instagram: "",
+    address: "",
   });
   const [clientError, setClientError] = useState("");
   const [clientSuccess, setClientSuccess] = useState("");
   const [clientSubmitting, setClientSubmitting] = useState(false);
 
-  const handleClientInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleClientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setClientForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -71,6 +70,7 @@ export function ClientFormDialog({
         email: "",
         phone: "",
         instagram: "",
+        address: "",
       });
       setTimeout(() => {
         onOpenChange(false);
@@ -146,6 +146,17 @@ export function ClientFormDialog({
               required
             />
           </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Address</label>
+            <input
+              name="address"
+              value={clientForm.address}
+              onChange={handleClientInputChange}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="Street address, city, state"
+              required
+            />
+          </div>
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
@@ -167,4 +178,3 @@ export function ClientFormDialog({
     </Dialog>
   );
 }
-
