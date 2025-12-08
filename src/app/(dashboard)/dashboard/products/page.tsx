@@ -5,15 +5,9 @@ import { DataTable } from "@/components/ui/data-table";
 import { getColumns, ProductWithCategory } from "./columns";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductMeta } from "@/hooks/useProductMeta";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ProductFormModal } from "@/components/products/ProductFormModal";
-import { DeleteConfirmDialog } from "@/components/products/DeleteConfirmDialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProductFormModal } from "../../../../components/products/ProductFormModal";
+import { DeleteConfirmDialog } from "../../../../components/products/DeleteConfirmDialog";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import {
   Dialog,
@@ -185,68 +179,60 @@ const Products = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-2">
-              <CardTitle className="text-4xl font-normal">Products</CardTitle>
-              <CardDescription className="font-normal">
-                Manage your products and stock levels
-              </CardDescription>
-            </div>
-            <button
-              onClick={() => {
-                setEditingItem(null);
-                setIsModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
-            >
-              <FiPlus className="w-4 h-4" />
-              Add Product
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 w-1/2 py-4">
-            {buttons.map((button) => (
-              <button
-                key={button.title}
-                className="w-fit border border-gray-300 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
-                onClick={button.onClick}
-              >
-                {button.icon}
-                <p className="text-black">{button.title}</p>
-              </button>
-            ))}
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-            {squareCards.map((card) => (
-              <Card className="bg-brand-500/10" key={card.title}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {card.title}
-                  </CardTitle>
-                  {card.icon}
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{card.value}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <DataTable
-            columns={columns}
-            data={data}
-            searchKey="name"
-            searchPlaceholder="Search by name..."
-            searchValue={searchQuery}
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onSearch={handleSearch}
-            loading={loading}
-          />
-        </CardContent>
-      </Card>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-2">
+          <p className="text-4xl font-normal">Products</p>
+          <p className="font-normal">Manage your products and stock levels</p>
+        </div>
+        <button
+          onClick={() => {
+            setEditingItem(null);
+            setIsModalOpen(true);
+          }}
+          className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+        >
+          <FiPlus className="w-4 h-4" />
+          Add Product
+        </button>
+      </div>
+      <div className="flex gap-4 w-1/2 py-4">
+        {buttons.map((button) => (
+          <button
+            key={button.title}
+            className="w-fit border border-gray-300 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            onClick={button.onClick}
+          >
+            {button.icon}
+            <p className="text-black">{button.title}</p>
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+        {squareCards.map((card) => (
+          <Card className="bg-brand-500/10 shadow-none" key={card.title}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {card.title}
+              </CardTitle>
+              {card.icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{card.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <DataTable
+        columns={columns}
+        data={data}
+        searchKey="name"
+        searchPlaceholder="Search by name, SKU, or category..."
+        searchValue={searchQuery}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        loading={loading}
+      />
 
       <ProductFormModal
         open={isModalOpen}

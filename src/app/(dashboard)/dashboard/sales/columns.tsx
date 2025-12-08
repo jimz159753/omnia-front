@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
 import { FiCalendar } from "react-icons/fi";
 
@@ -8,6 +8,11 @@ type TicketWithRelations = Ticket & {
   client: Client;
   product: Product;
   service: Service;
+};
+
+type RowWithGetValue = {
+  getValue: (key: string) => unknown;
+  original: TicketWithRelations;
 };
 
 const formatDateTime = (iso: string) => {
@@ -36,7 +41,10 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => {
-      const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
+      const r = row as RowWithGetValue;
+      const { dateStr, timeStr } = formatDateTime(
+        r.getValue("createdAt") as string
+      );
       return (
         <div className="flex items-center gap-2">
           <FiCalendar className="w-4 h-4 text-gray-500" />
@@ -55,16 +63,23 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
   {
     accessorKey: "product.name",
     header: "Product",
+    cell: ({ row }) => {
+      return <div>{row.original.product?.name || "-"}</div>;
+    },
   },
   {
     accessorKey: "service.name",
     header: "Service",
+    cell: ({ row }) => {
+      return <div>{row.original.service?.name || "-"}</div>;
+    },
   },
   {
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
+      const r = row as RowWithGetValue;
+      const amount = parseFloat(r.getValue("amount") as string);
       return (
         <div className="font-medium text-gray-900">
           {amount.toLocaleString("es-MX", {
@@ -79,11 +94,20 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const r = row as RowWithGetValue;
+      const status = r.getValue("status") as string;
+      const badgeClass =
+        status === "completed"
+          ? "bg-green-100 text-green-800"
+          : status === "pending"
+          ? "bg-yellow-100 text-yellow-800"
+          : "bg-red-100 text-red-800";
       return (
-        <div className="capitalize text-sm font-medium text-muted-foreground">
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
+        >
           {status}
-        </div>
+        </span>
       );
     },
   },

@@ -128,56 +128,50 @@ const Services = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-2">
-              <CardTitle className="text-4xl font-normal">Services</CardTitle>
-              <CardDescription className="font-normal">
-                Manage your services and offerings
-              </CardDescription>
-            </div>
-            <button
-              onClick={() => {
-                setEditingItem(null);
-                setIsModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
-            >
-              <FiPlus className="w-4 h-4" />
-              Add Service
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-            {squareCards.map((card) => (
-              <Card className="bg-brand-500/10" key={card.title}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {card.title}
-                  </CardTitle>
-                  {card.icon}
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{card.value}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <DataTable
-            columns={columns}
-            data={data}
-            searchKey="name"
-            searchPlaceholder="Search by service name..."
-            searchValue={searchQuery}
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onSearch={handleSearch}
-            loading={loading}
-          />
-        </CardContent>
-      </Card>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-2">
+          <CardTitle className="text-4xl font-normal">Services</CardTitle>
+          <CardDescription className="font-normal">
+            Manage your services and offerings
+          </CardDescription>
+        </div>
+        <button
+          onClick={() => {
+            setEditingItem(null);
+            setIsModalOpen(true);
+          }}
+          className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+        >
+          <FiPlus className="w-4 h-4" />
+          Add Service
+        </button>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+        {squareCards.map((card) => (
+          <Card className="bg-brand-500/10" key={card.title}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {card.title}
+              </CardTitle>
+              {card.icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{card.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <DataTable
+        columns={columns}
+        data={data}
+        searchKey="name"
+        searchPlaceholder="Search by service name..."
+        searchValue={searchQuery}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        loading={loading}
+      />
 
       <ServiceFormModal
         open={isModalOpen}
