@@ -9,6 +9,20 @@ type TicketWithRelations = Ticket & {
   service: Service;
 };
 
+const formatDateTime = (iso: string) => {
+  const date = new Date(iso);
+  const dateStr = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+  const timeStr = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return { dateStr, timeStr };
+};
+
 export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
   {
     accessorKey: "id",
@@ -21,8 +35,13 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return <div>{date.toLocaleDateString("es-MX")}</div>;
+      const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
+      return (
+        <div className="leading-tight">
+          <div>{dateStr}</div>
+          <div className="text-xs text-gray-500">{timeStr}</div>
+        </div>
+      );
     },
   },
   {

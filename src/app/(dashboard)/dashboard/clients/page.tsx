@@ -3,188 +3,44 @@
 import { DataTable } from "@/components/ui/data-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
-import { useEffect, useMemo, useState } from "react";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
-type ColumnDef<T> = {
-  accessorKey?: string;
-  header?: string;
-  cell?: (context: { row: { original: T } }) => React.ReactNode;
-};
-
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  instagram: string;
-  address: string;
-  createdAt: string;
-  tickets: Array<{
-    id: string;
-    amount: number;
-    status: string;
-    createdAt: string;
-    product: { name: string };
-    service: { name: string };
-  }>;
-}
-
-interface TicketRow {
-  id: string;
-  amount: number;
-  status: string;
-  createdAt: string;
-  product?: { name: string };
-  service?: { name: string };
-  notes?: string;
-}
+import { useClientsPage, type Client } from "@/hooks/useClientsPage";
 
 const Clients = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [activeTab, setActiveTab] = useState<
-    "all" | "products" | "appointments" | "notes"
-  >("all");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clientsHook = useClientsPage() as any;
+
+  const {
+    state: {
+      clients,
+      filteredClients,
+      selectedClientId,
+      selectedClient,
+      filteredTickets,
+      loading,
+      searchTerm,
+      isClientDialogOpen,
+      editingClient,
+      activeTab,
+      ticketColumns,
+    },
+    actions: {
+      setSearchTerm,
+      setSelectedClientId,
+      fetchClients,
+      openAddClient,
+      openEditClient,
+      handleDialogChange,
+      setActiveTab,
+    },
+  } = clientsHook;
+
   type DataTableWithSubComponent = React.ComponentType<{
     columns: unknown;
     data: unknown[];
     searchKey?: string;
   }>;
   const DataTableWithSub = DataTable as unknown as DataTableWithSubComponent;
-
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
-  useEffect(() => {
-    const term = searchTerm.trim().toLowerCase();
-    const filtered = !term
-      ? clients
-      : clients.filter((client) => {
-          const haystack = [
-            client.name,
-            client.email,
-            client.phone,
-            client.instagram,
-            client.address,
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-          return haystack.includes(term);
-        });
-    setFilteredClients(filtered);
-    if (filtered.length > 0) {
-      if (
-        !selectedClientId ||
-        !filtered.some((c) => c.id === selectedClientId)
-      ) {
-        setSelectedClientId(filtered[0].id);
-      }
-    } else {
-      setSelectedClientId(null);
-    }
-  }, [clients, searchTerm, selectedClientId]);
-
-  const selectedClient = useMemo(
-    () => filteredClients.find((c) => c.id === selectedClientId) || null,
-    [filteredClients, selectedClientId]
-  );
-
-  const ticketColumns: ColumnDef<TicketRow>[] = useMemo(
-    () => [
-      {
-        accessorKey: "id",
-        header: "Ticket #",
-        cell: ({ row }: { row: { original: TicketRow } }) => row.original.id,
-      },
-      {
-        accessorKey: "createdAt",
-        header: "Date",
-        cell: ({ row }: { row: { original: TicketRow } }) =>
-          new Date(row.original.createdAt).toLocaleDateString("es-MX"),
-      },
-      {
-        accessorKey: "product",
-        header: "Product",
-        cell: ({ row }: { row: { original: TicketRow } }) =>
-          row.original.product?.name || "-",
-      },
-      {
-        accessorKey: "service",
-        header: "Service",
-        cell: ({ row }: { row: { original: TicketRow } }) =>
-          row.original.service?.name || "-",
-      },
-      {
-        accessorKey: "amount",
-        header: "Amount",
-        cell: ({ row }: { row: { original: TicketRow } }) =>
-          new Intl.NumberFormat("es-MX", {
-            style: "currency",
-            currency: "MXN",
-          }).format(row.original.amount),
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }: { row: { original: TicketRow } }) => {
-          const status = row.original.status;
-          const badgeClass =
-            status === "completed"
-              ? "bg-green-100 text-green-800"
-              : status === "pending"
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-red-100 text-red-800";
-          return (
-            <span
-              className={`px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
-            >
-              {status}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "notes",
-        header: "Notes",
-        cell: ({ row }: { row: { original: TicketRow } }) =>
-          row.original.notes || "-",
-      },
-    ],
-    []
-  );
-
-  const filteredTickets = useMemo(() => {
-    if (!selectedClient) return [];
-    const tickets = selectedClient.tickets as TicketRow[];
-    if (activeTab === "all") return tickets;
-    if (activeTab === "products") {
-      return tickets.filter((t) => !!t.product?.name);
-    }
-    if (activeTab === "appointments") {
-      return tickets.filter((t) => !!t.service?.name);
-    }
-    return tickets.filter((t) => (t.notes || "").trim().length > 0);
-  }, [selectedClient, activeTab]);
-
-  const fetchClients = async () => {
-    try {
-      const response = await fetch("/api/clients");
-      const data = await response.json();
-      setClients(data);
-      setFilteredClients(data);
-    } catch (error) {
-      console.error("Failed to fetch clients:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -202,7 +58,7 @@ const Clients = () => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <button
-                  onClick={() => setIsClientDialogOpen(true)}
+                  onClick={openAddClient}
                   className="w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
                 >
                   Add Client
@@ -220,7 +76,7 @@ const Clients = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-2">
-                {filteredClients.map((client) => (
+                {filteredClients.map((client: Client) => (
                   <button
                     key={client.id}
                     onClick={() => setSelectedClientId(client.id)}
@@ -243,10 +99,7 @@ const Clients = () => {
                 <h3 className="text-xl font-semibold">{selectedClient.name}</h3>
                 <div className="flex justify-end">
                   <button
-                    onClick={() => {
-                      setEditingClient(selectedClient);
-                      setIsClientDialogOpen(true);
-                    }}
+                    onClick={openEditClient}
                     className="px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
                   >
                     Edit Client
@@ -308,10 +161,7 @@ const Clients = () => {
 
       <ClientFormDialog
         open={isClientDialogOpen}
-        onOpenChange={(open) => {
-          setIsClientDialogOpen(open);
-          if (!open) setEditingClient(null);
-        }}
+        onOpenChange={handleDialogChange}
         onSuccess={fetchClients}
         client={editingClient}
       />

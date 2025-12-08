@@ -47,6 +47,20 @@ interface Client {
 
 export type ClientRow = Client;
 
+const formatDateTime = (iso: string) => {
+  const date = new Date(iso);
+  const dateStr = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+  const timeStr = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return { dateStr, timeStr };
+};
+
 export const getColumns = (): ColumnDef<Client>[] => [
   {
     accessorKey: "name",
@@ -107,9 +121,11 @@ export const getColumns = (): ColumnDef<Client>[] => [
     header: () => <div className="text-center">Joined</div>,
     cell: ({ row }: RowContext) => {
       const date = row.getValue("createdAt") as string;
+      const { dateStr, timeStr } = formatDateTime(date);
       return (
-        <div className="text-center">
-          {new Date(date).toLocaleDateString("es-MX")}
+        <div className="text-center leading-tight">
+          <div>{dateStr}</div>
+          <div className="text-xs text-gray-500">{timeStr}</div>
         </div>
       );
     },

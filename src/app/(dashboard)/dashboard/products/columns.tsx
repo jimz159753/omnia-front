@@ -10,6 +10,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FiEdit, FiTrash2, FiMoreHorizontal } from "react-icons/fi";
 
+const formatDateTime = (iso: string) => {
+  const date = new Date(iso);
+  const dateStr = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+  const timeStr = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return { dateStr, timeStr };
+};
+
 // Extended type to include the category and subcategory relations
 export type ProductWithCategory = Product & {
   category: Category & {
@@ -28,6 +42,19 @@ export const getColumns = ({
   onUpdate,
   onDelete,
 }: GetColumnsParams): ColumnDef<ProductWithCategory>[] => [
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
+      return (
+        <div className="leading-tight">
+          <div>{dateStr}</div>
+          <div className="text-xs text-gray-500">{timeStr}</div>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "image",
     header: "Image",
@@ -115,14 +142,6 @@ export const getColumns = ({
         currency: "MXN",
       }).format(cost);
       return <div className="text-muted-foreground">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return <div>{date.toLocaleDateString("es-MX")}</div>;
     },
   },
   {
