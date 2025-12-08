@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { ColumnDef, TicketRow } from "@/types/clients";
+import { FiCalendar } from "react-icons/fi";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -29,9 +30,12 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
     cell: ({ row }) => {
       const { dateStr, timeStr } = formatDateTime(row.original.createdAt);
       return (
-        <div className="flex flex-col leading-tight">
-          <span>{dateStr}</span>
-          <span className="text-xs text-gray-500">{timeStr}</span>
+        <div className="flex items-center gap-2">
+          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <div className="flex flex-col leading-tight">
+            <span>{dateStr}</span>
+            <span className="text-xs text-gray-500">{timeStr}</span>
+          </div>
         </div>
       );
     },

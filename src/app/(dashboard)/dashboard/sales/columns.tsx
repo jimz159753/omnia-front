@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
+import { FiCalendar } from "react-icons/fi";
 
 type TicketWithRelations = Ticket & {
   client: Client;
@@ -37,9 +38,12 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     cell: ({ row }) => {
       const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
       return (
-        <div className="leading-tight">
-          <div>{dateStr}</div>
-          <div className="text-xs text-gray-500">{timeStr}</div>
+        <div className="flex items-center gap-2">
+          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <div className="leading-tight">
+            <div>{dateStr}</div>
+            <div className="text-xs text-gray-500">{timeStr}</div>
+          </div>
         </div>
       );
     },

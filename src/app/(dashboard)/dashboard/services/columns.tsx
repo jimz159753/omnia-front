@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FiEdit, FiTrash2, FiMoreHorizontal } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiMoreHorizontal, FiCalendar } from "react-icons/fi";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -131,9 +131,12 @@ export const getColumns = ({
     cell: ({ row }) => {
       const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
       return (
-        <div className="leading-tight">
-          <div>{dateStr}</div>
-          <div className="text-xs text-gray-500">{timeStr}</div>
+        <div className="flex items-center gap-2">
+          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <div className="leading-tight">
+            <div>{dateStr}</div>
+            <div className="text-xs text-gray-500">{timeStr}</div>
+          </div>
         </div>
       );
     },
