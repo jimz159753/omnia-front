@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
           </div>
         )}
         <Table>
-          <TableHeader className="bg-brand-500/10">
+          <TableHeader className="bg-brand-500/10 h-14 rounded-t-md">
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header: Header<TData, unknown>) => {

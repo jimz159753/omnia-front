@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
 import { FiCalendar } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
 
 type TicketWithRelations = Ticket & {
   client: Client;
@@ -103,11 +104,9 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
           ? "bg-yellow-100 text-yellow-800"
           : "bg-red-100 text-red-800";
       return (
-        <span
-          className={`px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
-        >
+        <Badge variant="secondary" className={`px-2 ${badgeClass}`}>
           {status}
-        </span>
+        </Badge>
       );
     },
   },

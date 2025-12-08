@@ -1,10 +1,16 @@
 "use client";
 
+import React from "react";
 import { DataTable } from "@/components/ui/data-table";
-import { Card, CardContent } from "@/components/ui/card";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
-import { useClientsPage, type Client } from "@/hooks/useClientsPage";
+import {
+  useClientsPage,
+  type Client,
+  type TicketRow,
+} from "@/hooks/useClientsPage";
+import SelectedClient from "./selected-client";
+import { GenericTabs } from "@/components/ui/GenericTabs";
 
 const Clients = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +41,24 @@ const Clients = () => {
     },
   } = clientsHook;
 
+  const tabs = [
+    { label: "All", value: "all" },
+    { label: "Products", value: "products" },
+    { label: "Appointments", value: "appointments" },
+    { label: "Notes", value: "notes" },
+  ];
+
+  const tabCounts = React.useMemo(() => {
+    const tickets = selectedClient?.tickets ?? [];
+    return {
+      all: tickets.length,
+      products: tickets.filter((t: TicketRow) => !!t.product?.name).length,
+      appointments: tickets.filter((t: TicketRow) => !!t.service?.name).length,
+      notes: tickets.filter((t: TicketRow) => (t.notes || "").trim().length > 0)
+        .length,
+    };
+  }, [selectedClient]);
+
   type DataTableWithSubComponent = React.ComponentType<{
     columns: unknown;
     data: unknown[];
@@ -52,8 +76,8 @@ const Clients = () => {
 
   return (
     <>
-      <div className="flex flex-row gap-6">
-        <div className="flex flex-col gap-4">
+      <div className="flex">
+        <div className="flex flex-col gap-4 p-4 h-screen border-r border-gray-200">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <button
@@ -92,62 +116,17 @@ const Clients = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4 flex-1">
-          {selectedClient ? (
-            <div className="rounded-lg border border-gray-200 p-4 bg-white shadow-sm space-y-2">
-              <h3 className="text-xl font-semibold">{selectedClient.name}</h3>
-              <div className="flex justify-end">
-                <button
-                  onClick={openEditClient}
-                  className="px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
-                >
-                  Edit Client
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
-                <p>
-                  <strong>Email:</strong> {selectedClient.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {selectedClient.phone}
-                </p>
-                <p>
-                  <strong>Instagram:</strong> {selectedClient.instagram || "-"}
-                </p>
-                <p>
-                  <strong>Address:</strong> {selectedClient.address || "-"}
-                </p>
-                <p>
-                  <strong>Tickets:</strong> {selectedClient.tickets.length}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">No client selected.</p>
-          )}
-          <div className="flex items-center gap-2">
-            {(["all", "products", "appointments", "notes"] as const).map(
-              (tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium border ${
-                    activeTab === tab
-                      ? "bg-brand-500 text-white border-brand-500"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  {tab === "all"
-                    ? "All"
-                    : tab === "products"
-                    ? "Products"
-                    : tab === "appointments"
-                    ? "Appointments"
-                    : "Notes"}
-                </button>
-              )
-            )}
-          </div>
+        <div className="flex flex-col gap-4 flex-1 p-4">
+          <SelectedClient client={selectedClient} onEdit={openEditClient} />
+          <GenericTabs
+            tabs={tabs.map((tab) => ({
+              ...tab,
+              value: tab.value as typeof activeTab,
+              count: tabCounts[tab.value as keyof typeof tabCounts] ?? 0,
+            }))}
+            activeTab={activeTab}
+            onChange={(value) => setActiveTab(value as typeof activeTab)}
+          />
           <DataTableWithSub
             columns={ticketColumns as unknown}
             data={filteredTickets}

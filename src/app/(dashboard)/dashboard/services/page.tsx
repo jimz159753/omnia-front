@@ -146,9 +146,9 @@ const Services = () => {
           Add Service
         </button>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
         {squareCards.map((card) => (
-          <Card className="bg-brand-500/10" key={card.title}>
+          <Card className="bg-brand-500/10 shadow-none" key={card.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {card.title}
