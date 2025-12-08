@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -74,18 +75,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { clientId, productId, serviceId, sellerId, amount, status, notes } = body;
 
-    if (!clientId || !productId || !serviceId || !sellerId || amount === undefined || !status) {
+    if (
+      !clientId ||
+      !sellerId ||
+      amount === undefined ||
+      !status ||
+      (!productId && !serviceId)
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
+    const ticketId = `TK-${new Date().getFullYear()}-${randomUUID()}`;
+
     const ticket = await prisma.ticket.create({
       data: {
+        id: ticketId,
         clientId,
-        productId,
-        serviceId,
+        productId: productId || null,
+        serviceId: serviceId || null,
         sellerId,
         amount: parseFloat(amount),
         status,

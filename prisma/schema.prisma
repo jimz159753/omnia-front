@@ -28,10 +28,10 @@ model Ticket {
   id        String   @id @default(uuid())
   clientId  String
   client    Client   @relation(fields: [clientId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  serviceId String
-  service   Service  @relation(fields: [serviceId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id])
   sellerId  String
   seller    User     @relation(fields: [sellerId], references: [id])
   amount    Float
@@ -46,7 +46,7 @@ model Client {
   name      String
   email     String   @unique
   phone     String
-  instagram String   @unique
+  instagram String?  @unique
   address   String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

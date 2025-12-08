@@ -45,11 +45,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, phone, instagram, address } = await request.json();
+    const { name, email, phone, instagram } = await request.json();
 
-    if (!name || !email || !phone || !instagram) {
+    if (!name || !email || !phone) {
       return NextResponse.json(
-        { error: "Missing required fields: name, email, phone, instagram" },
+        { error: "Missing required fields: name, email, phone" },
         { status: 400 }
       );
     }
@@ -59,8 +59,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         phone,
-        instagram,
-        address: address || "",
+        instagram: instagram || null,
       },
     });
 
@@ -86,3 +85,37 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const { name, email, phone, instagram, address } = await request.json();
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing client id" }, { status: 400 });
+    }
+
+    const data: Record<string, string | null> = {};
+    if (name !== undefined) data.name = name;
+    if (email !== undefined) data.email = email;
+    if (phone !== undefined) data.phone = phone;
+    if (instagram !== undefined) data.instagram = instagram || null;
+    if (address !== undefined) data.address = address || "";
+
+    const updated = await prisma.client.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(
+      { data: updated, message: "Client updated successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating client:", error);
+    return NextResponse.json(
+      { error: "Failed to update client" },
+      { status: 500 }
+    );
+  }
+}

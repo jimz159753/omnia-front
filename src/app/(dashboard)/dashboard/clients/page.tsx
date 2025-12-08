@@ -1,24 +1,15 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { getColumns } from "./columns";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { FiUsers, FiShoppingBag } from "react-icons/fi";
+import { Card, CardContent } from "@/components/ui/card";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
-import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useEffect, useMemo, useState } from "react";
+import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
+type ColumnDef<T> = {
+  accessorKey?: string;
+  header?: string;
+  cell?: (context: { row: { original: T } }) => React.ReactNode;
+};
 
 interface Client {
   id: string;
@@ -38,20 +29,149 @@ interface Client {
   }>;
 }
 
+interface TicketRow {
+  id: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+  product?: { name: string };
+  service?: { name: string };
+  notes?: string;
+}
+
 const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    "all" | "products" | "appointments" | "notes"
+  >("all");
+  type DataTableWithSubComponent = React.ComponentType<{
+    columns: unknown;
+    data: unknown[];
+    searchKey?: string;
+  }>;
+  const DataTableWithSub = DataTable as unknown as DataTableWithSubComponent;
 
   useEffect(() => {
     fetchClients();
   }, []);
 
   useEffect(() => {
-    filterClients();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, clients]);
+    const term = searchTerm.trim().toLowerCase();
+    const filtered = !term
+      ? clients
+      : clients.filter((client) => {
+          const haystack = [
+            client.name,
+            client.email,
+            client.phone,
+            client.instagram,
+            client.address,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          return haystack.includes(term);
+        });
+    setFilteredClients(filtered);
+    if (filtered.length > 0) {
+      if (
+        !selectedClientId ||
+        !filtered.some((c) => c.id === selectedClientId)
+      ) {
+        setSelectedClientId(filtered[0].id);
+      }
+    } else {
+      setSelectedClientId(null);
+    }
+  }, [clients, searchTerm, selectedClientId]);
+
+  const selectedClient = useMemo(
+    () => filteredClients.find((c) => c.id === selectedClientId) || null,
+    [filteredClients, selectedClientId]
+  );
+
+  const ticketColumns: ColumnDef<TicketRow>[] = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "Ticket #",
+        cell: ({ row }: { row: { original: TicketRow } }) => row.original.id,
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Date",
+        cell: ({ row }: { row: { original: TicketRow } }) =>
+          new Date(row.original.createdAt).toLocaleDateString("es-MX"),
+      },
+      {
+        accessorKey: "product",
+        header: "Product",
+        cell: ({ row }: { row: { original: TicketRow } }) =>
+          row.original.product?.name || "-",
+      },
+      {
+        accessorKey: "service",
+        header: "Service",
+        cell: ({ row }: { row: { original: TicketRow } }) =>
+          row.original.service?.name || "-",
+      },
+      {
+        accessorKey: "amount",
+        header: "Amount",
+        cell: ({ row }: { row: { original: TicketRow } }) =>
+          new Intl.NumberFormat("es-MX", {
+            style: "currency",
+            currency: "MXN",
+          }).format(row.original.amount),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }: { row: { original: TicketRow } }) => {
+          const status = row.original.status;
+          const badgeClass =
+            status === "completed"
+              ? "bg-green-100 text-green-800"
+              : status === "pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-red-100 text-red-800";
+          return (
+            <span
+              className={`px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "notes",
+        header: "Notes",
+        cell: ({ row }: { row: { original: TicketRow } }) =>
+          row.original.notes || "-",
+      },
+    ],
+    []
+  );
+
+  const filteredTickets = useMemo(() => {
+    if (!selectedClient) return [];
+    const tickets = selectedClient.tickets as TicketRow[];
+    if (activeTab === "all") return tickets;
+    if (activeTab === "products") {
+      return tickets.filter((t) => !!t.product?.name);
+    }
+    if (activeTab === "appointments") {
+      return tickets.filter((t) => !!t.service?.name);
+    }
+    return tickets.filter((t) => (t.notes || "").trim().length > 0);
+  }, [selectedClient, activeTab]);
 
   const fetchClients = async () => {
     try {
@@ -66,19 +186,6 @@ const Clients = () => {
     }
   };
 
-  const filterClients = () => {
-    let filtered = [...clients];
-
-    // Apply status filter
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((client) =>
-        client.tickets.some((ticket) => ticket.status === statusFilter)
-      );
-    }
-
-    setFilteredClients(filtered);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -87,93 +194,127 @@ const Clients = () => {
     );
   }
 
-  const totalClients = clients.length;
-  const activeClients = clients.filter((c) => c.tickets.length > 0).length;
-  const totalTickets = clients.reduce((acc, c) => acc + c.tickets.length, 0);
-  const averageTicketsPerClient =
-    totalClients > 0 ? (totalTickets / totalClients).toFixed(1) : "0";
-
-  const squareCards = [
-    {
-      title: "Total Clients",
-      value: totalClients.toString(),
-      icon: <FiUsers className="w-4 h-4" />,
-    },
-    {
-      title: "Active Clients",
-      value: activeClients.toString(),
-      icon: <FiShoppingBag className="w-4 h-4" />,
-    },
-    {
-      title: "Total Tickets",
-      value: totalTickets.toString(),
-      icon: <FiShoppingBag className="w-4 h-4" />,
-    },
-    {
-      title: "Avg. Tickets/Client",
-      value: averageTicketsPerClient,
-      icon: <FiShoppingBag className="w-4 h-4" />,
-    },
-  ];
-
   return (
     <>
       <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
+        <CardContent className="flex flex-row gap-6">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-4xl font-normal">Clients</CardTitle>
-              <CardDescription className="font-normal">
-                View clients and their ticket history
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setIsClientDialogOpen(true)}
+                  className="w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
+                >
+                  Add Client
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by name, email, phone, instagram, address"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+                <p className="text-sm text-gray-500">
+                  Showing {filteredClients.length} of {clients.length} clients
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                {filteredClients.map((client) => (
+                  <button
+                    key={client.id}
+                    onClick={() => setSelectedClientId(client.id)}
+                    className={`text-left px-3 py-2 rounded-md border transition-colors ${
+                      client.id === selectedClientId
+                        ? "border-brand-500 bg-brand-50"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="font-semibold">{client.name}</div>
+                    <div className="text-sm text-gray-600">{client.email}</div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {squareCards.map((card, index) => (
-              <div
-                key={index}
-                className="flex flex-col justify-between rounded-lg p-4 bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-500/10">
-                    {card.icon}
-                  </div>
+          <div className="flex flex-col gap-4 flex-1">
+            {selectedClient ? (
+              <div className="rounded-lg border border-gray-200 p-4 bg-white shadow-sm space-y-2">
+                <h3 className="text-xl font-semibold">{selectedClient.name}</h3>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setEditingClient(selectedClient);
+                      setIsClientDialogOpen(true);
+                    }}
+                    className="px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
+                  >
+                    Edit Client
+                  </button>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-3xl font-bold text-gray-900">
-                    {card.value}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+                  <p>
+                    <strong>Email:</strong> {selectedClient.email}
                   </p>
-                  <p className="text-xs font-medium text-gray-500">
-                    {card.title}
+                  <p>
+                    <strong>Phone:</strong> {selectedClient.phone}
+                  </p>
+                  <p>
+                    <strong>Instagram:</strong>{" "}
+                    {selectedClient.instagram || "-"}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {selectedClient.address || "-"}
+                  </p>
+                  <p>
+                    <strong>Tickets:</strong> {selectedClient.tickets.length}
                   </p>
                 </div>
               </div>
-            ))}
+            ) : (
+              <p className="text-sm text-gray-500">No client selected.</p>
+            )}
+            <div className="flex items-center gap-2">
+              {(["all", "products", "appointments", "notes"] as const).map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1 rounded-md text-sm font-medium border ${
+                      activeTab === tab
+                        ? "bg-brand-500 text-white border-brand-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    {tab === "all"
+                      ? "All"
+                      : tab === "products"
+                      ? "Products"
+                      : tab === "appointments"
+                      ? "Appointments"
+                      : "Notes"}
+                  </button>
+                )
+              )}
+            </div>
+            <DataTableWithSub
+              columns={ticketColumns as unknown}
+              data={filteredTickets}
+              searchKey="status"
+            />
           </div>
-
-          <div className="flex items-center justify-end">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <DataTable
-            columns={getColumns()}
-            data={filteredClients}
-            searchKey="name"
-          />
         </CardContent>
       </Card>
+
+      <ClientFormDialog
+        open={isClientDialogOpen}
+        onOpenChange={(open) => {
+          setIsClientDialogOpen(open);
+          if (!open) setEditingClient(null);
+        }}
+        onSuccess={fetchClients}
+        client={editingClient}
+      />
     </>
   );
 };

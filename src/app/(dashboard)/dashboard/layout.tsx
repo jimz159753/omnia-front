@@ -9,6 +9,7 @@ import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { AddNewDialog } from "@/components/dialogs/AddNewDialog";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
 import { SaleFormDialog } from "@/components/dialogs/SaleFormDialog";
+import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
 
 export default function DashboardLayout({
   children,
@@ -20,6 +21,7 @@ export default function DashboardLayout({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isClientFormOpen, setIsClientFormOpen] = useState(false);
   const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
+  const [isAppointmentFormOpen, setIsAppointmentFormOpen] = useState(false);
   const handleAddNewSelect = (value: string) => {
     if (!value) return;
     setIsDialogOpen(false);
@@ -27,6 +29,8 @@ export default function DashboardLayout({
       setIsClientFormOpen(true);
     } else if (value === "sale") {
       setIsSaleFormOpen(true);
+    } else if (value === "appointment") {
+      setIsAppointmentFormOpen(true);
     }
   };
 
@@ -76,6 +80,12 @@ export default function DashboardLayout({
         <SaleFormDialog
           open={isSaleFormOpen}
           onOpenChange={setIsSaleFormOpen}
+          onSuccess={() => setIsDialogOpen(false)}
+        />
+
+        <AppointmentFormDialog
+          open={isAppointmentFormOpen}
+          onOpenChange={setIsAppointmentFormOpen}
           onSuccess={() => setIsDialogOpen(false)}
         />
       </div>

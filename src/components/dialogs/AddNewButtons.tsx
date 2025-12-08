@@ -48,7 +48,7 @@ export const addNewButtonItems: AddNewButtonItem[] = [
 ];
 
 interface AddNewButtonsProps {
-  onSelect: (value: string) => void;
+  onSelect: (value: "appointment" | "sale" | "client") => void;
 }
 
 export function AddNewButtons({ onSelect }: AddNewButtonsProps) {

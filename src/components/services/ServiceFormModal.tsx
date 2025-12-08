@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,9 +18,11 @@ import {
 } from "@/components/ui/select";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import { ServiceWithRelations } from "@/app/(dashboard)/dashboard/services/columns";
-import { useServiceForm } from "@/hooks/useServiceForm";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { serviceSchema, type ServiceFormData } from "@/lib/validations/service";
 
-interface ServiceFormModalProps {
+export interface ServiceFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -32,19 +35,127 @@ export function ServiceFormModal({
   onSuccess,
   item,
 }: ServiceFormModalProps) {
+  const isEditMode = !!item;
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [subCategories, setSubCategories] = useState<
+    { id: string; name: string; categoryId: string }[]
+  >([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const {
-    isEditMode,
-    formData,
-    categories,
-    subCategories,
-    loading,
-    error,
-    success,
-    fieldErrors,
-    handleChange,
-    handleSelectChange,
+    control,
+    register,
     handleSubmit,
-  } = useServiceForm({ open, item, onSuccess, onOpenChange });
+    watch,
+    reset,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<ServiceFormData>({
+    resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      duration: "",
+      price: "",
+      commission: "",
+      categoryId: "",
+      subCategoryId: "",
+      image: "",
+    },
+  });
+
+  const watchedCategoryId = watch("categoryId");
+
+  useEffect(() => {
+    if (!open) return;
+    const load = async () => {
+      setError("");
+      try {
+        const [catRes, subRes] = await Promise.all([
+          fetch("/api/categories"),
+          fetch("/api/subcategories"),
+        ]);
+        const catData = await catRes.json();
+        const subData = await subRes.json();
+        setCategories(catData.data || []);
+        setSubCategories(subData.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load form data");
+      }
+    };
+
+    load();
+
+    if (item) {
+      reset({
+        name: item.name,
+        description: item.description ?? "",
+        duration: item.duration.toString(),
+        price: item.price.toString(),
+        commission: item.commission.toString(),
+        categoryId: item.categoryId ?? "",
+        subCategoryId: item.subCategoryId ?? "",
+        image: item.image ?? "",
+      });
+    } else {
+      reset({
+        name: "",
+        description: "",
+        duration: "",
+        price: "",
+        commission: "",
+        categoryId: "",
+        subCategoryId: "",
+        image: "",
+      });
+    }
+  }, [open, item, reset]);
+
+  const onSubmit = async (values: ServiceFormData) => {
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const payload = {
+        ...values,
+        duration: Number(values.duration),
+        price: Number(values.price),
+        commission: Number(values.commission),
+      };
+
+      const response = await fetch("/api/services", {
+        method: isEditMode ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          isEditMode ? { ...payload, id: item?.id } : payload
+        ),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(
+          data.error || `Failed to ${isEditMode ? "update" : "create"} service`
+        );
+      }
+
+      setSuccess(`Service ${isEditMode ? "updated" : "created"} successfully!`);
+      reset();
+      setTimeout(() => {
+        onOpenChange(false);
+        onSuccess?.();
+      }, 800);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -60,28 +171,24 @@ export function ServiceFormModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && <CustomAlert severity="error">{error}</CustomAlert>}
           {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           <div className="space-y-2">
-            <label
-              htmlFor="name"
-              className="text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="name" className="text-sm font-medium text-gray-700">
               Name<span className="text-red-500">*</span>
             </label>
             <input
               id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
+              {...register("name")}
               placeholder="Enter service name"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
-            {fieldErrors.name && (
-              <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.name.message as string}
+              </p>
             )}
           </div>
 
@@ -94,16 +201,14 @@ export function ServiceFormModal({
             </label>
             <textarea
               id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              {...register("description")}
               placeholder="Enter service description"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
               rows={3}
             />
-            {fieldErrors.description && (
+            {errors.description && (
               <p className="text-red-500 text-sm mt-1">
-                {fieldErrors.description}
+                {errors.description.message as string}
               </p>
             )}
           </div>
@@ -112,24 +217,33 @@ export function ServiceFormModal({
             <label className="text-sm font-medium text-gray-700">
               Category
             </label>
-            <Select
-              value={formData.categoryId}
-              onValueChange={(value) => handleSelectChange("categoryId", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {fieldErrors.categoryId && (
+            <Controller
+              control={control}
+              name="categoryId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setValue("subCategoryId", "");
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.categoryId && (
               <p className="text-red-500 text-sm mt-1">
-                {fieldErrors.categoryId}
+                {errors.categoryId.message as string}
               </p>
             )}
           </div>
@@ -138,33 +252,37 @@ export function ServiceFormModal({
             <label className="text-sm font-medium text-gray-700">
               Subcategory
             </label>
-            <Select
-              value={formData.subCategoryId}
-              onValueChange={(value) =>
-                handleSelectChange("subCategoryId", value)
-              }
-              disabled={!formData.categoryId}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a subcategory" />
-              </SelectTrigger>
-              <SelectContent>
-                {subCategories
-                  .filter(
-                    (sub) =>
-                      !formData.categoryId ||
-                      sub.categoryId === formData.categoryId
-                  )
-                  .map((sub) => (
-                    <SelectItem key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            {fieldErrors.subCategoryId && (
+            <Controller
+              control={control}
+              name="subCategoryId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={!watchedCategoryId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a subcategory" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subCategories
+                      .filter(
+                        (sub) =>
+                          !watchedCategoryId ||
+                          sub.categoryId === watchedCategoryId
+                      )
+                      .map((sub) => (
+                        <SelectItem key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.subCategoryId && (
               <p className="text-red-500 text-sm mt-1">
-                {fieldErrors.subCategoryId}
+                {errors.subCategoryId.message as string}
               </p>
             )}
           </div>
@@ -180,18 +298,15 @@ export function ServiceFormModal({
               <input
                 id="duration"
                 type="number"
-                name="duration"
-                value={formData.duration}
-                onChange={handleChange}
-                required
+                {...register("duration")}
                 placeholder="60"
                 min="1"
                 step="1"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              {fieldErrors.duration && (
+              {errors.duration && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors.duration}
+                  {errors.duration.message as string}
                 </p>
               )}
             </div>
@@ -206,17 +321,16 @@ export function ServiceFormModal({
               <input
                 id="price"
                 type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                required
+                {...register("price")}
                 placeholder="0.00"
                 min="0"
                 step="0.01"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              {fieldErrors.price && (
-                <p className="text-red-500 text-sm mt-1">{fieldErrors.price}</p>
+              {errors.price && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.price.message as string}
+                </p>
               )}
             </div>
 
@@ -230,18 +344,15 @@ export function ServiceFormModal({
               <input
                 id="commission"
                 type="number"
-                name="commission"
-                value={formData.commission}
-                onChange={handleChange}
-                required
+                {...register("commission")}
                 placeholder="0.00"
                 min="0"
                 step="0.01"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              {fieldErrors.commission && (
+              {errors.commission && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors.commission}
+                  {errors.commission.message as string}
                 </p>
               )}
             </div>
@@ -256,14 +367,14 @@ export function ServiceFormModal({
             </label>
             <input
               id="image"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
+              {...register("image")}
               placeholder="https://example.com/image.jpg"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
-            {fieldErrors.image && (
-              <p className="text-red-500 text-sm mt-1">{fieldErrors.image}</p>
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.image.message as string}
+              </p>
             )}
           </div>
 
@@ -271,17 +382,17 @@ export function ServiceFormModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              disabled={loading}
+              disabled={loading || isSubmitting}
               className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isSubmitting}
               className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading
+              {loading || isSubmitting
                 ? isEditMode
                   ? "Updating..."
                   : "Creating..."
@@ -295,4 +406,3 @@ export function ServiceFormModal({
     </Dialog>
   );
 }
-

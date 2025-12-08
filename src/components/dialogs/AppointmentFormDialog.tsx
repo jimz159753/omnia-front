@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Dialog,
@@ -18,11 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CustomAlert } from "@/components/ui/CustomAlert";
 
-interface Product {
+interface Service {
   id: string;
   name: string;
   price: number;
+  duration: number;
 }
 
 interface User {
@@ -30,15 +31,16 @@ interface User {
   email: string;
 }
 
-interface SaleFormDialogProps {
+interface AppointmentFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
 type FormValues = {
-  productId: string;
+  serviceId: string;
   sellerId: string;
+  duration: string;
   amount: string;
   includeNotes: boolean;
   notes: string;
@@ -49,14 +51,16 @@ type FormValues = {
   clientAddress: string;
 };
 
-export function SaleFormDialog({
+export function AppointmentFormDialog({
   open,
   onOpenChange,
   onSuccess,
-}: SaleFormDialogProps) {
-  const [products, setProducts] = useState<Product[]>([]);
+}: AppointmentFormDialogProps) {
+  const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const {
     control,
@@ -64,11 +68,13 @@ export function SaleFormDialog({
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
-      productId: "",
+      serviceId: "",
       sellerId: "",
+      duration: "",
       amount: "",
       includeNotes: false,
       notes: "",
@@ -80,10 +86,8 @@ export function SaleFormDialog({
     },
   });
 
+  const selectedServiceId = watch("serviceId");
   const includeNotes = watch("includeNotes");
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -91,21 +95,28 @@ export function SaleFormDialog({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (!selectedServiceId) return;
+    const svc = services.find((s) => s.id === selectedServiceId);
+    if (svc) {
+      setValue("amount", svc.price.toString());
+      setValue("duration", svc.duration.toString());
+    }
+  }, [selectedServiceId, services, setValue]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [productsRes, usersRes] = await Promise.all([
-        fetch("/api/products"),
+      const [servicesRes, usersRes] = await Promise.all([
+        fetch("/api/services"),
         fetch("/api/users"),
       ]);
-
-      const productsData = await productsRes.json();
+      const servicesData = await servicesRes.json();
       const usersData = await usersRes.json();
-
-      setProducts(productsData.data || []);
+      setServices(servicesData.data || []);
       setUsers(usersData || []);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
+    } catch (err) {
+      console.error(err);
       setError("Failed to load form data");
     } finally {
       setLoading(false);
@@ -152,7 +163,7 @@ export function SaleFormDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId: clientData.id,
-          productId: values.productId,
+          serviceId: values.serviceId,
           sellerId: values.sellerId,
           amount: parseFloat(values.amount),
           status: "pending",
@@ -162,19 +173,17 @@ export function SaleFormDialog({
 
       if (!ticketResponse.ok) {
         const data = await ticketResponse.json();
-        throw new Error(data.error || "Failed to create ticket");
+        throw new Error(data.error || "Failed to create appointment");
       }
 
-      setSuccess("Ticket created successfully");
+      setSuccess("Appointment created successfully");
       reset();
       setTimeout(() => {
         onOpenChange(false);
         onSuccess?.();
       }, 800);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to create ticket"
-      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create appointment");
     }
   };
 
@@ -182,14 +191,14 @@ export function SaleFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl">
         <DialogHeader>
-          <DialogTitle>Create Sale</DialogTitle>
+          <DialogTitle>Create Appointment</DialogTitle>
           <DialogDescription>
-            Fill out the sale and client details below
+            Fill out the appointment and client details below
           </DialogDescription>
         </DialogHeader>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {success && <p className="text-sm text-green-600">{success}</p>}
+        {error && <CustomAlert severity="error">{error}</CustomAlert>}
+        {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -198,39 +207,39 @@ export function SaleFormDialog({
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-6">
-              {/* Left Side - Sale Details */}
+              {/* Left Side - Appointment Details */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Sale Details</h3>
+                <h3 className="text-lg font-semibold">Appointment Details</h3>
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Product
+                    Service
                   </label>
                   <Controller
                     control={control}
-                    name="productId"
-                    rules={{ required: "Product is required" }}
+                    name="serviceId"
+                    rules={{ required: "Service is required" }}
                     render={({ field }) => (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select product" />
+                          <SelectValue placeholder="Select service" />
                         </SelectTrigger>
                         <SelectContent>
-                          {products.map((product) => (
-                            <SelectItem key={product.id} value={product.id}>
-                              {product.name} - ${product.price.toFixed(2)}
+                          {services.map((service) => (
+                            <SelectItem key={service.id} value={service.id}>
+                              {service.name} - ${service.price.toFixed(2)}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     )}
                   />
-                  {errors.productId && (
+                  {errors.serviceId && (
                     <p className="text-xs text-red-600">
-                      {errors.productId.message as string}
+                      {errors.serviceId.message as string}
                     </p>
                   )}
                 </div>
@@ -270,12 +279,28 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Amount
+                    Duration (minutes)
                   </label>
                   <input
                     type="number"
-                    step="0.01"
-                    {...register("amount", { required: "Amount is required" })}
+                    {...register("duration", { required: "Duration is required" })}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    placeholder="Duration"
+                  />
+                  {errors.duration && (
+                    <p className="text-xs text-red-600">
+                      {errors.duration.message as string}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    {...register("amount", { required: "Price is required" })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="0.00"
                   />
@@ -305,7 +330,7 @@ export function SaleFormDialog({
                       htmlFor="include-notes"
                       className="text-sm font-semibold text-gray-800 cursor-pointer select-none flex-1"
                     >
-                      Add sale note?
+                      Add appointment note?
                     </label>
                   </div>
 
@@ -317,7 +342,7 @@ export function SaleFormDialog({
                       <textarea
                         {...register("notes")}
                         className="w-full rounded-md border-2 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
-                        placeholder="Add any notes about this sale..."
+                        placeholder="Add any notes about this appointment..."
                         rows={4}
                       />
                     </div>
@@ -386,7 +411,7 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Instagram
+                    Instagram (optional)
                   </label>
                   <input
                     {...register("clientInstagram")}
@@ -397,7 +422,7 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Address
+                    Address (optional)
                   </label>
                   <input
                     {...register("clientAddress")}
@@ -422,7 +447,7 @@ export function SaleFormDialog({
                 disabled={isSubmitting}
                 className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Creating..." : "Generate Ticket"}
+                {isSubmitting ? "Creating..." : "Create Appointment"}
               </button>
             </div>
           </form>
@@ -431,3 +456,4 @@ export function SaleFormDialog({
     </Dialog>
   );
 }
+

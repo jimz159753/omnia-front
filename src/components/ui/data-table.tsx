@@ -28,7 +28,7 @@ interface PaginationInfo {
   totalPages: number;
 }
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string;
@@ -38,7 +38,10 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void;
   onSearch?: (search: string) => void;
   loading?: boolean;
+  renderSubComponent?: (row: TData) => React.ReactNode;
 }
+
+export type DataTablePropsType<TData, TValue> = DataTableProps<TData, TValue>;
 
 export function DataTable<TData, TValue>({
   columns,
@@ -50,8 +53,10 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onSearch,
   loading = false,
+  renderSubComponent,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
 
   const table = useReactTable({
     data,
@@ -64,6 +69,14 @@ export function DataTable<TData, TValue>({
     },
     manualPagination: true,
     pageCount: pagination?.totalPages ?? -1,
+    getRowId: (row, index) => {
+      return ((row as any).id as string | undefined) ?? String(index);
+    },
+    meta: {
+      toggleRowExpanded: (rowId: string) =>
+        setExpanded((prev) => ({ ...prev, [rowId]: !prev[rowId] })),
+      isRowExpanded: (rowId: string) => !!expanded[rowId],
+    },
   });
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,19 +127,25 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {renderSubComponent && expanded[row.id] && (
+                    <TableRow className="bg-gray-50">
+                      <TableCell colSpan={columns.length}>
+                        {renderSubComponent(row.original)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>
