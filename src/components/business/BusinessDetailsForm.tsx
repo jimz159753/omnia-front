@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 import {
   businessSchema,
   type BusinessFormValues,
@@ -44,6 +45,7 @@ export function BusinessDetailsForm() {
       whatsappCredits: false,
       whatsappChatBot: false,
       logo: undefined,
+      language: "en",
     },
   });
 
@@ -77,6 +79,7 @@ export function BusinessDetailsForm() {
           whatsappReminders: data.whatsappReminders ?? false,
           whatsappCredits: data.whatsappCredits ?? false,
           whatsappChatBot: data.whatsappChatBot ?? false,
+          language: data.language ?? "en",
           logo: undefined,
         });
         if (data.logo) setLogoPreview(data.logo);
@@ -186,6 +189,18 @@ export function BusinessDetailsForm() {
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">
+              {t("businessLanguage")}
+            </label>
+            <select
+              {...register("language")}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <option value="en">{t("businessLanguageEnglish")}</option>
+              <option value="es">{t("businessLanguageSpanish")}</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">
               {t("businessPhone")}
             </label>
             <input
@@ -245,11 +260,15 @@ export function BusinessDetailsForm() {
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {logoPreview && (
-              <img
-                src={logoPreview}
-                alt="Business logo"
-                className="mt-2 max-h-24"
-              />
+              <div className="mt-2 h-24 w-24 relative">
+                <Image
+                  src={logoPreview}
+                  alt="Business logo"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
             )}
           </div>
           <div className="md:col-span-2">

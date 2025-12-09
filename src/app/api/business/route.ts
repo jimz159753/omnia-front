@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
     whatsappReminders: parseBoolean(formData.get("whatsappReminders")),
     whatsappCredits: parseBoolean(formData.get("whatsappCredits")),
     whatsappChatBot: parseBoolean(formData.get("whatsappChatBot")),
+      language: (formData.get("language") as string) ?? "en",
   };
 
   let logoUrl = existing?.logo ?? null;

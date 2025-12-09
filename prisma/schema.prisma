@@ -12,7 +12,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -158,6 +157,7 @@ model Business {
   whatsappReminders Boolean  @default(false)
   whatsappCredits   Boolean  @default(false)
   whatsappChatBot   Boolean  @default(false)
+  language          String   @default("en")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

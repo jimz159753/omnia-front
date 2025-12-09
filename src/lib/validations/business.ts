@@ -21,6 +21,7 @@ export const businessSchema = z.object({
   whatsappCredits: z.boolean(),
   whatsappChatBot: z.boolean(),
   logo: z.any().optional(),
+  language: z.string().optional(),
 });
 
 export type BusinessFormValues = z.infer<typeof businessSchema>;
