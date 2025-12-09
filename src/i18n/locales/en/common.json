@@ -1,0 +1,23 @@
+{
+  "welcome": "Welcome",
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "previous": "Previous",
+  "next": "Next",
+  "page": "Page",
+  "of": "of",
+  "results": "results",
+  "showing": "Showing",
+  "to": "to",
+  "noResults": "No results.",
+  "success": "Success",
+  "error": "Error",
+  "confirm": "Confirm",
+  "actions": "Actions"
+}
+
