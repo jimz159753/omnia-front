@@ -4,6 +4,7 @@ import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
 import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
+import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 
 type TicketWithRelations = Ticket & {
   client: Client;
@@ -48,7 +49,7 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
       );
       return (
         <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <FiCalendar className="w-4 h-4 text-brand-500" />
           <div className="leading-tight">
             <div>{dateStr}</div>
             <div className="text-xs text-gray-500">{timeStr}</div>
@@ -96,16 +97,12 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     header: "Status",
     cell: ({ row }) => {
       const r = row as RowWithGetValue;
-      const status = r.getValue("status") as string;
-      const badgeClass =
-        status === "completed"
-          ? "bg-green-100 text-green-800"
-          : status === "pending"
-          ? "bg-yellow-100 text-yellow-800"
-          : "bg-red-100 text-red-800";
+      const status = (r.getValue("status") as string) || "";
+      const statusLabel = getStatusLabel(status);
+      const badgeClass = getStatusBadgeClass(status);
       return (
         <Badge variant="secondary" className={`px-2 ${badgeClass}`}>
-          {status}
+          {statusLabel}
         </Badge>
       );
     },

@@ -1,9 +1,11 @@
 "use client";
 
+import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns } from "./columns";
 import { useTickets } from "@/hooks/useTickets";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 import {
   FiDownload,
   FiDollarSign,
@@ -15,6 +17,12 @@ import {
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 
 const Sales = () => {
+  type TicketWithRelations = ReturnType<typeof useTickets>["data"][number] & {
+    notes?: string;
+  };
+  const [selectedTicket, setSelectedTicket] =
+    React.useState<TicketWithRelations | null>(null);
+
   const {
     data,
     loading,
@@ -152,6 +160,12 @@ const Sales = () => {
         onPageChange={handlePageChange}
         onSearch={handleSearch}
         loading={loading}
+        onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
+      />
+      <TicketDetailsDialog
+        open={!!selectedTicket}
+        onOpenChange={(open) => !open && setSelectedTicket(null)}
+        ticket={selectedTicket ?? undefined}
       />
     </>
   );

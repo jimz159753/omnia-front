@@ -22,7 +22,7 @@ export const addNewButtonItems: AddNewButtonItem[] = [
     className: "rounded-r-none",
     colorBg: "bg-blue-500/20",
     hoverBg: "hover:bg-blue-500/30",
-    iconColor: "text-blue-500",
+    iconColor: "text-brand-500",
     hoverRing: "hover:ring-blue-500",
   },
   {

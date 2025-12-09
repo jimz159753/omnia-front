@@ -4,13 +4,11 @@ import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
-import {
-  useClientsPage,
-  type Client,
-  type TicketRow,
-} from "@/hooks/useClientsPage";
+import { useClientsPage, type TicketRow } from "@/hooks/useClientsPage";
 import SelectedClient from "./selected-client";
-import { GenericTabs } from "@/components/ui/GenericTabs";
+import { GenericTabs } from "@/components/ui/genericTabs";
+import ClientSidebar from "./controllers";
+import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 
 const Clients = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +23,7 @@ const Clients = () => {
       filteredTickets,
       loading,
       searchTerm,
+      filter,
       isClientDialogOpen,
       editingClient,
       activeTab,
@@ -38,6 +37,7 @@ const Clients = () => {
       openEditClient,
       handleDialogChange,
       setActiveTab,
+      setFilter,
     },
   } = clientsHook;
 
@@ -59,10 +59,15 @@ const Clients = () => {
     };
   }, [selectedClient]);
 
+  const [selectedTicket, setSelectedTicket] = React.useState<TicketRow | null>(
+    null
+  );
+
   type DataTableWithSubComponent = React.ComponentType<{
     columns: unknown;
     data: unknown[];
     searchKey?: string;
+    onRowClick?: (row: unknown) => void;
   }>;
   const DataTableWithSub = DataTable as unknown as DataTableWithSubComponent;
 
@@ -77,45 +82,17 @@ const Clients = () => {
   return (
     <>
       <div className="flex">
-        <div className="flex flex-col gap-4 p-4 h-screen border-r border-gray-200">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={openAddClient}
-                className="w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
-              >
-                Add Client
-              </button>
-            </div>
-            <div className="space-y-2">
-              <input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, email, phone, instagram, address"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-              <p className="text-sm text-gray-500">
-                Showing {filteredClients.length} of {clients.length} clients
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              {filteredClients.map((client: Client) => (
-                <button
-                  key={client.id}
-                  onClick={() => setSelectedClientId(client.id)}
-                  className={`text-left px-3 py-2 rounded-md border transition-colors ${
-                    client.id === selectedClientId
-                      ? "border-brand-500 bg-brand-50"
-                      : "border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  <div className="font-semibold">{client.name}</div>
-                  <div className="text-sm text-gray-600">{client.email}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <ClientSidebar
+          clients={clients}
+          filteredClients={filteredClients}
+          selectedClientId={selectedClientId}
+          onSelectClient={setSelectedClientId}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          filter={filter}
+          onFilterChange={setFilter}
+          onAddClient={openAddClient}
+        />
         <div className="flex flex-col gap-4 flex-1 p-4">
           <SelectedClient client={selectedClient} onEdit={openEditClient} />
           <GenericTabs
@@ -131,9 +108,28 @@ const Clients = () => {
             columns={ticketColumns as unknown}
             data={filteredTickets}
             searchKey="status"
+            onRowClick={(row) => setSelectedTicket(row as TicketRow)}
           />
         </div>
       </div>
+      <TicketDetailsDialog
+        open={!!selectedTicket}
+        onOpenChange={(open) => !open && setSelectedTicket(null)}
+        ticket={
+          selectedTicket
+            ? {
+                ...selectedTicket,
+                client: selectedClient
+                  ? {
+                      name: selectedClient.name,
+                      email: selectedClient.email,
+                      phone: selectedClient.phone,
+                    }
+                  : undefined,
+              }
+            : undefined
+        }
+      />
       <ClientFormDialog
         open={isClientDialogOpen}
         onOpenChange={handleDialogChange}

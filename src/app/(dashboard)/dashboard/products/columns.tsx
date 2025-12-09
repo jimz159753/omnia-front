@@ -49,7 +49,7 @@ export const getColumns = ({
       const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
       return (
         <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <FiCalendar className="w-4 h-4 text-brand-500" />
           <div className="leading-tight">
             <div>{dateStr}</div>
             <div className="text-xs text-gray-500">{timeStr}</div>

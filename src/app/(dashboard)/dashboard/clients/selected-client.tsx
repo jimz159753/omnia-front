@@ -1,6 +1,7 @@
 "use client";
 
 import type { Client } from "@/hooks/useClientsPage";
+import { FiEdit2 } from "react-icons/fi";
 
 type Props = {
   client?: Client | null;
@@ -14,30 +15,35 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
 
   return (
     <div className="bg-white space-y-2">
-      <h3 className="text-xl font-semibold">{client.name}</h3>
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold">{client.name}</h3>
         <button
           onClick={onEdit}
-          className="px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-2 px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
         >
-          Edit Client
+          <FiEdit2 className="w-4 h-4" />
+          <p className="font-semibold">Edit Client</p>
         </button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
         <p>
-          <strong>Email:</strong> {client.email}
+          <span className="font-semibold">Email:</span> {client.email}
         </p>
         <p>
-          <strong>Phone:</strong> {client.phone}
+          <span className="font-semibold">Mobile:</span> {client.phone}
         </p>
         <p>
-          <strong>Instagram:</strong> {client.instagram || "-"}
+          <span className="font-semibold">Instagram:</span>{" "}
+          {client.instagram || "-"}
         </p>
         <p>
-          <strong>Address:</strong> {client.address || "-"}
+          <span className="font-semibold">Address:</span>{" "}
+          {client.address || "-"}
         </p>
         <p>
-          <strong>Tickets:</strong> {client.tickets?.length ?? 0}
+          <span className="font-semibold">Tickets:</span>{" "}
+          {client.tickets?.length ?? 0}
         </p>
       </div>
     </div>

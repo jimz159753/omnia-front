@@ -101,7 +101,7 @@ const Services = () => {
     {
       title: "Active Services",
       value: data.length.toString(),
-      icon: <FiCalendar className="w-4 h-4" />,
+      icon: <FiCalendar className="w-4 h-4 text-brand-500" />,
     },
     {
       title: "Avg Duration",

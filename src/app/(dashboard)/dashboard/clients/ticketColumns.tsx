@@ -4,6 +4,7 @@ import React from "react";
 import type { ColumnDef, TicketRow } from "@/types/clients";
 import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
+import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -32,7 +33,7 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
       const { dateStr, timeStr } = formatDateTime(row.original.createdAt);
       return (
         <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-gray-500" />
+          <FiCalendar className="w-4 h-4 text-brand-500" />
           <div className="flex flex-col leading-tight">
             <span>{dateStr}</span>
             <span className="text-xs text-gray-500">{timeStr}</span>
@@ -64,16 +65,15 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.original.status;
-      const badgeClass =
-        status === "completed"
-          ? "bg-green-100 text-green-800"
-          : status === "pending"
-          ? "bg-yellow-100 text-yellow-800"
-          : "bg-red-100 text-red-800";
+      const status = row.original.status || "";
+      const statusLabel = getStatusLabel(status);
+      const badgeClass = getStatusBadgeClass(status);
       return (
-        <Badge variant="secondary" className={`px-2 ${badgeClass}`}>
-          {status}
+        <Badge
+          variant="secondary"
+          className={`px-3 py-1 font-semibold ${badgeClass}`}
+        >
+          {statusLabel}
         </Badge>
       );
     },

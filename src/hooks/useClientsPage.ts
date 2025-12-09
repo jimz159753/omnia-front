@@ -6,8 +6,15 @@ import {
   type TicketRow,
   type ColumnDef,
   type ActiveTab,
+  type ClientFilter,
 } from "@/types/clients";
-export type { Client, TicketRow, ColumnDef, ActiveTab } from "@/types/clients";
+export type {
+  Client,
+  TicketRow,
+  ColumnDef,
+  ActiveTab,
+  ClientFilter,
+} from "@/types/clients";
 import { getTicketColumns } from "@/app/(dashboard)/dashboard/clients/ticketColumns";
 
 export interface ClientsPageState {
@@ -18,6 +25,7 @@ export interface ClientsPageState {
   filteredTickets: TicketRow[];
   loading: boolean;
   searchTerm: string;
+  filter: ClientFilter;
   isClientDialogOpen: boolean;
   editingClient: Client | null;
   activeTab: ActiveTab;
@@ -32,6 +40,7 @@ export interface ClientsPageActions {
   openEditClient: () => void;
   handleDialogChange: (open: boolean) => void;
   setActiveTab: (tab: ActiveTab) => void;
+  setFilter: (filter: ClientFilter) => void;
 }
 
 export type UseClientsPageReturn = {
@@ -45,6 +54,7 @@ export function useClientsPage(): UseClientsPageReturn {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState<ClientFilter>("all");
   const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>("all");
@@ -55,21 +65,29 @@ export function useClientsPage(): UseClientsPageReturn {
 
   useEffect(() => {
     const term = searchTerm.trim().toLowerCase();
-    const filtered = !term
-      ? clients
-      : clients.filter((client) => {
-          const haystack = [
-            client.name,
-            client.email,
-            client.phone,
-            client.instagram,
-            client.address,
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-          return haystack.includes(term);
-        });
+    const now = new Date();
+    const filtered = clients
+      .filter((client) => {
+        const createdAt = new Date(client.createdAt);
+        const diffDays = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+        if (filter === "recent") return diffDays <= 30;
+        if (filter === "inactive") return diffDays > 30;
+        return true;
+      })
+      .filter((client) => {
+        if (!term) return true;
+        const haystack = [
+          client.name,
+          client.email,
+          client.phone,
+          client.instagram,
+          client.address,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(term);
+      });
     setFilteredClients(filtered);
     if (filtered.length > 0) {
       if (
@@ -81,7 +99,7 @@ export function useClientsPage(): UseClientsPageReturn {
     } else {
       setSelectedClientId(null);
     }
-  }, [clients, searchTerm, selectedClientId]);
+  }, [clients, searchTerm, selectedClientId, filter]);
 
   const selectedClient = useMemo(
     () => filteredClients.find((c) => c.id === selectedClientId) || null,
@@ -145,6 +163,7 @@ export function useClientsPage(): UseClientsPageReturn {
       filteredTickets,
       loading,
       searchTerm,
+      filter,
       isClientDialogOpen,
       editingClient,
       activeTab,
@@ -158,6 +177,7 @@ export function useClientsPage(): UseClientsPageReturn {
       openEditClient,
       handleDialogChange,
       setActiveTab,
+      setFilter,
     },
   };
 }

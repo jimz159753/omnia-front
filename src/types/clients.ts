@@ -29,4 +29,5 @@ export interface Client {
 }
 
 export type ActiveTab = "all" | "products" | "appointments" | "notes";
+export type ClientFilter = "all" | "recent" | "inactive";
 

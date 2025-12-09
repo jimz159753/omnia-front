@@ -45,6 +45,7 @@ export interface DataTableProps<TData, TValue> {
   onSearch?: (search: string) => void;
   loading?: boolean;
   renderSubComponent?: (row: TData) => React.ReactNode;
+  onRowClick?: (row: TData) => void;
 }
 
 export type DataTablePropsType<TData, TValue> = DataTableProps<TData, TValue>;
@@ -60,6 +61,7 @@ export function DataTable<TData, TValue>({
   onSearch,
   loading = false,
   renderSubComponent,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
@@ -146,7 +148,11 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row: Row<TData>) => (
                 <React.Fragment key={row.id}>
-                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => onRowClick?.(row.original)}
+                    className={onRowClick ? "cursor-pointer" : undefined}
+                  >
                     {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
                       <TableCell key={cell.id}>
                         {flexRender(
