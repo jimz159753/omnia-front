@@ -6,6 +6,7 @@ import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
+import i18next from "@/i18n";
 
 type TicketWithRelations = Ticket & {
   client: Client;
@@ -40,72 +41,77 @@ const formatDateTime = (iso: string) => {
   return { dateStr, timeStr };
 };
 
-export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
-  {
-    accessorKey: "id",
-    header: "Ticket #",
-    cell: ({ row }) => {
-      return <div>{row.original.id}</div>;
+export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
+  const tCommon = (key: string) => i18next.t(`common:${key}`);
+  const tSales = (key: string) => i18next.t(`sales:${key}`);
+
+  return [
+    {
+      accessorKey: "id",
+      header: tSales("ticketNumber"),
+      cell: ({ row }) => {
+        return <div>{row.original.id}</div>;
+      },
     },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Date",
-    cell: ({ row }) => {
-      const r = row as RowWithGetValue;
-      const { dateStr, timeStr } = formatDateTime(
-        r.getValue("createdAt") as string
-      );
-      return (
-        <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-brand-500" />
-          <div className="leading-tight">
-            <div>{dateStr}</div>
-            <div className="text-xs text-gray-500">{timeStr}</div>
+    {
+      accessorKey: "createdAt",
+      header: tCommon("date"),
+      cell: ({ row }) => {
+        const r = row as RowWithGetValue;
+        const { dateStr, timeStr } = formatDateTime(
+          r.getValue("createdAt") as string
+        );
+        return (
+          <div className="flex items-center gap-2">
+            <FiCalendar className="w-4 h-4 text-brand-500" />
+            <div className="leading-tight">
+              <div>{dateStr}</div>
+              <div className="text-xs text-gray-500">{timeStr}</div>
+            </div>
           </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    accessorKey: "client.name",
-    header: "Client",
-  },
-  {
-    accessorKey: "quantity",
-    header: "Quantity",
-    cell: ({ row }) => {
-      return (
-        <div className="font-medium text-gray-900">{row.original.quantity}</div>
-      );
+    {
+      accessorKey: "client.name",
+      header: tCommon("client"),
     },
-  },
-  {
-    accessorKey: "total",
-    header: "Total",
-    cell: ({ row }) => {
-      return (
-        <div className="font-medium text-gray-900">
-          {formatCurrency(row.original.total ?? 0)}
-        </div>
-      );
+    {
+      accessorKey: "quantity",
+      header: tCommon("quantity"),
+      cell: ({ row }) => {
+        return (
+          <div className="font-medium text-gray-900">{row.original.quantity}</div>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const r = row as RowWithGetValue;
-      const status = (r.getValue("status") as string) || "";
-      const statusLabel = getStatusLabel(status);
-      const badgeClass = getStatusBadgeClass(status);
-      return (
-        <Badge
-          className={`px-3 py-1 font-semibold border-transparent ${badgeClass}`}
-        >
-          {statusLabel}
-        </Badge>
-      );
+    {
+      accessorKey: "total",
+      header: tCommon("total"),
+      cell: ({ row }) => {
+        return (
+          <div className="font-medium text-gray-900">
+            {formatCurrency(row.original.total ?? 0)}
+          </div>
+        );
+      },
     },
-  },
-];
+    {
+      accessorKey: "status",
+      header: tCommon("status"),
+      cell: ({ row }) => {
+        const r = row as RowWithGetValue;
+        const status = (r.getValue("status") as string) || "";
+        const statusLabel = getStatusLabel(status);
+        const badgeClass = getStatusBadgeClass(status);
+        return (
+          <Badge
+            className={`px-3 py-1 font-semibold border-transparent ${badgeClass}`}
+          >
+            {statusLabel}
+          </Badge>
+        );
+      },
+    },
+  ];
+};

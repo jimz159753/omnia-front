@@ -4,13 +4,13 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
 import { formatCurrency } from "@/utils";
 import { FiDownload, FiMail, FiPrinter, FiX } from "react-icons/fi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type TicketLike = {
   id?: string;
@@ -68,6 +68,7 @@ export const TicketDetailsDialog: React.FC<Props> = ({
   onOpenChange,
   ticket,
 }) => {
+  const { t } = useTranslation("sales");
   const { dateStr, timeStr } = formatDateTime(ticket?.createdAt);
 
   return (
@@ -78,20 +79,20 @@ export const TicketDetailsDialog: React.FC<Props> = ({
             <DialogHeader className="border-b border-gray-200 p-4">
               <div className="flex items-center justify-between">
                 <DialogTitle className="flex items-center gap-3">
-                  Purchase ticket
+                  {t("ticketDetails")}
                 </DialogTitle>
                 <div className="flex items-center gap-3">
                   <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
                     <FiPrinter />
-                    Print
+                    {t("print")}
                   </button>
                   <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
                     <FiDownload />
-                    PDF
+                    {t("pdf")}
                   </button>
                   <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
                     <FiMail />
-                    Email
+                    {t("email")}
                   </button>
                   <DialogClose asChild>
                     <FiX className="h-5 w-5 text-gray-500 cursor-pointer" />
@@ -102,20 +103,20 @@ export const TicketDetailsDialog: React.FC<Props> = ({
             <div className="flex flex-col gap-2 items-center justify-center p-6">
               <p className="text-sm text-gray-700">{dateStr}</p>
               <p className="text-xs text-gray-500">{timeStr}</p>
-              <p className="text-gray-500 mt-6">Ticket ID</p>
+                <p className="text-gray-500 mt-6">{t("ticketID")}</p>
               <p className="font-bold text-xl text-gray-900 mb-6">
                 #{ticket.id || "-"}
               </p>
               <div className="flex flex-col gap-2 border-y border-gray-200 py-10 w-full items-center justify-center">
                 <div className="flex flex-col gap-2">
                   <p className="text-gray-500">
-                    Client:{" "}
+                    {t("clientLabel")}:{" "}
                     <span className="font-semibold text-gray-900">
                       {ticket.client?.name || "-"}
                     </span>
                   </p>
                   <p className="text-gray-500">
-                    Staff:{" "}
+                    {t("staffLabel")}:{" "}
                     <span className="font-semibold text-gray-900">
                       {ticket.seller?.name || ticket.seller?.email || "-"}
                     </span>
@@ -124,7 +125,7 @@ export const TicketDetailsDialog: React.FC<Props> = ({
               </div>
               <div className="flex flex-col gap-2 border-b border-gray-200 py-10 w-full items-start justify-between">
                 <p className="text-xl text-gray-900 flex items-center justify-start">
-                  Items
+                  {t("itemsLabel")}
                 </p>
                 <div className="flex flex-col gap-3 w-full">
                   {(ticket.items || []).map((item, idx) => (
@@ -137,7 +138,7 @@ export const TicketDetailsDialog: React.FC<Props> = ({
                           {item.product?.name || item.service?.name || "Item"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          Qty: {item.quantity ?? 1}
+                          {t("qtyLabel")}: {item.quantity ?? 1}
                         </p>
                       </div>
                       <div className="text-right">
@@ -148,20 +149,20 @@ export const TicketDetailsDialog: React.FC<Props> = ({
                     </div>
                   ))}
                   {(!ticket.items || ticket.items.length === 0) && (
-                    <p className="text-sm text-gray-500">No items</p>
+                    <p className="text-sm text-gray-500">{t("itemsEmpty")}</p>
                   )}
                 </div>
               </div>
               <div className="flex border-b border-gray-200 py-10 w-full items-center justify-between">
                 <p className="text-xl font-bold text-gray-900 flex items-center justify-start">
-                  TOTAL:
+                  {t("totalLabel")}
                 </p>
                 <p className="text-xl font-bold text-gray-900">
                   {formatCurrency(ticket.total || 0) || "-"}
                 </p>
               </div>
               <p className="text-gray-500 text-center my-2">
-                THANKS FOR YOUR PURCHASE!
+                {t("thanks")}
               </p>
             </div>
           </>

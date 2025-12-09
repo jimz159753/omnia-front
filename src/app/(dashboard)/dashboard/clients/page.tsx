@@ -9,6 +9,7 @@ import SelectedClient from "./selected-client";
 import { GenericTabs } from "@/components/ui/genericTabs";
 import ClientSidebar from "./controllers";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Clients = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,11 +44,13 @@ const Clients = () => {
     },
   } = clientsHook;
 
+  const { t } = useTranslation("clients");
+
   const tabs = [
-    { label: "All", value: "all" },
-    { label: "Products", value: "products" },
-    { label: "Appointments", value: "appointments" },
-    { label: "Notes", value: "notes" },
+    { label: t("all"), value: "all" },
+    { label: t("products"), value: "products" },
+    { label: t("appointments"), value: "appointments" },
+    { label: t("notes"), value: "notes" },
   ];
 
   const tabCounts = React.useMemo(() => {

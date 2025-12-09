@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Sales = () => {
   type TicketWithRelations = ReturnType<typeof useTickets>["data"][number] & {
@@ -22,6 +23,8 @@ const Sales = () => {
   };
   const [selectedTicket, setSelectedTicket] =
     React.useState<TicketWithRelations | null>(null);
+  const { t: tSales } = useTranslation("sales");
+  const { t: tCommon } = useTranslation();
 
   const {
     data,
@@ -35,17 +38,17 @@ const Sales = () => {
   const exportToCSV = () => {
     try {
       if (data.length === 0) {
-        alert("No data to export");
+        alert(tSales("noDataExport"));
         return;
       }
 
       const headers = [
-        "Date",
-        "Client",
-        "Items",
-        "Quantity",
-        "Total",
-        "Status",
+        tCommon("date"),
+        tCommon("client"),
+        tSales("itemsLabel"),
+        tCommon("quantity"),
+        tCommon("total"),
+        tCommon("status"),
       ];
 
       const rows = data.map((ticket) => {
@@ -93,28 +96,28 @@ const Sales = () => {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Failed to export CSV", err);
-      alert("Failed to export CSV");
+      alert(tSales("csvError"));
     }
   };
 
   const squareCards = [
     {
-      title: "Tickets this week",
+      title: tSales("ticketsThisWeek"),
       value: "28",
       icon: <FiShoppingBag className="w-4 h-4" />,
     },
     {
-      title: "Scheduled services",
+      title: tSales("scheduledServices"),
       value: "14",
       icon: <FiPackage className="w-4 h-4" />,
     },
     {
-      title: "Active clients",
+      title: tSales("activeClients"),
       value: "42",
       icon: <FiUser className="w-4 h-4" />,
     },
     {
-      title: "Resolved tickets",
+      title: tSales("resolvedTickets"),
       value: "18",
       icon: <FiDollarSign className="w-4 h-4" />,
     },
@@ -135,17 +138,17 @@ const Sales = () => {
   return (
     <>
       <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-4xl font-normal">Sales</p>
-          <p className="font-normal">Track and review your support tickets</p>
-        </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-4xl font-normal">{tSales("title")}</p>
+        <p className="font-normal">{tSales("description")}</p>
+      </div>
         <button
           onClick={exportToCSV}
           disabled={loading || data.length === 0}
           className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
         >
           <FiDownload className="w-4 h-4" />
-          Export to CSV
+          {tSales("exportCSV")}
         </button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
@@ -163,18 +166,18 @@ const Sales = () => {
           </Card>
         ))}
       </div>
-      <DataTable
-        columns={columns}
-        data={data}
-        searchKey="client"
-        searchPlaceholder="Search by client..."
-        searchValue={searchQuery}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        loading={loading}
-        onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
-      />
+        <DataTable
+          columns={columns}
+          data={data}
+          searchKey="client"
+          searchPlaceholder={tSales("searchByClient")}
+          searchValue={searchQuery}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+          loading={loading}
+          onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
+        />
       <TicketDetailsDialog
         open={!!selectedTicket}
         onOpenChange={(open) => !open && setSelectedTicket(null)}

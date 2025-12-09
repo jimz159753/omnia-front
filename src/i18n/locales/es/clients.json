@@ -14,6 +14,17 @@
   "notes": "Notas",
   "newClient": "Nuevo Cliente",
   "existingClient": "Cliente Existente",
-  "selectClient": "Seleccionar cliente"
+  "selectClient": "Seleccionar cliente",
+  "searchPlaceholder": "Busca por nombre, correo, teléfono, instagram o dirección",
+  "filterAll": "Todos los clientes",
+  "filterRecent": "Recientes (últimos 30 días)",
+  "filterInactive": "Inactivos (más de 30 días)",
+  "clientsCount": "Mostrando {{filtered}} de {{total}} clientes",
+  "noClient": "Ningún cliente seleccionado.",
+  "email": "Correo electrónico",
+  "mobile": "Teléfono",
+  "instagram": "Instagram",
+  "address": "Dirección",
+  "ticketsLabel": "Tickets"
 }
 

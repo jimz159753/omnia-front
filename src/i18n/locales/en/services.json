@@ -5,6 +5,11 @@
   "deleteService": "Delete Service",
   "serviceName": "Service name",
   "serviceDescription": "Service description",
-  "duration": "Duration"
+  "duration": "Duration",
+  "image": "Image",
+  "category": "Category",
+  "subcategory": "Subcategory",
+  "price": "Price",
+  "commission": "Commission"
 }
 

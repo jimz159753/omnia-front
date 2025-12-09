@@ -6,6 +6,7 @@ import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
+import i18next from "@/i18n";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -21,50 +22,55 @@ const formatDateTime = (iso: string) => {
   return { dateStr, timeStr };
 };
 
-export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
-  {
-    accessorKey: "id",
-    header: "Ticket #",
-    cell: ({ row }) => row.original.id,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Date",
-    cell: ({ row }) => {
-      const { dateStr, timeStr } = formatDateTime(row.original.createdAt);
-      return (
-        <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-brand-500" />
-          <div className="flex flex-col leading-tight">
-            <span>{dateStr}</span>
-            <span className="text-xs text-gray-500">{timeStr}</span>
+export const getTicketColumns = (): ColumnDef<TicketRow>[] => {
+  const tCommon = (key: string) => i18next.t(`common:${key}`);
+  const tSales = (key: string) => i18next.t(`sales:${key}`);
+
+  return [
+    {
+      accessorKey: "id",
+      header: tSales("ticketNumber"),
+      cell: ({ row }) => row.original.id,
+    },
+    {
+      accessorKey: "createdAt",
+      header: tCommon("date"),
+      cell: ({ row }) => {
+        const { dateStr, timeStr } = formatDateTime(row.original.createdAt);
+        return (
+          <div className="flex items-center gap-2">
+            <FiCalendar className="w-4 h-4 text-brand-500" />
+            <div className="flex flex-col leading-tight">
+              <span>{dateStr}</span>
+              <span className="text-xs text-gray-500">{timeStr}</span>
+            </div>
           </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    accessorKey: "quantity",
-    header: "Quantity",
-    cell: ({ row }) => row.original.quantity,
-  },
-  {
-    accessorKey: "total",
-    header: "Total",
-    cell: ({ row }) => formatCurrency(row.original.total ?? 0),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status || "";
-      const statusLabel = getStatusLabel(status);
-      const badgeClass = getStatusBadgeClass(status);
-      return (
-        <Badge className={`px-3 py-1 font-semibold ${badgeClass}`}>
-          {statusLabel}
-        </Badge>
-      );
+    {
+      accessorKey: "quantity",
+      header: tCommon("quantity"),
+      cell: ({ row }) => row.original.quantity,
     },
-  },
-];
+    {
+      accessorKey: "total",
+      header: tCommon("total"),
+      cell: ({ row }) => formatCurrency(row.original.total ?? 0),
+    },
+    {
+      accessorKey: "status",
+      header: tCommon("status"),
+      cell: ({ row }) => {
+        const status = row.original.status || "";
+        const statusLabel = getStatusLabel(status);
+        const badgeClass = getStatusBadgeClass(status);
+        return (
+          <Badge className={`px-3 py-1 font-semibold ${badgeClass}`}>
+            {statusLabel}
+          </Badge>
+        );
+      },
+    },
+  ];
+};

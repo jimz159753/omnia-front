@@ -1,5 +1,6 @@
 import React from "react";
 import type { ClientFilter, Client } from "@/hooks/useClientsPage";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   clients: Client[];
@@ -24,6 +25,7 @@ const ClientSidebar: React.FC<Props> = ({
   onFilterChange,
   onAddClient,
 }) => {
+  const { t } = useTranslation("clients");
   return (
     <div className="flex flex-col gap-4 p-4 h-screen border-r border-gray-200">
       <div className="flex flex-col gap-2">
@@ -32,14 +34,14 @@ const ClientSidebar: React.FC<Props> = ({
             onClick={onAddClient}
             className="w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
           >
-            Add Client
+            {t("addClient")}
           </button>
         </div>
         <div className="space-y-2">
           <input
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search by name, email, phone, instagram, address"
+            placeholder={t("searchPlaceholder")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           <select
@@ -47,12 +49,15 @@ const ClientSidebar: React.FC<Props> = ({
             onChange={(e) => onFilterChange(e.target.value as ClientFilter)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <option value="all">All Clients</option>
-            <option value="recent">Recent (last 30 days)</option>
-            <option value="inactive">Inactives (30+ days)</option>
+            <option value="all">{t("filterAll")}</option>
+            <option value="recent">{t("filterRecent")}</option>
+            <option value="inactive">{t("filterInactive")}</option>
           </select>
           <p className="text-sm text-gray-500">
-            Showing {filteredClients.length} of {clients.length} clients
+            {t("clientsCount", {
+              filtered: filteredClients.length,
+              total: clients.length,
+            })}
           </p>
         </div>
         <div className="flex flex-col gap-2">

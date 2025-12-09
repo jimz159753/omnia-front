@@ -1,3 +1,5 @@
+import i18next from "@/i18n";
+
 export enum TicketStatus {
   Pending = "Pending",
   Confirmed = "Confirmed",
@@ -45,6 +47,10 @@ export function normalizeTicketStatus(
 export function getStatusLabel(status: string | null | undefined): string {
   const normalized = normalizeTicketStatus(status);
   if (!normalized) return status || "";
+  const translation = i18next.t(`status:${normalized}`);
+  if (translation && translation !== `status:${normalized}`) {
+    return translation;
+  }
   return STATUS_LABELS[normalized];
 }
 

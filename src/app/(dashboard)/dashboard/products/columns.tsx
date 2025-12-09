@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FiEdit, FiTrash2, FiMoreHorizontal, FiCalendar } from "react-icons/fi";
+import i18next from "@/i18n";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -45,13 +46,16 @@ interface GetColumnsParams {
   onDelete: (item: ProductWithCategory) => void;
 }
 
+const tCommon = (key: string) => i18next.t(`common:${key}`);
+const tProducts = (key: string) => i18next.t(`products:${key}`);
+
 export const getColumns = ({
   onUpdate,
   onDelete,
 }: GetColumnsParams): ColumnDef<ProductWithCategory>[] => [
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: tProducts("createdAt"),
     cell: ({ row }: CellInfo) => {
       const { dateStr, timeStr } = formatDateTime(
         row.getValue("createdAt") as string
@@ -69,7 +73,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "image",
-    header: "Image",
+    header: tProducts("image"),
     cell: ({ row }: CellInfo) => {
       const src = row.getValue("image") as string;
       return (
@@ -91,15 +95,15 @@ export const getColumns = ({
   },
   {
     accessorKey: "sku",
-    header: "SKU",
+    header: tProducts("sku"),
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: tCommon("name"),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: tCommon("description"),
     cell: ({ row }: CellInfo) => {
       const description = row.getValue("description") as string;
       return (
@@ -111,14 +115,14 @@ export const getColumns = ({
   },
   {
     accessorKey: "category.name",
-    header: "Category",
+    header: tProducts("category"),
     cell: ({ row }: CellInfo) => {
       return row.original.category?.name || "N/A";
     },
   },
   {
     accessorKey: "stock",
-    header: "Stock",
+    header: tCommon("stock"),
     cell: ({ row }: CellInfo) => {
       const stock = row.getValue("stock") as number;
       return (
@@ -134,7 +138,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "cost",
-    header: "Cost",
+    header: tCommon("cost"),
     cell: ({ row }: CellInfo) => {
       const cost = parseFloat(row.getValue("cost") as string);
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -146,7 +150,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: tCommon("price"),
     cell: ({ row }: CellInfo) => {
       const price = parseFloat(row.getValue("price") as string);
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -158,7 +162,9 @@ export const getColumns = ({
   },
   {
     accessorKey: "actions",
-    header: () => <div className="text-center">Actions</div>,
+    header: () => (
+      <div className="text-center">{tCommon("actions")}</div>
+    ),
     cell: ({ row }: CellInfo) => {
       const item = row.original;
 
@@ -176,14 +182,14 @@ export const getColumns = ({
                 className="cursor-pointer"
               >
                 <FiEdit className="mr-2 h-4 w-4" />
-                Update
+                {tCommon("update")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(item)}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <FiTrash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tCommon("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

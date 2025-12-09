@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FiEdit, FiTrash2, FiMoreHorizontal, FiCalendar } from "react-icons/fi";
+import i18next from "@/i18n";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -37,13 +38,16 @@ interface GetColumnsParams {
   onDelete: (item: ServiceWithRelations) => void;
 }
 
+const tCommon = (key: string) => i18next.t(`common:${key}`);
+const tServices = (key: string) => i18next.t(`services:${key}`);
+
 export const getColumns = ({
   onUpdate,
   onDelete,
 }: GetColumnsParams): ColumnDef<ServiceWithRelations>[] => [
   {
     accessorKey: "image",
-    header: "Image",
+    header: tServices("image"),
     cell: ({ row }) => {
       const src = row.getValue("image") as string;
       return (
@@ -65,11 +69,11 @@ export const getColumns = ({
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: tCommon("name"),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: tCommon("description"),
     cell: ({ row }) => {
       const description = row.getValue("description") as string;
       return (
@@ -81,21 +85,21 @@ export const getColumns = ({
   },
   {
     accessorKey: "category.name",
-    header: "Category",
+    header: tServices("category"),
     cell: ({ row }) => {
       return row.original.category?.name || "N/A";
     },
   },
   {
     accessorKey: "subCategory.name",
-    header: "Subcategory",
+    header: tServices("subcategory"),
     cell: ({ row }) => {
       return row.original.subCategory?.name || "N/A";
     },
   },
   {
     accessorKey: "duration",
-    header: "Duration (min)",
+    header: `${tServices("duration")} (min)`,
     cell: ({ row }) => {
       const duration = row.getValue("duration") as number;
       return <div className="font-medium">{duration} min</div>;
@@ -103,7 +107,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: tServices("price"),
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -115,7 +119,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "commission",
-    header: "Commission",
+    header: tServices("commission"),
     cell: ({ row }) => {
       const commission = parseFloat(row.getValue("commission"));
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -127,7 +131,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: tCommon("date"),
     cell: ({ row }) => {
       const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
       return (
@@ -143,7 +147,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "actions",
-    header: () => <div className="text-center">Actions</div>,
+    header: () => <div className="text-center">{tCommon("actions")}</div>,
     cell: ({ row }) => {
       const item = row.original;
 
@@ -161,14 +165,14 @@ export const getColumns = ({
                 className="cursor-pointer"
               >
                 <FiEdit className="mr-2 h-4 w-4" />
-                Update
+                {tCommon("update")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(item)}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <FiTrash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tCommon("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

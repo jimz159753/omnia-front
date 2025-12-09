@@ -2,6 +2,7 @@
 
 import type { Client } from "@/hooks/useClientsPage";
 import { FiEdit2 } from "react-icons/fi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {
   client?: Client | null;
@@ -9,8 +10,10 @@ type Props = {
 };
 
 const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
+  const { t } = useTranslation("clients");
+
   if (!client) {
-    return <p className="text-sm text-gray-500">No client selected.</p>;
+    return <p className="text-sm text-gray-500">{t("noClient")}</p>;
   }
 
   return (
@@ -22,27 +25,27 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
           className="flex items-center gap-2 px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-100 transition-colors"
         >
           <FiEdit2 className="w-4 h-4" />
-          <p className="font-semibold">Edit Client</p>
+          <p className="font-semibold">{t("editClient")}</p>
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
         <p>
-          <span className="font-semibold">Email:</span> {client.email}
+          <span className="font-semibold">{t("email")}:</span> {client.email}
         </p>
         <p>
-          <span className="font-semibold">Mobile:</span> {client.phone}
+          <span className="font-semibold">{t("mobile")}:</span> {client.phone}
         </p>
         <p>
-          <span className="font-semibold">Instagram:</span>{" "}
+          <span className="font-semibold">{t("instagram")}:</span>{" "}
           {client.instagram || "-"}
         </p>
         <p>
-          <span className="font-semibold">Address:</span>{" "}
+          <span className="font-semibold">{t("address")}:</span>{" "}
           {client.address || "-"}
         </p>
         <p>
-          <span className="font-semibold">Tickets:</span>{" "}
+          <span className="font-semibold">{t("ticketsLabel")}:</span>{" "}
           {client.tickets?.length ?? 0}
         </p>
       </div>
