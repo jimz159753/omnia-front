@@ -24,7 +24,6 @@ const formatDateTime = (iso: string) => {
 
 export const getTicketColumns = (): ColumnDef<TicketRow>[] => {
   const tCommon = (key: string) => i18next.t(`common:${key}`);
-  const tSales = (key: string) => i18next.t(`sales:${key}`);
 
   return [
     {

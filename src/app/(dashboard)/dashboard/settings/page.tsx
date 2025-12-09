@@ -35,6 +35,28 @@ const Settings = () => {
                     <li>• {t("businessDetailsItem")}</li>
                   </ul>
                 </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {t("accountHeader")}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {t("accountDetailsTitle")}
+                  </p>
+                  <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                    <li>• {t("accountDetailsItem")}</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {t("whatsappHeader")}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {t("whatsappDetailsTitle")}
+                  </p>
+                  <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                    <li>• {t("whatsappDetailsItem")}</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>

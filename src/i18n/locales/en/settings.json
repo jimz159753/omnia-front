@@ -18,6 +18,12 @@
   "businessCountry": "Country",
   "businessPhone": "Business phone",
   "businessDescription": "Description",
-  "businessLogo": "Business logo"
+  "businessLogo": "Business logo",
+  "accountHeader": "Account",
+  "accountDetailsTitle": "Your account data",
+  "accountDetailsItem": "Account settings",
+  "whatsappHeader": "WhatsApp",
+  "whatsappDetailsTitle": "WhatsApp channel",
+  "whatsappDetailsItem": "WhatsApp settings"
 }
 
