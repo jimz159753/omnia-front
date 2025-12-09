@@ -12,8 +12,16 @@ interface PaginationInfo {
 
 type TicketWithRelations = Ticket & {
   client: Client;
-  product: Product;
-  service: Service;
+  items: Array<{
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    product: Product | null;
+    service: Service | null;
+  }>;
+  seller?: { id: string; email: string };
+  quantity?: number;
+  total?: number;
 };
 
 export const useTickets = () => {
@@ -41,15 +49,35 @@ export const useTickets = () => {
       });
 
       const response = await fetch(`/api/tickets?${params}`);
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error("Failed to fetch tickets");
+        const message =
+          result?.error || result?.message || "Failed to fetch tickets";
+        toast.error(message);
+        setData([]);
+        setPagination((prev) => ({ ...prev, total: 0, totalPages: 0 }));
+        return;
       }
-      const result = await response.json();
-      setData(result.data);
-      setPagination(result.pagination);
+      setData(Array.isArray(result.data) ? result.data : []);
+      const totalCount = result.pagination?.total ?? result.data?.length ?? 0;
+      const totalPages =
+        result.pagination?.totalPages ??
+        (totalCount && pagination.pageSize
+          ? Math.ceil(totalCount / pagination.pageSize)
+          : 0);
+      setPagination(
+        result.pagination || {
+          page: currentPage,
+          pageSize: pagination.pageSize,
+          total: totalCount,
+          totalPages,
+        }
+      );
     } catch (error) {
       toast.error("No pudimos cargar los tickets.");
       console.error("Error fetching tickets:", error);
+      setData([]);
+      setPagination((prev) => ({ ...prev, total: 0, totalPages: 0 }));
     } finally {
       setLoading(false);
     }
@@ -73,6 +101,13 @@ export const useTickets = () => {
   const refetch = () => {
     fetchTickets(page, debouncedSearchQuery);
   };
+
+  useEffect(() => {
+    const handler = () => fetchTickets(page, debouncedSearchQuery);
+    window.addEventListener("tickets:refresh", handler);
+    return () => window.removeEventListener("tickets:refresh", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, debouncedSearchQuery]);
 
   const createTicket = async (payload: {
     clientId: string;

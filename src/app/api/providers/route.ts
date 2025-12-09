@@ -21,17 +21,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, ownerName, description } = body;
+    const { name } = body;
 
-    if (!name || !ownerName || !description) {
-      return NextResponse.json(
-        { error: "Name, ownerName and description are required" },
-        { status: 400 }
-      );
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
     const provider = await prisma.provider.create({
-      data: { name, ownerName, description },
+      data: {
+        name,
+      },
     });
 
     return NextResponse.json(

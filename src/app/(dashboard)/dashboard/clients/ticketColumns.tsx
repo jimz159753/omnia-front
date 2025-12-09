@@ -5,6 +5,7 @@ import type { ColumnDef, TicketRow } from "@/types/clients";
 import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
+import { formatCurrency } from "@/utils";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -43,23 +44,14 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
     },
   },
   {
-    accessorKey: "product",
-    header: "Product",
-    cell: ({ row }) => row.original.product?.name || "-",
+    accessorKey: "quantity",
+    header: "Quantity",
+    cell: ({ row }) => row.original.quantity,
   },
   {
-    accessorKey: "service",
-    header: "Service",
-    cell: ({ row }) => row.original.service?.name || "-",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) =>
-      new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN",
-      }).format(row.original.amount),
+    accessorKey: "total",
+    header: "Total",
+    cell: ({ row }) => formatCurrency(row.original.total ?? 0),
   },
   {
     accessorKey: "status",

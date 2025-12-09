@@ -42,9 +42,9 @@ const Sales = () => {
       const headers = [
         "Date",
         "Client",
-        "Product",
-        "Service",
-        "Amount",
+        "Items",
+        "Quantity",
+        "Total",
         "Status",
       ];
 
@@ -54,12 +54,25 @@ const Sales = () => {
           day: "2-digit",
           year: "numeric",
         });
+        const items = ticket.items || [];
+        const itemNames = items
+          .map((i) => i.product?.name || i.service?.name || "Item")
+          .join("; ");
+        const qty =
+          typeof ticket.quantity === "number"
+            ? ticket.quantity
+            : items.reduce((sum, i) => sum + (i.quantity || 0), 0);
+        const total =
+          typeof ticket.total === "number"
+            ? ticket.total
+            : items.reduce((sum, i) => sum + (i.total || 0), 0);
+
         return [
           dateStr,
           ticket.client?.name ?? "",
-          ticket.product?.name ?? "",
-          ticket.service?.name ?? "",
-          ticket.amount?.toFixed(2) ?? "0.00",
+          itemNames,
+          String(qty),
+          total.toFixed(2),
           ticket.status ?? "",
         ];
       });

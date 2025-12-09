@@ -5,11 +5,20 @@ import { Client, Product, Service, Ticket } from "@/generated/prisma";
 import { FiCalendar } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
+import { formatCurrency } from "@/utils";
 
 type TicketWithRelations = Ticket & {
   client: Client;
-  product: Product;
-  service: Service;
+  items: Array<{
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    product: Product | null;
+    service: Service | null;
+  }>;
+  quantity: number;
+  total: number;
+  seller?: { id: string; email: string };
 };
 
 type RowWithGetValue = {
@@ -63,31 +72,21 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
     header: "Client",
   },
   {
-    accessorKey: "product.name",
-    header: "Product",
+    accessorKey: "quantity",
+    header: "Quantity",
     cell: ({ row }) => {
-      return <div>{row.original.product?.name || "-"}</div>;
+      return (
+        <div className="font-medium text-gray-900">{row.original.quantity}</div>
+      );
     },
   },
   {
-    accessorKey: "service.name",
-    header: "Service",
+    accessorKey: "total",
+    header: "Total",
     cell: ({ row }) => {
-      return <div>{row.original.service?.name || "-"}</div>;
-    },
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => {
-      const r = row as RowWithGetValue;
-      const amount = parseFloat(r.getValue("amount") as string);
       return (
         <div className="font-medium text-gray-900">
-          {amount.toLocaleString("es-MX", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          {formatCurrency(row.original.total ?? 0)}
         </div>
       );
     },
@@ -101,7 +100,10 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
       const statusLabel = getStatusLabel(status);
       const badgeClass = getStatusBadgeClass(status);
       return (
-        <Badge variant="secondary" className={`px-2 ${badgeClass}`}>
+        <Badge
+          variant="secondary"
+          className={`px-3 py-1 font-semibold ${badgeClass}`}
+        >
           {statusLabel}
         </Badge>
       );

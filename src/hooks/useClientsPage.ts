@@ -116,10 +116,14 @@ export function useClientsPage(): UseClientsPageReturn {
     const tickets = selectedClient.tickets as TicketRow[];
     if (activeTab === "all") return tickets;
     if (activeTab === "products") {
-      return tickets.filter((t) => !!t.product?.name);
+      return tickets.filter((t) =>
+        (t.items || []).some((i) => i.product?.name)
+      );
     }
     if (activeTab === "appointments") {
-      return tickets.filter((t) => !!t.service?.name);
+      return tickets.filter((t) =>
+        (t.items || []).some((i) => i.service?.name)
+      );
     }
     return tickets.filter((t) => (t.notes || "").trim().length > 0);
   }, [selectedClient, activeTab]);
@@ -128,9 +132,10 @@ export function useClientsPage(): UseClientsPageReturn {
     try {
       setLoading(true);
       const response = await fetch("/api/clients");
-      const data = await response.json();
-      setClients(data);
-      setFilteredClients(data);
+      const result = await response.json();
+      const list = Array.isArray(result) ? result : result.data || [];
+      setClients(list);
+      setFilteredClients(list);
     } catch (error) {
       console.error("Failed to fetch clients:", error);
     } finally {

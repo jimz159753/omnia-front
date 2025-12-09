@@ -9,8 +9,6 @@ type CategoryOption = {
 
 type ProviderForm = {
   name: string;
-  ownerName: string;
-  description: string;
 };
 
 type CategoryForm = {
@@ -32,8 +30,6 @@ export const useProductMeta = () => {
 
   const [providerForm, setProviderForm] = useState<ProviderForm>({
     name: "",
-    ownerName: "",
-    description: "",
   });
 
   const [categoryForm, setCategoryForm] = useState<CategoryForm>({
@@ -64,10 +60,14 @@ export const useProductMeta = () => {
 
   const handleCreateProvider = async () => {
     try {
+      if (!providerForm.name.trim()) {
+        toast.error("Name is required");
+        return;
+      }
       const res = await fetch("/api/providers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(providerForm),
+        body: JSON.stringify({ name: providerForm.name.trim() }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -75,7 +75,7 @@ export const useProductMeta = () => {
       }
       toast.success("Provider created");
       setProviderModalOpen(false);
-      setProviderForm({ name: "", ownerName: "", description: "" });
+      setProviderForm({ name: "" });
     } catch (error) {
       console.error(error);
       toast.error(

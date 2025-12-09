@@ -28,6 +28,7 @@ interface Product {
 interface User {
   id: string;
   email: string;
+  name?: string;
 }
 
 interface SaleFormDialogProps {
@@ -39,7 +40,7 @@ interface SaleFormDialogProps {
 type FormValues = {
   productId: string;
   sellerId: string;
-  amount: string;
+  amount: string; // quantity
   includeNotes: boolean;
   notes: string;
   clientName: string;
@@ -91,6 +92,17 @@ export function SaleFormDialog({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (open) {
+      setError("");
+      setSuccess("");
+    } else {
+      setError("");
+      setSuccess("");
+      reset();
+    }
+  }, [open, reset]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -103,7 +115,7 @@ export function SaleFormDialog({
       const usersData = await usersRes.json();
 
       setProducts(productsData.data || []);
-      setUsers(usersData || []);
+      setUsers(Array.isArray(usersData) ? usersData : usersData.data || []);
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError("Failed to load form data");
@@ -147,14 +159,26 @@ export function SaleFormDialog({
         clientData = result.data;
       }
 
+      const quantity = parseInt(values.amount || "1", 10) || 1;
+      const unitPrice =
+        products.find((p) => p.id === values.productId)?.price || 0;
+
       const ticketResponse = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId: clientData.id,
-          productId: values.productId,
           sellerId: values.sellerId,
-          amount: parseFloat(values.amount),
+          items: [
+            {
+              productId: values.productId,
+              quantity,
+              unitPrice,
+              total: unitPrice * quantity,
+            },
+          ],
+          quantity,
+          total: unitPrice * quantity,
           status: "pending",
           notes: values.includeNotes ? values.notes : "",
         }),
@@ -270,14 +294,18 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Amount
+                    Quantity
                   </label>
                   <input
                     type="number"
-                    step="0.01"
-                    {...register("amount", { required: "Amount is required" })}
+                    min="1"
+                    step="1"
+                    {...register("amount", {
+                      required: "Quantity is required",
+                      min: { value: 1, message: "Quantity must be at least 1" },
+                    })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="0.00"
+                    placeholder="1"
                   />
                   {errors.amount && (
                     <p className="text-xs text-red-600">

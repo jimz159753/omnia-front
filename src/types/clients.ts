@@ -9,12 +9,18 @@ export type ColumnDef<T> = {
 
 export interface TicketRow {
   id: string;
-  amount: number;
+  quantity: number;
+  total: number;
   status: string;
   createdAt: string;
-  product?: { name: string };
-  service?: { name: string };
   notes?: string;
+  items?: Array<{
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    product?: { name: string };
+    service?: { name: string };
+  }>;
 }
 
 export interface Client {

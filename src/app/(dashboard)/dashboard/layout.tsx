@@ -80,13 +80,19 @@ export default function DashboardLayout({
         <SaleFormDialog
           open={isSaleFormOpen}
           onOpenChange={setIsSaleFormOpen}
-          onSuccess={() => setIsDialogOpen(false)}
+          onSuccess={() => {
+            setIsDialogOpen(false);
+            window.dispatchEvent(new Event("tickets:refresh"));
+          }}
         />
 
         <AppointmentFormDialog
           open={isAppointmentFormOpen}
           onOpenChange={setIsAppointmentFormOpen}
-          onSuccess={() => setIsDialogOpen(false)}
+          onSuccess={() => {
+            setIsDialogOpen(false);
+            window.dispatchEvent(new Event("tickets:refresh"));
+          }}
         />
       </div>
     </div>

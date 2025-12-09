@@ -279,41 +279,21 @@ const Products = () => {
             <div className="space-y-1">
               <label
                 className="text-sm font-medium text-gray-700"
-                htmlFor="prov-owner"
+                htmlFor="prov-name"
               >
-                Owner Name
+                Name<span className="text-red-500">*</span>
               </label>
               <input
-                id="prov-owner"
+                id="prov-name"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={providerForm.ownerName}
+                value={providerForm.name}
                 onChange={(e) =>
                   setProviderForm((p: typeof providerForm) => ({
                     ...p,
-                    ownerName: e.target.value,
+                    name: e.target.value,
                   }))
                 }
-                placeholder="Owner name"
-              />
-            </div>
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="prov-desc"
-              >
-                Description
-              </label>
-              <textarea
-                id="prov-desc"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
-                value={providerForm.description}
-                onChange={(e) =>
-                  setProviderForm((p: typeof providerForm) => ({
-                    ...p,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Provider description"
+                placeholder="Provider name"
               />
             </div>
           </div>

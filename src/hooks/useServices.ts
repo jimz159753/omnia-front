@@ -33,15 +33,35 @@ export const useServices = () => {
       });
 
       const response = await fetch(`/api/services?${params}`);
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error("Failed to fetch services");
+        const message =
+          result?.error || result?.message || "Failed to fetch services";
+        toast.error(message);
+        setData([]);
+        setPagination((prev) => ({ ...prev, total: 0, totalPages: 0 }));
+        return;
       }
-      const result = await response.json();
-      setData(result.data);
-      setPagination(result.pagination);
+      setData(Array.isArray(result.data) ? result.data : []);
+      const totalCount = result.pagination?.total ?? result.data?.length ?? 0;
+      const totalPages =
+        result.pagination?.totalPages ??
+        (totalCount && pagination.pageSize
+          ? Math.ceil(totalCount / pagination.pageSize)
+          : 0);
+      setPagination(
+        result.pagination || {
+          page: currentPage,
+          pageSize: pagination.pageSize,
+          total: totalCount,
+          totalPages,
+        }
+      );
     } catch (error) {
       toast.error("No pudimos cargar los servicios.");
       console.error("Error fetching services:", error);
+      setData([]);
+      setPagination((prev) => ({ ...prev, total: 0, totalPages: 0 }));
     } finally {
       setLoading(false);
     }

@@ -41,7 +41,7 @@ type FormValues = {
   serviceId: string;
   sellerId: string;
   duration: string;
-  amount: string;
+  amount: string; // price
   includeNotes: boolean;
   notes: string;
   clientName: string;
@@ -158,14 +158,24 @@ export function AppointmentFormDialog({
         clientData = result.data;
       }
 
+      const unitPrice =
+        services.find((s) => s.id === values.serviceId)?.price || 0;
       const ticketResponse = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId: clientData.id,
-          serviceId: values.serviceId,
           sellerId: values.sellerId,
-          amount: parseFloat(values.amount),
+          items: [
+            {
+              serviceId: values.serviceId,
+              quantity: 1,
+              unitPrice,
+              total: unitPrice,
+            },
+          ],
+          quantity: 1,
+          total: unitPrice,
           status: "pending",
           notes: values.includeNotes ? values.notes : "",
         }),

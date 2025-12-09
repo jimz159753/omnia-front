@@ -21,11 +21,11 @@ export async function GET(request: NextRequest) {
       include: {
         tickets: {
           include: {
-            product: {
-              select: { name: true },
-            },
-            service: {
-              select: { name: true },
+            items: {
+              include: {
+                product: { select: { name: true } },
+                service: { select: { name: true } },
+              },
             },
           },
           orderBy: { createdAt: "desc" },
@@ -45,11 +45,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, phone, instagram } = await request.json();
+    const { name, email, phone, instagram, address } = await request.json();
 
-    if (!name || !email || !phone) {
+    if (!name || !email) {
       return NextResponse.json(
-        { error: "Missing required fields: name, email, phone" },
+        { error: "Missing required fields: name, email" },
         { status: 400 }
       );
     }
@@ -58,8 +58,9 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         email,
-        phone,
+        phone: phone || "",
         instagram: instagram || null,
+        address: address || "",
       },
     });
 

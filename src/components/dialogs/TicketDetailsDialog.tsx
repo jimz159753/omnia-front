@@ -15,7 +15,7 @@ import { FiDownload, FiPrinter, FiX } from "react-icons/fi";
 type TicketLike = {
   id?: string;
   createdAt?: string | Date;
-  amount?: number;
+  quantity?: number;
   status?: string;
   notes?: string | null;
   client?: {
@@ -23,9 +23,15 @@ type TicketLike = {
     email?: string | null;
     phone?: string | null;
   };
-  seller?: { name?: string | null };
-  product?: { name?: string | null; price?: number | null };
-  service?: { name?: string | null };
+  seller?: { name?: string | null; email?: string | null };
+  items?: Array<{
+    quantity?: number;
+    unitPrice?: number;
+    total?: number;
+    product?: { name?: string | null; price?: number | null } | null;
+    service?: { name?: string | null; price?: number | null } | null;
+  }>;
+  total?: number;
 };
 
 type Props = {
@@ -93,11 +99,10 @@ export const TicketDetailsDialog: React.FC<Props> = ({
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-2 items-center justify-center p-6">
-              <p className="font-medium">{dateStr}</p>
+              <p className="text-sm text-gray-700">{dateStr}</p>
               <p className="text-xs text-gray-500">{timeStr}</p>
-              <p>Ticket ID</p>
-
-              <p className="font-bold text-xl text-gray-900">
+              <p className="text-gray-500 mt-6">Ticket ID</p>
+              <p className="font-bold text-xl text-gray-900 mb-6">
                 #{ticket.id || "-"}
               </p>
               <div className="flex flex-col gap-2 border-y border-gray-200 py-10 w-full items-center justify-center">
@@ -111,27 +116,39 @@ export const TicketDetailsDialog: React.FC<Props> = ({
                   <p className="text-gray-500">
                     Staff:{" "}
                     <span className="font-semibold text-gray-900">
-                      {ticket.seller?.name || "-"}
+                      {ticket.seller?.name || ticket.seller?.email || "-"}
                     </span>
                   </p>
                 </div>
               </div>
               <div className="flex flex-col gap-2 border-b border-gray-200 py-10 w-full items-start justify-between">
                 <p className="text-xl text-gray-900 flex items-center justify-start">
-                  Services
+                  Items
                 </p>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col">
-                    <p className="text-semibold text-gray-900">
-                      {ticket.service?.name || "-"}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Done by: {ticket.seller?.name || "-"}
-                    </p>
-                  </div>
-                  <p className="text-semibold text-gray-900">
-                    {formatCurrency(ticket.product?.price || 0) || "-"}
-                  </p>
+                <div className="flex flex-col gap-3 w-full">
+                  {(ticket.items || []).map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between w-full border border-gray-100 rounded-lg p-3"
+                    >
+                      <div className="flex flex-col">
+                        <p className="text-semibold text-gray-900">
+                          {item.product?.name || item.service?.name || "Item"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Qty: {item.quantity ?? 1}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-semibold text-gray-900">
+                          {formatCurrency(item.total || 0)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {(!ticket.items || ticket.items.length === 0) && (
+                    <p className="text-sm text-gray-500">No items</p>
+                  )}
                 </div>
               </div>
               <div className="flex border-b border-gray-200 py-10 w-full items-center justify-between">
@@ -139,9 +156,12 @@ export const TicketDetailsDialog: React.FC<Props> = ({
                   TOTAL:
                 </p>
                 <p className="text-xl font-bold text-gray-900">
-                  {formatCurrency(ticket.amount || 0) || "-"}
+                  {formatCurrency(ticket.total || 0) || "-"}
                 </p>
               </div>
+              <p className="text-gray-500 text-center my-2">
+                THANKS FOR YOUR PURCHASE!
+              </p>
             </div>
           </>
         ) : null}

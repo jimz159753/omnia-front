@@ -25,20 +25,18 @@ model User {
 }
 
 model Ticket {
-  id        String   @id @default(uuid())
+  id        String       @id @default(uuid())
   clientId  String
-  client    Client   @relation(fields: [clientId], references: [id])
-  productId String?
-  product   Product? @relation(fields: [productId], references: [id])
-  serviceId String?
-  service   Service? @relation(fields: [serviceId], references: [id])
+  client    Client       @relation(fields: [clientId], references: [id])
   sellerId  String
-  seller    User     @relation(fields: [sellerId], references: [id])
-  amount    Float
+  seller    User         @relation(fields: [sellerId], references: [id])
+  total     Float        @default(0)
+  quantity  Int          @default(1)
   status    String
-  notes     String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  notes     String       @default("")
+  items     TicketItem[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Client {
@@ -79,8 +77,8 @@ model SubCategory {
 model Provider {
   id          String    @id @default(uuid())
   name        String
-  ownerName   String
-  description String
+  ownerName   String    @default("")
+  description String    @default("")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
@@ -103,7 +101,7 @@ model Product {
   provider      Provider     @relation(fields: [providerId], references: [id])
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  tickets       Ticket[]
+  ticketItems   TicketItem[]
 }
 
 model Service {
@@ -120,5 +118,20 @@ model Service {
   commission    Float
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  tickets       Ticket[]
+  ticketItems   TicketItem[]
+}
+
+model TicketItem {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id])
+  quantity  Int      @default(1)
+  unitPrice Float    @default(0)
+  total     Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
