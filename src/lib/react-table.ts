@@ -29,4 +29,3 @@ export type Cell<TData = any, TValue = any> = any;
 export type Header<TData = any, TValue = any> = any;
 export type HeaderGroup<TData = any> = any;
 export type Row<TData = any> = any;
-

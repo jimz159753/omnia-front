@@ -10,10 +10,10 @@ import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
 import { CheckCheckIcon } from "@/components/CheckCheckIcon";
 import { ShoppingCartIcon } from "@/components/ShoppingCartIcon";
-import { BicepsFlexedIcon } from "@/components/BicepsFlexedIcon";
-import { SettingsIcon } from "@/components/SettingsIcon";
 import { HomeIcon } from "@/components/HouseIcon";
-import { FiUsers } from "react-icons/fi";
+import { GearIcon } from "@/components/gear-icon";
+import { ClientsIcon } from "@/components/clients-icon";
+import { ServicesIcon } from "@/components/services-icon";
 
 // Tabs
 
@@ -79,11 +79,11 @@ export const items: IMenuItem[] = [
     title: "Products",
   },
   {
-    icon: () => <BicepsFlexedIcon size={22} />,
+    icon: () => <ServicesIcon size={22} />,
     title: "Services",
   },
   {
-    icon: () => <FiUsers size={22} />,
+    icon: () => <ClientsIcon size={22} />,
     title: "Clients",
   },
   {
@@ -91,7 +91,7 @@ export const items: IMenuItem[] = [
     title: "line",
   },
   {
-    icon: () => <SettingsIcon size={22} />,
+    icon: () => <GearIcon size={22} />,
     title: "Settings",
   },
 ];
