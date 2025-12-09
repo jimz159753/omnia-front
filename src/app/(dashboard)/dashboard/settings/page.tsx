@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FiGlobe, FiSettings } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
+import { BusinessDetailsForm } from "@/components/business/BusinessDetailsForm";
 
 const Settings = () => {
   const { t } = useTranslation("settings");
@@ -33,6 +33,9 @@ const Settings = () => {
                   </p>
                   <ul className="mt-2 space-y-1 text-sm text-gray-600">
                     <li>• {t("businessDetailsItem")}</li>
+                    <li>• {t("businessServices")}</li>
+                    <li>• {t("businessUsers")}</li>
+                    <li>• {t("businessSchedules")}</li>
                   </ul>
                 </div>
                 <div>
@@ -55,6 +58,9 @@ const Settings = () => {
                   </p>
                   <ul className="mt-2 space-y-1 text-sm text-gray-600">
                     <li>• {t("whatsappDetailsItem")}</li>
+                    <li>• {t("whatsappReminders")}</li>
+                    <li>• {t("whatsappCredits")}</li>
+                    <li>• {t("whatsappChatBot")}</li>
                   </ul>
                 </div>
               </div>
@@ -71,93 +77,9 @@ const Settings = () => {
               <p className="text-sm text-gray-500 mb-4">
                 {t("businessFormDescription")}
               </p>
-              <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessName")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessName")}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessCategory")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessCategory")}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessWebsite")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="https://"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessRFC")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessRFC")}
-                  />
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessAddress")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessAddress")}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessCountry")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessCountry")}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessPhone")}
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("businessPhone")}
-                  />
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessDescription")}
-                  </label>
-                  <textarea
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                    rows={3}
-                    placeholder={t("businessDescription")}
-                  />
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("businessLogo")}
-                  </label>
-                  <input
-                    type="file"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  />
-                </div>
-              </form>
+              <BusinessDetailsForm />
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
