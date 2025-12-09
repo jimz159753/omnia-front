@@ -10,7 +10,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { formatCurrency } from "@/utils";
-import { FiDownload, FiPrinter, FiX } from "react-icons/fi";
+import { FiDownload, FiMail, FiPrinter, FiX } from "react-icons/fi";
 
 type TicketLike = {
   id?: string;
@@ -75,28 +75,29 @@ export const TicketDetailsDialog: React.FC<Props> = ({
       <DialogContent className="p-0 max-w-xl [&>button:first-of-type]:hidden">
         {ticket ? (
           <>
-            <DialogHeader className="border-b border-gray-200 pb-4 p-6">
+            <DialogHeader className="border-b border-gray-200 p-4">
               <div className="flex items-center justify-between">
-                <DialogTitle className="flex items-center gap-3  pb-4">
+                <DialogTitle className="flex items-center gap-3">
                   Purchase ticket
                 </DialogTitle>
                 <div className="flex items-center gap-3">
-                  <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-2 text-gray-900">
+                  <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
                     <FiPrinter />
                     Print
                   </button>
-                  <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-2 text-gray-900">
+                  <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
                     <FiDownload />
                     PDF
+                  </button>
+                  <button className="text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 text-gray-900 hover:bg-gray-100">
+                    <FiMail />
+                    Email
                   </button>
                   <DialogClose asChild>
                     <FiX className="h-5 w-5 text-gray-500 cursor-pointer" />
                   </DialogClose>
                 </div>
               </div>
-              <DialogDescription className="text-gray-500">
-                View the details of the ticket.
-              </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-2 items-center justify-center p-6">
               <p className="text-sm text-gray-700">{dateStr}</p>

@@ -17,6 +17,13 @@ export type {
 } from "@/types/clients";
 import { getTicketColumns } from "@/app/(dashboard)/dashboard/clients/ticketColumns";
 
+interface PaginationInfo {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface ClientsPageState {
   clients: Client[];
   filteredClients: Client[];
@@ -30,6 +37,7 @@ export interface ClientsPageState {
   editingClient: Client | null;
   activeTab: ActiveTab;
   ticketColumns: ColumnDef<TicketRow>[];
+  ticketPagination: PaginationInfo;
 }
 
 export interface ClientsPageActions {
@@ -41,6 +49,7 @@ export interface ClientsPageActions {
   handleDialogChange: (open: boolean) => void;
   setActiveTab: (tab: ActiveTab) => void;
   setFilter: (filter: ClientFilter) => void;
+  handleTicketPageChange: (page: number) => void;
 }
 
 export type UseClientsPageReturn = {
@@ -58,6 +67,8 @@ export function useClientsPage(): UseClientsPageReturn {
   const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>("all");
+  const [ticketPage, setTicketPage] = useState(1);
+  const ticketPageSize = 5;
 
   useEffect(() => {
     fetchClients();
@@ -111,7 +122,7 @@ export function useClientsPage(): UseClientsPageReturn {
     []
   );
 
-  const filteredTickets = useMemo(() => {
+  const allFilteredTickets = useMemo(() => {
     if (!selectedClient) return [];
     const tickets = selectedClient.tickets as TicketRow[];
     if (activeTab === "all") return tickets;
@@ -127,6 +138,23 @@ export function useClientsPage(): UseClientsPageReturn {
     }
     return tickets.filter((t) => (t.notes || "").trim().length > 0);
   }, [selectedClient, activeTab]);
+
+  const ticketPagination: PaginationInfo = useMemo(() => {
+    const total = allFilteredTickets.length;
+    const totalPages = Math.ceil(total / ticketPageSize);
+    return {
+      page: ticketPage,
+      pageSize: ticketPageSize,
+      total,
+      totalPages,
+    };
+  }, [allFilteredTickets.length, ticketPage, ticketPageSize]);
+
+  const filteredTickets = useMemo(() => {
+    const startIndex = (ticketPage - 1) * ticketPageSize;
+    const endIndex = startIndex + ticketPageSize;
+    return allFilteredTickets.slice(startIndex, endIndex);
+  }, [allFilteredTickets, ticketPage, ticketPageSize]);
 
   const fetchClients = async () => {
     try {
@@ -159,6 +187,15 @@ export function useClientsPage(): UseClientsPageReturn {
     if (!open) setEditingClient(null);
   };
 
+  const handleTicketPageChange = (page: number) => {
+    setTicketPage(page);
+  };
+
+  // Reset ticket page when tab or client changes
+  useEffect(() => {
+    setTicketPage(1);
+  }, [activeTab, selectedClientId]);
+
   return {
     state: {
       clients,
@@ -173,6 +210,7 @@ export function useClientsPage(): UseClientsPageReturn {
       editingClient,
       activeTab,
       ticketColumns,
+      ticketPagination,
     },
     actions: {
       setSearchTerm,
@@ -183,6 +221,7 @@ export function useClientsPage(): UseClientsPageReturn {
       handleDialogChange,
       setActiveTab,
       setFilter,
+      handleTicketPageChange,
     },
   };
 }

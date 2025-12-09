@@ -28,6 +28,7 @@ const Clients = () => {
       editingClient,
       activeTab,
       ticketColumns,
+      ticketPagination,
     },
     actions: {
       setSearchTerm,
@@ -38,6 +39,7 @@ const Clients = () => {
       handleDialogChange,
       setActiveTab,
       setFilter,
+      handleTicketPageChange,
     },
   } = clientsHook;
 
@@ -72,6 +74,8 @@ const Clients = () => {
     data: unknown[];
     searchKey?: string;
     onRowClick?: (row: unknown) => void;
+    pagination?: unknown;
+    onPageChange?: (page: number) => void;
   }>;
   const DataTableWithSub = DataTable as unknown as DataTableWithSubComponent;
 
@@ -113,6 +117,8 @@ const Clients = () => {
             data={filteredTickets}
             searchKey="status"
             onRowClick={(row) => setSelectedTicket(row as TicketRow)}
+            pagination={ticketPagination}
+            onPageChange={handleTicketPageChange}
           />
         </div>
       </div>

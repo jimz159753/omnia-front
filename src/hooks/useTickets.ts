@@ -31,7 +31,7 @@ export const useTickets = () => {
   const [services, setServices] = useState<{ id: string; name: string }[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 0,
     totalPages: 0,
   });

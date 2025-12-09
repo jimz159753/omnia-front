@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useDebounce } from "@/hooks/useDebounce";
 
 interface PaginationInfo {
@@ -184,6 +184,39 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination Controls */}
+      {pagination && onPageChange && (
+        <div className="flex items-center justify-between px-2">
+          <div className="text-sm text-gray-500">
+            Showing{" "}
+            {pagination.total === 0
+              ? 0
+              : (pagination.page - 1) * pagination.pageSize + 1}{" "}
+            to{" "}
+            {Math.min(pagination.page * pagination.pageSize, pagination.total)}{" "}
+            of {pagination.total} results
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onPageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1"
+            >
+              <FiChevronLeft className="w-4 h-4" />
+              <p className="text-sm">Previous</p>
+            </button>
+            <button
+              onClick={() => onPageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1"
+            >
+              <p className="text-sm">Next</p>
+              <FiChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
