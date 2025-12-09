@@ -52,8 +52,12 @@ const Clients = () => {
     const tickets = selectedClient?.tickets ?? [];
     return {
       all: tickets.length,
-      products: tickets.filter((t: TicketRow) => !!t.product?.name).length,
-      appointments: tickets.filter((t: TicketRow) => !!t.service?.name).length,
+      products: tickets.filter((t: TicketRow) =>
+        (t.items || []).some((i) => i.product?.name)
+      ).length,
+      appointments: tickets.filter((t: TicketRow) =>
+        (t.items || []).some((i) => i.service?.name)
+      ).length,
       notes: tickets.filter((t: TicketRow) => (t.notes || "").trim().length > 0)
         .length,
     };

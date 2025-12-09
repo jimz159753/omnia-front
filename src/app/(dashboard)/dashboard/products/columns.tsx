@@ -46,7 +46,9 @@ export const getColumns = ({
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => {
-      const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
+      const { dateStr, timeStr } = formatDateTime(
+        row.getValue("createdAt") as string
+      );
       return (
         <div className="flex items-center gap-2">
           <FiCalendar className="w-4 h-4 text-brand-500" />
@@ -124,18 +126,6 @@ export const getColumns = ({
     },
   },
   {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN",
-      }).format(price);
-      return <div className="font-medium">{formatted}</div>;
-    },
-  },
-  {
     accessorKey: "cost",
     header: "Cost",
     cell: ({ row }) => {
@@ -145,6 +135,18 @@ export const getColumns = ({
         currency: "MXN",
       }).format(cost);
       return <div className="text-muted-foreground">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"));
+      const formatted = new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }).format(price);
+      return <div className="font-medium">{formatted}</div>;
     },
   },
   {
@@ -183,4 +185,3 @@ export const getColumns = ({
     },
   },
 ];
-

@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import ClientDetailsTabs from "@/components/ui/ClientDetailsTabs";
 
 interface Product {
   id: string;
@@ -48,6 +49,7 @@ type FormValues = {
   clientPhone: string;
   clientInstagram: string;
   clientAddress: string;
+  existingClientId: string;
 };
 
 export function SaleFormDialog({
@@ -57,6 +59,9 @@ export function SaleFormDialog({
 }: SaleFormDialogProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [clients, setClients] = useState<
+    { id: string; name: string; email: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -78,10 +83,12 @@ export function SaleFormDialog({
       clientPhone: "",
       clientInstagram: "",
       clientAddress: "",
+      existingClientId: "",
     },
   });
 
   const includeNotes = watch("includeNotes");
+  const existingClientId = watch("existingClientId");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -106,16 +113,21 @@ export function SaleFormDialog({
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [productsRes, usersRes] = await Promise.all([
+      const [productsRes, usersRes, clientsRes] = await Promise.all([
         fetch("/api/products"),
         fetch("/api/users"),
+        fetch("/api/clients"),
       ]);
 
       const productsData = await productsRes.json();
       const usersData = await usersRes.json();
+      const clientsData = await clientsRes.json();
 
       setProducts(productsData.data || []);
       setUsers(Array.isArray(usersData) ? usersData : usersData.data || []);
+      setClients(
+        Array.isArray(clientsData) ? clientsData : clientsData.data || []
+      );
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError("Failed to load form data");
@@ -129,34 +141,38 @@ export function SaleFormDialog({
     setSuccess("");
 
     try {
-      const clientPayload = {
-        name: values.clientName,
-        email: values.clientEmail,
-        phone: values.clientPhone,
-        instagram: values.clientInstagram,
-        address: values.clientAddress,
-      };
+      let clientId = values.existingClientId;
+      if (!clientId) {
+        const clientPayload = {
+          name: values.clientName,
+          email: values.clientEmail,
+          phone: values.clientPhone,
+          instagram: values.clientInstagram,
+          address: values.clientAddress,
+        };
 
-      const clientResponse = await fetch("/api/clients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(clientPayload),
-      });
+        const clientResponse = await fetch("/api/clients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(clientPayload),
+        });
 
-      let clientData;
-      if (clientResponse.status === 409) {
-        const existingClientRes = await fetch(
-          `/api/clients?email=${encodeURIComponent(values.clientEmail)}`
-        );
-        clientData = await existingClientRes.json();
-        if (!clientData || !clientData.id) {
-          throw new Error("Client not found");
+        let clientData;
+        if (clientResponse.status === 409) {
+          const existingClientRes = await fetch(
+            `/api/clients?email=${encodeURIComponent(values.clientEmail)}`
+          );
+          clientData = await existingClientRes.json();
+          if (!clientData || !clientData.id) {
+            throw new Error("Client not found");
+          }
+        } else if (!clientResponse.ok) {
+          throw new Error("Failed to create client");
+        } else {
+          const result = await clientResponse.json();
+          clientData = result.data;
         }
-      } else if (!clientResponse.ok) {
-        throw new Error("Failed to create client");
-      } else {
-        const result = await clientResponse.json();
-        clientData = result.data;
+        clientId = clientData.id;
       }
 
       const quantity = parseInt(values.amount || "1", 10) || 1;
@@ -167,7 +183,7 @@ export function SaleFormDialog({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          clientId: clientData.id,
+          clientId,
           sellerId: values.sellerId,
           items: [
             {
@@ -353,86 +369,133 @@ export function SaleFormDialog({
                 </div>
               </div>
 
-              {/* Right Side - Client Details */}
+              {/* Right Side - Client Details with Tabs */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Client Information</h3>
+                <h3 className="text-lg font-semibold">Client</h3>
+                <ClientDetailsTabs
+                  existingCount={clients.length}
+                  activeTab={existingClientId ? "existing" : "new"}
+                  onChange={(v) => {
+                    if (v === "new") {
+                      reset({
+                        ...watch(),
+                        existingClientId: "",
+                      });
+                    } else if (clients[0]) {
+                      reset({
+                        ...watch(),
+                        existingClientId: clients[0].id,
+                      });
+                    }
+                  }}
+                />
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    Name
-                  </label>
-                  <input
-                    {...register("clientName", {
-                      required: "Client name is required",
-                    })}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="Client name"
-                  />
-                  {errors.clientName && (
-                    <p className="text-xs text-red-600">
-                      {errors.clientName.message as string}
-                    </p>
-                  )}
-                </div>
+                {existingClientId ? (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Select Client
+                    </label>
+                    <Controller
+                      control={control}
+                      name="existingClientId"
+                      rules={{ required: "Client is required" }}
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select client" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {clients.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.name} - {c.email}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.existingClientId && (
+                      <p className="text-xs text-red-600">
+                        {errors.existingClientId.message as string}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Name
+                      </label>
+                      <input
+                        {...register("clientName", {
+                          required: "Client name is required",
+                        })}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="Client name"
+                      />
+                      {errors.clientName && (
+                        <p className="text-xs text-red-600">
+                          {errors.clientName.message as string}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    {...register("clientEmail", {
-                      required: "Client email is required",
-                    })}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="client@example.com"
-                  />
-                  {errors.clientEmail && (
-                    <p className="text-xs text-red-600">
-                      {errors.clientEmail.message as string}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        {...register("clientEmail", {
+                          required: "Client email is required",
+                        })}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="client@example.com"
+                      />
+                      {errors.clientEmail && (
+                        <p className="text-xs text-red-600">
+                          {errors.clientEmail.message as string}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    Phone
-                  </label>
-                  <input
-                    {...register("clientPhone", {
-                      required: "Client phone is required",
-                    })}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="Phone number"
-                  />
-                  {errors.clientPhone && (
-                    <p className="text-xs text-red-600">
-                      {errors.clientPhone.message as string}
-                    </p>
-                  )}
-                </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Phone
+                      </label>
+                      <input
+                        {...register("clientPhone")}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="Client phone"
+                      />
+                    </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    Instagram
-                  </label>
-                  <input
-                    {...register("clientInstagram")}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="@instagram"
-                  />
-                </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Instagram
+                      </label>
+                      <input
+                        {...register("clientInstagram")}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="@handle"
+                      />
+                    </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    Address
-                  </label>
-                  <input
-                    {...register("clientAddress")}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="Street address, city, state"
-                  />
-                </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Address
+                      </label>
+                      <input
+                        {...register("clientAddress")}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="Client address"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

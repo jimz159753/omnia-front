@@ -9,6 +9,7 @@ type TabItem = {
   label: string;
   value: ActiveTab;
   count?: number;
+  showBadge?: boolean;
 };
 
 type Props = {
@@ -17,13 +18,12 @@ type Props = {
   onChange: (tab: ActiveTab) => void;
 };
 
-export const GenericTabs: React.FC<Props> = ({
-  tabs,
-  activeTab,
-  onChange,
-}) => {
+export const GenericTabs: React.FC<Props> = ({ tabs, activeTab, onChange }) => {
   return (
-    <Tabs value={activeTab} onValueChange={(v: string) => onChange(v as ActiveTab)}>
+    <Tabs
+      value={activeTab}
+      onValueChange={(v: string) => onChange(v as ActiveTab)}
+    >
       <TabsList className="bg-background justify-start rounded-none border-b p-0">
         {tabs.map((tab) => (
           <TabsTrigger
@@ -33,9 +33,14 @@ export const GenericTabs: React.FC<Props> = ({
           >
             <span className="flex items-center gap-2">
               <span>{tab.label}</span>
-              <Badge variant="secondary" className="min-w-[24px] justify-center">
-                {tab.count ?? 0}
-              </Badge>
+              {tab.showBadge !== false && (
+                <Badge
+                  variant="secondary"
+                  className="min-w-[24px] justify-center"
+                >
+                  {tab.count ?? 0}
+                </Badge>
+              )}
             </span>
           </TabsTrigger>
         ))}
@@ -43,4 +48,3 @@ export const GenericTabs: React.FC<Props> = ({
     </Tabs>
   );
 };
-
