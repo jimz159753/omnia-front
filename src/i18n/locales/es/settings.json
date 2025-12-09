@@ -4,6 +4,20 @@
   "selectLanguage": "Selecciona tu idioma preferido",
   "languageDescription": "Elige el idioma que deseas usar en toda la aplicación.",
   "additionalSettings": "Configuración Adicional",
-  "moreSettingsSoon": "Más opciones de configuración próximamente..."
+  "moreSettingsSoon": "Más opciones de configuración próximamente...",
+  "configurationHeader": "Configuración",
+  "businessHeader": "Negocio",
+  "businessDetailsTitle": "Detalles del negocio",
+  "businessDetailsItem": "Detalles del negocio",
+  "businessFormDescription": "Mantén actualizada esta información para que tus clientes te encuentren fácilmente.",
+  "businessName": "Nombre del negocio",
+  "businessCategory": "Categoría",
+  "businessWebsite": "Sitio web",
+  "businessRFC": "RFC",
+  "businessAddress": "Dirección",
+  "businessCountry": "País",
+  "businessPhone": "Teléfono del negocio",
+  "businessDescription": "Descripción",
+  "businessLogo": "Logotipo del negocio"
 }
 

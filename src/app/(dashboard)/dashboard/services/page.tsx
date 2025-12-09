@@ -21,6 +21,7 @@ import {
   FiPlus,
   FiZap,
 } from "react-icons/fi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +40,8 @@ const Services = () => {
     handleSearch,
     refetch,
   } = useServices();
+  const { t: tServicesTranslation } = useTranslation("services");
+  const { t: tCommon } = useTranslation();
 
   if (loading && data.length === 0) {
     return (
@@ -90,6 +93,8 @@ const Services = () => {
   const columns = getColumns({
     onUpdate: handleUpdate,
     onDelete: handleDelete,
+    tServices: tServicesTranslation,
+    tCommon,
   });
 
   const squareCards = [
@@ -130,9 +135,10 @@ const Services = () => {
     <>
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
-          <CardTitle className="text-4xl font-normal">Services</CardTitle>
+          <CardTitle className="text-4xl font-normal">{tServicesTranslation("title")}</CardTitle>
           <CardDescription className="font-normal">
-            Manage your services and offerings
+            {tServicesTranslation("description") ||
+              tCommon("description")}
           </CardDescription>
         </div>
         <button
@@ -165,7 +171,7 @@ const Services = () => {
         columns={columns}
         data={data}
         searchKey="name"
-        searchPlaceholder="Search by service name..."
+          searchPlaceholder={tServicesTranslation("searchPlaceholder") || tCommon("search")}
         searchValue={searchQuery}
         pagination={pagination}
         onPageChange={handlePageChange}

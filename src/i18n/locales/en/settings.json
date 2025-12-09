@@ -4,6 +4,20 @@
   "selectLanguage": "Select your preferred language",
   "languageDescription": "Choose the language you want to use across the application.",
   "additionalSettings": "Additional Settings",
-  "moreSettingsSoon": "More settings options coming soon..."
+  "moreSettingsSoon": "More settings options coming soon...",
+  "configurationHeader": "Configuration",
+  "businessHeader": "Business",
+  "businessDetailsTitle": "Business details",
+  "businessDetailsItem": "Business details",
+  "businessFormDescription": "Help people connect with your brand by keeping this information up to date.",
+  "businessName": "Business name",
+  "businessCategory": "Category",
+  "businessWebsite": "Website",
+  "businessRFC": "RFC",
+  "businessAddress": "Address",
+  "businessCountry": "Country",
+  "businessPhone": "Business phone",
+  "businessDescription": "Description",
+  "businessLogo": "Business logo"
 }
 

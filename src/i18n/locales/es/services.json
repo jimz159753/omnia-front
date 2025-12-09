@@ -1,5 +1,7 @@
 {
   "title": "Servicios",
+  "description": "Administra tus servicios y ofertas",
+  "searchPlaceholder": "Busca por nombre del servicio...",
   "addService": "Agregar Servicio",
   "editService": "Editar Servicio",
   "deleteService": "Eliminar Servicio",

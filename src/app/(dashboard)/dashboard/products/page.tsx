@@ -26,6 +26,7 @@ import {
   FiShoppingBag,
   FiUsers,
 } from "react-icons/fi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +64,9 @@ const Products = () => {
     handleCreateCategory,
     handleCreateSubCategory,
   } = useProductMeta();
+
+  const { t: tProducts } = useTranslation("products");
+  const { t: tCommon } = useTranslation();
 
   if (loading && data.length === 0) {
     return (
@@ -114,6 +118,8 @@ const Products = () => {
   const columns = getColumns({
     onUpdate: handleUpdate,
     onDelete: handleDelete,
+    tProducts,
+    tCommon,
   });
 
   // Calculate statistics from products data

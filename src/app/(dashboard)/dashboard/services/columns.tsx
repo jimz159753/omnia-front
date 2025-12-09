@@ -36,18 +36,25 @@ export type ServiceWithRelations = Service & {
 interface GetColumnsParams {
   onUpdate: (item: ServiceWithRelations) => void;
   onDelete: (item: ServiceWithRelations) => void;
+  tCommon?: (key: string) => string;
+  tServices?: (key: string) => string;
 }
-
-const tCommon = (key: string) => i18next.t(`common:${key}`);
-const tServices = (key: string) => i18next.t(`services:${key}`);
 
 export const getColumns = ({
   onUpdate,
   onDelete,
-}: GetColumnsParams): ColumnDef<ServiceWithRelations>[] => [
+  tCommon,
+  tServices,
+}: GetColumnsParams): ColumnDef<ServiceWithRelations>[] => {
+  const translateCommon =
+    tCommon ?? ((key: string) => i18next.t(`common:${key}`));
+  const translateServices =
+    tServices ?? ((key: string) => i18next.t(`services:${key}`));
+
+  return [
   {
     accessorKey: "image",
-    header: tServices("image"),
+    header: translateServices("image"),
     cell: ({ row }) => {
       const src = row.getValue("image") as string;
       return (
@@ -69,11 +76,11 @@ export const getColumns = ({
   },
   {
     accessorKey: "name",
-    header: tCommon("name"),
+    header: translateCommon("name"),
   },
   {
     accessorKey: "description",
-    header: tCommon("description"),
+    header: translateCommon("description"),
     cell: ({ row }) => {
       const description = row.getValue("description") as string;
       return (
@@ -85,21 +92,21 @@ export const getColumns = ({
   },
   {
     accessorKey: "category.name",
-    header: tServices("category"),
+    header: translateServices("category"),
     cell: ({ row }) => {
       return row.original.category?.name || "N/A";
     },
   },
   {
     accessorKey: "subCategory.name",
-    header: tServices("subcategory"),
+    header: translateServices("subcategory"),
     cell: ({ row }) => {
       return row.original.subCategory?.name || "N/A";
     },
   },
   {
     accessorKey: "duration",
-    header: `${tServices("duration")} (min)`,
+    header: `${translateServices("duration")} (min)`,
     cell: ({ row }) => {
       const duration = row.getValue("duration") as number;
       return <div className="font-medium">{duration} min</div>;
@@ -107,7 +114,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "price",
-    header: tServices("price"),
+    header: translateServices("price"),
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -119,7 +126,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "commission",
-    header: tServices("commission"),
+    header: translateServices("commission"),
     cell: ({ row }) => {
       const commission = parseFloat(row.getValue("commission"));
       const formatted = new Intl.NumberFormat("es-MX", {
@@ -131,7 +138,7 @@ export const getColumns = ({
   },
   {
     accessorKey: "createdAt",
-    header: tCommon("date"),
+    header: translateCommon("date"),
     cell: ({ row }) => {
       const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
       return (
@@ -147,7 +154,9 @@ export const getColumns = ({
   },
   {
     accessorKey: "actions",
-    header: () => <div className="text-center">{tCommon("actions")}</div>,
+    header: () => (
+      <div className="text-center">{translateCommon("actions")}</div>
+    ),
     cell: ({ row }) => {
       const item = row.original;
 
@@ -165,14 +174,14 @@ export const getColumns = ({
                 className="cursor-pointer"
               >
                 <FiEdit className="mr-2 h-4 w-4" />
-                {tCommon("update")}
+                {translateCommon("update")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(item)}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <FiTrash2 className="mr-2 h-4 w-4" />
-                {tCommon("delete")}
+                {translateCommon("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -180,5 +189,6 @@ export const getColumns = ({
       );
     },
   },
-];
+  ];
+};
 

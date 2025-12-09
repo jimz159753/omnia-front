@@ -37,5 +37,6 @@
   "quantity": "Quantity",
   "required": "required",
   "optional": "optional",
-  "instagram": "Instagram"
+  "instagram": "Instagram",
+  "client": "Client"
 }

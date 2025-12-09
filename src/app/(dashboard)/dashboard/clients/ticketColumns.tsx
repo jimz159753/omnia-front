@@ -29,7 +29,7 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => {
   return [
     {
       accessorKey: "id",
-      header: tSales("ticketNumber"),
+      header: "Ticket #",
       cell: ({ row }) => row.original.id,
     },
     {
