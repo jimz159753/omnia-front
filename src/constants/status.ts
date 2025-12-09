@@ -1,8 +1,8 @@
 export enum TicketStatus {
-  Pending = "pending",
-  Confirmed = "confirmed",
-  Done = "done",
-  Canceled = "canceled",
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Done = "Done",
+  Canceled = "Canceled",
 }
 
 const LEGACY_ALIASES: Record<string, TicketStatus> = {
@@ -28,16 +28,17 @@ export function normalizeTicketStatus(
   status: string | null | undefined
 ): TicketStatus | undefined {
   if (!status) return undefined;
-  const normalized = status.toLowerCase();
+  const normalized = status;
+
+  // Check legacy aliases first
   if (normalized in LEGACY_ALIASES) return LEGACY_ALIASES[normalized];
-  if (
-    normalized === TicketStatus.Pending ||
-    normalized === TicketStatus.Confirmed ||
-    normalized === TicketStatus.Done ||
-    normalized === TicketStatus.Canceled
-  ) {
-    return normalized as TicketStatus;
-  }
+
+  // Check against enum values (case-insensitive)
+  if (normalized === "Pending") return TicketStatus.Pending;
+  if (normalized === "Confirmed") return TicketStatus.Confirmed;
+  if (normalized === "Done") return TicketStatus.Done;
+  if (normalized === "Canceled") return TicketStatus.Canceled;
+
   return undefined;
 }
 

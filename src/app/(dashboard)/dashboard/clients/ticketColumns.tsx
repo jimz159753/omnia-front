@@ -61,10 +61,7 @@ export const getTicketColumns = (): ColumnDef<TicketRow>[] => [
       const statusLabel = getStatusLabel(status);
       const badgeClass = getStatusBadgeClass(status);
       return (
-        <Badge
-          variant="secondary"
-          className={`px-3 py-1 font-semibold ${badgeClass}`}
-        >
+        <Badge className={`px-3 py-1 font-semibold ${badgeClass}`}>
           {statusLabel}
         </Badge>
       );

@@ -33,6 +33,13 @@ export type ProductWithCategory = Product & {
   provider: Provider | null;
 };
 
+type CellInfo = {
+  row: {
+    getValue: (key: string) => unknown;
+    original: ProductWithCategory;
+  };
+};
+
 interface GetColumnsParams {
   onUpdate: (item: ProductWithCategory) => void;
   onDelete: (item: ProductWithCategory) => void;
@@ -45,7 +52,7 @@ export const getColumns = ({
   {
     accessorKey: "createdAt",
     header: "Created At",
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       const { dateStr, timeStr } = formatDateTime(
         row.getValue("createdAt") as string
       );
@@ -63,7 +70,7 @@ export const getColumns = ({
   {
     accessorKey: "image",
     header: "Image",
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       const src = row.getValue("image") as string;
       return (
         <div className="flex items-center justify-center">
@@ -93,7 +100,7 @@ export const getColumns = ({
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       const description = row.getValue("description") as string;
       return (
         <div className="max-w-[300px] truncate" title={description}>
@@ -105,14 +112,14 @@ export const getColumns = ({
   {
     accessorKey: "category.name",
     header: "Category",
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       return row.original.category?.name || "N/A";
     },
   },
   {
     accessorKey: "stock",
     header: "Stock",
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       const stock = row.getValue("stock") as number;
       return (
         <div
@@ -128,8 +135,8 @@ export const getColumns = ({
   {
     accessorKey: "cost",
     header: "Cost",
-    cell: ({ row }) => {
-      const cost = parseFloat(row.getValue("cost"));
+    cell: ({ row }: CellInfo) => {
+      const cost = parseFloat(row.getValue("cost") as string);
       const formatted = new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
@@ -140,8 +147,8 @@ export const getColumns = ({
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
+    cell: ({ row }: CellInfo) => {
+      const price = parseFloat(row.getValue("price") as string);
       const formatted = new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
@@ -152,7 +159,7 @@ export const getColumns = ({
   {
     accessorKey: "actions",
     header: () => <div className="text-center">Actions</div>,
-    cell: ({ row }) => {
+    cell: ({ row }: CellInfo) => {
       const item = row.original;
 
       return (

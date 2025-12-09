@@ -101,8 +101,7 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => [
       const badgeClass = getStatusBadgeClass(status);
       return (
         <Badge
-          variant="secondary"
-          className={`px-3 py-1 font-semibold ${badgeClass}`}
+          className={`px-3 py-1 font-semibold border-transparent ${badgeClass}`}
         >
           {statusLabel}
         </Badge>
