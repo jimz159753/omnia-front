@@ -1,0 +1,19 @@
+{
+  "title": "Productos",
+  "addProduct": "Agregar Producto",
+  "editProduct": "Editar Producto",
+  "deleteProduct": "Eliminar Producto",
+  "sku": "SKU",
+  "category": "Categoría",
+  "subcategory": "Subcategoría",
+  "provider": "Proveedor",
+  "image": "Imagen",
+  "createdAt": "Creado el",
+  "selectCategory": "Seleccionar categoría",
+  "selectSubcategory": "Seleccionar subcategoría",
+  "selectProvider": "Seleccionar proveedor",
+  "productName": "Nombre del producto",
+  "productDescription": "Descripción del producto",
+  "lowStock": "Existencias bajas"
+}
+

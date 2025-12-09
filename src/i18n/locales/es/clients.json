@@ -1,0 +1,19 @@
+{
+  "title": "Clientes",
+  "addClient": "Agregar Cliente",
+  "editClient": "Editar Cliente",
+  "deleteClient": "Eliminar Cliente",
+  "clientName": "Nombre del cliente",
+  "allClients": "Todos los Clientes",
+  "recent": "Recientes (últimos 30 días)",
+  "inactive": "Inactivos (más de 30 días)",
+  "tickets": "Tickets",
+  "all": "Todos",
+  "products": "Productos",
+  "appointments": "Citas",
+  "notes": "Notas",
+  "newClient": "Nuevo Cliente",
+  "existingClient": "Cliente Existente",
+  "selectClient": "Seleccionar cliente"
+}
+

@@ -18,6 +18,24 @@
   "success": "Success",
   "error": "Error",
   "confirm": "Confirm",
-  "actions": "Actions"
+  "actions": "Actions",
+  "update": "Update",
+  "create": "Create",
+  "close": "Close",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
+  "address": "Address",
+  "description": "Description",
+  "price": "Price",
+  "cost": "Cost",
+  "stock": "Stock",
+  "status": "Status",
+  "date": "Date",
+  "time": "Time",
+  "total": "Total",
+  "quantity": "Quantity",
+  "required": "required",
+  "optional": "optional",
+  "instagram": "Instagram"
 }
-

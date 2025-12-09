@@ -1,0 +1,10 @@
+{
+  "title": "Services",
+  "addService": "Add Service",
+  "editService": "Edit Service",
+  "deleteService": "Delete Service",
+  "serviceName": "Service name",
+  "serviceDescription": "Service description",
+  "duration": "Duration"
+}
+

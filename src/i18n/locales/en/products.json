@@ -1,0 +1,19 @@
+{
+  "title": "Products",
+  "addProduct": "Add Product",
+  "editProduct": "Edit Product",
+  "deleteProduct": "Delete Product",
+  "sku": "SKU",
+  "category": "Category",
+  "subcategory": "Subcategory",
+  "provider": "Provider",
+  "image": "Image",
+  "createdAt": "Created At",
+  "selectCategory": "Select category",
+  "selectSubcategory": "Select subcategory",
+  "selectProvider": "Select provider",
+  "productName": "Product name",
+  "productDescription": "Product description",
+  "lowStock": "Low stock"
+}
+

@@ -18,6 +18,24 @@
   "success": "Éxito",
   "error": "Error",
   "confirm": "Confirmar",
-  "actions": "Acciones"
+  "actions": "Acciones",
+  "update": "Actualizar",
+  "create": "Crear",
+  "close": "Cerrar",
+  "name": "Nombre",
+  "email": "Correo electrónico",
+  "phone": "Teléfono",
+  "address": "Dirección",
+  "description": "Descripción",
+  "price": "Precio",
+  "cost": "Costo",
+  "stock": "Existencias",
+  "status": "Estado",
+  "date": "Fecha",
+  "time": "Hora",
+  "total": "Total",
+  "quantity": "Cantidad",
+  "required": "requerido",
+  "optional": "opcional",
+  "instagram": "Instagram"
 }
-
