@@ -22,7 +22,7 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
           href={`/dashboard/${tabName.toLowerCase()}`}
         >
           <div
-            className={`flex items-center justify-center w-12 h-12 rounded-md ${
+            className={`flex items-center justify-center w-10 h-10 rounded-md ${
               isActive
                 ? "bg-gray-200 text-[#06334A] shadow-sm"
                 : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
