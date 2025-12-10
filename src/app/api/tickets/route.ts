@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "";
     const dateFilter = searchParams.get("dateFilter") || "all";
     const specificDate = searchParams.get("specificDate") || "";
+    const startDate = searchParams.get("startDate") || "";
 
     const skip = (page - 1) * pageSize;
 
@@ -78,28 +79,31 @@ export async function GET(request: NextRequest) {
     // Date filtering
     if (dateFilter && dateFilter !== "all") {
       const now = new Date();
-      let startDate: Date;
-      let endDate: Date;
+      let filterStartDate: Date;
+      let filterEndDate: Date;
 
       if (dateFilter === "today") {
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-        endDate = new Date(now.setHours(23, 59, 59, 999));
+        filterStartDate = new Date(now.setHours(0, 0, 0, 0));
+        filterEndDate = new Date(now.setHours(23, 59, 59, 999));
       } else if (dateFilter === "thisMonth") {
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        filterStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        filterEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
       } else if (dateFilter === "calendar" && specificDate) {
         const selectedDate = new Date(specificDate);
-        startDate = new Date(selectedDate.setHours(0, 0, 0, 0));
-        endDate = new Date(selectedDate.setHours(23, 59, 59, 999));
+        filterStartDate = new Date(selectedDate.setHours(0, 0, 0, 0));
+        filterEndDate = new Date(selectedDate.setHours(23, 59, 59, 999));
+      } else if (dateFilter === "custom" && startDate) {
+        filterStartDate = new Date(startDate);
+        filterEndDate = new Date();
       } else {
-        startDate = new Date(0);
-        endDate = new Date();
+        filterStartDate = new Date(0);
+        filterEndDate = new Date();
       }
 
       conditions.push({
         createdAt: {
-          gte: startDate,
-          lte: endDate,
+          gte: filterStartDate,
+          lte: filterEndDate,
         },
       });
     }

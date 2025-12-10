@@ -39,13 +39,24 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
     try {
       setLoading(true);
 
-      // Get all tickets (we'll filter by date on the client side for now)
-      const response = await fetch("/api/tickets?pageSize=1000");
+      // Calculate date range for last 5 days
+      const today = new Date();
+      const fiveDaysAgo = new Date(today);
+      fiveDaysAgo.setDate(today.getDate() - 4);
+      fiveDaysAgo.setHours(0, 0, 0, 0);
+
+      // Get tickets from the last 5 days with date filter
+      const params = new URLSearchParams({
+        pageSize: "100",
+        dateFilter: "custom",
+        startDate: fiveDaysAgo.toISOString(),
+      });
+
+      const response = await fetch(`/api/tickets?${params}`);
       const data = await response.json();
       const tickets = data.data || [];
 
       // Get last 5 days
-      const today = new Date();
       const last5Days: DayData[] = [];
 
       for (let i = 4; i >= 0; i--) {
@@ -56,7 +67,7 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
         const nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);
 
-        const ticketsOnDay = tickets.filter((ticket: any) => {
+        const ticketsOnDay = tickets.filter((ticket: { createdAt: string }) => {
           const ticketDate = new Date(ticket.createdAt);
           return ticketDate >= date && ticketDate < nextDay;
         }).length;
@@ -86,8 +97,6 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
       setLoading(false);
     }
   };
-
-  const totalTickets = chartData.reduce((sum, day) => sum + day.tickets, 0);
 
   return (
     <Card className={className}>
