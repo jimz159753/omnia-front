@@ -17,7 +17,7 @@
   "itemsEmpty": "Sin artículos",
   "status": "Estado",
   "clientLabel": "Cliente",
-  "staffLabel": "Equipo",
+  "staffLabel": "Personal",
   "qtyLabel": "Cantidad",
   "appointmentDetails": "Detalles de la Cita",
   "saleDetails": "Detalles de la Venta",
@@ -28,4 +28,3 @@
   "totalLabel": "TOTAL",
   "thanks": "¡GRACIAS POR TU COMPRA!"
 }
-

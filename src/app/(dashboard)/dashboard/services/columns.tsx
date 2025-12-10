@@ -52,143 +52,133 @@ export const getColumns = ({
     tServices ?? ((key: string) => i18next.t(`services:${key}`));
 
   return [
-  {
-    accessorKey: "image",
-    header: translateServices("image"),
-    cell: ({ row }) => {
-      const src = row.getValue("image") as string;
-      return (
-        <div className="flex items-center justify-center">
-          {src ? (
-            <img
-              src={src}
-              alt={row.original.name}
-              className="h-10 w-10 rounded object-cover"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
-              N/A
-            </div>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "name",
-    header: translateCommon("name"),
-  },
-  {
-    accessorKey: "description",
-    header: translateCommon("description"),
-    cell: ({ row }) => {
-      const description = row.getValue("description") as string;
-      return (
-        <div className="max-w-[300px] truncate" title={description}>
-          {description}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "category.name",
-    header: translateServices("category"),
-    cell: ({ row }) => {
-      return row.original.category?.name || "N/A";
-    },
-  },
-  {
-    accessorKey: "subCategory.name",
-    header: translateServices("subcategory"),
-    cell: ({ row }) => {
-      return row.original.subCategory?.name || "N/A";
-    },
-  },
-  {
-    accessorKey: "duration",
-    header: `${translateServices("duration")} (min)`,
-    cell: ({ row }) => {
-      const duration = row.getValue("duration") as number;
-      return <div className="font-medium">{duration} min</div>;
-    },
-  },
-  {
-    accessorKey: "price",
-    header: translateServices("price"),
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN",
-      }).format(price);
-      return <div className="font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "commission",
-    header: translateServices("commission"),
-    cell: ({ row }) => {
-      const commission = parseFloat(row.getValue("commission"));
-      const formatted = new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN",
-      }).format(commission);
-      return <div className="text-muted-foreground">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: translateCommon("date"),
-    cell: ({ row }) => {
-      const { dateStr, timeStr } = formatDateTime(row.getValue("createdAt") as string);
-      return (
-        <div className="flex items-center gap-2">
-          <FiCalendar className="w-4 h-4 text-brand-500" />
-          <div className="leading-tight">
-            <div>{dateStr}</div>
-            <div className="text-xs text-gray-500">{timeStr}</div>
+    {
+      accessorKey: "image",
+      header: translateServices("image"),
+      cell: ({ row }) => {
+        const src = row.getValue("image") as string;
+        return (
+          <div className="flex items-center justify-center">
+            {src ? (
+              <img
+                src={src}
+                alt={row.original.name}
+                className="h-10 w-10 rounded object-cover"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                N/A
+              </div>
+            )}
           </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    accessorKey: "actions",
-    header: () => (
-      <div className="text-center">{translateCommon("actions")}</div>
-    ),
-    cell: ({ row }) => {
-      const item = row.original;
+    {
+      accessorKey: "name",
+      header: translateCommon("name"),
+    },
+    {
+      accessorKey: "description",
+      header: translateCommon("description"),
+      cell: ({ row }) => {
+        const description = row.getValue("description") as string;
+        return (
+          <div className="max-w-[300px] truncate" title={description}>
+            {description}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "category.name",
+      header: translateServices("category"),
+      cell: ({ row }) => {
+        return row.original.category?.name || "N/A";
+      },
+    },
+    {
+      accessorKey: "subCategory.name",
+      header: translateServices("subcategory"),
+      cell: ({ row }) => {
+        return row.original.subCategory?.name || "N/A";
+      },
+    },
+    {
+      accessorKey: "duration",
+      header: `${translateServices("duration")} (min)`,
+      cell: ({ row }) => {
+        const duration = row.getValue("duration") as number;
+        return <div className="font-medium">{duration} min</div>;
+      },
+    },
+    {
+      accessorKey: "price",
+      header: translateServices("price"),
+      cell: ({ row }) => {
+        const price = parseFloat(row.getValue("price"));
+        const formatted = new Intl.NumberFormat("es-MX", {
+          style: "currency",
+          currency: "MXN",
+        }).format(price);
+        return <div className="font-medium">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "commission",
+      header: translateServices("commission"),
+      cell: ({ row }) => {
+        const commission = parseFloat(row.getValue("commission"));
+        const formatted = new Intl.NumberFormat("es-MX", {
+          style: "currency",
+          currency: "MXN",
+        }).format(commission);
+        return <div className="text-muted-foreground">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: translateCommon("date"),
+      cell: ({ row }) => {
+        const { dateStr, timeStr } = formatDateTime(
+          row.getValue("createdAt") as string
+        );
+        return (
+          <div className="flex items-center gap-2">
+            <FiCalendar className="w-4 h-4 text-brand-500" />
+            <div className="leading-tight">
+              <div>{dateStr}</div>
+              <div className="text-xs text-gray-500">{timeStr}</div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "actions",
+      header: () => (
+        <div className="text-center">{translateCommon("actions")}</div>
+      ),
+      cell: ({ row }) => {
+        const item = row.original;
 
-      return (
-        <div className="flex justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                <FiMoreHorizontal className="w-4 h-4 cursor-pointer" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => onUpdate(item)}
-                className="cursor-pointer"
-              >
-                <FiEdit className="mr-2 h-4 w-4" />
-                {translateCommon("update")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onDelete(item)}
-                className="cursor-pointer text-red-600 focus:text-red-600"
-              >
-                <FiTrash2 className="mr-2 h-4 w-4" />
-                {translateCommon("delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
+        return (
+          <div className="flex justify-center">
+            <button
+              onClick={() => onUpdate(item)}
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity hover:bg-brand-500/10 rounded-md p-2"
+            >
+              <FiEdit className="w-4 h-4 cursor-pointer" />
+            </button>
+            <button
+              onClick={() => onDelete(item)}
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity text-red-500 hover:bg-red-500/10 rounded-md p-2"
+            >
+              <FiTrash2 className="w-4 h-4 cursor-pointer" />
+            </button>
+          </div>
+        );
+      },
     },
-  },
   ];
 };
-

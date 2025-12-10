@@ -61,24 +61,6 @@ export const getColumns = ({
 
   return [
     {
-      accessorKey: "createdAt",
-      header: translateProducts("createdAt"),
-      cell: ({ row }: CellInfo) => {
-        const { dateStr, timeStr } = formatDateTime(
-          row.getValue("createdAt") as string
-        );
-        return (
-          <div className="flex items-center gap-2">
-            <FiCalendar className="w-4 h-4 text-brand-500" />
-            <div className="leading-tight">
-              <div>{dateStr}</div>
-              <div className="text-xs text-gray-500">{timeStr}</div>
-            </div>
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: "image",
       header: translateProducts("image"),
       cell: ({ row }: CellInfo) => {
@@ -180,30 +162,19 @@ export const getColumns = ({
         const item = row.original;
 
         return (
-          <div className="flex justify-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                  <FiMoreHorizontal className="w-4 h-4 cursor-pointer" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => onUpdate(item)}
-                  className="cursor-pointer"
-                >
-                  <FiEdit className="mr-2 h-4 w-4" />
-                  {translateCommon("update")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onDelete(item)}
-                  className="cursor-pointer text-red-600 focus:text-red-600"
-                >
-                  <FiTrash2 className="mr-2 h-4 w-4" />
-                  {translateCommon("delete")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => onUpdate(item)}
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity hover:bg-brand-500/10 rounded-md p-2"
+            >
+              <FiEdit className="w-4 h-4 cursor-pointer" />
+            </button>
+            <button
+              onClick={() => onDelete(item)}
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity text-red-500 hover:bg-red-500/10 rounded-md p-2"
+            >
+              <FiTrash2 className="w-4 h-4 cursor-pointer" />
+            </button>
           </div>
         );
       },

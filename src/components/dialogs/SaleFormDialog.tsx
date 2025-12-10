@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
 
@@ -229,8 +231,20 @@ export function SaleFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {success && <p className="text-sm text-green-600">{success}</p>}
+        {error && (
+          <Alert variant="destructive">
+            <FiAlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success">
+            <FiCheckCircle className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>{success}</AlertDescription>
+          </Alert>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">

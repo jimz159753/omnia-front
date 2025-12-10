@@ -270,10 +270,15 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating ticket:", error);
+
+    // Return specific error messages for known issues
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     return NextResponse.json(
       { error: "Failed to create ticket" },
       { status: 500 }
     );
   }
 }
-

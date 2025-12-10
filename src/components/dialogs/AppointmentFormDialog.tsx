@@ -17,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CustomAlert } from "@/components/ui/CustomAlert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
 
@@ -238,8 +239,20 @@ export function AppointmentFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {error && <CustomAlert severity="error">{error}</CustomAlert>}
-        {success && <CustomAlert severity="success">{success}</CustomAlert>}
+        {error && (
+          <Alert variant="destructive">
+            <FiAlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success">
+            <FiCheckCircle className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>{success}</AlertDescription>
+          </Alert>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
