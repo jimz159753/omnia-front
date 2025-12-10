@@ -6,6 +6,7 @@ import { getColumns } from "./columns";
 import { useTickets } from "@/hooks/useTickets";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
+import TicketsLineChart from "@/components/charts/TicketsLineChart";
 import {
   FiDownload,
   FiDollarSign,
@@ -104,22 +105,20 @@ const Sales = () => {
     {
       title: tSales("ticketsThisWeek"),
       value: "28",
+      description: "+12% from last week",
       icon: <FiShoppingBag className="w-4 h-4" />,
     },
     {
       title: tSales("scheduledServices"),
       value: "14",
+      description: "+3 pending this week",
       icon: <FiPackage className="w-4 h-4" />,
     },
     {
       title: tSales("activeClients"),
       value: "42",
+      description: "+8 new this month",
       icon: <FiUser className="w-4 h-4" />,
-    },
-    {
-      title: tSales("resolvedTickets"),
-      value: "18",
-      icon: <FiDollarSign className="w-4 h-4" />,
     },
   ];
 
@@ -138,10 +137,10 @@ const Sales = () => {
   return (
     <>
       <div className="flex items-start justify-between">
-      <div className="flex flex-col gap-2">
-        <p className="text-4xl font-normal">{tSales("title")}</p>
-        <p className="font-normal">{tSales("description")}</p>
-      </div>
+        <div className="flex flex-col gap-2">
+          <p className="text-4xl font-normal">{tSales("title")}</p>
+          <p className="font-normal">{tSales("description")}</p>
+        </div>
         <button
           onClick={exportToCSV}
           disabled={loading || data.length === 0}
@@ -162,22 +161,26 @@ const Sales = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {card.description}
+              </p>
             </CardContent>
           </Card>
         ))}
+        <TicketsLineChart className="bg-brand-500/10 shadow-none" />
       </div>
-        <DataTable
-          columns={columns}
-          data={data}
-          searchKey="client"
-          searchPlaceholder={tSales("searchByClient")}
-          searchValue={searchQuery}
-          pagination={pagination}
-          onPageChange={handlePageChange}
-          onSearch={handleSearch}
-          loading={loading}
-          onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
-        />
+      <DataTable
+        columns={columns}
+        data={data}
+        searchKey="client"
+        searchPlaceholder={tSales("searchByClient")}
+        searchValue={searchQuery}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        loading={loading}
+        onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
+      />
       <TicketDetailsDialog
         open={!!selectedTicket}
         onOpenChange={(open) => !open && setSelectedTicket(null)}
