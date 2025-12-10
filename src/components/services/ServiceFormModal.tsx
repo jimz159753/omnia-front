@@ -21,6 +21,7 @@ import { ServiceWithRelations } from "@/app/(dashboard)/dashboard/services/colum
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceSchema, type ServiceFormData } from "@/lib/validations/service";
+import { ImageDropzone } from "@/components/ui/image-dropzone";
 
 export interface ServiceFormModalProps {
   open: boolean;
@@ -46,6 +47,7 @@ export function ServiceFormModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const {
     control,
@@ -103,6 +105,7 @@ export function ServiceFormModal({
         subCategoryId: item.subCategoryId ?? "",
         image: item.image ?? "",
       });
+      setImageFile(null);
     } else {
       reset({
         name: "",
@@ -114,6 +117,7 @@ export function ServiceFormModal({
         subCategoryId: "",
         image: "",
       });
+      setImageFile(null);
     }
   }, [open, item, reset]);
 
@@ -122,11 +126,33 @@ export function ServiceFormModal({
     setSuccess("");
     setLoading(true);
     try {
+      let imageUrl = values.image;
+
+      // Upload image if a file is selected
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          const uploadError = await uploadResponse.json();
+          throw new Error(uploadError.error || "Failed to upload image");
+        }
+
+        const uploadResult = await uploadResponse.json();
+        imageUrl = uploadResult.url;
+      }
+
       const payload = {
         ...values,
         duration: Number(values.duration),
         price: Number(values.price),
         commission: Number(values.commission),
+        image: imageUrl,
       };
 
       const response = await fetch("/api/services", {
@@ -146,6 +172,7 @@ export function ServiceFormModal({
 
       setSuccess(`Service ${isEditMode ? "updated" : "created"} successfully!`);
       reset();
+      setImageFile(null);
       setTimeout(() => {
         onOpenChange(false);
         onSuccess?.();
@@ -359,17 +386,13 @@ export function ServiceFormModal({
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="image"
-              className="text-sm font-medium text-gray-700"
-            >
-              Image URL
+            <label className="text-sm font-medium text-gray-700">
+              Service Image
             </label>
-            <input
-              id="image"
-              {...register("image")}
-              placeholder="https://example.com/image.jpg"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            <ImageDropzone
+              value={watch("image")}
+              onChange={(file) => setImageFile(file)}
+              onError={(error) => setError(error)}
             />
             {errors.image && (
               <p className="text-red-500 text-sm mt-1">
