@@ -53,7 +53,7 @@ export const useTickets = () => {
     try {
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        pageSize: pagination.pageSize.toString(),
+        pageSize: "5", // Always request 5 items per page
         search,
       });
 
@@ -83,17 +83,13 @@ export const useTickets = () => {
       const totalCount = result.pagination?.total ?? result.data?.length ?? 0;
       const totalPages =
         result.pagination?.totalPages ??
-        (totalCount && pagination.pageSize
-          ? Math.ceil(totalCount / pagination.pageSize)
-          : 0);
-      setPagination(
-        result.pagination || {
-          page: currentPage,
-          pageSize: pagination.pageSize,
-          total: totalCount,
-          totalPages,
-        }
-      );
+        (totalCount ? Math.ceil(totalCount / 5) : 0);
+      setPagination({
+        page: currentPage,
+        pageSize: 5, // Always use 5 items per page
+        total: totalCount,
+        totalPages,
+      });
     } catch (error) {
       toast.error("No pudimos cargar los tickets.");
       console.error("Error fetching tickets:", error);

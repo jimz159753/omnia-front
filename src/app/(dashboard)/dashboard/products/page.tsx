@@ -220,7 +220,7 @@ const Products = () => {
             setEditingItem(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+          className="flex items-center gap-2 px-4 py-1 text-md rounded-md border border-brand-500 hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiPlus className="w-4 h-4" />
           Add Product
@@ -230,7 +230,7 @@ const Products = () => {
         {buttons.map((button) => (
           <button
             key={button.title}
-            className="w-fit border border-gray-300 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            className="w-fit border border-brand-500 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             onClick={button.onClick}
           >
             {button.icon}
