@@ -100,35 +100,36 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
 
   return (
     <Card className={className}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4">
         <CardTitle className="text-sm font-medium">
           Tickets (Last 5 Days)
         </CardTitle>
         <FiTrendingUp className="w-4 h-4 text-muted-foreground" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-visible pt-2">
         {loading ? (
-          <div className="flex items-center justify-center h-[70px]">
+          <div className="flex items-center justify-center h-[60px]">
             <p className="text-xs text-gray-400">Loading...</p>
           </div>
         ) : chartData.length === 0 ? (
-          <div className="flex items-center justify-center h-[70px]">
+          <div className="flex items-center justify-center h-[60px]">
             <p className="text-xs text-gray-400">No data available</p>
           </div>
         ) : (
           <>
-            <ChartContainer config={chartConfig} className="h-[70px] w-full">
+            <ChartContainer config={chartConfig} className="h-[60px] w-full">
               <LineChart
                 data={chartData}
-                margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
+                margin={{ top: 8, right: 12, left: 12, bottom: 8 }}
               >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={8}
+                  tickMargin={3}
                   tick={{ fontSize: 10 }}
+                  height={10}
                 />
                 <YAxis
                   tickLine={false}
@@ -156,9 +157,10 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
                   strokeWidth={2}
                   dot={{
                     fill: "var(--color-tickets)",
+                    r: 3,
                   }}
                   activeDot={{
-                    r: 6,
+                    r: 5,
                   }}
                 />
               </LineChart>
