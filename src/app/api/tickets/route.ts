@@ -29,31 +29,54 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "5");
     const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || "";
 
     const skip = (page - 1) * pageSize;
 
-    const where = search
-      ? {
-          OR: [
-            {
-              client: {
-                name: { contains: search, mode: "insensitive" as const },
+    const where: any = {};
+
+    // Build the where clause with proper AND/OR logic
+    const conditions: any[] = [];
+
+    if (search) {
+      conditions.push({
+        OR: [
+          {
+            client: {
+              name: { contains: search, mode: "insensitive" as const },
+            },
+          },
+          {
+            items: {
+              some: {
+                product: {
+                  name: { contains: search, mode: "insensitive" as const },
+                },
               },
             },
-            {
-              product: {
-                name: { contains: search, mode: "insensitive" as const },
+          },
+          {
+            items: {
+              some: {
+                service: {
+                  name: { contains: search, mode: "insensitive" as const },
+                },
               },
             },
-            {
-              service: {
-                name: { contains: search, mode: "insensitive" as const },
-              },
-            },
-            { status: { contains: search, mode: "insensitive" as const } },
-          ],
-        }
-      : {};
+          },
+          { status: { contains: search, mode: "insensitive" as const } },
+        ],
+      });
+    }
+
+    if (status && status !== "all") {
+      conditions.push({ status });
+    }
+
+    // If we have conditions, combine them with AND
+    if (conditions.length > 0) {
+      where.AND = conditions;
+    }
 
     const total = await prisma.ticket.count({ where });
 

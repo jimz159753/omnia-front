@@ -47,6 +47,7 @@ export interface DataTableProps<TData, TValue> {
   loading?: boolean;
   renderSubComponent?: (row: TData) => React.ReactNode;
   onRowClick?: (row: TData) => void;
+  extraFilters?: React.ReactNode;
 }
 
 export type DataTablePropsType<TData, TValue> = DataTableProps<TData, TValue>;
@@ -63,6 +64,7 @@ export function DataTable<TData, TValue>({
   loading = false,
   renderSubComponent,
   onRowClick,
+  extraFilters,
 }: DataTableProps<TData, TValue>) {
   const { t } = useTranslation();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -106,21 +108,25 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {searchKey && onSearch && (
-        <div className="flex items-center justify-end w-full">
-          <div className="relative max-w-sm">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              placeholder={searchPlaceholder}
-              value={inputValue}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                setInputValue(event.target.value)
-              }
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-            />
+      <div className="flex items-center justify-between">
+        {extraFilters && extraFilters}
+
+        {searchKey && onSearch && (
+          <div className="flex items-center justify-end w-full">
+            <div className="relative max-w-sm">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                placeholder={searchPlaceholder}
+                value={inputValue}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setInputValue(event.target.value)
+                }
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div className="rounded-md border relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">

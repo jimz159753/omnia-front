@@ -37,9 +37,10 @@ export const useTickets = () => {
   });
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const fetchTickets = async (currentPage: number, search: string = "") => {
+  const fetchTickets = async (currentPage: number, search: string = "", status: string = "all") => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -47,6 +48,10 @@ export const useTickets = () => {
         pageSize: pagination.pageSize.toString(),
         search,
       });
+      
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
 
       const response = await fetch(`/api/tickets?${params}`);
       const result = await response.json().catch(() => ({}));
@@ -83,31 +88,36 @@ export const useTickets = () => {
     }
   };
 
+  // Fetch tickets when search or status changes
   useEffect(() => {
     setPage(1);
-    fetchTickets(1, debouncedSearchQuery);
+    fetchTickets(1, debouncedSearchQuery, statusFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, statusFilter]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    fetchTickets(newPage, debouncedSearchQuery);
+    fetchTickets(newPage, debouncedSearchQuery, statusFilter);
   };
 
   const handleSearch = (search: string) => {
     setSearchQuery(search);
   };
 
+  const handleStatusChange = (status: string) => {
+    setStatusFilter(status);
+  };
+
   const refetch = () => {
-    fetchTickets(page, debouncedSearchQuery);
+    fetchTickets(page, debouncedSearchQuery, statusFilter);
   };
 
   useEffect(() => {
-    const handler = () => fetchTickets(page, debouncedSearchQuery);
+    const handler = () => fetchTickets(page, debouncedSearchQuery, statusFilter);
     window.addEventListener("tickets:refresh", handler);
     return () => window.removeEventListener("tickets:refresh", handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, debouncedSearchQuery]);
+  }, [page, debouncedSearchQuery, statusFilter]);
 
   const createTicket = async (payload: {
     clientId: string;
@@ -131,7 +141,7 @@ export const useTickets = () => {
       }
 
       toast.success("Ticket created successfully");
-      await fetchTickets(page, debouncedSearchQuery);
+      await fetchTickets(page, debouncedSearchQuery, statusFilter);
       return true;
     } catch (error) {
       console.error("Error creating ticket:", error);
@@ -171,10 +181,12 @@ export const useTickets = () => {
     loading,
     pagination,
     searchQuery,
+    statusFilter,
     products,
     services,
     handlePageChange,
     handleSearch,
+    handleStatusChange,
     refetch,
     createTicket,
   };

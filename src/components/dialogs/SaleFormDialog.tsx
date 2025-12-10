@@ -406,14 +406,14 @@ export function SaleFormDialog({
                 />
 
                 {existingClientId ? (
-                  <Controller
-                    control={control}
-                    name="existingClientId"
-                    rules={{ required: "Client is required" }}
-                    render={({ field }) => (
+                    <Controller
+                      control={control}
+                      name="existingClientId"
+                      rules={{ required: "Client is required" }}
+                      render={({ field }) => (
                       <ClientCombobox
                         clients={clients}
-                        value={field.value}
+                          value={field.value}
                         onChange={field.onChange}
                         error={errors.existingClientId?.message as string}
                       />

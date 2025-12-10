@@ -7,16 +7,18 @@ import { useTickets } from "@/hooks/useTickets";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 import TicketsLineChart from "@/components/charts/TicketsLineChart";
-import {
-  FiDownload,
-  FiDollarSign,
-  FiPackage,
-  FiShoppingBag,
-  FiUser,
-} from "react-icons/fi";
+import { FiDownload, FiPackage, FiShoppingBag, FiUser } from "react-icons/fi";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { useTranslation } from "@/hooks/useTranslation";
+import { TicketStatus } from "@/constants/status";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Sales = () => {
   type TicketWithRelations = ReturnType<typeof useTickets>["data"][number] & {
@@ -32,8 +34,10 @@ const Sales = () => {
     loading,
     pagination,
     searchQuery,
+    statusFilter,
     handlePageChange,
     handleSearch,
+    handleStatusChange,
   } = useTickets();
 
   const exportToCSV = () => {
@@ -180,6 +184,20 @@ const Sales = () => {
         onSearch={handleSearch}
         loading={loading}
         onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
+        extraFilters={
+          <Select value={statusFilter} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value={TicketStatus.Pending}>Pending</SelectItem>
+              <SelectItem value={TicketStatus.Confirmed}>Confirmed</SelectItem>
+              <SelectItem value={TicketStatus.Done}>Done</SelectItem>
+              <SelectItem value={TicketStatus.Canceled}>Canceled</SelectItem>
+            </SelectContent>
+          </Select>
+        }
       />
       <TicketDetailsDialog
         open={!!selectedTicket}
