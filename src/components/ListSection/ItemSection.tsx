@@ -24,8 +24,8 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
           <div
             className={`flex items-center justify-center w-10 h-10 rounded-md ${
               isActive
-                ? "bg-gray-200 text-[#06334A] shadow-sm"
-                : "text-gray-700 hover:bg-gray-100 hover:text-[#06334A]"
+                ? "bg-brand-200 text-brand-600 shadow-sm"
+                : "text-gray-700 hover:bg-brand-100 hover:text-brand-600"
             }`}
           >
             <div>

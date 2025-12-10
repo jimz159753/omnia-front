@@ -2,28 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, Category, SubCategory, Provider } from "@/generated/prisma";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FiEdit, FiTrash2, FiMoreHorizontal, FiCalendar } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import i18next from "@/i18n";
-
-const formatDateTime = (iso: string) => {
-  const date = new Date(iso);
-  const dateStr = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  });
-  const timeStr = date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return { dateStr, timeStr };
-};
+import Image from "next/image";
 
 // Extended type to include the category and subcategory relations
 export type ProductWithCategory = Product & {
@@ -68,13 +49,13 @@ export const getColumns = ({
         return (
           <div className="flex items-center justify-center">
             {src ? (
-              <img
+              <Image
                 src={src}
                 alt={row.original.name}
-                className="h-10 w-10 rounded object-cover"
+                className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
                 N/A
               </div>
             )}

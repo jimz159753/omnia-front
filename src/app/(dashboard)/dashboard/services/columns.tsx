@@ -2,14 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Service, Category, SubCategory } from "@/generated/prisma";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FiEdit, FiTrash2, FiMoreHorizontal, FiCalendar } from "react-icons/fi";
+
+import { FiEdit, FiTrash2, FiCalendar } from "react-icons/fi";
 import i18next from "@/i18n";
+import Image from "next/image";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
@@ -31,6 +27,13 @@ export type ServiceWithRelations = Service & {
     subCategory: SubCategory | null;
   };
   subCategory: SubCategory;
+};
+
+type CellInfo = {
+  row: {
+    getValue: (key: string) => unknown;
+    original: ServiceWithRelations;
+  };
 };
 
 interface GetColumnsParams {
@@ -55,18 +58,18 @@ export const getColumns = ({
     {
       accessorKey: "image",
       header: translateServices("image"),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         const src = row.getValue("image") as string;
         return (
           <div className="flex items-center justify-center">
             {src ? (
-              <img
+              <Image
                 src={src}
                 alt={row.original.name}
-                className="h-10 w-10 rounded object-cover"
+                className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
                 N/A
               </div>
             )}
@@ -81,7 +84,7 @@ export const getColumns = ({
     {
       accessorKey: "description",
       header: translateCommon("description"),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         const description = row.getValue("description") as string;
         return (
           <div className="max-w-[300px] truncate" title={description}>
@@ -93,21 +96,21 @@ export const getColumns = ({
     {
       accessorKey: "category.name",
       header: translateServices("category"),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         return row.original.category?.name || "N/A";
       },
     },
     {
       accessorKey: "subCategory.name",
       header: translateServices("subcategory"),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         return row.original.subCategory?.name || "N/A";
       },
     },
     {
       accessorKey: "duration",
       header: `${translateServices("duration")} (min)`,
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         const duration = row.getValue("duration") as number;
         return <div className="font-medium">{duration} min</div>;
       },
@@ -115,8 +118,8 @@ export const getColumns = ({
     {
       accessorKey: "price",
       header: translateServices("price"),
-      cell: ({ row }) => {
-        const price = parseFloat(row.getValue("price"));
+      cell: ({ row }: CellInfo) => {
+        const price = parseFloat(row.getValue("price") as string);
         const formatted = new Intl.NumberFormat("es-MX", {
           style: "currency",
           currency: "MXN",
@@ -127,8 +130,8 @@ export const getColumns = ({
     {
       accessorKey: "commission",
       header: translateServices("commission"),
-      cell: ({ row }) => {
-        const commission = parseFloat(row.getValue("commission"));
+      cell: ({ row }: CellInfo) => {
+        const commission = parseFloat(row.getValue("commission") as string);
         const formatted = new Intl.NumberFormat("es-MX", {
           style: "currency",
           currency: "MXN",
@@ -139,7 +142,7 @@ export const getColumns = ({
     {
       accessorKey: "createdAt",
       header: translateCommon("date"),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         const { dateStr, timeStr } = formatDateTime(
           row.getValue("createdAt") as string
         );
@@ -159,7 +162,7 @@ export const getColumns = ({
       header: () => (
         <div className="text-center">{translateCommon("actions")}</div>
       ),
-      cell: ({ row }) => {
+      cell: ({ row }: CellInfo) => {
         const item = row.original;
 
         return (
