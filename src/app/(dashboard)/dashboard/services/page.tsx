@@ -153,10 +153,11 @@ const Services = () => {
     <>
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
-          <CardTitle className="text-4xl font-normal">{tServicesTranslation("title")}</CardTitle>
+          <CardTitle className="text-4xl font-normal">
+            {tServicesTranslation("title")}
+          </CardTitle>
           <CardDescription className="font-normal">
-            {tServicesTranslation("description") ||
-              tCommon("description")}
+            {tServicesTranslation("description") || tCommon("description")}
           </CardDescription>
         </div>
         <button
@@ -164,7 +165,7 @@ const Services = () => {
             setEditingItem(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-1 text-md rounded-md bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+          className="flex items-center gap-2 px-4 py-1 text-md rounded-md border border-brand-500 hover:bg-brand-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiPlus className="w-4 h-4" />
           Add Service
@@ -189,7 +190,9 @@ const Services = () => {
         columns={columns}
         data={data}
         searchKey="name"
-          searchPlaceholder={tServicesTranslation("searchPlaceholder") || tCommon("search")}
+        searchPlaceholder={
+          tServicesTranslation("searchPlaceholder") || tCommon("search")
+        }
         searchValue={searchQuery}
         pagination={pagination}
         onPageChange={handlePageChange}

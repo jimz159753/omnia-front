@@ -1,6 +1,13 @@
 import React from "react";
 import type { ClientFilter, Client } from "@/hooks/useClientsPage";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   clients: Client[];
@@ -44,15 +51,19 @@ const ClientSidebar: React.FC<Props> = ({
             placeholder={t("searchPlaceholder")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
-          <select
+          <Select
             value={filter}
-            onChange={(e) => onFilterChange(e.target.value as ClientFilter)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+            onValueChange={(value) => onFilterChange(value as ClientFilter)}
           >
-            <option value="all">{t("filterAll")}</option>
-            <option value="recent">{t("filterRecent")}</option>
-            <option value="inactive">{t("filterInactive")}</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("filterAll")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("filterAll")}</SelectItem>
+              <SelectItem value="recent">{t("filterRecent")}</SelectItem>
+              <SelectItem value="inactive">{t("filterInactive")}</SelectItem>
+            </SelectContent>
+          </Select>
           <p className="text-sm text-gray-500">
             {t("clientsCount", {
               filtered: filteredClients.length,
