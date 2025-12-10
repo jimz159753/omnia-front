@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { FiGlobe, FiSettings } from "react-icons/fi";
+import { FiGlobe } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
 import { BusinessDetailsForm } from "@/components/business/BusinessDetailsForm";
 
@@ -11,11 +11,6 @@ const Settings = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <FiSettings className="w-8 h-8 text-brand-500" />
-        <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-4 lg:col-span-1">
           <Card>

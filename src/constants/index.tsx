@@ -8,12 +8,12 @@ import mirrors from "@/assets/images/mirrors.webp";
 import plants from "@/assets/images/plants.webp";
 import products from "@/assets/images/products.webp";
 import yard from "@/assets/images/yard.webp";
-import { CheckCheckIcon } from "@/components/CheckCheckIcon";
-import { ShoppingCartIcon } from "@/components/ShoppingCartIcon";
-import { HomeIcon } from "@/components/HouseIcon";
+import { DoubleCheckIcon } from "@/components/double-check-icon";
 import { GearIcon } from "@/components/gear-icon";
 import { ClientsIcon } from "@/components/clients-icon";
+import { ShoppingCartIcon } from "@/components/shopping-cart-icon";
 import { ServicesIcon } from "@/components/services-icon";
+import { HomeIcon } from "@/components/home-icon";
 
 // Tabs
 
@@ -71,7 +71,7 @@ export const items: IMenuItem[] = [
     title: "Analytics",
   },
   {
-    icon: () => <CheckCheckIcon size={22} />,
+    icon: () => <DoubleCheckIcon size={22} />,
     title: "Sales",
   },
   {
