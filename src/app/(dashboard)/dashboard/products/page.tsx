@@ -8,7 +8,7 @@ import { useProductMeta } from "@/hooks/useProductMeta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductFormModal } from "../../../../components/products/ProductFormModal";
 import { DeleteConfirmDialog } from "../../../../components/products/DeleteConfirmDialog";
-import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -70,11 +70,34 @@ const Products = () => {
 
   if (loading && data.length === 0) {
     return (
-      <div className="container mx-auto py-10">
-        <div className="flex items-center justify-center h-64">
-          <CustomLoadingSpinner size={48} />
+      <>
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-10 w-[200px]" />
+            <Skeleton className="h-4 w-[300px]" />
+          </div>
+          <Skeleton className="h-10 w-[140px]" />
         </div>
-      </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-[120px]" />
+                <Skeleton className="h-4 w-4 rounded" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-[100px]" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="flex gap-2 mb-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-[140px]" />
+          ))}
+        </div>
+        <Skeleton className="h-[400px] w-full rounded-lg" />
+      </>
     );
   }
 

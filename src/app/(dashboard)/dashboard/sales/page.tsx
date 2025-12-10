@@ -8,11 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 import TicketsLineChart from "@/components/charts/TicketsLineChart";
 import { FiDownload, FiPackage, FiShoppingBag, FiUser } from "react-icons/fi";
-
-import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { useTranslation } from "@/hooks/useTranslation";
 import { StatusFilter } from "@/components/filters/StatusFilter";
 import { DateFilter } from "@/components/filters/DateFilter";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Sales = () => {
   type TicketWithRelations = ReturnType<typeof useTickets>["data"][number] & {
@@ -128,11 +127,39 @@ const Sales = () => {
 
   if (loading && data.length === 0) {
     return (
-      <div className="container mx-auto py-10">
-        <div className="flex items-center justify-center h-64">
-          <CustomLoadingSpinner size={48} />
+      <>
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-10 w-[200px]" />
+            <Skeleton className="h-4 w-[300px]" />
+          </div>
+          <Skeleton className="h-10 w-[140px]" />
         </div>
-      </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
+          {[...Array(4)].map((_, i) => (
+            <Card className="bg-brand-500/10 shadow-none" key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-[120px]" />
+                <Skeleton className="h-4 w-4 rounded" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-[80px] mb-2" />
+                <Skeleton className="h-3 w-[140px]" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <Skeleton className="h-10 w-[320px]" />
+            <div className="flex gap-2">
+              <Skeleton className="h-10 w-[180px]" />
+              <Skeleton className="h-10 w-[180px]" />
+            </div>
+          </div>
+          <Skeleton className="h-[400px] w-full rounded-lg" />
+        </div>
+      </>
     );
   }
 
@@ -146,7 +173,7 @@ const Sales = () => {
         <button
           onClick={exportToCSV}
           disabled={loading || data.length === 0}
-          className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm rounded-md border border-brand-500 hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiDownload className="w-4 h-4" />
           {tSales("exportCSV")}
