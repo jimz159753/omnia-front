@@ -115,20 +115,22 @@ const Products = () => {
     setDeletingItem(item);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = () => {
     if (!deletingItem) return;
 
-    const response = await fetch(`/api/products?id=${deletingItem.id}`, {
+    fetch(`/api/products?id=${deletingItem.id}`, {
       method: "DELETE",
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to delete product");
-    }
-
-    refetch();
-    setDeletingItem(null);
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete product");
+        }
+        refetch();
+        setDeletingItem(null);
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+      });
   };
 
   const handleModalClose = (open: boolean) => {
@@ -274,7 +276,7 @@ const Products = () => {
         open={!!deletingItem}
         onOpenChange={(open) => !open && setDeletingItem(null)}
         onConfirm={handleDeleteConfirm}
-        itemName={deletingItem?.name || ""}
+        item={deletingItem}
       />
 
       {/* Provider Modal */}

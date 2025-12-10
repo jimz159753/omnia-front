@@ -8,71 +8,46 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CustomButton } from "@/components/ui/CustomButton";
-import { CustomAlert } from "@/components/ui/CustomAlert";
-import { useState } from "react";
+import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => Promise<void>;
-  itemName: string;
+  onConfirm: () => void;
+  item: ProductWithCategory | null;
 }
 
 export function DeleteConfirmDialog({
   open,
   onOpenChange,
   onConfirm,
-  itemName,
+  item,
 }: DeleteConfirmDialogProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleConfirm = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      await onConfirm();
-      onOpenChange(false);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to delete product"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!item) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Product</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete <strong>{itemName}</strong>? This
-            action cannot be undone.
+            Are you sure you want to delete the product &quot;{item.name}&quot;?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
-
-        {error && <CustomAlert severity="error">{error}</CustomAlert>}
-
-        <DialogFooter>
-          <CustomButton
-            type="button"
+        <DialogFooter className="gap-2">
+          <button
             onClick={() => onOpenChange(false)}
-            disabled={loading}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+            className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
           >
             Cancel
-          </CustomButton>
-          <CustomButton
-            type="button"
-            onClick={handleConfirm}
-            disabled={loading}
-            className="bg-red-600 hover:bg-red-700 text-white"
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors"
           >
-            {loading ? "Deleting..." : "Delete"}
-          </CustomButton>
+            Delete
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
