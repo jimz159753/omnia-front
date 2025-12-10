@@ -38,9 +38,17 @@ export const useTickets = () => {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const fetchTickets = async (currentPage: number, search: string = "", status: string = "all") => {
+  const fetchTickets = async (
+    currentPage: number,
+    search: string = "",
+    status: string = "all",
+    dateFilterType: string = "all",
+    specificDate?: Date
+  ) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -48,9 +56,17 @@ export const useTickets = () => {
         pageSize: pagination.pageSize.toString(),
         search,
       });
-      
+
       if (status && status !== "all") {
         params.append("status", status);
+      }
+
+      if (dateFilterType && dateFilterType !== "all") {
+        params.append("dateFilter", dateFilterType);
+      }
+
+      if (specificDate) {
+        params.append("specificDate", specificDate.toISOString());
       }
 
       const response = await fetch(`/api/tickets?${params}`);
@@ -88,16 +104,28 @@ export const useTickets = () => {
     }
   };
 
-  // Fetch tickets when search or status changes
+  // Fetch tickets when search, status, or date filter changes
   useEffect(() => {
     setPage(1);
-    fetchTickets(1, debouncedSearchQuery, statusFilter);
+    fetchTickets(
+      1,
+      debouncedSearchQuery,
+      statusFilter,
+      dateFilter,
+      selectedDate
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchQuery, statusFilter]);
+  }, [debouncedSearchQuery, statusFilter, dateFilter, selectedDate]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    fetchTickets(newPage, debouncedSearchQuery, statusFilter);
+    fetchTickets(
+      newPage,
+      debouncedSearchQuery,
+      statusFilter,
+      dateFilter,
+      selectedDate
+    );
   };
 
   const handleSearch = (search: string) => {
@@ -108,16 +136,43 @@ export const useTickets = () => {
     setStatusFilter(status);
   };
 
+  const handleDateFilterChange = (filter: string) => {
+    setDateFilter(filter);
+    if (filter !== "calendar") {
+      setSelectedDate(undefined); // Clear selected date when not using calendar
+    }
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      setDateFilter("calendar");
+    }
+  };
+
   const refetch = () => {
-    fetchTickets(page, debouncedSearchQuery, statusFilter);
+    fetchTickets(
+      page,
+      debouncedSearchQuery,
+      statusFilter,
+      dateFilter,
+      selectedDate
+    );
   };
 
   useEffect(() => {
-    const handler = () => fetchTickets(page, debouncedSearchQuery, statusFilter);
+    const handler = () =>
+      fetchTickets(
+        page,
+        debouncedSearchQuery,
+        statusFilter,
+        dateFilter,
+        selectedDate
+      );
     window.addEventListener("tickets:refresh", handler);
     return () => window.removeEventListener("tickets:refresh", handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, debouncedSearchQuery, statusFilter]);
+  }, [page, debouncedSearchQuery, statusFilter, dateFilter, selectedDate]);
 
   const createTicket = async (payload: {
     clientId: string;
@@ -141,7 +196,13 @@ export const useTickets = () => {
       }
 
       toast.success("Ticket created successfully");
-      await fetchTickets(page, debouncedSearchQuery, statusFilter);
+      await fetchTickets(
+        page,
+        debouncedSearchQuery,
+        statusFilter,
+        dateFilter,
+        selectedDate
+      );
       return true;
     } catch (error) {
       console.error("Error creating ticket:", error);
@@ -182,11 +243,15 @@ export const useTickets = () => {
     pagination,
     searchQuery,
     statusFilter,
+    dateFilter,
+    selectedDate,
     products,
     services,
     handlePageChange,
     handleSearch,
     handleStatusChange,
+    handleDateFilterChange,
+    handleDateSelect,
     refetch,
     createTicket,
   };

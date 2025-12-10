@@ -48,11 +48,13 @@ export interface DataTableProps<TData, TValue> {
   renderSubComponent?: (row: TData) => React.ReactNode;
   onRowClick?: (row: TData) => void;
   extraFilters?: React.ReactNode;
+  reverseFilters?: boolean;
 }
 
 export type DataTablePropsType<TData, TValue> = DataTableProps<TData, TValue>;
 
 export function DataTable<TData, TValue>({
+  reverseFilters = false,
   columns,
   data,
   searchKey,
@@ -108,12 +110,16 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        {extraFilters && extraFilters}
+      <div
+        className={`flex items-center justify-between gap-4 ${
+          reverseFilters ? "flex-row-reverse" : "flex-row"
+        }`}
+      >
+        {extraFilters && <div className="flex-shrink-0">{extraFilters}</div>}
 
         {searchKey && onSearch && (
-          <div className="flex items-center justify-end w-full">
-            <div className="relative max-w-sm">
+          <div className="flex items-center flex-shrink-0">
+            <div className="relative w-[320px]">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 placeholder={searchPlaceholder}

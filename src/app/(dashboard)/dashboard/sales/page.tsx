@@ -11,14 +11,8 @@ import { FiDownload, FiPackage, FiShoppingBag, FiUser } from "react-icons/fi";
 
 import { CustomLoadingSpinner } from "@/components/ui/CustomLoadingSpinner";
 import { useTranslation } from "@/hooks/useTranslation";
-import { TicketStatus } from "@/constants/status";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { StatusFilter } from "@/components/filters/StatusFilter";
+import { DateFilter } from "@/components/filters/DateFilter";
 
 const Sales = () => {
   type TicketWithRelations = ReturnType<typeof useTickets>["data"][number] & {
@@ -35,9 +29,13 @@ const Sales = () => {
     pagination,
     searchQuery,
     statusFilter,
+    dateFilter,
+    selectedDate,
     handlePageChange,
     handleSearch,
     handleStatusChange,
+    handleDateFilterChange,
+    handleDateSelect,
   } = useTickets();
 
   const exportToCSV = () => {
@@ -173,7 +171,9 @@ const Sales = () => {
         ))}
         <TicketsLineChart className="bg-brand-500/10 shadow-none" />
       </div>
+
       <DataTable
+        reverseFilters={true}
         columns={columns}
         data={data}
         searchKey="client"
@@ -185,18 +185,15 @@ const Sales = () => {
         loading={loading}
         onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
         extraFilters={
-          <Select value={statusFilter} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value={TicketStatus.Pending}>Pending</SelectItem>
-              <SelectItem value={TicketStatus.Confirmed}>Confirmed</SelectItem>
-              <SelectItem value={TicketStatus.Done}>Done</SelectItem>
-              <SelectItem value={TicketStatus.Canceled}>Canceled</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <StatusFilter value={statusFilter} onChange={handleStatusChange} />
+            <DateFilter
+              value={dateFilter}
+              selectedDate={selectedDate}
+              onChange={handleDateFilterChange}
+              onDateSelect={handleDateSelect}
+            />
+          </div>
         }
       />
       <TicketDetailsDialog

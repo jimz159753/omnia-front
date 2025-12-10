@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 
 const Select = SelectPrimitive.Root;
@@ -90,9 +90,6 @@ const SelectItem = React.forwardRef<
     )}
     {...props}
   >
-    <SelectPrimitive.ItemIndicator className="absolute left-2 flex items-center">
-      <FiCheck className="h-4 w-4" />
-    </SelectPrimitive.ItemIndicator>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
   </SelectPrimitive.Item>
 ));
@@ -120,4 +117,3 @@ export {
   SelectItem,
   SelectSeparator,
 };
-

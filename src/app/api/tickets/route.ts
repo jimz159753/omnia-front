@@ -30,6 +30,8 @@ export async function GET(request: NextRequest) {
     const pageSize = parseInt(searchParams.get("pageSize") || "5");
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
+    const dateFilter = searchParams.get("dateFilter") || "all";
+    const specificDate = searchParams.get("specificDate") || "";
 
     const skip = (page - 1) * pageSize;
 
@@ -72,7 +74,36 @@ export async function GET(request: NextRequest) {
     if (status && status !== "all") {
       conditions.push({ status });
     }
+    
+    // Date filtering
+    if (dateFilter && dateFilter !== "all") {
+      const now = new Date();
+      let startDate: Date;
+      let endDate: Date;
 
+      if (dateFilter === "today") {
+        startDate = new Date(now.setHours(0, 0, 0, 0));
+        endDate = new Date(now.setHours(23, 59, 59, 999));
+      } else if (dateFilter === "thisMonth") {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      } else if (dateFilter === "calendar" && specificDate) {
+        const selectedDate = new Date(specificDate);
+        startDate = new Date(selectedDate.setHours(0, 0, 0, 0));
+        endDate = new Date(selectedDate.setHours(23, 59, 59, 999));
+      } else {
+        startDate = new Date(0);
+        endDate = new Date();
+      }
+
+      conditions.push({
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      });
+    }
+    
     // If we have conditions, combine them with AND
     if (conditions.length > 0) {
       where.AND = conditions;
