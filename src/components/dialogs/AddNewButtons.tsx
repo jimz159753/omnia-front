@@ -22,7 +22,7 @@ export const addNewButtonItems: AddNewButtonItem[] = [
     className: "rounded-r-none",
     colorBg: "bg-blue-500/20",
     hoverBg: "hover:bg-blue-500/30",
-    iconColor: "text-brand-500",
+    iconColor: "text-blue-500",
     hoverRing: "hover:ring-blue-500",
   },
   {
@@ -53,7 +53,7 @@ interface AddNewButtonsProps {
 
 export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
   return (
-    <div className="flex justify-center gap-0">
+    <div className="flex justify-center mx-auto gap-0">
       {addNewButtonItems.map((item) => {
         const Icon = item.icon;
 

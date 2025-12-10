@@ -22,8 +22,8 @@ export function AddNewDialog({
 }: AddNewDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex flex-col items-center justify-around gap-8">
-        <DialogHeader className="flex flex-col  gap-2">
+      <DialogContent className="flex flex-col items-start justify-around gap-8">
+        <DialogHeader className="flex flex-col gap-2">
           <DialogTitle className="text-2xl font-normal">Add New</DialogTitle>
           <DialogDescription>
             Choose the type of item you want to add.

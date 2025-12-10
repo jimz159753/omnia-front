@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CustomAlert } from "@/components/ui/CustomAlert";
-import ClientDetailsTabs from "@/components/ui/ClientDetailsTabs";
+import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
+import ClientCombobox from "@/components/clients/ClientCombobox";
 
 interface Service {
   id: string;
@@ -414,38 +415,19 @@ export function AppointmentFormDialog({
                 />
 
                 {existingClientId ? (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Select Client
-                    </label>
-                    <Controller
-                      control={control}
-                      name="existingClientId"
-                      rules={{ required: "Client is required" }}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select client" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {clients.map((client) => (
-                              <SelectItem key={client.id} value={client.id}>
-                                {client.name} ({client.email})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.existingClientId && (
-                      <p className="text-xs text-red-600">
-                        {errors.existingClientId.message as string}
-                      </p>
+                  <Controller
+                    control={control}
+                    name="existingClientId"
+                    rules={{ required: "Client is required" }}
+                    render={({ field }) => (
+                      <ClientCombobox
+                        clients={clients}
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.existingClientId?.message as string}
+                      />
                     )}
-                  </div>
+                  />
                 ) : (
                   <>
                     <div className="space-y-1">
