@@ -24,7 +24,6 @@ export default function SettingsLayout({
           path: "/dashboard/settings/business-details",
           label: t("businessDetailsItem"),
         },
-        { path: "/dashboard/settings/services", label: t("businessServices") },
         { path: "/dashboard/settings/users", label: t("businessUsers") },
         {
           path: "/dashboard/settings/schedules",

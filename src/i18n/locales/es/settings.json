@@ -53,5 +53,21 @@
   "whatsappCredits": "Créditos",
   "whatsappChatBot": "Chat bot de WhatsApp",
   "businessSaveSuccess": "Detalles del negocio guardados exitosamente",
-  "businessSaveError": "Error al guardar los detalles del negocio"
+  "businessSaveError": "Error al guardar los detalles del negocio",
+  "profileSettings": "Configuración del Perfil",
+  "profileSettingsDescription": "Actualiza tu información personal y avatar.",
+  "accountName": "Nombre Completo",
+  "accountEmail": "Correo Electrónico",
+  "accountAvatar": "Avatar del Perfil",
+  "saveProfile": "Guardar Perfil",
+  "profileUpdateSuccess": "Perfil actualizado exitosamente",
+  "profileUpdateError": "Error al actualizar el perfil",
+  "changePassword": "Cambiar Contraseña",
+  "changePasswordDescription": "Actualiza tu contraseña para mantener tu cuenta segura.",
+  "currentPassword": "Contraseña Actual",
+  "newPassword": "Nueva Contraseña",
+  "confirmPassword": "Confirmar Nueva Contraseña",
+  "changePasswordButton": "Cambiar Contraseña",
+  "passwordChangeSuccess": "Contraseña cambiada exitosamente",
+  "passwordChangeError": "Error al cambiar la contraseña"
 }

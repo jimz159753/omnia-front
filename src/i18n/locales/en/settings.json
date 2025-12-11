@@ -52,5 +52,21 @@
   "whatsappCredits": "Credits",
   "whatsappChatBot": "WhatsApp chat bot",
   "businessSaveSuccess": "Business details saved successfully",
-  "businessSaveError": "Failed to save business details"
+  "businessSaveError": "Failed to save business details",
+  "profileSettings": "Profile Settings",
+  "profileSettingsDescription": "Update your personal information and avatar.",
+  "accountName": "Full Name",
+  "accountEmail": "Email Address",
+  "accountAvatar": "Profile Avatar",
+  "saveProfile": "Save Profile",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateError": "Failed to update profile",
+  "changePassword": "Change Password",
+  "changePasswordDescription": "Update your password to keep your account secure.",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm New Password",
+  "changePasswordButton": "Change Password",
+  "passwordChangeSuccess": "Password changed successfully",
+  "passwordChangeError": "Failed to change password"
 }
