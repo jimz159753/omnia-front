@@ -2,6 +2,7 @@ import React from "react";
 import { TabNames } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ItemSectionProps {
   icon: React.FC<{ size?: number }>;
@@ -9,10 +10,12 @@ interface ItemSectionProps {
 }
 
 const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
+  const { t } = useTranslation();
   const tabName = title as TabNames;
   const pathname = usePathname();
   const itemPath = `/dashboard/${tabName.toLowerCase()}`;
-  const isActive = pathname === itemPath;
+  const isActive = pathname.startsWith(itemPath);
+  const translationKey = tabName.toLowerCase();
 
   return (
     <li>
@@ -32,7 +35,7 @@ const ItemSection = ({ title, icon: Icon }: ItemSectionProps) => {
               <Icon size={24} />
             </div>
           </div>
-          <p className="text-sm">{title}</p>
+          <p className="text-sm">{t(translationKey)}</p>
         </Link>
       ) : (
         <div className="mx-auto mt-4 border-b border-gray-300 w-12" />

@@ -61,7 +61,7 @@ export default function SettingsLayout({
     <div className="p-6 space-y-6">
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-4 lg:col-span-1">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>{t("configurationHeader")}</CardTitle>
             </CardHeader>
@@ -98,7 +98,6 @@ export default function SettingsLayout({
             </CardContent>
           </Card>
         </div>
-
         <div className="lg:col-span-4 space-y-4">{children}</div>
       </div>
     </div>

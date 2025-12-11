@@ -38,5 +38,11 @@
   "required": "requerido",
   "optional": "opcional",
   "instagram": "Instagram",
-  "client": "Cliente"
+  "client": "Cliente",
+  "analytics": "Analítica",
+  "sales": "Ventas",
+  "products": "Productos",
+  "services": "Servicios",
+  "clients": "Clientes",
+  "settings": "Configuración"
 }

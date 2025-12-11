@@ -17,7 +17,10 @@ async function saveLogo(logoFile: File | null) {
   if (!logoFile || logoFile.size === 0) return null;
   await fs.promises.mkdir(uploadDirectory, { recursive: true });
   const buffer = Buffer.from(await logoFile.arrayBuffer());
-  const safeName = `${Date.now()}-${logoFile.name.replace(/[^a-zA-Z0-9._-]/g, "")}`;
+  const safeName = `${Date.now()}-${logoFile.name.replace(
+    /[^a-zA-Z0-9._-]/g,
+    ""
+  )}`;
   const filePath = path.join(uploadDirectory, safeName);
   await fs.promises.writeFile(filePath, buffer);
   return `/uploads/${safeName}`;
@@ -31,20 +34,23 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const existing = await prisma.business.findFirst();
-  const logoFile = formData.get("logo") instanceof File ? (formData.get("logo") as File) : null;
+  const logoFile =
+    formData.get("logo") instanceof File
+      ? (formData.get("logo") as File)
+      : null;
 
   const data = {
-    name: (formData.get("name") as string) ?? "",
-    category: (formData.get("category") as string) ?? "",
-    website: (formData.get("website") as string) ?? "",
-    rfc: (formData.get("rfc") as string) ?? "",
-    address: (formData.get("address") as string) ?? "",
-    country: (formData.get("country") as string) ?? "",
-    phone: (formData.get("phone") as string) ?? "",
-    description: (formData.get("description") as string) ?? "",
-    facebook: (formData.get("facebook") as string) ?? "",
-    twitter: (formData.get("twitter") as string) ?? "",
-    instagram: (formData.get("instagram") as string) ?? "",
+    name: (formData.get("name") as string) || "",
+    category: (formData.get("category") as string) || "",
+    website: (formData.get("website") as string) || "",
+    rfc: (formData.get("rfc") as string) || "",
+    address: (formData.get("address") as string) || "",
+    country: (formData.get("country") as string) || "",
+    phone: (formData.get("phone") as string) || "",
+    description: (formData.get("description") as string) || "",
+    facebook: (formData.get("facebook") as string) || "",
+    twitter: (formData.get("twitter") as string) || "",
+    instagram: (formData.get("instagram") as string) || "",
     parking: parseBoolean(formData.get("parking")),
     acceptCards: parseBoolean(formData.get("acceptCards")),
     acceptCash: parseBoolean(formData.get("acceptCash")),
@@ -53,7 +59,7 @@ export async function POST(request: NextRequest) {
     whatsappReminders: parseBoolean(formData.get("whatsappReminders")),
     whatsappCredits: parseBoolean(formData.get("whatsappCredits")),
     whatsappChatBot: parseBoolean(formData.get("whatsappChatBot")),
-      language: (formData.get("language") as string) ?? "en",
+    language: (formData.get("language") as string) || "en",
   };
 
   let logoUrl = existing?.logo ?? null;
@@ -68,17 +74,25 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (logoUrl) {
-    (data as typeof data & { logo: string }).logo = logoUrl;
+  const finalData = logoUrl ? { ...data, logo: logoUrl } : data;
+
+  try {
+    const business = existing
+      ? await prisma.business.update({
+          where: { id: existing.id },
+          data: finalData,
+        })
+      : await prisma.business.create({ data: finalData });
+
+    return NextResponse.json({ data: business });
+  } catch (error) {
+    console.error("Business save error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to save business details",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
-
-  const business = existing
-    ? await prisma.business.update({
-        where: { id: existing.id },
-        data,
-      })
-    : await prisma.business.create({ data });
-
-  return NextResponse.json({ data: business });
 }
-

@@ -138,17 +138,17 @@ model TicketItem {
 
 model Business {
   id                String   @id @default(cuid())
-  name              String
-  category          String
-  website           String
-  rfc               String
-  address           String
-  country           String
-  phone             String
-  description       String
-  facebook          String?
-  twitter           String?
-  instagram         String?
+  name              String   @default("")
+  category          String   @default("")
+  website           String   @default("")
+  rfc               String   @default("")
+  address           String   @default("")
+  country           String   @default("")
+  phone             String   @default("")
+  description       String   @default("")
+  facebook          String   @default("")
+  twitter           String   @default("")
+  instagram         String   @default("")
   parking           Boolean  @default(false)
   acceptCards       Boolean  @default(false)
   acceptCash        Boolean  @default(false)

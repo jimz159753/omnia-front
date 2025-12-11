@@ -51,5 +51,7 @@
   "whatsappDetailsItem": "Configuración de WhatsApp",
   "whatsappReminders": "Recordatorios",
   "whatsappCredits": "Créditos",
-  "whatsappChatBot": "Chat bot de WhatsApp"
+  "whatsappChatBot": "Chat bot de WhatsApp",
+  "businessSaveSuccess": "Detalles del negocio guardados exitosamente",
+  "businessSaveError": "Error al guardar los detalles del negocio"
 }

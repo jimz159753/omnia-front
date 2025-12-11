@@ -5,6 +5,11 @@ import { initReactI18next } from "react-i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { defaultLocale } from "./config";
 
+// Get the saved language from localStorage or use default
+const savedLanguage = typeof window !== "undefined" 
+  ? localStorage.getItem("i18nextLng") || defaultLocale
+  : defaultLocale;
+
 i18next
   .use(initReactI18next)
   .use(
@@ -14,7 +19,7 @@ i18next
     )
   )
   .init({
-    lng: defaultLocale,
+    lng: savedLanguage,
     fallbackLng: defaultLocale,
     interpolation: {
       escapeValue: false,
@@ -23,6 +28,13 @@ i18next
       useSuspense: false,
     },
   });
+
+// Save language to localStorage whenever it changes
+i18next.on("languageChanged", (lng) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("i18nextLng", lng);
+  }
+});
 
 export default i18next;
 

@@ -50,5 +50,7 @@
   "whatsappDetailsItem": "WhatsApp settings",
   "whatsappReminders": "Reminders",
   "whatsappCredits": "Credits",
-  "whatsappChatBot": "WhatsApp chat bot"
+  "whatsappChatBot": "WhatsApp chat bot",
+  "businessSaveSuccess": "Business details saved successfully",
+  "businessSaveError": "Failed to save business details"
 }

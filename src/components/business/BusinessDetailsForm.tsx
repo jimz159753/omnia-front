@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation as useI18nTranslation } from "react-i18next";
 import { BiBuilding, BiGlobe, BiSave } from "react-icons/bi";
 import { FiMessageCircle } from "react-icons/fi";
 
@@ -15,10 +16,18 @@ import {
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "../ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function BusinessDetailsForm() {
   const { t } = useTranslation("settings");
   const { t: tCommon } = useTranslation();
+  const { i18n } = useI18nTranslation();
 
   const {
     register,
@@ -78,11 +87,6 @@ export function BusinessDetailsForm() {
       description: t("faqPetsDescription"),
     },
     {
-      name: "wheelchair access" as const,
-      label: t("faqWheelchairAccess"),
-      description: t("faqWheelchairAccessDescription"),
-    },
-    {
       name: "freeWifi" as const,
       label: t("faqWifi"),
       description: t("faqWifiDescription"),
@@ -120,10 +124,14 @@ export function BusinessDetailsForm() {
           logo: undefined,
         });
         if (data.logo) setLogoPreview(data.logo);
+        // Set the application language to match the saved business language
+        if (data.language && data.language !== i18n.language) {
+          i18n.changeLanguage(data.language);
+        }
       }
     };
     fetchBusiness();
-  }, [reset]);
+  }, [reset, i18n]);
 
   const onSubmit = async (values: BusinessFormValues) => {
     try {
@@ -139,15 +147,28 @@ export function BusinessDetailsForm() {
         method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error("Failed to save business");
+
       const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          json.details || json.error || "Failed to save business"
+        );
+      }
+
       toast.success(t("businessSaveSuccess"));
       if (json?.data?.logo) {
         setLogoPreview(json.data.logo);
       }
+      // Update the application language to match the saved language
+      if (values.language && values.language !== i18n.language) {
+        i18n.changeLanguage(values.language);
+      }
     } catch (error) {
-      console.error(error);
-      toast.error(t("businessSaveError"));
+      console.error("Business save error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : t("businessSaveError");
+      toast.error(errorMessage);
     }
   };
 
@@ -224,13 +245,25 @@ export function BusinessDetailsForm() {
               <label className="text-sm font-medium text-gray-700">
                 {t("businessLanguage")}
               </label>
-              <select
-                {...register("language")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              >
-                <option value="en">{t("businessLanguageEnglish")}</option>
-                <option value="es">{t("businessLanguageSpanish")}</option>
-              </select>
+              <Controller
+                name="language"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("businessLanguage")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">
+                        {t("businessLanguageEnglish")}
+                      </SelectItem>
+                      <SelectItem value="es">
+                        {t("businessLanguageSpanish")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
