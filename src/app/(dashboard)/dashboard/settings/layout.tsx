@@ -43,10 +43,6 @@ export default function SettingsLayout({
       icon: <BiLogoWhatsapp className="w-5 h-5 text-brand-500" />,
       items: [
         {
-          path: "/dashboard/settings/whatsapp",
-          label: t("whatsappDetailsItem"),
-        },
-        {
           path: "/dashboard/settings/reminders",
           label: t("whatsappReminders"),
         },

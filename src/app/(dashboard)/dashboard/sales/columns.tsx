@@ -3,7 +3,6 @@
 import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
 import { FiCalendar } from "react-icons/fi";
-import { Badge } from "@/components/ui/badge";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
 import i18next from "@/i18n";
@@ -81,7 +80,9 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       header: tCommon("quantity"),
       cell: ({ row }) => {
         return (
-          <div className="font-medium text-gray-900">{row.original.quantity}</div>
+          <div className="font-medium text-gray-900">
+            {row.original.quantity}
+          </div>
         );
       },
     },
@@ -103,13 +104,25 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
         const r = row as RowWithGetValue;
         const status = (r.getValue("status") as string) || "";
         const statusLabel = getStatusLabel(status);
-        const badgeClass = getStatusBadgeClass(status);
+
+        // Define status colors directly
+        let colorClasses = "bg-gray-100 text-gray-800";
+        if (status === "Pending") {
+          colorClasses = "bg-yellow-100 text-yellow-800";
+        } else if (status === "Confirmed") {
+          colorClasses = "bg-blue-100 text-blue-800";
+        } else if (status === "Done") {
+          colorClasses = "bg-green-100 text-green-800";
+        } else if (status === "Canceled") {
+          colorClasses = "bg-red-100 text-red-800";
+        }
+
         return (
-          <Badge
-            className={`px-3 py-1 font-semibold border-transparent ${badgeClass}`}
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${colorClasses}`}
           >
             {statusLabel}
-          </Badge>
+          </span>
         );
       },
     },

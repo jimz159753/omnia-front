@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
 export async function GET() {
@@ -69,12 +69,17 @@ export async function POST(request: NextRequest) {
     // Handle avatar upload
     let avatarPath = null;
     if (avatarData && avatarData.startsWith("data:image")) {
+      const matches = avatarData.match(/^data:image\/(\w+);base64,/);
+      const imageType = matches ? matches[1] : "jpg";
       const base64Data = avatarData.split(",")[1];
       const buffer = Buffer.from(base64Data, "base64");
-      const fileName = `${Date.now()}-avatar.jpg`;
+      const fileName = `${Date.now()}-avatar.${imageType}`;
       const uploadDir = path.join(process.cwd(), "public", "uploads");
+      
+      // Ensure upload directory exists
+      await mkdir(uploadDir, { recursive: true });
+      
       const filePath = path.join(uploadDir, fileName);
-
       await writeFile(filePath, buffer);
       avatarPath = `/uploads/${fileName}`;
     }
@@ -169,12 +174,17 @@ export async function PUT(request: NextRequest) {
 
     // Handle avatar upload
     if (avatarData && avatarData.startsWith("data:image")) {
+      const matches = avatarData.match(/^data:image\/(\w+);base64,/);
+      const imageType = matches ? matches[1] : "jpg";
       const base64Data = avatarData.split(",")[1];
       const buffer = Buffer.from(base64Data, "base64");
-      const fileName = `${Date.now()}-avatar.jpg`;
+      const fileName = `${Date.now()}-avatar.${imageType}`;
       const uploadDir = path.join(process.cwd(), "public", "uploads");
+      
+      // Ensure upload directory exists
+      await mkdir(uploadDir, { recursive: true });
+      
       const filePath = path.join(uploadDir, fileName);
-
       await writeFile(filePath, buffer);
       updateData.avatar = `/uploads/${fileName}`;
     }

@@ -174,7 +174,17 @@ export function UserDialog({
               render={({ field }) => (
                 <ImageDropzone
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(file) => {
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        field.onChange(reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    } else {
+                      field.onChange("");
+                    }
+                  }}
                 />
               )}
             />

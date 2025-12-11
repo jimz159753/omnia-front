@@ -64,6 +64,7 @@ export const getColumns = ({
           <div className="flex items-center justify-center">
             {src ? (
               <Image
+                key={src}
                 src={src}
                 alt={row.original.name}
                 width={40}

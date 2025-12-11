@@ -50,10 +50,12 @@ export const getColumns = ({
           <div className="flex items-center justify-center">
             {src ? (
               <Image
+                key={src}
                 src={src}
                 alt={row.original.name}
                 width={40}
                 height={40}
+                unoptimized
                 className="h-10 w-10 rounded-full object-cover"
               />
             ) : (

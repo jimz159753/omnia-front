@@ -44,5 +44,7 @@
   "products": "Productos",
   "services": "Servicios",
   "clients": "Clientes",
-  "settings": "Configuración"
+  "calendar": "Calendario",
+  "settings": "Configuración",
+  "today": "Hoy"
 }

@@ -64,12 +64,12 @@ export function UsersPage() {
   }, []);
 
   return (
-    <Card className="shadow-none">
-      <CardHeader>
+    <div>
+      <div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FiUsers className="w-6 h-6 text-brand-500" />
-            <CardTitle>{t("usersHeader")}</CardTitle>
+            <p className="text-2xl font-semibold">{t("usersHeader")}</p>
           </div>
           <button
             type="button"
@@ -84,8 +84,8 @@ export function UsersPage() {
           </button>
         </div>
         <p className="text-sm text-gray-500 mt-2">{t("usersDescription")}</p>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
@@ -105,7 +105,7 @@ export function UsersPage() {
             searchPlaceholder={t("searchUsers")}
           />
         )}
-      </CardContent>
+      </div>
 
       <UserDialog
         open={isUserDialogOpen}
@@ -118,7 +118,6 @@ export function UsersPage() {
         onSuccess={fetchUsers}
         editingUser={editingUser}
       />
-    </Card>
+    </div>
   );
 }
-

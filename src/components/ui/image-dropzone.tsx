@@ -90,6 +90,8 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
               width={150}
               height={150}
               className="w-full h-full object-cover"
+              unoptimized
+              key={preview}
             />
             <button
               type="button"

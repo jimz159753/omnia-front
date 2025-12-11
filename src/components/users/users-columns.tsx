@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tantml:react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { FiCalendar, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Image from "next/image";
 
@@ -20,6 +20,13 @@ interface UsersColumnsProps {
   onDelete: (id: string) => void;
 }
 
+type CellContext = {
+  row: {
+    getValue: (key: string) => unknown;
+    original: User;
+  };
+};
+
 export const getUsersColumns = ({
   t,
   onEdit,
@@ -28,7 +35,7 @@ export const getUsersColumns = ({
   {
     accessorKey: "avatar",
     header: t("avatar"),
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext) => {
       const avatar = row.getValue("avatar") as string | null;
       const name = row.original.name;
       return avatar ? (
@@ -50,21 +57,25 @@ export const getUsersColumns = ({
   {
     accessorKey: "name",
     header: t("name"),
-    cell: ({ row }) => {
-      return <span className="font-medium">{row.getValue("name")}</span>;
+    cell: ({ row }: CellContext) => {
+      return (
+        <span className="font-medium">{row.getValue("name") as string}</span>
+      );
     },
   },
   {
     accessorKey: "email",
     header: t("email"),
-    cell: ({ row }) => {
-      return <span className="text-gray-600">{row.getValue("email")}</span>;
+    cell: ({ row }: CellContext) => {
+      return (
+        <span className="text-gray-600">{row.getValue("email") as string}</span>
+      );
     },
   },
   {
     accessorKey: "role",
     header: t("role"),
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext) => {
       const role = row.getValue("role") as string;
       return (
         <span
@@ -82,7 +93,7 @@ export const getUsersColumns = ({
   {
     accessorKey: "isActive",
     header: t("status"),
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext) => {
       const isActive = row.getValue("isActive") as boolean;
       return (
         <span
@@ -98,25 +109,35 @@ export const getUsersColumns = ({
   {
     accessorKey: "createdAt",
     header: t("joinedAt"),
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext) => {
       const createdAt = row.getValue("createdAt") as string;
       const date = new Date(createdAt);
       return (
-        <span className="text-gray-600 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <FiCalendar className="w-4 h-4 text-brand-500" />
-          {date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
+          <div className="flex flex-col">
+            <span className="text-gray-600 text-sm">
+              {date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+            <span className="text-gray-400 text-xs">
+              {date.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+        </div>
       );
     },
   },
   {
     id: "actions",
     header: () => <div className="text-right">{t("actions")}</div>,
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext) => {
       const user = row.original;
 
       return (

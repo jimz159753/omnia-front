@@ -14,6 +14,7 @@ import { ClientsIcon } from "@/components/clients-icon";
 import { ShoppingCartIcon } from "@/components/shopping-cart-icon";
 import { ServicesIcon } from "@/components/services-icon";
 import { HomeIcon } from "@/components/home-icon";
+import { CalendarIcon } from "@/components/calendar-icon";
 
 // Tabs
 
@@ -85,6 +86,10 @@ export const items: IMenuItem[] = [
   {
     icon: () => <ClientsIcon size={22} />,
     title: "Clients",
+  },
+  {
+    icon: () => <CalendarIcon size={22} />,
+    title: "Calendar",
   },
   {
     icon: () => null,
