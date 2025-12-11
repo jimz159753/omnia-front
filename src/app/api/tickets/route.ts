@@ -456,3 +456,43 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Ticket ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // First delete related ticket items
+    await prisma.ticketItem.deleteMany({
+      where: { ticketId: id },
+    });
+
+    // Then delete the ticket
+    await prisma.ticket.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { message: "Ticket deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting ticket:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      { error: "Failed to delete ticket" },
+      { status: 500 }
+    );
+  }
+}

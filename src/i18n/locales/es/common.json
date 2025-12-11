@@ -86,5 +86,9 @@
   "editClient": "Editar Cliente",
   "editClientDescription": "Actualice la información del cliente",
   "addNew": "Agregar Nuevo",
-  "addNewDescription": "Elija el tipo de elemento que desea agregar"
+  "addNewDescription": "Elija el tipo de elemento que desea agregar",
+  "eventDeleted": "Evento eliminado correctamente",
+  "eventDeleteError": "Error al eliminar el evento",
+  "deleteAppointment": "Eliminar Cita",
+  "deleteAppointmentDescription": "¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer."
 }

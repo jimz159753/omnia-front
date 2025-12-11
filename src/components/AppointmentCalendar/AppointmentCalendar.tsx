@@ -11,6 +11,8 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiUserPlus,
+  FiEdit2,
+  FiTrash2,
 } from "react-icons/fi";
 import { UserDialog } from "@/components/dialogs/UserDialog";
 import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
@@ -21,6 +23,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "@/styles/calendar.css";
@@ -70,6 +82,8 @@ export function AppointmentCalendar() {
     end: Date;
     resourceId?: string | number;
   } | null>(null);
+  const [deleteConfirmEvent, setDeleteConfirmEvent] =
+    useState<CalendarEvent | null>(null);
 
   // Fetch staff members
   const fetchStaff = async () => {
@@ -131,6 +145,69 @@ export function AppointmentCalendar() {
     console.log("Event selected:", event);
     // Here you can open a dialog to edit/view the appointment
   }, []);
+
+  // Handle edit event
+  const handleEditEvent = useCallback((event: CalendarEvent) => {
+    setSelectedSlot({
+      start: event.start,
+      end: event.end,
+      resourceId: event.resourceId,
+    });
+    setIsAppointmentDialogOpen(true);
+  }, []);
+
+  // Handle delete event
+  const handleDeleteEvent = async (event: CalendarEvent) => {
+    try {
+      const response = await fetch(`/api/tickets?id=${event.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete event");
+      }
+
+      // Remove from local state
+      setEvents((prev) => prev.filter((e) => e.id !== event.id));
+      toast.success(t("eventDeleted") || "Event deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      toast.error(t("eventDeleteError") || "Failed to delete event");
+    } finally {
+      setDeleteConfirmEvent(null);
+    }
+  };
+
+  // Custom event component with edit/delete buttons
+  const CustomEvent = ({ event }: { event: CalendarEvent }) => {
+    return (
+      <div className="flex items-center justify-between h-fit px-2">
+        <div className="flex-1 text-xs font-medium truncate">{event.title}</div>
+        <div className="flex gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditEvent(event);
+            }}
+            className="p-1 bg-white/90 rounded hover:bg-white text-gray-700 hover:text-brand-500 transition-colors"
+            title={t("edit") || "Edit"}
+          >
+            <FiEdit2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteConfirmEvent(event);
+            }}
+            className="p-1 bg-white/90 rounded hover:bg-white text-gray-700 hover:text-red-500 transition-colors"
+            title={t("delete") || "Delete"}
+          >
+            <FiTrash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // Fetch appointments/tickets
   const fetchAppointments = async () => {
@@ -429,6 +506,9 @@ export function AppointmentCalendar() {
                 dayHeaderFormat: (date, culture, localizer) =>
                   localizer?.format(date, "EEEE, MMMM d", culture) ?? "",
               }}
+              components={{
+                event: CustomEvent,
+              }}
             />
           </div>
         </div>
@@ -462,6 +542,34 @@ export function AppointmentCalendar() {
             : null
         }
       />
+
+      <AlertDialog
+        open={!!deleteConfirmEvent}
+        onOpenChange={(open: boolean) => !open && setDeleteConfirmEvent(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("deleteAppointment") || "Delete Appointment"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("deleteAppointmentDescription") ||
+                "Are you sure you want to delete this appointment? This action cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel") || "Cancel"}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                deleteConfirmEvent && handleDeleteEvent(deleteConfirmEvent)
+              }
+              className="bg-red-500 hover:bg-red-600"
+            >
+              {t("delete") || "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
