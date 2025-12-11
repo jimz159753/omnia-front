@@ -202,7 +202,7 @@ export function SaleFormDialog({
           ],
           quantity,
           total: unitPrice * quantity,
-          status: "pending",
+          status: "Pending",
           notes: values.includeNotes ? values.notes : "",
         }),
       });

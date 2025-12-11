@@ -222,7 +222,7 @@ export function AppointmentFormDialog({
           ],
           quantity: 1,
           total: unitPrice,
-          status: "pending",
+          status: "Pending",
           notes: values.includeNotes ? values.notes : "",
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
