@@ -82,10 +82,9 @@ export default function SettingsLayout({
                             className={cn(
                               "block text-sm px-8 py-1 rounded-md transition-colors h-10 flex items-center justify-start cursor-pointer",
                               pathname === item.path
-                                ? "bg-brand-50 text-brand-700 font-medium"
-                                : "text-gray-600 hover:bg-gray-50"
+                                ? "bg-brand-50 !text-brand-700 font-medium"
+                                : "text-gray-600 hover:bg-gray-50 hover:text-brand-700"
                             )}
-                            style={{ textDecoration: "none", color: "inherit" }}
                           >
                             {item.label}
                           </Link>
