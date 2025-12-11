@@ -5,12 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+import { BiBuilding } from "react-icons/bi";
 import {
   businessSchema,
   type BusinessFormValues,
 } from "@/lib/validations/business";
+import { ImageDropzone } from "@/components/ui/image-dropzone";
 
 export function BusinessDetailsForm() {
   const { t } = useTranslation("settings");
@@ -19,7 +19,6 @@ export function BusinessDetailsForm() {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { isSubmitting },
   } = useForm<BusinessFormValues>({
@@ -50,7 +49,7 @@ export function BusinessDetailsForm() {
   });
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const logoFiles = watch("logo") as FileList | undefined;
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -95,8 +94,8 @@ export function BusinessDetailsForm() {
         if (key === "logo") return;
         formData.append(key, value?.toString() ?? "");
       });
-      if (logoFiles && logoFiles.length > 0) {
-        formData.append("logo", logoFiles[0]);
+      if (logoFile) {
+        formData.append("logo", logoFile);
       }
       const res = await fetch("/api/business", {
         method: "POST",
@@ -115,14 +114,12 @@ export function BusinessDetailsForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("businessDetailsTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-gray-500 mb-4">
-          {t("businessFormDescription")}
-        </p>
+    <>
+      <div className="flex items-center gap-2 mb-4">
+        <BiBuilding className="w-5 h-5 text-brand-500" />
+        <p className="text-lg font-medium">{t("businessDetailsTitle")}</p>
+      </div>
+      <div>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 gap-4 md:grid-cols-2"
@@ -209,6 +206,26 @@ export function BusinessDetailsForm() {
               placeholder={t("businessPhone")}
             />
           </div>
+          <div className="space-y-1 md:col-span-2">
+            <label className="text-sm font-medium text-gray-700">
+              {t("businessLogo")}
+            </label>
+            <ImageDropzone
+              value={logoPreview || undefined}
+              onChange={(file: File | null) => {
+                setLogoFile(file);
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setLogoPreview(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  setLogoPreview(null);
+                }
+              }}
+            />
+          </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">
               {t("businessFacebook")}
@@ -249,27 +266,6 @@ export function BusinessDetailsForm() {
               rows={3}
               placeholder={t("businessDescription")}
             />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessLogo")}
-            </label>
-            <input
-              type="file"
-              {...register("logo")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-            {logoPreview && (
-              <div className="mt-2 h-24 w-24 relative">
-                <Image
-                  src={logoPreview}
-                  alt="Business logo"
-                  fill
-                  className="object-contain"
-                  unoptimized
-                />
-              </div>
-            )}
           </div>
           <div className="md:col-span-2">
             <p className="text-sm font-semibold text-gray-800">
@@ -361,7 +357,7 @@ export function BusinessDetailsForm() {
             </button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </>
   );
 }

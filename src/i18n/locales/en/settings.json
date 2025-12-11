@@ -6,7 +6,7 @@
   "additionalSettings": "Additional Settings",
   "moreSettingsSoon": "More settings options coming soon...",
   "configurationHeader": "Configuration",
-  "businessHeader": "Business",
+  "businessHeader": "BUSINESS",
   "businessDetailsTitle": "Business details",
   "businessDetailsItem": "Business details",
   "businessServices": "Services",
@@ -34,15 +34,12 @@
   "faqCash": "Accept cash",
   "faqPets": "Pet friendly",
   "faqWifi": "Free Wi-Fi",
-  "accountHeader": "Account",
+  "accountHeader": "ACCOUNT",
   "accountDetailsTitle": "Your account data",
   "accountDetailsItem": "Account settings",
-  "whatsappHeader": "WhatsApp",
-  "whatsappDetailsTitle": "WhatsApp channel",
-  "whatsappDetailsItem": "WhatsApp settings"
-  ,
+  "whatsappHeader": "WHATSAPP",
+  "whatsappDetailsItem": "WhatsApp settings",
   "whatsappReminders": "Reminders",
   "whatsappCredits": "Credits",
   "whatsappChatBot": "WhatsApp chat bot"
 }
-
