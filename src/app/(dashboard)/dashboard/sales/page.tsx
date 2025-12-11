@@ -155,8 +155,8 @@ const Sales = () => {
             <div className="flex gap-2">
               <Skeleton className="h-10 w-[180px]" />
               <Skeleton className="h-10 w-[180px]" />
-        </div>
-      </div>
+            </div>
+          </div>
           <Skeleton className="h-[400px] w-full rounded-lg" />
         </div>
       </>
@@ -168,12 +168,12 @@ const Sales = () => {
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
           <p className="text-4xl font-normal">{tSales("title")}</p>
-          <p className="font-normal">{tSales("description")}</p>
+          <p className="text-sm text-gray-500">{tSales("description")}</p>
         </div>
         <button
           onClick={exportToCSV}
           disabled={loading || data.length === 0}
-          className="flex items-center gap-2 px-4 py-2 text-sm rounded-md border border-brand-500 hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiDownload className="w-4 h-4" />
           {tSales("exportCSV")}

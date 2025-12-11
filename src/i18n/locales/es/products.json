@@ -8,6 +8,7 @@
   "subcategory": "Subcategoría",
   "provider": "Proveedor",
   "image": "Imagen",
+  "description": "Administra tu inventario de productos, precios y niveles de stock.",
   "createdAt": "Creado el",
   "selectCategory": "Seleccionar categoría",
   "selectSubcategory": "Seleccionar subcategoría",

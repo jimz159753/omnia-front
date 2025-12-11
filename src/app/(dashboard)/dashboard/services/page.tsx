@@ -4,13 +4,7 @@ import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns, ServiceWithRelations } from "./columns";
 import { useServices } from "@/hooks/useServices";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ServiceFormModal } from "@/components/services/ServiceFormModal";
 import { DeleteConfirmDialog } from "@/components/services/DeleteConfirmDialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -153,22 +147,22 @@ const Services = () => {
     <>
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
-          <CardTitle className="text-4xl font-normal">
+          <p className="text-4xl font-normal">
             {tServicesTranslation("title")}
-          </CardTitle>
-          <CardDescription className="font-normal">
-            {tServicesTranslation("description") || tCommon("description")}
-          </CardDescription>
+          </p>
+          <p className="text-sm text-gray-500">
+            {tServicesTranslation("description")}
+          </p>
         </div>
         <button
           onClick={() => {
             setEditingItem(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-1 text-md rounded-md border border-brand-500 hover:bg-brand-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiPlus className="w-4 h-4" />
-          Add Service
+          {tServicesTranslation("addService")}
         </button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">

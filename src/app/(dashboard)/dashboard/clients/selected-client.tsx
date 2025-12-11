@@ -22,10 +22,10 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
         <h3 className="text-xl font-semibold">{client.name}</h3>
         <button
           onClick={onEdit}
-          className="flex items-center gap-2 px-3 py-1 text-sm rounded-md border border-brand-500 hover:bg-brand-100 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <FiEdit2 className="w-4 h-4" />
-          <p className="font-semibold">{t("editClient")}</p>
+          {t("editClient")}
         </button>
       </div>
 

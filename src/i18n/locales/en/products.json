@@ -8,6 +8,7 @@
   "subcategory": "Subcategory",
   "provider": "Provider",
   "image": "Image",
+  "description": "Manage your product inventory, prices, and stock levels.",
   "createdAt": "Created At",
   "selectCategory": "Select category",
   "selectSubcategory": "Select subcategory",
