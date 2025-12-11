@@ -15,6 +15,12 @@ import {
 import { UserDialog } from "@/components/dialogs/UserDialog";
 import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
 import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as ShadcnCalendar } from "@/components/ui/calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "@/styles/calendar.css";
@@ -314,7 +320,26 @@ export function AppointmentCalendar() {
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FiCalendar className="w-6 h-6 text-brand-500" />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="hover:opacity-70 transition-opacity">
+                    <FiCalendar className="w-6 h-6 text-brand-500 cursor-pointer" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <ShadcnCalendar
+                    mode="single"
+                    selected={currentDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        handleNavigate(date);
+                      }
+                    }}
+                    initialFocus
+                    className="w-[250px]"
+                  />
+                </PopoverContent>
+              </Popover>
               <p className="text-2xl font-semibold">{t("calendar")}</p>
             </div>
             <div className="flex items-center gap-2">
@@ -325,28 +350,6 @@ export function AppointmentCalendar() {
                 <FiUserPlus className="w-4 h-4" />
                 Add Staff
               </button>
-              <div className="flex items-center border border-gray-300 rounded-md">
-                <button
-                  onClick={() => setView("day")}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    view === "day"
-                      ? "bg-brand-500 text-white"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  Day
-                </button>
-                <button
-                  onClick={() => setView("week")}
-                  className={`px-3 py-2 text-sm font-medium transition-colors border-l border-gray-300 ${
-                    view === "week"
-                      ? "bg-brand-500 text-white"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  Week
-                </button>
-              </div>
               <button
                 onClick={() => handleNavigate(new Date())}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
@@ -357,11 +360,7 @@ export function AppointmentCalendar() {
                 <button
                   onClick={() => {
                     const newDate = new Date(currentDate);
-                    if (view === "day") {
-                      newDate.setDate(currentDate.getDate() - 1);
-                    } else {
-                      newDate.setDate(currentDate.getDate() - 7);
-                    }
+                    newDate.setDate(currentDate.getDate() - 1);
                     handleNavigate(newDate);
                   }}
                   className="p-2 hover:bg-gray-50 transition-colors"
@@ -371,11 +370,7 @@ export function AppointmentCalendar() {
                 <button
                   onClick={() => {
                     const newDate = new Date(currentDate);
-                    if (view === "day") {
-                      newDate.setDate(currentDate.getDate() + 1);
-                    } else {
-                      newDate.setDate(currentDate.getDate() + 7);
-                    }
+                    newDate.setDate(currentDate.getDate() + 1);
                     handleNavigate(newDate);
                   }}
                   className="p-2 hover:bg-gray-50 transition-colors border-l border-gray-300"
@@ -420,7 +415,7 @@ export function AppointmentCalendar() {
               min={new Date(2024, 0, 1, 8, 0, 0)}
               max={new Date(2024, 0, 1, 20, 0, 0)}
               defaultView="day"
-              views={["day", "week"]}
+              views={["day"]}
               toolbar={false}
               formats={{
                 timeGutterFormat: (date, culture, localizer) =>
