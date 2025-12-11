@@ -69,5 +69,19 @@
   "confirmPassword": "Confirmar Nueva Contraseña",
   "changePasswordButton": "Cambiar Contraseña",
   "passwordChangeSuccess": "Contraseña cambiada exitosamente",
-  "passwordChangeError": "Error al cambiar la contraseña"
+  "passwordChangeError": "Error al cambiar la contraseña",
+  "schedulesDescription": "Establece el horario de tu negocio para cada día de la semana.",
+  "dayMonday": "Lunes",
+  "dayTuesday": "Martes",
+  "dayWednesday": "Miércoles",
+  "dayThursday": "Jueves",
+  "dayFriday": "Viernes",
+  "daySaturday": "Sábado",
+  "daySunday": "Domingo",
+  "startTime": "Hora de Inicio",
+  "endTime": "Hora de Fin",
+  "closed": "Cerrado",
+  "saveSchedules": "Guardar Horarios",
+  "scheduleSaveSuccess": "Horarios guardados exitosamente",
+  "scheduleSaveError": "Error al guardar los horarios"
 }

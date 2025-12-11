@@ -1,0 +1,116 @@
+/* Custom styles for rsuite DatePicker */
+
+/* Input field styling */
+.rs-picker-input {
+  border-radius: 0.375rem !important;
+  border-color: #d1d5db !important;
+  font-size: 0.875rem !important;
+  padding: 0.375rem 0.75rem !important;
+  height: auto !important;
+}
+
+.rs-picker-input:focus-within {
+  border-color: #418268 !important;
+  box-shadow: 0 0 0 2px rgba(65, 130, 104, 0.1) !important;
+}
+
+/* Disabled state */
+.rs-picker-disabled .rs-picker-input {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+.rs-picker-disabled .rs-picker-toggle-value {
+  color: #9ca3af !important;
+}
+
+/* Toggle caret icon */
+.rs-picker-toggle-caret {
+  color: #6b7280 !important;
+}
+
+.rs-picker-toggle-caret:hover {
+  color: #418268 !important;
+}
+
+.rs-picker-disabled .rs-picker-toggle-caret {
+  color: #d1d5db !important;
+}
+
+/* Dropdown menu */
+.rs-picker-menu {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Hide calendar, show only time picker */
+.rs-picker-menu .rs-calendar-month-dropdown {
+  display: none !important;
+}
+
+.rs-picker-menu .rs-calendar-header {
+  display: none !important;
+}
+
+.rs-picker-menu .rs-calendar-body {
+  display: none !important;
+}
+
+.rs-picker-menu .rs-calendar-table {
+  display: none !important;
+}
+
+/* Time picker specific */
+.rs-calendar-time-dropdown {
+  border-radius: 0.375rem !important;
+  max-height: 250px !important;
+}
+
+.rs-calendar-time-dropdown-column {
+  border-radius: 0.375rem !important;
+}
+
+.rs-calendar-time-dropdown-cell {
+  font-size: 0.875rem !important;
+  padding: 0.5rem !important;
+}
+
+.rs-calendar-time-dropdown-cell:hover {
+  background-color: #f3f4f6 !important;
+  color: #418268 !important;
+}
+
+.rs-calendar-time-dropdown-cell-active {
+  background-color: #418268 !important;
+  color: white !important;
+}
+
+/* Make time dropdown full width */
+.rs-picker-menu .rs-calendar-time-view {
+  width: 100% !important;
+}
+
+/* AM/PM column styling */
+.rs-calendar-time-dropdown-column:last-child {
+  width: 60px !important;
+}
+
+/* OK button */
+.rs-picker-toolbar-right-btn-ok {
+  background-color: #418268 !important;
+  border-color: #418268 !important;
+}
+
+.rs-picker-toolbar-right-btn-ok:hover {
+  background-color: #357055 !important;
+  border-color: #357055 !important;
+}
+
+/* Prevent text selection on toggle */
+.rs-picker-toggle {
+  user-select: none;
+}
+

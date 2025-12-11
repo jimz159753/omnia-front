@@ -68,5 +68,19 @@
   "confirmPassword": "Confirm New Password",
   "changePasswordButton": "Change Password",
   "passwordChangeSuccess": "Password changed successfully",
-  "passwordChangeError": "Failed to change password"
+  "passwordChangeError": "Failed to change password",
+  "schedulesDescription": "Set your business hours for each day of the week.",
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+  "startTime": "Start Time",
+  "endTime": "End Time",
+  "closed": "Closed",
+  "saveSchedules": "Save Schedules",
+  "scheduleSaveSuccess": "Schedules saved successfully",
+  "scheduleSaveError": "Failed to save schedules"
 }
