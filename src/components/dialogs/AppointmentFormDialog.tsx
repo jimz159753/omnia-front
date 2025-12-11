@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogPortal,
 } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { FiX } from "react-icons/fi";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -21,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Service {
   id: string;
@@ -68,6 +72,7 @@ export function AppointmentFormDialog({
   onSuccess,
   initialSlot,
 }: AppointmentFormDialogProps) {
+  const { t } = useTranslation("common");
   const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [clients, setClients] = useState<
@@ -84,6 +89,7 @@ export function AppointmentFormDialog({
     watch,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -154,11 +160,15 @@ export function AppointmentFormDialog({
       const start = new Date(startTime);
       const end = new Date(endTime);
       if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-        const durationInMinutes = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+        const durationInMinutes = Math.round(
+          (end.getTime() - start.getTime()) / (1000 * 60)
+        );
         if (durationInMinutes >= 0) {
           const currentDuration = watch("duration");
           if (currentDuration !== durationInMinutes.toString()) {
-            setValue("duration", durationInMinutes.toString(), { shouldValidate: false });
+            setValue("duration", durationInMinutes.toString(), {
+              shouldValidate: false,
+            });
           }
         }
       }
@@ -273,45 +283,71 @@ export function AppointmentFormDialog({
     }
   };
 
+  // Custom DialogContent without overlay
+  const CustomDialogContent = React.forwardRef<
+    React.ElementRef<typeof DialogPrimitive.Content>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+  >(({ className, children, ...props }, ref) => (
+    <DialogPortal>
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-200 bg-white p-6 shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500">
+          <FiX className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  ));
+  CustomDialogContent.displayName = "CustomDialogContent";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl">
+      <CustomDialogContent className="max-w-5xl">
         <DialogHeader>
-          <DialogTitle>Create Appointment</DialogTitle>
+          <DialogTitle>{t("createAppointment")}</DialogTitle>
           <DialogDescription>
-            Fill out the appointment and client details below
+            {t("createAppointmentDescription")}
           </DialogDescription>
         </DialogHeader>
 
         {error && (
           <Alert variant="destructive">
             <FiAlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>{t("error")}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {success && (
           <Alert variant="success">
             <FiCheckCircle className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
+            <AlertTitle>{t("success")}</AlertTitle>
             <AlertDescription>{success}</AlertDescription>
           </Alert>
         )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <p className="text-sm text-gray-500">Loading...</p>
+            <p className="text-sm text-gray-500">{t("loading")}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-6">
               {/* Left Side - Appointment Details */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Appointment Details</h3>
+                <h3 className="text-lg font-semibold">
+                  {t("appointmentDetails")}
+                </h3>
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Service
+                    {t("serviceLabel")}
                   </label>
                   <Controller
                     control={control}
@@ -323,7 +359,7 @@ export function AppointmentFormDialog({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select service" />
+                          <SelectValue placeholder={t("selectService")} />
                         </SelectTrigger>
                         <SelectContent>
                           {services.map((service) => (
@@ -344,7 +380,7 @@ export function AppointmentFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Staff
+                    {t("staffLabel")}
                   </label>
                   <Controller
                     control={control}
@@ -378,7 +414,7 @@ export function AppointmentFormDialog({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">
-                      Start Time
+                      {t("startTimeLabel")}
                     </label>
                     <input
                       type="datetime-local"
@@ -396,7 +432,7 @@ export function AppointmentFormDialog({
 
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">
-                      End Time
+                      {t("endTimeLabel")}
                     </label>
                     <input
                       type="datetime-local"
@@ -415,7 +451,7 @@ export function AppointmentFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Duration (minutes)
+                    {t("durationLabel")}
                   </label>
                   <input
                     type="number"
@@ -424,17 +460,27 @@ export function AppointmentFormDialog({
                       onChange: (e) => {
                         const durationMinutes = parseInt(e.target.value);
                         const currentStartTime = watch("startTime");
-                        if (currentStartTime && !isNaN(durationMinutes) && durationMinutes > 0) {
+                        if (
+                          currentStartTime &&
+                          !isNaN(durationMinutes) &&
+                          durationMinutes > 0
+                        ) {
                           const start = new Date(currentStartTime);
                           if (!isNaN(start.getTime())) {
-                            const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
-                            setValue("endTime", end.toISOString().slice(0, 16), { shouldValidate: false });
+                            const end = new Date(
+                              start.getTime() + durationMinutes * 60 * 1000
+                            );
+                            setValue(
+                              "endTime",
+                              end.toISOString().slice(0, 16),
+                              { shouldValidate: false }
+                            );
                           }
                         }
                       },
                     })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="Duration"
+                    placeholder={t("durationPlaceholder")}
                   />
                   {errors.duration && (
                     <p className="text-xs text-red-600">
@@ -445,13 +491,13 @@ export function AppointmentFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Price
+                    {t("price")}
                   </label>
                   <input
                     type="number"
                     {...register("amount", { required: "Price is required" })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="0.00"
+                    placeholder={t("pricePlaceholder")}
                   />
                   {errors.amount && (
                     <p className="text-xs text-red-600">
@@ -479,19 +525,19 @@ export function AppointmentFormDialog({
                       htmlFor="include-notes"
                       className="text-sm font-semibold text-gray-800 cursor-pointer select-none flex-1"
                     >
-                      Add appointment note?
+                      {t("addAppointmentNote")}
                     </label>
                   </div>
 
                   {includeNotes && (
                     <div className="pt-3 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
                       <label className="text-sm font-semibold text-gray-800">
-                        Notes
+                        {t("notesLabel")}
                       </label>
                       <textarea
                         {...register("notes")}
                         className="w-full rounded-md border-2 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
-                        placeholder="Add any notes about this appointment..."
+                        placeholder={t("notesPlaceholderAppointment")}
                         rows={4}
                       />
                     </div>
@@ -501,7 +547,7 @@ export function AppointmentFormDialog({
 
               {/* Right Side - Client Details */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Client</h3>
+                <h3 className="text-lg font-semibold">{t("client")}</h3>
                 <ClientDetailsTabs
                   existingCount={clients.length}
                   activeTab={existingClientId ? "existing" : "new"}
@@ -538,14 +584,14 @@ export function AppointmentFormDialog({
                   <>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Name
+                        {t("name")}
                       </label>
                       <input
                         {...register("clientName", {
                           required: "Client name is required",
                         })}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Client name"
+                        placeholder={t("name")}
                       />
                       {errors.clientName && (
                         <p className="text-xs text-red-600">
@@ -556,7 +602,7 @@ export function AppointmentFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Email
+                        {t("email")}
                       </label>
                       <input
                         type="email"
@@ -564,7 +610,7 @@ export function AppointmentFormDialog({
                           required: "Client email is required",
                         })}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="client@example.com"
+                        placeholder={t("email")}
                       />
                       {errors.clientEmail && (
                         <p className="text-xs text-red-600">
@@ -575,14 +621,14 @@ export function AppointmentFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Phone
+                        {t("phone")}
                       </label>
                       <input
                         {...register("clientPhone", {
                           required: "Client phone is required",
                         })}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Phone number"
+                        placeholder={t("phone")}
                       />
                       {errors.clientPhone && (
                         <p className="text-xs text-red-600">
@@ -593,7 +639,7 @@ export function AppointmentFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Instagram (optional)
+                        {t("instagramOptional")}
                       </label>
                       <input
                         {...register("clientInstagram")}
@@ -604,12 +650,12 @@ export function AppointmentFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Address (optional)
+                        {t("addressOptional")}
                       </label>
                       <input
                         {...register("clientAddress")}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Street address, city, state"
+                        placeholder={t("address")}
                       />
                     </div>
                   </>
@@ -624,19 +670,19 @@ export function AppointmentFormDialog({
                 onClick={() => onOpenChange(false)}
                 className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Creating..." : "Create Appointment"}
+                {isSubmitting ? t("creating") : t("createAppointment")}
               </button>
             </div>
           </form>
         )}
-      </DialogContent>
+      </CustomDialogContent>
     </Dialog>
   );
 }

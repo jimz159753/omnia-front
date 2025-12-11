@@ -2,10 +2,11 @@
 
 import type { IconType } from "react-icons";
 import { FiCalendar, FiShoppingBag, FiUserPlus } from "react-icons/fi";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type AddNewButtonItem = {
-  value: string;
-  label: string;
+  value: "appointment" | "sale" | "client";
+  labelKey: string;
   icon: IconType;
   className: string;
   colorBg: string;
@@ -14,10 +15,10 @@ type AddNewButtonItem = {
   hoverRing: string;
 };
 
-export const addNewButtonItems: AddNewButtonItem[] = [
+const addNewButtonItems: AddNewButtonItem[] = [
   {
     value: "appointment",
-    label: "Appointment",
+    labelKey: "appointment",
     icon: FiCalendar,
     className: "rounded-r-none",
     colorBg: "bg-blue-500/20",
@@ -27,7 +28,7 @@ export const addNewButtonItems: AddNewButtonItem[] = [
   },
   {
     value: "sale",
-    label: "Sale",
+    labelKey: "sale",
     icon: FiShoppingBag,
     className: "rounded-none",
     colorBg: "bg-green-500/20",
@@ -37,7 +38,7 @@ export const addNewButtonItems: AddNewButtonItem[] = [
   },
   {
     value: "client",
-    label: "Client",
+    labelKey: "client",
     icon: FiUserPlus,
     className: "rounded-l-none",
     colorBg: "bg-purple-500/20",
@@ -52,6 +53,8 @@ interface AddNewButtonsProps {
 }
 
 export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
+  const { t } = useTranslation("common");
+
   return (
     <div className="flex justify-center mx-auto gap-0">
       {addNewButtonItems.map((item) => {
@@ -60,7 +63,7 @@ export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
         return (
           <button
             key={item.value}
-            aria-label={item.label}
+            aria-label={t(item.labelKey)}
             onClick={() => onSelect(item.value)}
             className={`
               ${item.className}
@@ -77,7 +80,7 @@ export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
               <Icon className={`${item.iconColor}`} size={24} />
             </div>
 
-            <p className="text-sm font-semibold">{item.label}</p>
+            <p className="text-sm font-semibold">{t(item.labelKey)}</p>
           </button>
         );
       })}

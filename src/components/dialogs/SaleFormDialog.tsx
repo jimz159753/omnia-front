@@ -1,15 +1,17 @@
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogPortal,
 } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { FiX } from "react-icons/fi";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -22,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Product {
   id: string;
@@ -60,6 +63,7 @@ export function SaleFormDialog({
   onOpenChange,
   onSuccess,
 }: SaleFormDialogProps) {
+  const { t } = useTranslation("common");
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [clients, setClients] = useState<
@@ -208,58 +212,80 @@ export function SaleFormDialog({
         throw new Error(data.error || "Failed to create ticket");
       }
 
-      setSuccess("Ticket created successfully");
+      setSuccess(t("ticketCreatedSuccess"));
       reset();
       setTimeout(() => {
         onOpenChange(false);
         onSuccess?.();
       }, 800);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to create ticket"
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : t("ticketCreationError");
+      setError(errorMessage);
     }
   };
 
+  // Custom DialogContent without overlay
+  const CustomDialogContent = React.forwardRef<
+    React.ElementRef<typeof DialogPrimitive.Content>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+  >(({ className, children, ...props }, ref) => (
+    <DialogPortal>
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-200 bg-white p-6 shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500">
+          <FiX className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  ));
+  CustomDialogContent.displayName = "CustomDialogContent";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl">
+      <CustomDialogContent className="max-w-5xl">
         <DialogHeader>
-          <DialogTitle>Create Sale</DialogTitle>
-          <DialogDescription>
-            Fill out the sale and client details below
-          </DialogDescription>
+          <DialogTitle>{t("createSale")}</DialogTitle>
+          <DialogDescription>{t("createSaleDescription")}</DialogDescription>
         </DialogHeader>
 
         {error && (
           <Alert variant="destructive">
             <FiAlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>{t("error")}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {success && (
           <Alert variant="success">
             <FiCheckCircle className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
+            <AlertTitle>{t("success")}</AlertTitle>
             <AlertDescription>{success}</AlertDescription>
           </Alert>
         )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <p className="text-sm text-gray-500">Loading...</p>
+            <p className="text-sm text-gray-500">{t("loading")}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-6">
               {/* Left Side - Sale Details */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Sale Details</h3>
+                <h3 className="text-lg font-semibold">{t("saleDetails")}</h3>
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Product
+                    {t("productLabel")}
                   </label>
                   <Controller
                     control={control}
@@ -271,7 +297,7 @@ export function SaleFormDialog({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select product" />
+                          <SelectValue placeholder={t("selectProduct")} />
                         </SelectTrigger>
                         <SelectContent>
                           {products.map((product) => (
@@ -292,7 +318,7 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Staff
+                    {t("staffLabel")}
                   </label>
                   <Controller
                     control={control}
@@ -304,7 +330,7 @@ export function SaleFormDialog({
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select staff" />
+                          <SelectValue placeholder={t("selectStaff")} />
                         </SelectTrigger>
                         <SelectContent>
                           {users.map((user) => (
@@ -325,7 +351,7 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Quantity
+                    {t("quantity")}
                   </label>
                   <input
                     type="number"
@@ -364,19 +390,19 @@ export function SaleFormDialog({
                       htmlFor="include-notes"
                       className="text-sm font-semibold text-gray-800 cursor-pointer select-none flex-1"
                     >
-                      Add sale note?
+                      {t("addSaleNote")}
                     </label>
                   </div>
 
                   {includeNotes && (
                     <div className="pt-3 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
                       <label className="text-sm font-semibold text-gray-800">
-                        Notes
+                        {t("notesLabel")}
                       </label>
                       <textarea
                         {...register("notes")}
                         className="w-full rounded-md border-2 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
-                        placeholder="Add any notes about this sale..."
+                        placeholder={t("notesPlaceholder")}
                         rows={4}
                       />
                     </div>
@@ -386,7 +412,7 @@ export function SaleFormDialog({
 
               {/* Right Side - Client Details with Tabs */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Client</h3>
+                <h3 className="text-lg font-semibold">{t("client")}</h3>
                 <ClientDetailsTabs
                   existingCount={clients.length}
                   activeTab={existingClientId ? "existing" : "new"}
@@ -406,14 +432,14 @@ export function SaleFormDialog({
                 />
 
                 {existingClientId ? (
-                    <Controller
-                      control={control}
-                      name="existingClientId"
-                      rules={{ required: "Client is required" }}
-                      render={({ field }) => (
+                  <Controller
+                    control={control}
+                    name="existingClientId"
+                    rules={{ required: "Client is required" }}
+                    render={({ field }) => (
                       <ClientCombobox
                         clients={clients}
-                          value={field.value}
+                        value={field.value}
                         onChange={field.onChange}
                         error={errors.existingClientId?.message as string}
                       />
@@ -423,14 +449,14 @@ export function SaleFormDialog({
                   <>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Name
+                        {t("name")}
                       </label>
                       <input
                         {...register("clientName", {
                           required: "Client name is required",
                         })}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Client name"
+                        placeholder={t("name")}
                       />
                       {errors.clientName && (
                         <p className="text-xs text-red-600">
@@ -441,7 +467,7 @@ export function SaleFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Email
+                        {t("email")}
                       </label>
                       <input
                         type="email"
@@ -449,7 +475,7 @@ export function SaleFormDialog({
                           required: "Client email is required",
                         })}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="client@example.com"
+                        placeholder={t("email")}
                       />
                       {errors.clientEmail && (
                         <p className="text-xs text-red-600">
@@ -460,18 +486,18 @@ export function SaleFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Phone
+                        {t("phone")}
                       </label>
                       <input
                         {...register("clientPhone")}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Client phone"
+                        placeholder={t("phone")}
                       />
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Instagram
+                        {t("instagram")}
                       </label>
                       <input
                         {...register("clientInstagram")}
@@ -482,12 +508,12 @@ export function SaleFormDialog({
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">
-                        Address
+                        {t("address")}
                       </label>
                       <input
                         {...register("clientAddress")}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        placeholder="Client address"
+                        placeholder={t("address")}
                       />
                     </div>
                   </>
@@ -502,19 +528,19 @@ export function SaleFormDialog({
                 onClick={() => onOpenChange(false)}
                 className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Creating..." : "Generate Ticket"}
+                {isSubmitting ? t("saving") : t("create")}
               </button>
             </div>
           </form>
         )}
-      </DialogContent>
+      </CustomDialogContent>
     </Dialog>
   );
 }
