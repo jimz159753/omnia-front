@@ -59,6 +59,11 @@ export function AppointmentCalendar() {
   const [loading, setLoading] = useState(true);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date;
+    end: Date;
+    resourceId?: string | number;
+  } | null>(null);
 
   // Fetch staff members
   const fetchStaff = async () => {
@@ -99,10 +104,22 @@ export function AppointmentCalendar() {
     setView(newView);
   }, []);
 
-  const handleSelectSlot = useCallback(() => {
-    // TODO: Pass selected time and staff to appointment dialog
-    setIsAppointmentDialogOpen(true);
-  }, []);
+  const handleSelectSlot = useCallback(
+    ({
+      start,
+      end,
+      resourceId,
+    }: {
+      start: Date;
+      end: Date;
+      resourceId?: string | number;
+    }) => {
+      if (isAppointmentDialogOpen) return;
+      setSelectedSlot({ start, end, resourceId });
+      setIsAppointmentDialogOpen(true);
+    },
+    [isAppointmentDialogOpen]
+  );
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
     console.log("Event selected:", event);
@@ -433,8 +450,22 @@ export function AppointmentCalendar() {
 
       <AppointmentFormDialog
         open={isAppointmentDialogOpen}
-        onOpenChange={setIsAppointmentDialogOpen}
+        onOpenChange={(open) => {
+          setIsAppointmentDialogOpen(open);
+          if (!open) {
+            setSelectedSlot(null);
+          }
+        }}
         onSuccess={handleAppointmentSuccess}
+        initialSlot={
+          selectedSlot
+            ? {
+                start: selectedSlot.start,
+                end: selectedSlot.end,
+                resourceId: selectedSlot.resourceId?.toString(),
+              }
+            : null
+        }
       />
     </div>
   );

@@ -52,8 +52,6 @@ interface AppointmentFormDialogProps {
 type FormValues = {
   serviceId: string;
   staffId: string;
-  duration: string;
-  amount: string; // price
   includeNotes: boolean;
   notes: string;
   clientName: string;
@@ -62,8 +60,6 @@ type FormValues = {
   clientInstagram: string;
   clientAddress: string;
   existingClientId: string;
-  startTime: string;
-  endTime: string;
 };
 
 export function AppointmentFormDialog({
@@ -89,14 +85,11 @@ export function AppointmentFormDialog({
     watch,
     reset,
     setValue,
-    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
       serviceId: "",
       staffId: "",
-      duration: "",
-      amount: "",
       includeNotes: false,
       notes: "",
       clientName: "",
@@ -105,17 +98,11 @@ export function AppointmentFormDialog({
       clientInstagram: "",
       clientAddress: "",
       existingClientId: "",
-      startTime: new Date().toISOString().slice(0, 16),
-      endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16),
     },
   });
 
-  const selectedServiceId = watch("serviceId");
   const includeNotes = watch("includeNotes");
   const existingClientId = watch("existingClientId");
-  const startTime = watch("startTime");
-  const endTime = watch("endTime");
-  const duration = watch("duration");
 
   useEffect(() => {
     if (open) {
@@ -134,46 +121,15 @@ export function AppointmentFormDialog({
     }
   }, [open, reset]);
 
-  useEffect(() => {
-    if (!selectedServiceId) return;
-    const svc = services.find((s) => s.id === selectedServiceId);
-    if (svc) {
-      setValue("amount", svc.price.toString());
-      setValue("duration", svc.duration.toString());
-    }
-  }, [selectedServiceId, services, setValue]);
-
   // Populate form with initial slot data
   useEffect(() => {
     if (initialSlot && open) {
-      setValue("startTime", initialSlot.start.toISOString().slice(0, 16));
-      setValue("endTime", initialSlot.end.toISOString().slice(0, 16));
+      // prefill the staff if provided
       if (initialSlot.resourceId) {
         setValue("staffId", initialSlot.resourceId);
       }
     }
   }, [initialSlot, open, setValue]);
-
-  // Synchronize duration with start/end times (auto-calculate duration)
-  useEffect(() => {
-    if (startTime && endTime) {
-      const start = new Date(startTime);
-      const end = new Date(endTime);
-      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-        const durationInMinutes = Math.round(
-          (end.getTime() - start.getTime()) / (1000 * 60)
-        );
-        if (durationInMinutes >= 0) {
-          const currentDuration = watch("duration");
-          if (currentDuration !== durationInMinutes.toString()) {
-            setValue("duration", durationInMinutes.toString(), {
-              shouldValidate: false,
-            });
-          }
-        }
-      }
-    }
-  }, [startTime, endTime, setValue, watch]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -239,8 +195,17 @@ export function AppointmentFormDialog({
         clientId = clientData.id;
       }
 
-      const unitPrice =
-        services.find((s) => s.id === values.serviceId)?.price || 0;
+      const svc = services.find((s) => s.id === values.serviceId);
+      const unitPrice = svc?.price || 0;
+      const svcDuration = svc?.duration ?? 60;
+      const startTime = initialSlot?.start ?? new Date();
+      const endTime =
+        initialSlot?.end ?? new Date(startTime.getTime() + svcDuration * 60000);
+      const durationInMinutes =
+        Math.max(
+          0,
+          Math.round((endTime.getTime() - startTime.getTime()) / 60000)
+        ) || svcDuration;
       const ticketResponse = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -259,9 +224,9 @@ export function AppointmentFormDialog({
           total: unitPrice,
           status: "pending",
           notes: values.includeNotes ? values.notes : "",
-          startTime: new Date(values.startTime).toISOString(),
-          endTime: new Date(values.endTime).toISOString(),
-          duration: parseInt(values.duration),
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          duration: durationInMinutes,
         }),
       });
 
@@ -411,100 +376,7 @@ export function AppointmentFormDialog({
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      {t("startTimeLabel")}
-                    </label>
-                    <input
-                      type="datetime-local"
-                      {...register("startTime", {
-                        required: "Start time is required",
-                      })}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    {errors.startTime && (
-                      <p className="text-xs text-red-600">
-                        {errors.startTime.message as string}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      {t("endTimeLabel")}
-                    </label>
-                    <input
-                      type="datetime-local"
-                      {...register("endTime", {
-                        required: "End time is required",
-                      })}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    {errors.endTime && (
-                      <p className="text-xs text-red-600">
-                        {errors.endTime.message as string}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("durationLabel")}
-                  </label>
-                  <input
-                    type="number"
-                    {...register("duration", {
-                      required: "Duration is required",
-                      onChange: (e) => {
-                        const durationMinutes = parseInt(e.target.value);
-                        const currentStartTime = watch("startTime");
-                        if (
-                          currentStartTime &&
-                          !isNaN(durationMinutes) &&
-                          durationMinutes > 0
-                        ) {
-                          const start = new Date(currentStartTime);
-                          if (!isNaN(start.getTime())) {
-                            const end = new Date(
-                              start.getTime() + durationMinutes * 60 * 1000
-                            );
-                            setValue(
-                              "endTime",
-                              end.toISOString().slice(0, 16),
-                              { shouldValidate: false }
-                            );
-                          }
-                        }
-                      },
-                    })}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("durationPlaceholder")}
-                  />
-                  {errors.duration && (
-                    <p className="text-xs text-red-600">
-                      {errors.duration.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    {t("price")}
-                  </label>
-                  <input
-                    type="number"
-                    {...register("amount", { required: "Price is required" })}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("pricePlaceholder")}
-                  />
-                  {errors.amount && (
-                    <p className="text-xs text-red-600">
-                      {errors.amount.message as string}
-                    </p>
-                  )}
-                </div>
+                {/* Duration, price, start/end time are auto-calculated */}
 
                 <div className="pt-4 mt-2 border-t border-gray-200">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
