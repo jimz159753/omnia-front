@@ -27,6 +27,13 @@ export async function GET(request: NextRequest) {
                 service: { select: { name: true } },
               },
             },
+            staff: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
         },

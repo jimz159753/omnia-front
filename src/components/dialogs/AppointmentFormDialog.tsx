@@ -38,11 +38,16 @@ interface AppointmentFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  initialSlot?: {
+    start: Date;
+    end: Date;
+    resourceId?: string;
+  } | null;
 }
 
 type FormValues = {
   serviceId: string;
-  sellerId: string;
+  staffId: string;
   duration: string;
   amount: string; // price
   includeNotes: boolean;
@@ -53,12 +58,15 @@ type FormValues = {
   clientInstagram: string;
   clientAddress: string;
   existingClientId: string;
+  startTime: string;
+  endTime: string;
 };
 
 export function AppointmentFormDialog({
   open,
   onOpenChange,
   onSuccess,
+  initialSlot,
 }: AppointmentFormDialogProps) {
   const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -80,7 +88,7 @@ export function AppointmentFormDialog({
   } = useForm<FormValues>({
     defaultValues: {
       serviceId: "",
-      sellerId: "",
+      staffId: "",
       duration: "",
       amount: "",
       includeNotes: false,
@@ -91,12 +99,17 @@ export function AppointmentFormDialog({
       clientInstagram: "",
       clientAddress: "",
       existingClientId: "",
+      startTime: new Date().toISOString().slice(0, 16),
+      endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16),
     },
   });
 
   const selectedServiceId = watch("serviceId");
   const includeNotes = watch("includeNotes");
   const existingClientId = watch("existingClientId");
+  const startTime = watch("startTime");
+  const endTime = watch("endTime");
+  const duration = watch("duration");
 
   useEffect(() => {
     if (open) {
@@ -123,6 +136,34 @@ export function AppointmentFormDialog({
       setValue("duration", svc.duration.toString());
     }
   }, [selectedServiceId, services, setValue]);
+
+  // Populate form with initial slot data
+  useEffect(() => {
+    if (initialSlot && open) {
+      setValue("startTime", initialSlot.start.toISOString().slice(0, 16));
+      setValue("endTime", initialSlot.end.toISOString().slice(0, 16));
+      if (initialSlot.resourceId) {
+        setValue("staffId", initialSlot.resourceId);
+      }
+    }
+  }, [initialSlot, open, setValue]);
+
+  // Synchronize duration with start/end times (auto-calculate duration)
+  useEffect(() => {
+    if (startTime && endTime) {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+        const durationInMinutes = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+        if (durationInMinutes >= 0) {
+          const currentDuration = watch("duration");
+          if (currentDuration !== durationInMinutes.toString()) {
+            setValue("duration", durationInMinutes.toString(), { shouldValidate: false });
+          }
+        }
+      }
+    }
+  }, [startTime, endTime, setValue, watch]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -195,7 +236,7 @@ export function AppointmentFormDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId,
-          sellerId: values.sellerId,
+          staffId: values.staffId,
           items: [
             {
               serviceId: values.serviceId,
@@ -208,6 +249,9 @@ export function AppointmentFormDialog({
           total: unitPrice,
           status: "pending",
           notes: values.includeNotes ? values.notes : "",
+          startTime: new Date(values.startTime).toISOString(),
+          endTime: new Date(values.endTime).toISOString(),
+          duration: parseInt(values.duration),
         }),
       });
 
@@ -300,19 +344,19 @@ export function AppointmentFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Seller
+                    Staff
                   </label>
                   <Controller
                     control={control}
-                    name="sellerId"
-                    rules={{ required: "Seller is required" }}
+                    name="staffId"
+                    rules={{ required: "Staff is required" }}
                     render={({ field }) => (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select seller" />
+                          <SelectValue placeholder="Select staff" />
                         </SelectTrigger>
                         <SelectContent>
                           {users.map((user) => (
@@ -324,11 +368,49 @@ export function AppointmentFormDialog({
                       </Select>
                     )}
                   />
-                  {errors.sellerId && (
+                  {errors.staffId && (
                     <p className="text-xs text-red-600">
-                      {errors.sellerId.message as string}
+                      {errors.staffId.message as string}
                     </p>
                   )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Start Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      {...register("startTime", {
+                        required: "Start time is required",
+                      })}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                    {errors.startTime && (
+                      <p className="text-xs text-red-600">
+                        {errors.startTime.message as string}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      End Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      {...register("endTime", {
+                        required: "End time is required",
+                      })}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                    {errors.endTime && (
+                      <p className="text-xs text-red-600">
+                        {errors.endTime.message as string}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1">
@@ -339,6 +421,17 @@ export function AppointmentFormDialog({
                     type="number"
                     {...register("duration", {
                       required: "Duration is required",
+                      onChange: (e) => {
+                        const durationMinutes = parseInt(e.target.value);
+                        const currentStartTime = watch("startTime");
+                        if (currentStartTime && !isNaN(durationMinutes) && durationMinutes > 0) {
+                          const start = new Date(currentStartTime);
+                          if (!isNaN(start.getTime())) {
+                            const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
+                            setValue("endTime", end.toISOString().slice(0, 16), { shouldValidate: false });
+                          }
+                        }
+                      },
                     })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     placeholder="Duration"

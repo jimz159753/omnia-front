@@ -18,7 +18,7 @@ type TicketWithRelations = Ticket & {
   }>;
   quantity: number;
   total: number;
-  seller?: { id: string; email: string };
+  staff?: { id: string; email: string };
 };
 
 type RowWithGetValue = {

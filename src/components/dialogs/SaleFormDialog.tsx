@@ -43,7 +43,7 @@ interface SaleFormDialogProps {
 
 type FormValues = {
   productId: string;
-  sellerId: string;
+  staffId: string;
   amount: string; // quantity
   includeNotes: boolean;
   notes: string;
@@ -77,7 +77,7 @@ export function SaleFormDialog({
   } = useForm<FormValues>({
     defaultValues: {
       productId: "",
-      sellerId: "",
+      staffId: "",
       amount: "",
       includeNotes: false,
       notes: "",
@@ -187,7 +187,7 @@ export function SaleFormDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId,
-          sellerId: values.sellerId,
+          staffId: values.staffId,
           items: [
             {
               productId: values.productId,
@@ -292,19 +292,19 @@ export function SaleFormDialog({
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Seller
+                    Staff
                   </label>
                   <Controller
                     control={control}
-                    name="sellerId"
-                    rules={{ required: "Seller is required" }}
+                    name="staffId"
+                    rules={{ required: "Staff is required" }}
                     render={({ field }) => (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select seller" />
+                          <SelectValue placeholder="Select staff" />
                         </SelectTrigger>
                         <SelectContent>
                           {users.map((user) => (
@@ -316,9 +316,9 @@ export function SaleFormDialog({
                       </Select>
                     )}
                   />
-                  {errors.sellerId && (
+                  {errors.staffId && (
                     <p className="text-xs text-red-600">
-                      {errors.sellerId.message as string}
+                      {errors.staffId.message as string}
                     </p>
                   )}
                 </div>

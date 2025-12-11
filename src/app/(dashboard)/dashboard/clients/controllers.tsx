@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FiPlus } from "react-icons/fi";
 
 type Props = {
   clients: Client[];
@@ -39,8 +40,9 @@ const ClientSidebar: React.FC<Props> = ({
         <div className="flex items-center justify-between">
           <button
             onClick={onAddClient}
-            className="w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
+            className="flex items-center gap-2 w-full px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600 transition-colors"
           >
+            <FiPlus className="w-4 h-4" />
             {t("addClient")}
           </button>
         </div>

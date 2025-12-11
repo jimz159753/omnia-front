@@ -19,7 +19,7 @@ type TicketWithRelations = Ticket & {
     product: Product | null;
     service: Service | null;
   }>;
-  seller?: { id: string; email: string };
+  staff?: { id: string; email: string };
   quantity?: number;
   total?: number;
 };

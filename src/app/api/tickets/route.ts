@@ -119,9 +119,10 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         client: true,
-        seller: {
+        staff: {
           select: {
             id: true,
+            name: true,
             email: true,
           },
         },
@@ -162,7 +163,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       clientId,
-      sellerId,
+      staffId,
       status,
       notes,
       items: incomingItems,
@@ -170,9 +171,12 @@ export async function POST(request: NextRequest) {
       serviceId,
       quantity,
       total,
+      startTime,
+      endTime,
+      duration,
     } = body;
 
-    if (!clientId || !sellerId || !status) {
+    if (!clientId || !staffId || !status) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -291,24 +295,38 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Use provided duration or calculate from start/end times
+      let durationInMinutes: number | null = null;
+      if (duration !== undefined && duration !== null) {
+        durationInMinutes = parseInt(duration.toString());
+      } else if (startTime && endTime) {
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+        durationInMinutes = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+      }
+
       return tx.ticket.create({
         data: {
           id: ticketId,
           clientId,
-          sellerId,
+          staffId,
           quantity: totalQuantity,
           total: computedTotal,
           status,
           notes: notes || "",
+          startTime: startTime ? new Date(startTime) : null,
+          endTime: endTime ? new Date(endTime) : null,
+          duration: durationInMinutes,
           items: {
             create: itemData,
           },
         },
         include: {
           client: true,
-          seller: {
+          staff: {
             select: {
               id: true,
+              name: true,
               email: true,
             },
           },
@@ -336,6 +354,104 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { error: "Failed to create ticket" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, startTime, endTime, staffId } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Ticket ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Build update data object
+    const updateData: {
+      startTime?: Date | null;
+      endTime?: Date | null;
+      duration?: number | null;
+      staffId?: string;
+    } = {};
+
+    let startDate: Date | null = null;
+    let endDate: Date | null = null;
+
+    if (startTime !== undefined) {
+      startDate = startTime ? new Date(startTime) : null;
+      updateData.startTime = startDate;
+    }
+    if (endTime !== undefined) {
+      endDate = endTime ? new Date(endTime) : null;
+      updateData.endTime = endDate;
+    }
+    if (staffId) {
+      updateData.staffId = staffId;
+    }
+
+    // Calculate duration if both times are being updated
+    if (startTime !== undefined && endTime !== undefined && startDate && endDate) {
+      const durationInMinutes = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60));
+      updateData.duration = durationInMinutes;
+    } else if (startTime !== undefined || endTime !== undefined) {
+      // If only one time is updated, fetch the ticket to calculate with the existing time
+      const existingTicket = await prisma.ticket.findUnique({
+        where: { id },
+        select: { startTime: true, endTime: true },
+      });
+
+      if (existingTicket) {
+        const finalStartTime = startDate || existingTicket.startTime;
+        const finalEndTime = endDate || existingTicket.endTime;
+        
+        if (finalStartTime && finalEndTime) {
+          const durationInMinutes = Math.round(
+            (finalEndTime.getTime() - finalStartTime.getTime()) / (1000 * 60)
+          );
+          updateData.duration = durationInMinutes;
+        }
+      }
+    }
+
+    const updatedTicket = await prisma.ticket.update({
+      where: { id },
+      data: updateData,
+      include: {
+        client: true,
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        items: {
+          include: {
+            product: true,
+            service: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { data: updatedTicket, message: "Ticket updated successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating ticket:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      { error: "Failed to update ticket" },
       { status: 500 }
     );
   }

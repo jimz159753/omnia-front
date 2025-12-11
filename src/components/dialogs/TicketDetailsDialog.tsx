@@ -23,7 +23,7 @@ type TicketLike = {
     email?: string | null;
     phone?: string | null;
   };
-  seller?: { name?: string | null; email?: string | null };
+  staff?: { name?: string | null; email?: string | null };
   items?: Array<{
     quantity?: number;
     unitPrice?: number;
@@ -118,7 +118,7 @@ export const TicketDetailsDialog: React.FC<Props> = ({
                   <p className="text-gray-500">
                     {t("staffLabel")}:{" "}
                     <span className="font-semibold text-gray-900">
-                      {ticket.seller?.name || ticket.seller?.email || "-"}
+                      {ticket.staff?.name || ticket.staff?.email || "-"}
                     </span>
                   </p>
                 </div>

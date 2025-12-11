@@ -32,12 +32,15 @@ model Ticket {
   id        String       @id @default(uuid())
   clientId  String
   client    Client       @relation(fields: [clientId], references: [id])
-  sellerId  String
-  seller    User         @relation(fields: [sellerId], references: [id])
+  staffId   String       @map("sellerId")
+  staff     User         @relation(fields: [staffId], references: [id])
   total     Float        @default(0)
   quantity  Int          @default(1)
   status    String
   notes     String       @default("")
+  startTime DateTime?
+  endTime   DateTime?
+  duration  Int?         @map("duration") // Duration in minutes
   items     TicketItem[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
