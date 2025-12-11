@@ -22,6 +22,7 @@ model User {
   password  String
   avatar    String?
   role      String   @default("user") // admin, user
+  position  String   @default("")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

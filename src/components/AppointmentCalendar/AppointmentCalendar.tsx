@@ -55,6 +55,7 @@ interface StaffMember {
   id: string;
   name: string;
   role: string;
+  position: string;
 }
 
 interface CalendarEvent {
@@ -96,11 +97,19 @@ export function AppointmentCalendar() {
           // Filter active users only
           const activeStaff = json.data
             .filter((user: { isActive: boolean }) => user.isActive)
-            .map((user: { id: string; name: string; role: string }) => ({
-              id: user.id,
-              name: user.name,
-              role: user.role,
-            }));
+            .map(
+              (user: {
+                id: string;
+                name: string;
+                role: string;
+                position: string;
+              }) => ({
+                id: user.id,
+                name: user.name,
+                role: user.role,
+                position: user.position || "",
+              })
+            );
           setStaff(activeStaff);
         }
       }
@@ -205,6 +214,20 @@ export function AppointmentCalendar() {
             <FiTrash2 className="w-4 h-4" />
           </button>
         </div>
+      </div>
+    );
+  };
+
+  // Custom resource header component showing name and position
+  const CustomResourceHeader = ({ resource }: { resource: StaffMember }) => {
+    return (
+      <div className="flex flex-col items-center justify-center py-1">
+        <span className="font-semibold text-sm">{resource.name}</span>
+        {resource.position && (
+          <span className="text-xs opacity-80 font-normal">
+            {resource.position}
+          </span>
+        )}
       </div>
     );
   };
@@ -508,6 +531,9 @@ export function AppointmentCalendar() {
               }}
               components={{
                 event: CustomEvent,
+                resourceHeader: ({ resource }) => (
+                  <CustomResourceHeader resource={resource} />
+                ),
               }}
             />
           </div>

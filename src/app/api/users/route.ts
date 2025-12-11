@@ -13,6 +13,7 @@ export async function GET() {
         email: true,
         avatar: true,
         role: true,
+        position: true,
         isActive: true,
         createdAt: true,
       },
@@ -41,6 +42,7 @@ export async function POST(request: NextRequest) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = formData.get("role") as string;
+    const position = formData.get("position") as string;
     const isActive = formData.get("isActive") === "true";
     const avatarData = formData.get("avatar") as string;
 
@@ -90,6 +92,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         role: role || "user",
+        position: position || "",
         isActive,
         avatar: avatarPath,
       },
@@ -103,6 +106,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         avatar: user.avatar,
         role: user.role,
+        position: user.position,
         isActive: user.isActive,
       },
     });
@@ -135,6 +139,7 @@ export async function PUT(request: NextRequest) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = formData.get("role") as string;
+    const position = formData.get("position") as string;
     const isActive = formData.get("isActive") === "true";
     const avatarData = formData.get("avatar") as string;
 
@@ -164,6 +169,7 @@ export async function PUT(request: NextRequest) {
       name,
       email,
       role: role || "user",
+      position: position || "",
       isActive,
     };
 
@@ -202,6 +208,7 @@ export async function PUT(request: NextRequest) {
         email: user.email,
         avatar: user.avatar,
         role: user.role,
+        position: user.position,
         isActive: user.isActive,
       },
     });

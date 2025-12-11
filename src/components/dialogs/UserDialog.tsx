@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,22 +23,31 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { BiSave } from "react-icons/bi";
 
-const userSchema = z.object({
+const baseUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters").optional(),
   role: z.enum(["admin", "user"]),
+  position: z.string().optional(),
   isActive: z.boolean(),
   avatar: z.string().optional(),
 });
 
-type UserFormValues = z.infer<typeof userSchema>;
+const createUserSchema = baseUserSchema.extend({
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const editUserSchema = baseUserSchema.extend({
+  password: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal("")),
+});
+
+type UserFormValues = z.infer<typeof createUserSchema>;
 
 interface User {
   id: string;
   name: string;
   email: string;
   role: string;
+  position: string;
   isActive: boolean;
   avatar: string | null;
 }
@@ -60,6 +69,11 @@ export function UserDialog({
   const { t: tCommon } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const schema = useMemo(
+    () => (editingUser ? editUserSchema : createUserSchema),
+    [editingUser]
+  );
+
   const {
     control,
     handleSubmit,
@@ -67,12 +81,13 @@ export function UserDialog({
     register,
     formState: { errors },
   } = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
       role: "user",
+      position: "",
       isActive: true,
       avatar: "",
     },
@@ -85,6 +100,7 @@ export function UserDialog({
         email: editingUser.email,
         password: "",
         role: editingUser.role as "admin" | "user",
+        position: editingUser.position || "",
         isActive: editingUser.isActive,
         avatar: editingUser.avatar || "",
       });
@@ -94,6 +110,7 @@ export function UserDialog({
         email: "",
         password: "",
         role: "user",
+        position: "",
         isActive: true,
         avatar: "",
       });
@@ -110,6 +127,7 @@ export function UserDialog({
         formData.append("password", values.password);
       }
       formData.append("role", values.role);
+      formData.append("position", values.position || "");
       formData.append("isActive", values.isActive.toString());
 
       if (values.avatar && values.avatar.startsWith("data:")) {
@@ -257,6 +275,18 @@ export function UserDialog({
             {errors.role && (
               <p className="text-xs text-red-500">{errors.role.message}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              {t("userPosition")}
+            </label>
+            <input
+              {...register("position")}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder={t("userPositionPlaceholder")}
+            />
           </div>
 
           <div className="flex items-center space-x-2">

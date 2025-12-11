@@ -117,6 +117,8 @@
   "userEmail": "Email",
   "userPassword": "Password",
   "userRole": "Role",
+  "userPosition": "Position",
+  "userPositionPlaceholder": "e.g. Hair Stylist, Manager, Receptionist",
   "userAvatar": "Avatar",
   "userActive": "Active",
   "selectRole": "Select Role",

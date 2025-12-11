@@ -1,6 +1,7 @@
 /* Custom Calendar Styles */
 
 .calendar-container {
+  border-top: 1px solid #e5e7eb;
   font-family: inherit;
 }
 
@@ -11,11 +12,14 @@
 
 /* Header styles */
 .rbc-header {
-  padding: 8px 4px;
+  padding: 12px 8px;
   font-weight: 600;
+  font-size: 13px;
   color: #374151;
   border-bottom: 2px solid #e5e7eb;
-  background-color: #f9fafb;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 /* Time gutter */
@@ -137,6 +141,8 @@
 
 .rbc-time-header {
   border-bottom: none;
+  border-right: none;
+  margin-right: 0;
 }
 
 /* Scrollbar styling */
@@ -168,16 +174,24 @@
 
 /* Resource (Staff) column headers */
 .rbc-header.rbc-resource-header {
-  background-color: #418268;
+  background: linear-gradient(135deg, #418268 0%, #357055 100%);
   color: white;
   font-weight: 600;
-  padding: 12px 8px;
-  border-right: 2px solid #e5e7eb;
+  font-size: 14px;
+  padding: 16px 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .rbc-header.rbc-resource-header:last-child {
   border-right: none;
+}
+
+.rbc-header.rbc-resource-header:hover {
+  background: linear-gradient(135deg, #357055 0%, #2d5f47 100%);
 }
 
 /* Resource columns in day/week view */
@@ -202,13 +216,17 @@
 
 /* Make resource headers stand out */
 .rbc-time-header-content .rbc-header {
-  border-bottom: 2px solid #357055;
+  border-bottom: none;
+}
+
+/* Time header row styling */
+.rbc-time-header {
+  background: #f9fafb;
+  overflow: hidden;
+  margin-right: 0 !important;
 }
 
 /* Adjust time column when resources are present */
-.rbc-time-header.rbc-overflowing {
-  border-right: 2px solid #e5e7eb;
-}
 
 /* Drag and Drop Styles */
 .rbc-addons-dnd .rbc-addons-dnd-resizable {
@@ -279,4 +297,3 @@
 .rbc-addons-dnd-resizable:hover .rbc-addons-dnd-resize-ns-icon {
   opacity: 1;
 }
-

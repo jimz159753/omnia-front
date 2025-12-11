@@ -10,6 +10,7 @@ export interface User {
   email: string;
   avatar: string | null;
   role: string;
+  position: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -86,6 +87,18 @@ export const getUsersColumns = ({
           }`}
         >
           {t(`role${role.charAt(0).toUpperCase() + role.slice(1)}`)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "position",
+    header: t("userPosition"),
+    cell: ({ row }: CellContext) => {
+      const position = row.getValue("position") as string;
+      return (
+        <span className="text-gray-600">
+          {position || "-"}
         </span>
       );
     },

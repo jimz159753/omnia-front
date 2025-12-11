@@ -118,6 +118,8 @@
   "userEmail": "Correo Electrónico",
   "userPassword": "Contraseña",
   "userRole": "Rol",
+  "userPosition": "Puesto",
+  "userPositionPlaceholder": "ej. Estilista, Gerente, Recepcionista",
   "userAvatar": "Avatar",
   "userActive": "Activo",
   "selectRole": "Seleccionar Rol",
