@@ -43,32 +43,32 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push({
-        OR: [
-          {
-            client: {
-              name: { contains: search, mode: "insensitive" as const },
-            },
-          },
-          {
-            items: {
-              some: {
-                product: {
-                  name: { contains: search, mode: "insensitive" as const },
-                },
+          OR: [
+            {
+              client: {
+                name: { contains: search, mode: "insensitive" as const },
               },
             },
-          },
-          {
+            {
             items: {
               some: {
-                service: {
-                  name: { contains: search, mode: "insensitive" as const },
+              product: {
+                name: { contains: search, mode: "insensitive" as const },
                 },
               },
+              },
             },
-          },
-          { status: { contains: search, mode: "insensitive" as const } },
-        ],
+            {
+            items: {
+              some: {
+              service: {
+                name: { contains: search, mode: "insensitive" as const },
+                },
+              },
+              },
+            },
+            { status: { contains: search, mode: "insensitive" as const } },
+          ],
       });
     }
 

@@ -85,10 +85,10 @@ export const useTickets = () => {
         result.pagination?.totalPages ??
         (totalCount ? Math.ceil(totalCount / 5) : 0);
       setPagination({
-        page: currentPage,
+          page: currentPage,
         pageSize: 5, // Always use 5 items per page
-        total: totalCount,
-        totalPages,
+          total: totalCount,
+          totalPages,
       });
     } catch (error) {
       toast.error("No pudimos cargar los tickets.");

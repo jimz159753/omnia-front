@@ -1,16 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
-import { BiBuilding } from "react-icons/bi";
+import { BiBuilding, BiGlobe, BiSave } from "react-icons/bi";
+import { FiMessageCircle } from "react-icons/fi";
+
 import {
   businessSchema,
   type BusinessFormValues,
 } from "@/lib/validations/business";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "../ui/card";
 
 export function BusinessDetailsForm() {
   const { t } = useTranslation("settings");
@@ -20,6 +24,7 @@ export function BusinessDetailsForm() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { isSubmitting },
   } = useForm<BusinessFormValues>({
     resolver: zodResolver(businessSchema),
@@ -50,6 +55,39 @@ export function BusinessDetailsForm() {
 
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  const faqItems = [
+    {
+      name: "parking" as const,
+      label: t("faqParking"),
+      description: t("faqParkingDescription"),
+    },
+    {
+      name: "acceptCards" as const,
+      label: t("faqCards"),
+      description: t("faqCardsDescription"),
+    },
+    {
+      name: "acceptCash" as const,
+      label: t("faqCash"),
+      description: t("faqCashDescription"),
+    },
+    {
+      name: "petFriendly" as const,
+      label: t("faqPets"),
+      description: t("faqPetsDescription"),
+    },
+    {
+      name: "wheelchair access" as const,
+      label: t("faqWheelchairAccess"),
+      description: t("faqWheelchairAccessDescription"),
+    },
+    {
+      name: "freeWifi" as const,
+      label: t("faqWifi"),
+      description: t("faqWifiDescription"),
+    },
+  ];
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -115,246 +153,218 @@ export function BusinessDetailsForm() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-4">
-        <BiBuilding className="w-5 h-5 text-brand-500" />
-        <p className="text-lg font-medium">{t("businessDetailsTitle")}</p>
+      <div className="flex items-center gap-2 mb-4 text-sm">
+        <BiBuilding className="w-6 h-6 text-brand-500" />
+        <p className="text-2xl font-medium">{t("businessDetailsTitle")}</p>
       </div>
       <div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 gap-4 md:grid-cols-2"
-        >
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessName")}
-            </label>
-            <input
-              {...register("name")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessName")}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessCategory")}
-            </label>
-            <input
-              {...register("category")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessCategory")}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessWebsite")}
-            </label>
-            <input
-              {...register("website")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessRFC")}
-            </label>
-            <input
-              {...register("rfc")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessRFC")}
-            />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessAddress")}
-            </label>
-            <input
-              {...register("address")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessAddress")}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessCountry")}
-            </label>
-            <input
-              {...register("country")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessCountry")}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessLanguage")}
-            </label>
-            <select
-              {...register("language")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
-              <option value="en">{t("businessLanguageEnglish")}</option>
-              <option value="es">{t("businessLanguageSpanish")}</option>
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessPhone")}
-            </label>
-            <input
-              {...register("phone")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("businessPhone")}
-            />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessLogo")}
-            </label>
-            <ImageDropzone
-              value={logoPreview || undefined}
-              onChange={(file: File | null) => {
-                setLogoFile(file);
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setLogoPreview(reader.result as string);
-                  };
-                  reader.readAsDataURL(file);
-                } else {
-                  setLogoPreview(null);
-                }
-              }}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessFacebook")}
-            </label>
-            <input
-              {...register("facebook")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://facebook.com/yourpage"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessTwitter")}
-            </label>
-            <input
-              {...register("twitter")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://twitter.com/yourhandle"
-            />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessInstagram")}
-            </label>
-            <input
-              {...register("instagram")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://instagram.com/youraccount"
-            />
-          </div>
-          <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("businessDescription")}
-            </label>
-            <textarea
-              {...register("description")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-              rows={3}
-              placeholder={t("businessDescription")}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <p className="text-sm font-semibold text-gray-800">
-              {t("faqHeader")}
-            </p>
-            <div className="space-y-2 pt-2 text-sm text-gray-700">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("parking")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("faqParking")}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 pb-10">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessName")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("acceptCards")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("faqCards")}
+              <input
+                {...register("name")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessName")}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessCategory")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("acceptCash")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("faqCash")}
+              <input
+                {...register("category")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessCategory")}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessWebsite")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("petFriendly")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("faqPets")}
+              <input
+                {...register("website")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="https://"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessRFC")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("freeWifi")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("faqWifi")}
+              <input
+                {...register("rfc")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessRFC")}
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessAddress")}
               </label>
+              <input
+                {...register("address")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessAddress")}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessCountry")}
+              </label>
+              <input
+                {...register("country")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessCountry")}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessLanguage")}
+              </label>
+              <select
+                {...register("language")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              >
+                <option value="en">{t("businessLanguageEnglish")}</option>
+                <option value="es">{t("businessLanguageSpanish")}</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessPhone")}
+              </label>
+              <input
+                {...register("phone")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder={t("businessPhone")}
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessDescription")}
+              </label>
+              <textarea
+                {...register("description")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+                rows={3}
+                placeholder={t("businessDescription")}
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessLogo")}
+              </label>
+              <ImageDropzone
+                value={logoPreview || undefined}
+                onChange={(file: File | null) => {
+                  setLogoFile(file);
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setLogoPreview(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    setLogoPreview(null);
+                  }
+                }}
+              />
             </div>
           </div>
-          <div className="md:col-span-2">
-            <p className="text-sm font-semibold text-gray-800">
-              {t("whatsappDetailsTitle")}
+          <div className="space-y-1 md:col-span-2 py-10 border-y border-gray-300">
+            <div className="flex items-center gap-2 mb-2">
+              <BiGlobe className="w-6 h-6 text-brand-500" />
+              <p className="text-2xl font-medium">{t("businessSocialMedia")}</p>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              {t("businessSocialMediaDescription")}
             </p>
-            <div className="space-y-2 pt-2 text-sm text-gray-700">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("whatsappReminders")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("whatsappReminders")}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessFacebook")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("whatsappCredits")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("whatsappCredits")}
+              <input
+                {...register("facebook")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="https://facebook.com/yourpage"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessTwitter")}
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...register("whatsappChatBot")}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                {t("whatsappChatBot")}
+              <input
+                {...register("twitter")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="https://twitter.com/yourhandle"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("businessInstagram")}
               </label>
+              <input
+                {...register("instagram")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="https://instagram.com/youraccount"
+              />
             </div>
           </div>
-          <div className="md:col-span-2 flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="ml-auto rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSubmitting
-                ? tCommon("loading") ?? "Saving..."
-                : t("businessFormSave")}
-            </button>
+          <div className="space-y-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="md:col-span-2 py-10 border-y border-gray-300">
+              <div className="flex items-center gap-2 mb-4">
+                <FiMessageCircle className="w-6 h-6 text-brand-500" />
+                <p className="text-2xl font-medium">{t("faqHeader")}</p>
+              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                {t("faqDescription")}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {faqItems.map((item) => (
+                  <Card className="shadow-none" key={item.name}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        <Controller
+                          name={item.name as keyof BusinessFormValues}
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          )}
+                        />
+                        <div className="flex-1">
+                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                            {item.label}
+                          </label>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="ml-auto rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                <BiSave className="w-5 h-5 text-white" />
+                <span>
+                  {isSubmitting
+                    ? tCommon("loading") ?? "Saving..."
+                    : t("businessFormSave")}
+                </span>
+              </button>
+            </div>
           </div>
         </form>
       </div>

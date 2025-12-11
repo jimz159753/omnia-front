@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface ImageDropzoneProps {
   value?: string;
@@ -83,15 +84,17 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
       {preview ? (
         <div className="relative">
           <div className="relative w-[150px] h-[150px] border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-            <img
+            <Image
               src={preview}
               alt="Preview"
+              width={150}
+              height={150}
               className="w-full h-full object-cover"
             />
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg"
+              className="absolute top-1 right-1 bg-gray-300 text-gray-700 rounded-full p-1 hover:bg-gray-400 transition-colors shadow-lg"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +110,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
               </svg>
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">Click × to remove</p>
+          <p className="text-xs text-gray-500 mt-2">Click to remove</p>
         </div>
       ) : (
         <div
@@ -155,4 +158,3 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
     </div>
   );
 };
-

@@ -155,8 +155,8 @@ const Sales = () => {
             <div className="flex gap-2">
               <Skeleton className="h-10 w-[180px]" />
               <Skeleton className="h-10 w-[180px]" />
-            </div>
-          </div>
+        </div>
+      </div>
           <Skeleton className="h-[400px] w-full rounded-lg" />
         </div>
       </>
