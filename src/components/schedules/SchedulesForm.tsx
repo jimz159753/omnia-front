@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
-import { BiCalendar, BiSave } from "react-icons/bi";
+import { BiCalendar, BiSave, BiTime } from "react-icons/bi";
+import { FiPlus } from "react-icons/fi";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataTable } from "@/components/ui/data-table";
 import { TimePicker } from "rsuite";
+import { RestTimeDialog } from "@/components/dialogs/RestTimeDialog";
+import {
+  getRestTimesColumns,
+  type RestTime,
+} from "@/components/schedules/rest-times-columns";
 import "rsuite/dist/rsuite.min.css";
 import "@/styles/timepicker.css";
 
@@ -83,6 +90,9 @@ const dateToTimeString = (date: Date | null): string => {
 export function SchedulesForm() {
   const { t } = useTranslation("settings");
   const { t: tCommon } = useTranslation();
+  const [restTimes, setRestTimes] = useState<RestTime[]>([]);
+  const [isRestTimeDialogOpen, setIsRestTimeDialogOpen] = useState(false);
+  const [editingRestTime, setEditingRestTime] = useState<RestTime | null>(null);
 
   const {
     control,
@@ -102,6 +112,41 @@ export function SchedulesForm() {
       sunday: { isOpen: false, startTime: "09:00", endTime: "17:00" },
     },
   });
+
+  const fetchRestTimes = async () => {
+    try {
+      const res = await fetch("/api/rest-times");
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data) {
+          setRestTimes(json.data);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch rest times:", error);
+    }
+  };
+
+  const handleDeleteRestTime = async (id: string) => {
+    try {
+      const res = await fetch(`/api/rest-times?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "Failed to delete rest time");
+      }
+
+      toast.success(t("restTimeDeleteSuccess"));
+      fetchRestTimes();
+    } catch (error) {
+      console.error("Delete rest time error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : t("restTimeDeleteError");
+      toast.error(errorMessage);
+    }
+  };
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -134,6 +179,7 @@ export function SchedulesForm() {
       }
     };
     fetchSchedules();
+    fetchRestTimes();
   }, [reset]);
 
   const onSubmit = async (values: ScheduleFormValues) => {
@@ -145,6 +191,8 @@ export function SchedulesForm() {
         endTime: schedule.endTime || null,
       }));
 
+      console.log("Submitting schedules:", schedules);
+
       const res = await fetch("/api/schedules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -152,6 +200,7 @@ export function SchedulesForm() {
       });
 
       const json = await res.json();
+      console.log("API response:", json);
 
       if (!res.ok) {
         throw new Error(
@@ -278,6 +327,56 @@ export function SchedulesForm() {
           </button>
         </div>
       </form>
+
+      {/* Rest Times Section */}
+      <div className="mt-10 pt-10 border-t border-gray-300">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <BiTime className="w-6 h-6 text-brand-500" />
+            <p className="text-2xl font-medium">{t("restTimes")}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEditingRestTime(null);
+              setIsRestTimeDialogOpen(true);
+            }}
+            className="rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 transition-colors flex items-center gap-2"
+          >
+            <FiPlus className="w-4 h-4" />
+            {t("addRestTime")}
+          </button>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          {t("restTimesDescription")}
+        </p>
+
+        <DataTable
+          columns={getRestTimesColumns({
+            t,
+            onEdit: (restTime) => {
+              setEditingRestTime(restTime);
+              setIsRestTimeDialogOpen(true);
+            },
+            onDelete: handleDeleteRestTime,
+          })}
+          data={restTimes}
+          searchKey="dayOfWeek"
+          searchPlaceholder={t("searchDay")}
+        />
+      </div>
+
+      <RestTimeDialog
+        open={isRestTimeDialogOpen}
+        onOpenChange={(open) => {
+          setIsRestTimeDialogOpen(open);
+          if (!open) {
+            setEditingRestTime(null);
+          }
+        }}
+        onSuccess={fetchRestTimes}
+        editingRestTime={editingRestTime}
+      />
     </div>
   );
 }

@@ -176,3 +176,12 @@ model Schedule {
 
   @@unique([dayOfWeek])
 }
+
+model RestTime {
+  id        String   @id @default(uuid())
+  dayOfWeek String
+  startTime String
+  endTime   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

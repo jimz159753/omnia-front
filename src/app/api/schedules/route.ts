@@ -22,6 +22,13 @@ export async function GET() {
   }
 }
 
+interface ScheduleInput {
+  dayOfWeek: string;
+  isOpen: boolean;
+  startTime: string | null;
+  endTime: string | null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -34,11 +41,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate schedule data
+    for (const schedule of schedules) {
+      if (!schedule.dayOfWeek || typeof schedule.isOpen !== 'boolean') {
+        return NextResponse.json(
+          { error: "Invalid schedule format" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Delete all existing schedules and create new ones
     await prisma.schedule.deleteMany();
 
     const createdSchedules = await prisma.schedule.createMany({
-      data: schedules.map((schedule: any) => ({
+      data: schedules.map((schedule: ScheduleInput) => ({
         dayOfWeek: schedule.dayOfWeek,
         isOpen: schedule.isOpen,
         startTime: schedule.startTime,
