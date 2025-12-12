@@ -204,6 +204,76 @@ export const useAppointmentDetails = ({
   );
 
   /**
+   * Check for time conflicts with existing appointments
+   */
+  const checkTimeConflict = useCallback(
+    async (
+      staffId: string,
+      startTime: Date,
+      endTime: Date,
+      excludeTicketId?: string
+    ): Promise<boolean> => {
+      try {
+        const response = await fetch("/api/tickets");
+        if (!response.ok) {
+          console.error("Failed to fetch tickets for conflict check");
+          return false;
+        }
+
+        const json = await response.json();
+        const tickets = json?.data?.data || json?.data || [];
+
+        // Check for overlapping appointments with the same staff
+        const hasConflict = tickets.some(
+          (ticket: {
+            id: string;
+            staffId: string;
+            startTime?: string;
+            endTime?: string;
+          }) => {
+            // Skip the ticket being edited
+            if (excludeTicketId && ticket.id === excludeTicketId) {
+              return false;
+            }
+
+            // Only check tickets for the same staff member
+            if (ticket.staffId !== staffId) {
+              return false;
+            }
+
+            // Skip if no time data
+            if (!ticket.startTime || !ticket.endTime) {
+              return false;
+            }
+
+            const existingStart = new Date(ticket.startTime);
+            const existingEnd = new Date(ticket.endTime);
+
+            // Check for overlap
+            // Two time ranges overlap if: start1 < end2 AND start2 < end1
+            const overlaps = startTime < existingEnd && endTime > existingStart;
+
+            if (overlaps) {
+              console.log("Time conflict detected:", {
+                existing: { start: existingStart, end: existingEnd },
+                proposed: { start: startTime, end: endTime },
+              });
+            }
+
+            return overlaps;
+          }
+        );
+
+        return hasConflict;
+      } catch (error) {
+        console.error("Error checking time conflict:", error);
+        return false;
+      }
+    },
+    []
+  );
+
+  /**
    * Create appointment ticket
    */
   const createAppointment = useCallback(
@@ -324,6 +394,20 @@ export const useAppointmentDetails = ({
         );
         console.log("Appointment details calculated:", appointmentDetails);
 
+        // Check for time conflicts
+        const hasConflict = await checkTimeConflict(
+          values.staffId,
+          appointmentDetails.startTime,
+          appointmentDetails.endTime,
+          isEditing ? initialData?.ticketId : undefined
+        );
+
+        if (hasConflict) {
+          throw new Error(
+            "Time conflict: This staff member already has an appointment scheduled during this time slot."
+          );
+        }
+
         if (isEditing && initialData?.ticketId) {
           // Update existing appointment
           await updateAppointment(
@@ -361,6 +445,7 @@ export const useAppointmentDetails = ({
       initialData?.ticketId,
       getOrCreateClient,
       calculateAppointmentDetails,
+      checkTimeConflict,
       createAppointment,
       updateAppointment,
       reset,

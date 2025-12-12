@@ -303,6 +303,35 @@ export function AppointmentCalendar() {
     }, 1000);
   };
 
+  // Check for time conflicts
+  const checkTimeConflict = useCallback(
+    (
+      proposedStart: Date,
+      proposedEnd: Date,
+      staffId: string | number | undefined,
+      excludeEventId?: string
+    ): boolean => {
+      return events.some((event) => {
+        // Skip the event being moved/resized
+        if (excludeEventId && event.id === excludeEventId) {
+          return false;
+        }
+
+        // Only check events for the same staff member
+        if (event.resourceId !== staffId?.toString()) {
+          return false;
+        }
+
+        // Check for overlap
+        // Two time ranges overlap if: start1 < end2 AND start2 < end1
+        const overlaps = proposedStart < event.end && proposedEnd > event.start;
+
+        return overlaps;
+      });
+    },
+    [events]
+  );
+
   // Handle event drag to new time
   const onEventDrop = useCallback(
     async (data: {
@@ -312,14 +341,31 @@ export function AppointmentCalendar() {
       resourceId?: string | number;
       isAllDay?: boolean;
     }) => {
+      const proposedStart = new Date(data.start);
+      const proposedEnd = new Date(data.end);
+      const targetStaffId = data.resourceId || data.event.resourceId;
+
+      // Check for time conflicts
+      const hasConflict = checkTimeConflict(
+        proposedStart,
+        proposedEnd,
+        targetStaffId,
+        data.event.id
+      );
+
+      if (hasConflict) {
+        toast.error(t("timeConflictError"));
+        return; // Don't update if there's a conflict
+      }
+
       // Optimistically update UI
       const updatedEvents = events.map((existingEvent) => {
         if (existingEvent.id === data.event.id) {
           return {
             ...existingEvent,
-            start: new Date(data.start),
-            end: new Date(data.end),
-            resourceId: data.resourceId?.toString() || existingEvent.resourceId,
+            start: proposedStart,
+            end: proposedEnd,
+            resourceId: targetStaffId?.toString() || existingEvent.resourceId,
           };
         }
         return existingEvent;
@@ -333,9 +379,9 @@ export function AppointmentCalendar() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: data.event.id,
-            startTime: new Date(data.start).toISOString(),
-            endTime: new Date(data.end).toISOString(),
-            staffId: data.resourceId,
+            startTime: proposedStart.toISOString(),
+            endTime: proposedEnd.toISOString(),
+            staffId: targetStaffId,
           }),
         });
 
@@ -351,7 +397,7 @@ export function AppointmentCalendar() {
         setEvents(events);
       }
     },
-    [events]
+    [events, checkTimeConflict, t]
   );
 
   // Handle event resize
@@ -362,13 +408,29 @@ export function AppointmentCalendar() {
       end: string | Date;
       isAllDay?: boolean;
     }) => {
+      const proposedStart = new Date(data.start);
+      const proposedEnd = new Date(data.end);
+
+      // Check for time conflicts
+      const hasConflict = checkTimeConflict(
+        proposedStart,
+        proposedEnd,
+        data.event.resourceId,
+        data.event.id
+      );
+
+      if (hasConflict) {
+        toast.error(t("timeConflictError"));
+        return; // Don't update if there's a conflict
+      }
+
       // Optimistically update UI
       const updatedEvents = events.map((existingEvent) => {
         if (existingEvent.id === data.event.id) {
           return {
             ...existingEvent,
-            start: new Date(data.start),
-            end: new Date(data.end),
+            start: proposedStart,
+            end: proposedEnd,
           };
         }
         return existingEvent;
@@ -382,8 +444,8 @@ export function AppointmentCalendar() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: data.event.id,
-            startTime: new Date(data.start).toISOString(),
-            endTime: new Date(data.end).toISOString(),
+            startTime: proposedStart.toISOString(),
+            endTime: proposedEnd.toISOString(),
           }),
         });
 
@@ -399,7 +461,7 @@ export function AppointmentCalendar() {
         setEvents(events);
       }
     },
-    [events]
+    [events, checkTimeConflict, t]
   );
 
   const locale = i18n.language === "es" ? "es-ES" : "en-US";
