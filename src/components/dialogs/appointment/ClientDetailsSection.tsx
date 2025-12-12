@@ -1,10 +1,10 @@
+import { useCallback } from "react";
 import {
   Controller,
   UseFormRegister,
   Control,
   FieldErrors,
-  UseFormReset,
-  UseFormWatch,
+  UseFormSetValue,
 } from "react-hook-form";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
@@ -13,7 +13,7 @@ import type {
   Client,
   Service,
   AppointmentFormValues,
-} from "@/hooks/useAppointmentForm";
+} from "@/hooks/useAppointmentDetails";
 import { FormActions } from "./FormActions";
 
 interface ClientDetailsSectionProps {
@@ -23,9 +23,9 @@ interface ClientDetailsSectionProps {
   clients: Client[];
   services: Service[];
   existingClientId: string;
+  setExistingClientId: (value: string) => void;
   selectedServiceId: string;
-  reset: UseFormReset<AppointmentFormValues>;
-  watch: UseFormWatch<AppointmentFormValues>;
+  setValue: UseFormSetValue<AppointmentFormValues>;
   isSubmitting: boolean;
   onCancel: () => void;
 }
@@ -41,9 +41,9 @@ export const ClientDetailsSection = ({
   clients,
   services,
   existingClientId,
+  setExistingClientId,
   selectedServiceId,
-  reset,
-  watch,
+  setValue,
   isSubmitting,
   onCancel,
 }: ClientDetailsSectionProps) => {
@@ -53,29 +53,31 @@ export const ClientDetailsSection = ({
   const selectedService = services.find((s) => s.id === selectedServiceId);
   const totalPrice = selectedService?.price || 0;
 
+  // Memoize tab change handler to prevent re-renders
+  const handleTabChange = useCallback(
+    (v: string) => {
+      if (v === "new") {
+        setValue("existingClientId", "", { shouldDirty: false });
+        setExistingClientId("");
+      } else if (clients.length > 0) {
+        setValue("existingClientId", clients[0].id, { shouldDirty: false });
+        setExistingClientId(clients[0].id);
+      }
+    },
+    [setValue, setExistingClientId, clients]
+  );
+
   return (
     <div className="flex flex-col w-1/3 space-y-4">
       {/* Client Tabs */}
       <ClientDetailsTabs
         existingCount={clients.length}
         activeTab={existingClientId ? "existing" : "new"}
-        onChange={(v) => {
-          if (v === "new") {
-            reset({
-              ...watch(),
-              existingClientId: "",
-            });
-          } else if (clients[0]) {
-            reset({
-              ...watch(),
-              existingClientId: clients[0].id,
-            });
-          }
-        }}
+        onChange={handleTabChange}
       />
 
       {/* Existing Client Selection or New Client Form */}
-      <div className="min-h-[400px]">
+      <div>
         {existingClientId ? (
           <Controller
             control={control}
@@ -178,7 +180,7 @@ export const ClientDetailsSection = ({
       </div>
 
       {/* Total Section */}
-      <div className="pt-6 mt-6 border-t">
+      <div className="pt-6 mt-auto border-t flex flex-col justify-between">
         <div className="flex justify-between items-center text-lg">
           <span className="font-semibold">{t("total")}:</span>
           <span className="font-bold text-2xl">${totalPrice.toFixed(2)}</span>

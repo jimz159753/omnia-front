@@ -17,7 +17,7 @@ import type {
   Service,
   User,
   AppointmentFormValues,
-} from "@/hooks/useAppointmentForm";
+} from "@/hooks/useAppointmentDetails";
 
 interface AppointmentDetailsSectionProps {
   control: Control<AppointmentFormValues>;
@@ -26,6 +26,7 @@ interface AppointmentDetailsSectionProps {
   users: User[];
   services: Service[];
   includeNotes: boolean;
+  setIncludeNotes: (value: boolean) => void;
   selectedServiceId: string;
 }
 
@@ -40,6 +41,7 @@ export const AppointmentDetailsSection = ({
   users,
   services,
   includeNotes,
+  setIncludeNotes,
   selectedServiceId,
 }: AppointmentDetailsSectionProps) => {
   const { t } = useTranslation("common");
@@ -160,7 +162,9 @@ export const AppointmentDetailsSection = ({
                 id="include-notes"
                 checked={field.value}
                 onCheckedChange={(checked) => {
-                  field.onChange(Boolean(checked));
+                  const boolValue = Boolean(checked);
+                  field.onChange(boolValue);
+                  setIncludeNotes(boolValue);
                 }}
               />
             )}

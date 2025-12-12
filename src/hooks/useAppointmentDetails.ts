@@ -33,7 +33,7 @@ export interface AppointmentFormValues {
   existingClientId: string;
 }
 
-export interface UseAppointmentFormProps {
+export interface UseAppointmentDetailsProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -45,15 +45,15 @@ export interface UseAppointmentFormProps {
 }
 
 /**
- * Custom hook to manage appointment form logic
+ * Custom hook to manage appointment details logic
  * Handles data fetching, form state, validation, and submission
  */
-export const useAppointmentForm = ({
+export const useAppointmentDetails = ({
   open,
   onOpenChange,
   onSuccess,
   initialSlot,
-}: UseAppointmentFormProps) => {
+}: UseAppointmentDetailsProps) => {
   // State
   const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -61,6 +61,8 @@ export const useAppointmentForm = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [includeNotes, setIncludeNotes] = useState(false);
+  const [existingClientId, setExistingClientId] = useState("");
 
   // Form management
   const form = useForm<AppointmentFormValues>({
@@ -78,12 +80,9 @@ export const useAppointmentForm = ({
     },
   });
 
-  const { control, register, handleSubmit, watch, reset, setValue, formState } = form;
+  const { control, register, handleSubmit, watch, reset, setValue, formState } =
+    form;
   const { errors, isSubmitting } = formState;
-
-  // Watched values
-  const includeNotes = watch("includeNotes");
-  const existingClientId = watch("existingClientId");
 
   /**
    * Fetch all required data (services, users, clients)
@@ -96,7 +95,7 @@ export const useAppointmentForm = ({
         fetch("/api/users"),
         fetch("/api/clients"),
       ]);
-      
+
       const servicesData = await servicesRes.json();
       const usersData = await usersRes.json();
       const clientsData = await clientsRes.json();
@@ -115,7 +114,7 @@ export const useAppointmentForm = ({
   }, []);
 
   /**
-   * Create a new client or get existing client ID
+   * Create or get existing client
    */
   const getOrCreateClient = useCallback(
     async (values: AppointmentFormValues): Promise<string> => {
@@ -137,17 +136,16 @@ export const useAppointmentForm = ({
         body: JSON.stringify(clientPayload),
       });
 
-      // Handle existing client (409 conflict)
       if (clientResponse.status === 409) {
         const existingClientRes = await fetch(
           `/api/clients?email=${encodeURIComponent(values.clientEmail)}`
         );
         const clientData = await existingClientRes.json();
-        
+
         if (!clientData || !clientData.id) {
           throw new Error("Client not found");
         }
-        
+
         return clientData.id;
       }
 
@@ -162,19 +160,19 @@ export const useAppointmentForm = ({
   );
 
   /**
-   * Calculate appointment details based on service and slot
+   * Calculate appointment details
    */
   const calculateAppointmentDetails = useCallback(
     (serviceId: string) => {
       const service = services.find((s) => s.id === serviceId);
       const unitPrice = service?.price || 0;
       const serviceDuration = service?.duration ?? 60;
-      
+
       const startTime = initialSlot?.start ?? new Date();
       const endTime =
         initialSlot?.end ??
         new Date(startTime.getTime() + serviceDuration * 60000);
-      
+
       const durationInMinutes =
         Math.max(
           0,
@@ -246,19 +244,15 @@ export const useAppointmentForm = ({
       setSuccess("");
 
       try {
-        // Step 1: Get or create client
         const clientId = await getOrCreateClient(values);
-
-        // Step 2: Calculate appointment details
-        const appointmentDetails = calculateAppointmentDetails(values.serviceId);
-
-        // Step 3: Create appointment
+        const appointmentDetails = calculateAppointmentDetails(
+          values.serviceId
+        );
         await createAppointment(clientId, values, appointmentDetails);
 
-        // Success
         setSuccess("Appointment created successfully");
         reset();
-        
+
         setTimeout(() => {
           onOpenChange(false);
           onSuccess?.();
@@ -291,7 +285,7 @@ export const useAppointmentForm = ({
   }, [open, fetchData]);
 
   /**
-   * Reset form and clear messages when dialog state changes
+   * Reset form when dialog closes
    */
   useEffect(() => {
     if (open) {
@@ -301,6 +295,8 @@ export const useAppointmentForm = ({
       setError("");
       setSuccess("");
       reset();
+      setIncludeNotes(false);
+      setExistingClientId("");
     }
   }, [open, reset]);
 
@@ -309,7 +305,6 @@ export const useAppointmentForm = ({
    */
   useEffect(() => {
     if (initialSlot && open) {
-      // Prefill the staff if provided
       if (initialSlot.resourceId) {
         setValue("staffId", initialSlot.resourceId);
       }
@@ -324,22 +319,22 @@ export const useAppointmentForm = ({
     loading,
     error,
     success,
-    
+
     // Form
     form,
     control,
     register,
     handleSubmit: handleSubmit(onSubmit),
     watch,
+    reset,
+    setValue,
     errors,
     isSubmitting,
-    
-    // Watched values
+
+    // Local state
     includeNotes,
+    setIncludeNotes,
     existingClientId,
-    
-    // Methods
-    reset,
+    setExistingClientId,
   };
 };
-
