@@ -24,6 +24,7 @@ interface AppointmentFormDialogProps {
     resourceId?: string;
   } | null;
   initialData?: {
+    ticketId?: string;
     clientId?: string;
     serviceId?: string;
     notes?: string;

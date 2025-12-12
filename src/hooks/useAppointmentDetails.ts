@@ -43,6 +43,7 @@ export interface UseAppointmentDetailsProps {
     resourceId?: string;
   } | null;
   initialData?: {
+    ticketId?: string;
     clientId?: string;
     serviceId?: string;
     notes?: string;
@@ -249,6 +250,55 @@ export const useAppointmentDetails = ({
   );
 
   /**
+   * Update existing appointment ticket
+   */
+  const updateAppointment = useCallback(
+    async (
+      ticketId: string,
+      clientId: string,
+      values: AppointmentFormValues,
+      appointmentDetails: ReturnType<typeof calculateAppointmentDetails>
+    ) => {
+      const { unitPrice, startTime, endTime, durationInMinutes } =
+        appointmentDetails;
+
+      console.log("Updating ticket:", ticketId);
+
+      const ticketResponse = await fetch("/api/tickets", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: ticketId,
+          clientId,
+          staffId: values.staffId,
+          items: [
+            {
+              serviceId: values.serviceId,
+              quantity: 1,
+              unitPrice,
+              total: unitPrice,
+            },
+          ],
+          quantity: 1,
+          total: unitPrice,
+          notes: values.includeNotes ? values.notes : "",
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          duration: durationInMinutes,
+        }),
+      });
+
+      if (!ticketResponse.ok) {
+        const data = await ticketResponse.json();
+        throw new Error(data.error || "Failed to update appointment");
+      }
+
+      return await ticketResponse.json();
+    },
+    []
+  );
+
+  /**
    * Form submission handler
    */
   const onSubmit = useCallback(
@@ -257,6 +307,13 @@ export const useAppointmentDetails = ({
       setSuccess("");
 
       console.log("Form submitted with values:", values);
+      const isEditing = !!initialData?.ticketId;
+      console.log(
+        "Is editing:",
+        isEditing,
+        "Ticket ID:",
+        initialData?.ticketId
+      );
 
       try {
         const clientId = await getOrCreateClient(values);
@@ -267,9 +324,21 @@ export const useAppointmentDetails = ({
         );
         console.log("Appointment details calculated:", appointmentDetails);
 
-        await createAppointment(clientId, values, appointmentDetails);
+        if (isEditing && initialData?.ticketId) {
+          // Update existing appointment
+          await updateAppointment(
+            initialData.ticketId,
+            clientId,
+            values,
+            appointmentDetails
+          );
+          setSuccess("Appointment updated successfully");
+        } else {
+          // Create new appointment
+          await createAppointment(clientId, values, appointmentDetails);
+          setSuccess("Appointment created successfully");
+        }
 
-        setSuccess("Appointment created successfully");
         reset();
 
         setTimeout(() => {
@@ -277,16 +346,23 @@ export const useAppointmentDetails = ({
           onSuccess?.();
         }, 800);
       } catch (err) {
-        console.error("Error creating appointment:", err);
+        console.error(
+          `Error ${isEditing ? "updating" : "creating"} appointment:`,
+          err
+        );
         setError(
-          err instanceof Error ? err.message : "Failed to create appointment"
+          err instanceof Error
+            ? err.message
+            : `Failed to ${isEditing ? "update" : "create"} appointment`
         );
       }
     },
     [
+      initialData?.ticketId,
       getOrCreateClient,
       calculateAppointmentDetails,
       createAppointment,
+      updateAppointment,
       reset,
       onOpenChange,
       onSuccess,

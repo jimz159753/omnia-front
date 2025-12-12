@@ -360,7 +360,9 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, startTime, endTime, staffId } = body;
+    const { id, startTime, endTime, staffId, clientId, notes, items, quantity, total, duration } = body;
+
+    console.log("PUT /api/tickets - Updating ticket:", id, body);
 
     if (!id) {
       return NextResponse.json(
@@ -375,6 +377,10 @@ export async function PUT(request: NextRequest) {
       endTime?: Date | null;
       duration?: number | null;
       staffId?: string;
+      clientId?: string;
+      notes?: string;
+      quantity?: number;
+      total?: number;
     } = {};
 
     let startDate: Date | null = null;
@@ -390,6 +396,21 @@ export async function PUT(request: NextRequest) {
     }
     if (staffId) {
       updateData.staffId = staffId;
+    }
+    if (clientId) {
+      updateData.clientId = clientId;
+    }
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+    if (quantity !== undefined) {
+      updateData.quantity = quantity;
+    }
+    if (total !== undefined) {
+      updateData.total = total;
+    }
+    if (duration !== undefined) {
+      updateData.duration = duration;
     }
 
     // Calculate duration if both times are being updated
@@ -413,6 +434,28 @@ export async function PUT(request: NextRequest) {
           );
           updateData.duration = durationInMinutes;
         }
+      }
+    }
+
+    // Handle items update if provided
+    if (items && Array.isArray(items)) {
+      // Delete existing items and create new ones
+      await prisma.ticketItem.deleteMany({
+        where: { ticketId: id },
+      });
+
+      // Create new items
+      for (const item of items) {
+        await prisma.ticketItem.create({
+          data: {
+            ticketId: id,
+            productId: item.productId || null,
+            serviceId: item.serviceId || null,
+            quantity: item.quantity || 1,
+            unitPrice: item.unitPrice || 0,
+            total: item.total || 0,
+          },
+        });
       }
     }
 

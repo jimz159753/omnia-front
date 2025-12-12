@@ -89,6 +89,7 @@ export function AppointmentCalendar() {
     resourceId?: string | number;
   } | null>(null);
   const [selectedEventData, setSelectedEventData] = useState<{
+    ticketId?: string;
     clientId?: string;
     serviceId?: string;
     notes?: string;
@@ -170,9 +171,10 @@ export function AppointmentCalendar() {
         end: event.end,
         resourceId: event.resourceId,
       });
-      // Set the event data if available
+      // Set the event data if available (for editing)
       if (event.ticketData) {
         setSelectedEventData({
+          ticketId: event.id, // Use the event ID as the ticket ID
           clientId: event.ticketData.clientId,
           serviceId: event.ticketData.serviceId,
           notes: event.ticketData.notes,
