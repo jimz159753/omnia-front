@@ -68,117 +68,118 @@ export const ClientDetailsSection = ({
   );
 
   return (
-    <div className="flex flex-col w-1/3 space-y-4">
-      {/* Client Tabs */}
-      <ClientDetailsTabs
-        existingCount={clients.length}
-        activeTab={existingClientId ? "existing" : "new"}
-        onChange={handleTabChange}
-      />
-
-      {/* Existing Client Selection or New Client Form */}
+    <div className="flex flex-col justify-between w-1/3 space-y-4">
       <div>
-        {existingClientId ? (
-          <Controller
-            control={control}
-            name="existingClientId"
-            rules={{ required: "Client is required" }}
-            render={({ field }) => (
-              <ClientCombobox
-                clients={clients}
-                value={field.value}
-                onChange={field.onChange}
-                error={errors.existingClientId?.message as string}
-              />
-            )}
-          />
-        ) : (
-          /* New Client Form */
-          <div className="space-y-4">
-            {/* Name */}
-            <div className="space-y-2">
-              <label className="text-sm font-normal text-gray-700">
-                {t("name")}
-              </label>
-              <input
-                {...register("clientName", {
-                  required: "Client name is required",
-                })}
-                className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder={t("name")}
-              />
-              {errors.clientName && (
-                <p className="text-xs text-red-600">
-                  {errors.clientName.message as string}
-                </p>
+        {/* Client Tabs */}
+        <ClientDetailsTabs
+          existingCount={clients.length}
+          activeTab={existingClientId ? "existing" : "new"}
+          onChange={handleTabChange}
+        />
+
+        {/* Existing Client Selection or New Client Form */}
+        <div>
+          {existingClientId ? (
+            <Controller
+              control={control}
+              name="existingClientId"
+              rules={{ required: "Client is required" }}
+              render={({ field }) => (
+                <ClientCombobox
+                  clients={clients}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.existingClientId?.message as string}
+                />
               )}
-            </div>
+            />
+          ) : (
+            /* New Client Form */
+            <div className="space-y-4">
+              {/* Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-normal text-gray-700">
+                  {t("name")}
+                </label>
+                <input
+                  {...register("clientName", {
+                    required: "Client name is required",
+                  })}
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder={t("name")}
+                />
+                {errors.clientName && (
+                  <p className="text-xs text-red-600">
+                    {errors.clientName.message as string}
+                  </p>
+                )}
+              </div>
 
-            {/* Last Name */}
-            <div className="space-y-2">
-              <label className="text-sm font-normal text-gray-700">
-                {t("lastName")}
-              </label>
-              <input
-                className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder={t("lastName")}
-              />
-            </div>
+              {/* Last Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-normal text-gray-700">
+                  {t("lastName")}
+                </label>
+                <input
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder={t("lastName")}
+                />
+              </div>
 
-            {/* Phone */}
-            <div className="space-y-2">
-              <label className="text-sm font-normal text-gray-700">
-                {t("phone")}
-              </label>
-              <input
-                {...register("clientPhone", {
-                  required: "Client phone is required",
-                })}
-                className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder={t("phone")}
-              />
-              {errors.clientPhone && (
-                <p className="text-xs text-red-600">
-                  {errors.clientPhone.message as string}
-                </p>
-              )}
-            </div>
+              {/* Phone */}
+              <div className="space-y-2">
+                <label className="text-sm font-normal text-gray-700">
+                  {t("phone")}
+                </label>
+                <input
+                  {...register("clientPhone", {
+                    required: "Client phone is required",
+                  })}
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder={t("phone")}
+                />
+                {errors.clientPhone && (
+                  <p className="text-xs text-red-600">
+                    {errors.clientPhone.message as string}
+                  </p>
+                )}
+              </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="text-sm font-normal text-gray-700">
-                {t("email")}
-              </label>
-              <input
-                type="email"
-                {...register("clientEmail", {
-                  required: "Client email is required",
-                })}
-                className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder={t("email")}
-              />
-              {errors.clientEmail && (
-                <p className="text-xs text-red-600">
-                  {errors.clientEmail.message as string}
-                </p>
-              )}
-            </div>
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="text-sm font-normal text-gray-700">
+                  {t("email")}
+                </label>
+                <input
+                  type="email"
+                  {...register("clientEmail", {
+                    required: "Client email is required",
+                  })}
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder={t("email")}
+                />
+                {errors.clientEmail && (
+                  <p className="text-xs text-red-600">
+                    {errors.clientEmail.message as string}
+                  </p>
+                )}
+              </div>
 
-            {/* Birthday */}
-            <div className="space-y-2">
-              <label className="text-sm font-normal text-gray-700">
-                {t("birthday")}
-              </label>
-              <input
-                type="text"
-                className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="DD/MM/YYYY"
-              />
+              {/* Birthday */}
+              <div className="space-y-2">
+                <label className="text-sm font-normal text-gray-700">
+                  {t("birthday")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  placeholder="DD/MM/YYYY"
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-
       {/* Total Section */}
       <div className="pt-6 mt-auto border-t flex flex-col justify-between">
         <div className="flex justify-between items-center text-lg">

@@ -63,7 +63,7 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh]">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col">
         <DialogHeader className="border-b h-fit pb-4">
           <DialogTitle className="text-xl font-normal">
             {t("createAppointment")}
