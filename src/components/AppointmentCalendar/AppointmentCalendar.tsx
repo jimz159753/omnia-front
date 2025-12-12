@@ -11,8 +11,6 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiUserPlus,
-  FiEdit2,
-  FiTrash2,
 } from "react-icons/fi";
 import { UserDialog } from "@/components/dialogs/UserDialog";
 import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
@@ -150,20 +148,19 @@ export function AppointmentCalendar() {
     [isAppointmentDialogOpen]
   );
 
-  const handleSelectEvent = useCallback((event: CalendarEvent) => {
-    console.log("Event selected:", event);
-    // Here you can open a dialog to edit/view the appointment
-  }, []);
-
-  // Handle edit event
-  const handleEditEvent = useCallback((event: CalendarEvent) => {
-    setSelectedSlot({
-      start: event.start,
-      end: event.end,
-      resourceId: event.resourceId,
-    });
-    setIsAppointmentDialogOpen(true);
-  }, []);
+  const handleSelectEvent = useCallback(
+    (event: CalendarEvent) => {
+      if (isAppointmentDialogOpen) return;
+      // Open the appointment dialog with the event's time slot pre-filled
+      setSelectedSlot({
+        start: event.start,
+        end: event.end,
+        resourceId: event.resourceId,
+      });
+      setIsAppointmentDialogOpen(true);
+    },
+    [isAppointmentDialogOpen]
+  );
 
   // Handle delete event
   const handleDeleteEvent = async (event: CalendarEvent) => {
@@ -185,37 +182,6 @@ export function AppointmentCalendar() {
     } finally {
       setDeleteConfirmEvent(null);
     }
-  };
-
-  // Custom event component with edit/delete buttons
-  const CustomEvent = ({ event }: { event: CalendarEvent }) => {
-    return (
-      <div className="flex items-center justify-between h-fit px-2">
-        <div className="flex-1 text-xs font-medium truncate">{event.title}</div>
-        <div className="flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditEvent(event);
-            }}
-            className="p-1 bg-white/90 rounded hover:bg-white text-gray-700 hover:text-brand-500 transition-colors"
-            title={t("edit") || "Edit"}
-          >
-            <FiEdit2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setDeleteConfirmEvent(event);
-            }}
-            className="p-1 bg-white/90 rounded hover:bg-white text-gray-700 hover:text-red-500 transition-colors"
-            title={t("delete") || "Delete"}
-          >
-            <FiTrash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    );
   };
 
   // Custom resource header component showing name and position
@@ -530,7 +496,6 @@ export function AppointmentCalendar() {
                   localizer?.format(date, "EEEE, MMMM d", culture) ?? "",
               }}
               components={{
-                event: CustomEvent,
                 resourceHeader: ({ resource }) => (
                   <CustomResourceHeader resource={resource} />
                 ),
