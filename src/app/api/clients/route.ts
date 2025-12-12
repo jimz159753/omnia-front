@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -52,14 +50,26 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, phone, instagram, address } = await request.json();
+    const body = await request.json();
+    console.log("Received client creation request:", body);
+
+    const { name, email, phone, instagram, address } = body;
 
     if (!name || !email) {
+      console.error("Missing required fields:", { name, email });
       return NextResponse.json(
         { error: "Missing required fields: name, email" },
         { status: 400 }
       );
     }
+
+    console.log("Creating client with data:", {
+      name,
+      email,
+      phone: phone || "",
+      instagram: instagram || null,
+      address: address || "",
+    });
 
     const client = await prisma.client.create({
       data: {
@@ -71,23 +81,32 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log("Client created successfully:", client.id);
+
     return NextResponse.json(
       { data: client, message: "Client created successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating client:", error);
+    console.error("Error creating client - Full error:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    
     if (
       error instanceof Error &&
       error.message.toLowerCase().includes("unique constraint")
     ) {
+      console.error("Unique constraint violation");
       return NextResponse.json(
         { error: "Client with this email or instagram already exists" },
         { status: 409 }
       );
     }
+    
     return NextResponse.json(
-      { error: "Failed to create client" },
+      { 
+        error: "Failed to create client",
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

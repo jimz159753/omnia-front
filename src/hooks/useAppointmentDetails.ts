@@ -125,10 +125,12 @@ export const useAppointmentDetails = ({
       const clientPayload = {
         name: values.clientName,
         email: values.clientEmail,
-        phone: values.clientPhone,
-        instagram: values.clientInstagram,
-        address: values.clientAddress,
+        phone: values.clientPhone || "",
+        instagram: values.clientInstagram || null,
+        address: values.clientAddress || "",
       };
+
+      console.log("Creating client with payload:", clientPayload);
 
       const clientResponse = await fetch("/api/clients", {
         method: "POST",
@@ -150,7 +152,12 @@ export const useAppointmentDetails = ({
       }
 
       if (!clientResponse.ok) {
-        throw new Error("Failed to create client");
+        const errorData = await clientResponse.json();
+        console.error("Client creation failed:", errorData);
+        const errorMessage = errorData.details
+          ? `${errorData.error}: ${errorData.details}`
+          : errorData.error || "Failed to create client";
+        throw new Error(errorMessage);
       }
 
       const result = await clientResponse.json();
@@ -243,11 +250,17 @@ export const useAppointmentDetails = ({
       setError("");
       setSuccess("");
 
+      console.log("Form submitted with values:", values);
+
       try {
         const clientId = await getOrCreateClient(values);
+        console.log("Client created/found with ID:", clientId);
+
         const appointmentDetails = calculateAppointmentDetails(
           values.serviceId
         );
+        console.log("Appointment details calculated:", appointmentDetails);
+
         await createAppointment(clientId, values, appointmentDetails);
 
         setSuccess("Appointment created successfully");
@@ -258,6 +271,7 @@ export const useAppointmentDetails = ({
           onSuccess?.();
         }, 800);
       } catch (err) {
+        console.error("Error creating appointment:", err);
         setError(
           err instanceof Error ? err.message : "Failed to create appointment"
         );
