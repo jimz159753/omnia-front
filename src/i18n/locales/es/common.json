@@ -80,6 +80,7 @@
   "settings": "Configuración",
   "today": "Hoy",
   "createAppointment": "Crear Cita",
+  "editAppointment": "Editar Cita",
   "createAppointmentDescription": "Complete los detalles de la cita y del cliente a continuación",
   "saveAppointment": "Guardar Cita",
   "createSale": "Crear Venta",

@@ -23,6 +23,11 @@ interface AppointmentFormDialogProps {
     end: Date;
     resourceId?: string;
   } | null;
+  initialData?: {
+    clientId?: string;
+    serviceId?: string;
+    notes?: string;
+  } | null;
 }
 
 export function AppointmentFormDialog({
@@ -30,6 +35,7 @@ export function AppointmentFormDialog({
   onOpenChange,
   onSuccess,
   initialSlot,
+  initialData,
 }: AppointmentFormDialogProps) {
   const { t } = useTranslation("common");
 
@@ -57,6 +63,7 @@ export function AppointmentFormDialog({
     onOpenChange,
     onSuccess,
     initialSlot,
+    initialData,
   });
 
   // Custom DialogContent without overlay
@@ -66,7 +73,7 @@ export function AppointmentFormDialog({
       <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0">
         <DialogHeader className="border-b h-fit p-4">
           <DialogTitle className="text-xl font-normal">
-            {t("createAppointment")}
+            {initialData ? t("editAppointment") : t("createAppointment")}
           </DialogTitle>
         </DialogHeader>
         <div className="max-w-7xl w-[95vw] h-[85vh] p-4">

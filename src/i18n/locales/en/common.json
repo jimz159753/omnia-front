@@ -80,6 +80,7 @@
   "settings": "Settings",
   "today": "Today",
   "createAppointment": "Create Appointment",
+  "editAppointment": "Edit Appointment",
   "createAppointmentDescription": "Fill out the appointment and client details below",
   "saveAppointment": "Save Appointment",
   "createSale": "Create Sale",

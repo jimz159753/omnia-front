@@ -42,6 +42,11 @@ export interface UseAppointmentDetailsProps {
     end: Date;
     resourceId?: string;
   } | null;
+  initialData?: {
+    clientId?: string;
+    serviceId?: string;
+    notes?: string;
+  } | null;
 }
 
 /**
@@ -53,6 +58,7 @@ export const useAppointmentDetails = ({
   onOpenChange,
   onSuccess,
   initialSlot,
+  initialData,
 }: UseAppointmentDetailsProps) => {
   // State
   const [services, setServices] = useState<Service[]>([]);
@@ -324,6 +330,30 @@ export const useAppointmentDetails = ({
       }
     }
   }, [initialSlot, open, setValue]);
+
+  /**
+   * Populate form with initial ticket data when editing
+   */
+  useEffect(() => {
+    if (initialData && open) {
+      console.log("Pre-filling form with initial data:", initialData);
+
+      if (initialData.serviceId) {
+        setValue("serviceId", initialData.serviceId);
+      }
+
+      if (initialData.clientId) {
+        setValue("existingClientId", initialData.clientId);
+        setExistingClientId(initialData.clientId);
+      }
+
+      if (initialData.notes) {
+        setValue("notes", initialData.notes);
+        setValue("includeNotes", true);
+        setIncludeNotes(true);
+      }
+    }
+  }, [initialData, open, setValue, setExistingClientId, setIncludeNotes]);
 
   return {
     // Data

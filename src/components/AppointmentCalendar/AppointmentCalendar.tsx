@@ -62,6 +62,13 @@ interface CalendarEvent {
   start: Date;
   end: Date;
   resourceId?: string; // Staff member ID
+  ticketData?: {
+    clientId: string;
+    clientName: string;
+    serviceId?: string;
+    notes?: string;
+    status: string;
+  };
 }
 
 // Create the DnD Calendar with proper types
@@ -80,6 +87,11 @@ export function AppointmentCalendar() {
     start: Date;
     end: Date;
     resourceId?: string | number;
+  } | null>(null);
+  const [selectedEventData, setSelectedEventData] = useState<{
+    clientId?: string;
+    serviceId?: string;
+    notes?: string;
   } | null>(null);
   const [deleteConfirmEvent, setDeleteConfirmEvent] =
     useState<CalendarEvent | null>(null);
@@ -151,12 +163,21 @@ export function AppointmentCalendar() {
   const handleSelectEvent = useCallback(
     (event: CalendarEvent) => {
       if (isAppointmentDialogOpen) return;
-      // Open the appointment dialog with the event's time slot pre-filled
+      // Open the appointment dialog with the event's time slot and data pre-filled
+      console.log("Event clicked:", event);
       setSelectedSlot({
         start: event.start,
         end: event.end,
         resourceId: event.resourceId,
       });
+      // Set the event data if available
+      if (event.ticketData) {
+        setSelectedEventData({
+          clientId: event.ticketData.clientId,
+          serviceId: event.ticketData.serviceId,
+          notes: event.ticketData.notes,
+        });
+      }
       setIsAppointmentDialogOpen(true);
     },
     [isAppointmentDialogOpen]
@@ -214,11 +235,15 @@ export function AppointmentCalendar() {
           const calendarEvents = ticketsData.map(
             (ticket: {
               id: string;
+              clientId: string;
               client?: { name: string };
               items?: Array<{
+                serviceId?: string;
                 service?: { name: string };
                 product?: { name: string };
               }>;
+              notes?: string;
+              status: string;
               createdAt: string;
               startTime?: string;
               endTime?: string;
@@ -243,6 +268,13 @@ export function AppointmentCalendar() {
                 start,
                 end,
                 resourceId: ticket.staffId,
+                ticketData: {
+                  clientId: ticket.clientId,
+                  clientName: ticket.client?.name || "Unknown Client",
+                  serviceId: ticket.items?.[0]?.serviceId,
+                  notes: ticket.notes || "",
+                  status: ticket.status,
+                },
               };
             }
           );
@@ -520,6 +552,7 @@ export function AppointmentCalendar() {
           setIsAppointmentDialogOpen(open);
           if (!open) {
             setSelectedSlot(null);
+            setSelectedEventData(null);
           }
         }}
         onSuccess={handleAppointmentSuccess}
@@ -532,6 +565,7 @@ export function AppointmentCalendar() {
               }
             : null
         }
+        initialData={selectedEventData}
       />
 
       <AlertDialog
