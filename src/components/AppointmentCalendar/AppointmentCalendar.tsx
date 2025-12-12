@@ -400,70 +400,6 @@ export function AppointmentCalendar() {
     [events, checkTimeConflict, t]
   );
 
-  // Handle event resize
-  const onEventResize = useCallback(
-    async (data: {
-      event: CalendarEvent;
-      start: string | Date;
-      end: string | Date;
-      isAllDay?: boolean;
-    }) => {
-      const proposedStart = new Date(data.start);
-      const proposedEnd = new Date(data.end);
-
-      // Check for time conflicts
-      const hasConflict = checkTimeConflict(
-        proposedStart,
-        proposedEnd,
-        data.event.resourceId,
-        data.event.id
-      );
-
-      if (hasConflict) {
-        toast.error(t("timeConflictError"));
-        return; // Don't update if there's a conflict
-      }
-
-      // Optimistically update UI
-      const updatedEvents = events.map((existingEvent) => {
-        if (existingEvent.id === data.event.id) {
-          return {
-            ...existingEvent,
-            start: proposedStart,
-            end: proposedEnd,
-          };
-        }
-        return existingEvent;
-      });
-      setEvents(updatedEvents);
-
-      // Sync with backend
-      try {
-        const response = await fetch(`/api/tickets`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: data.event.id,
-            startTime: proposedStart.toISOString(),
-            endTime: proposedEnd.toISOString(),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update event");
-        }
-
-        toast.success("Event duration updated");
-      } catch (error) {
-        console.error("Failed to update event:", error);
-        toast.error("Failed to update event");
-        // Revert optimistic update
-        setEvents(events);
-      }
-    },
-    [events, checkTimeConflict, t]
-  );
-
   const locale = i18n.language === "es" ? "es-ES" : "en-US";
 
   if (loading) {
@@ -569,11 +505,10 @@ export function AppointmentCalendar() {
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}
               onEventDrop={onEventDrop}
-              onEventResize={onEventResize}
               selectable
-              resizable
-              step={30}
-              timeslots={2}
+              resizable={false}
+              step={5}
+              timeslots={12}
               min={new Date(2024, 0, 1, 8, 0, 0)}
               max={new Date(2024, 0, 1, 20, 0, 0)}
               defaultView="day"

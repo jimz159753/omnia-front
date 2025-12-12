@@ -25,15 +25,36 @@
 /* Time gutter */
 .rbc-time-gutter {
   color: #6b7280;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .rbc-time-slot {
-  min-height: 40px;
+  min-height: 8px;
+  z-index: 1;
+}
+
+/* Hover effect for time slots - works in all columns */
+.rbc-time-slot:hover {
+  background-color: rgba(65, 130, 104, 0.15) !important;
+  cursor: pointer !important;
+  z-index: 1;
+}
+
+.rbc-day-slot .rbc-time-slot:hover {
+  background-color: rgba(65, 130, 104, 0.15) !important;
+  border-top: 2px solid rgba(65, 130, 104, 0.5) !important;
+  cursor: pointer !important;
+  z-index: 1;
+}
+
+.rbc-time-column .rbc-time-slot:hover {
+  background-color: rgba(65, 130, 104, 0.15) !important;
+  cursor: pointer !important;
+  z-index: 1;
 }
 
 .rbc-timeslot-group {
-  min-height: 80px;
+  min-height: 96px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -53,22 +74,32 @@
 
 .rbc-day-slot .rbc-event {
   border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 13px;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 11px;
   font-weight: 500;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  line-height: 1.2;
 }
 
 /* Event styles */
 .rbc-event {
   background-color: #418268;
   color: white;
-  border-radius: 4px;
-  padding: 2px 8px;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 11px;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  line-height: 1.2;
 }
 
 .rbc-event:hover {
   background-color: #357055;
+  z-index: 15;
 }
 
 .rbc-event.rbc-selected {
@@ -76,12 +107,13 @@
 }
 
 .rbc-event-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
 }
 
 .rbc-event-content {
-  font-size: 13px;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 /* Selected slot */
@@ -214,6 +246,20 @@
   border-left: 2px solid #e5e7eb;
 }
 
+/* Ensure hover works in time content - covers all staff columns */
+.rbc-time-content .rbc-time-slot:hover {
+  background-color: rgba(65, 130, 104, 0.15) !important;
+  cursor: pointer !important;
+  z-index: 1;
+}
+
+.rbc-day-slot .rbc-time-column .rbc-time-slot:hover {
+  background-color: rgba(65, 130, 104, 0.15) !important;
+  border-top: 2px solid rgba(65, 130, 104, 0.5) !important;
+  cursor: pointer !important;
+  z-index: 1;
+}
+
 /* Make resource headers stand out */
 .rbc-time-header-content .rbc-header {
   border-bottom: none;
@@ -241,7 +287,7 @@
 .rbc-addons-dnd .rbc-event:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  z-index: 20;
 }
 
 /* Event being dragged */
