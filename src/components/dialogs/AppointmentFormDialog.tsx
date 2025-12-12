@@ -63,66 +63,67 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col">
-        <DialogHeader className="border-b h-fit pb-4">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="border-b h-fit p-4">
           <DialogTitle className="text-xl font-normal">
             {t("createAppointment")}
           </DialogTitle>
         </DialogHeader>
+        <div className="max-w-7xl w-[95vw] h-[85vh] p-4">
+          {error && (
+            <Alert variant="destructive">
+              <FiAlertCircle className="h-4 w-4" />
+              <AlertTitle>{t("error")}</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {success && (
+            <Alert variant="success">
+              <FiCheckCircle className="h-4 w-4" />
+              <AlertTitle>{t("success")}</AlertTitle>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
 
-        {error && (
-          <Alert variant="destructive">
-            <FiAlertCircle className="h-4 w-4" />
-            <AlertTitle>{t("error")}</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {success && (
-          <Alert variant="success">
-            <FiCheckCircle className="h-4 w-4" />
-            <AlertTitle>{t("success")}</AlertTitle>
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <p className="text-sm text-gray-500">{t("loading")}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col h-full">
+              <div className="flex gap-8 flex-1 overflow-y-auto">
+                {/* Left Side - Appointment Details */}
+                <div className="flex-1">
+                  <AppointmentDetailsSection
+                    control={control}
+                    register={register}
+                    errors={errors}
+                    users={users}
+                    services={services}
+                    includeNotes={includeNotes}
+                    setIncludeNotes={setIncludeNotes}
+                    selectedServiceId={watch("serviceId")}
+                  />
+                </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <p className="text-sm text-gray-500">{t("loading")}</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col h-full">
-            <div className="flex gap-8 flex-1 overflow-y-auto">
-              {/* Left Side - Appointment Details */}
-              <div className="flex-1">
-                <AppointmentDetailsSection
+                {/* Right Side - Client Details */}
+                <ClientDetailsSection
+                  services={services}
+                  selectedServiceId={watch("serviceId")}
+                  isSubmitting={isSubmitting}
+                  onCancel={() => onOpenChange(false)}
                   control={control}
                   register={register}
                   errors={errors}
-                  users={users}
-                  services={services}
-                  includeNotes={includeNotes}
-                  setIncludeNotes={setIncludeNotes}
-                  selectedServiceId={watch("serviceId")}
+                  clients={clients}
+                  existingClientId={existingClientId}
+                  setExistingClientId={setExistingClientId}
+                  setValue={setValue}
                 />
               </div>
-
-              {/* Right Side - Client Details */}
-              <ClientDetailsSection
-                services={services}
-                selectedServiceId={watch("serviceId")}
-                isSubmitting={isSubmitting}
-                onCancel={() => onOpenChange(false)}
-                control={control}
-                register={register}
-                errors={errors}
-                clients={clients}
-                existingClientId={existingClientId}
-                setExistingClientId={setExistingClientId}
-                setValue={setValue}
-              />
-            </div>
-          </form>
-        )}
+            </form>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

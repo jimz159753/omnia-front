@@ -15,8 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FiCheck, FiCode } from "react-icons/fi";
-import { cn } from "@/lib/utils";
+import { FiCode } from "react-icons/fi";
 
 interface Client {
   id: string;
@@ -72,14 +71,11 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                       onChange(client.id);
                       setOpen(false);
                     }}
+                    className="flex items-center justify-between"
                   >
-                    {client.name} - {client.email}
-                    <FiCheck
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === client.id ? "opacity-100" : "opacity-0"
-                      )}
-                    />
+                    <span>
+                      {client.name} - {client.email}
+                    </span>
                   </CommandItem>
                 ))}
               </CommandGroup>

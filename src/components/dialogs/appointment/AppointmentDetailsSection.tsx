@@ -56,7 +56,7 @@ export const AppointmentDetailsSection = ({
       <h3 className="text-base font-normal">{t("appointmentDetails")}</h3>
 
       {/* Service details in horizontal layout */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 bg-gray-50 p-4 rounded-md">
         {/* Staff */}
         <div className="space-y-2">
           <label className="text-sm font-normal text-gray-700">
