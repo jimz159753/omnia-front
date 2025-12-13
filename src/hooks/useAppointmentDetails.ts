@@ -52,6 +52,30 @@ export interface UseAppointmentDetailsProps {
   selectedTime?: string;
 }
 
+export interface TicketData {
+  id: string;
+  status: string;
+  client: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  staff: {
+    id: string;
+    name?: string;
+    email: string;
+  };
+  items: Array<{
+    id: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    product?: { name: string } | null;
+    service?: { name: string } | null;
+  }>;
+  total: number;
+}
+
 /**
  * Custom hook to manage appointment details logic
  * Handles data fetching, form state, validation, and submission
@@ -74,6 +98,7 @@ export const useAppointmentDetails = ({
   const [success, setSuccess] = useState("");
   const [includeNotes, setIncludeNotes] = useState(false);
   const [existingClientId, setExistingClientId] = useState("");
+  const [ticketData, setTicketData] = useState<TicketData | null>(null);
 
   // Form management
   const form = useForm<AppointmentFormValues>({
@@ -119,6 +144,30 @@ export const useAppointmentDetails = ({
     } catch (err) {
       console.error("Failed to load form data:", err);
       setError("Failed to load form data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Fetch ticket details for editing
+   */
+  const fetchTicketData = useCallback(async (ticketId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/tickets?id=${ticketId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch ticket data");
+      }
+      const json = await response.json();
+      const ticket = json.data?.data?.[0] || json.data?.[0] || json.data;
+      
+      if (ticket) {
+        setTicketData(ticket);
+      }
+    } catch (err) {
+      console.error("Failed to load ticket data:", err);
+      setError("Failed to load ticket data");
     } finally {
       setLoading(false);
     }
@@ -472,8 +521,12 @@ export const useAppointmentDetails = ({
   useEffect(() => {
     if (open) {
       fetchData();
+      // Fetch ticket data if editing
+      if (initialData?.ticketId) {
+        fetchTicketData(initialData.ticketId);
+      }
     }
-  }, [open, fetchData]);
+  }, [open, fetchData, fetchTicketData, initialData?.ticketId]);
 
   /**
    * Reset form when dialog closes
@@ -534,6 +587,7 @@ export const useAppointmentDetails = ({
     loading,
     error,
     success,
+    ticketData,
 
     // Form
     form,

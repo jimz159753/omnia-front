@@ -9,6 +9,7 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
+import { AppointmentTicketTable } from "./appointment/AppointmentTicketTable";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -87,6 +88,7 @@ export function AppointmentFormDialog({
     setIncludeNotes,
     existingClientId,
     setExistingClientId,
+    ticketData,
   } = useAppointmentDetails({
     open,
     onOpenChange,
@@ -140,16 +142,58 @@ export function AppointmentFormDialog({
                   />
 
                   {/* Appointment Details Section */}
-                  <AppointmentDetailsSection
-                    control={control}
-                    register={register}
-                    errors={errors}
-                    users={users}
-                    services={services}
-                    includeNotes={includeNotes}
-                    setIncludeNotes={setIncludeNotes}
-                    selectedServiceId={watch("serviceId")}
-                  />
+                  {initialData ? (
+                    <AppointmentTicketTable
+                      ticketData={ticketData}
+                      onStatusChange={(status) => {
+                        console.log("Status changed to:", status);
+                        // TODO: Implement status change API call
+                      }}
+                      onDeleteItem={(itemId) => {
+                        console.log("Delete item:", itemId);
+                        // TODO: Implement delete item API call
+                      }}
+                      onDiscountChange={(itemId, discount) => {
+                        console.log(
+                          `Discount changed for item ${itemId}:`,
+                          discount
+                        );
+                        // TODO: Implement discount update API call
+                      }}
+                      onAddService={() => {
+                        console.log("Add service");
+                        // TODO: Implement add service
+                      }}
+                      onAddProduct={() => {
+                        console.log("Add product");
+                        // TODO: Implement add product
+                      }}
+                      onUseCertificate={() => {
+                        console.log("Use certificate");
+                        // TODO: Implement use certificate
+                      }}
+                      onAddTip={() => {
+                        console.log("Add tip");
+                        // TODO: Implement add tip
+                      }}
+                      includeNotes={includeNotes}
+                      setIncludeNotes={setIncludeNotes}
+                      control={control}
+                      register={register}
+                      errors={errors}
+                    />
+                  ) : (
+                    <AppointmentDetailsSection
+                      control={control}
+                      register={register}
+                      errors={errors}
+                      users={users}
+                      services={services}
+                      includeNotes={includeNotes}
+                      setIncludeNotes={setIncludeNotes}
+                      selectedServiceId={watch("serviceId")}
+                    />
+                  )}
                 </div>
 
                 {/* Right Side - Client Details */}
