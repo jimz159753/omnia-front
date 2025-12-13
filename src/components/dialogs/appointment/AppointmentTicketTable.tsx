@@ -219,17 +219,15 @@ export function AppointmentTicketTable({
   };
 
   const handleDeleteItem = async (itemId: string) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
-      // Check if it's a new item
-      const isNewItem = newItems.some((item) => item.id === itemId);
+    // Check if it's a new item
+    const isNewItem = newItems.some((item) => item.id === itemId);
 
-      if (isNewItem) {
-        // Remove from local state
-        setNewItems((prev) => prev.filter((item) => item.id !== itemId));
-      } else {
-        // Call parent callback for existing items
-        await onDeleteItem?.(itemId);
-      }
+    if (isNewItem) {
+      // For new items, just remove from local state without confirmation
+      setNewItems((prev) => prev.filter((item) => item.id !== itemId));
+    } else {
+      // For existing items, show confirmation and call parent callback
+      await onDeleteItem?.(itemId);
     }
   };
 
