@@ -48,6 +48,8 @@ export interface UseAppointmentDetailsProps {
     serviceId?: string;
     notes?: string;
   } | null;
+  selectedDate?: Date;
+  selectedTime?: string;
 }
 
 /**
@@ -60,6 +62,8 @@ export const useAppointmentDetails = ({
   onSuccess,
   initialSlot,
   initialData,
+  selectedDate,
+  selectedTime,
 }: UseAppointmentDetailsProps) => {
   // State
   const [services, setServices] = useState<Service[]>([]);
@@ -177,27 +181,29 @@ export const useAppointmentDetails = ({
    * Calculate appointment details
    */
   const calculateAppointmentDetails = useCallback(
-    (serviceId: string) => {
+    (serviceId: string, selectedDate?: Date, selectedTime?: string) => {
       const service = services.find((s) => s.id === serviceId);
       const unitPrice = service?.price || 0;
       const serviceDuration = service?.duration ?? 60;
 
-      const startTime = initialSlot?.start ?? new Date();
-      const endTime =
-        initialSlot?.end ??
-        new Date(startTime.getTime() + serviceDuration * 60000);
+      // Use selectedDate and selectedTime if provided, otherwise fall back to initialSlot
+      let startTime: Date;
+      if (selectedDate && selectedTime) {
+        const [hours, minutes] = selectedTime.split(":").map(Number);
+        startTime = new Date(selectedDate);
+        startTime.setHours(hours, minutes, 0, 0);
+      } else {
+        startTime = initialSlot?.start ?? new Date();
+      }
 
-      const durationInMinutes =
-        Math.max(
-          0,
-          Math.round((endTime.getTime() - startTime.getTime()) / 60000)
-        ) || serviceDuration;
+      // Always calculate endTime based on startTime + service duration
+      const endTime = new Date(startTime.getTime() + serviceDuration * 60000);
 
       return {
         unitPrice,
         startTime,
         endTime,
-        durationInMinutes,
+        durationInMinutes: serviceDuration,
       };
     },
     [services, initialSlot]
@@ -390,7 +396,9 @@ export const useAppointmentDetails = ({
         console.log("Client created/found with ID:", clientId);
 
         const appointmentDetails = calculateAppointmentDetails(
-          values.serviceId
+          values.serviceId,
+          selectedDate,
+          selectedTime
         );
         console.log("Appointment details calculated:", appointmentDetails);
 
@@ -451,6 +459,8 @@ export const useAppointmentDetails = ({
       reset,
       onOpenChange,
       onSuccess,
+      selectedDate,
+      selectedTime,
     ]
   );
 

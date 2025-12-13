@@ -8,8 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
-import { DatePicker } from "@/components/ui/date-picker";
-import { TimePicker } from "@/components/ui/time-picker";
+import { AppointmentHeader } from "./appointment/AppointmentHeader";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -94,6 +93,8 @@ export function AppointmentFormDialog({
     onSuccess,
     initialSlot,
     initialData,
+    selectedDate,
+    selectedTime,
   });
 
   return (
@@ -129,33 +130,14 @@ export function AppointmentFormDialog({
               <div className="flex h-full">
                 {/* Left Side - Title, Date/Time + Appointment Details */}
                 <div className="flex-1">
-                  {/* Title with Close Button */}
-                  <div className="flex items-center justify-between border-b p-4">
-                    <h2 className="text-2xl font-semibold">
-                      {initialData
-                        ? t("editAppointment")
-                        : t("createAppointment")}
-                    </h2>
-                    {/* Date and Time Pickers */}
-                    <div className="flex items-center gap-3">
-                      <DatePicker
-                        value={selectedDate}
-                        onChange={setSelectedDate}
-                        placeholder="Select date"
-                        className="w-fit"
-                      />
-                      <span className="text-gray-400">at</span>
-                      <TimePicker
-                        value={selectedTime}
-                        onChange={setSelectedTime}
-                        placeholder="Select time"
-                        className="w-[120px]"
-                        minuteStep={5}
-                        businessHoursStart="09:00"
-                        businessHoursEnd="18:00"
-                      />
-                    </div>
-                  </div>
+                  {/* Header with Title and Date/Time Pickers */}
+                  <AppointmentHeader
+                    initialData={initialData}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    selectedTime={selectedTime}
+                    setSelectedTime={setSelectedTime}
+                  />
 
                   {/* Appointment Details Section */}
                   <AppointmentDetailsSection
