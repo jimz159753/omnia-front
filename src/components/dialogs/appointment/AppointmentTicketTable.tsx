@@ -11,6 +11,7 @@ import {
 } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddProductDialog } from "./AddProductDialog";
+import { toast } from "sonner";
 
 interface TicketItem {
   id: string;
@@ -181,7 +182,7 @@ export function AppointmentTicketTable({
 
     if (!selectedProduct) {
       console.error("Product not found");
-      alert("Producto no encontrado");
+      toast.error("Producto no encontrado");
       return;
     }
 
@@ -206,6 +207,9 @@ export function AppointmentTicketTable({
     // Add to local state for display
     setNewItems((prev) => [...prev, newItem]);
 
+    // Show success toast
+    toast.success("Producto agregado a la tabla");
+
     // Notify parent (optional callback)
     if (ticketData?.id) {
       onAddProduct?.({
@@ -224,9 +228,13 @@ export function AppointmentTicketTable({
 
     if (isNewItem) {
       // For new items, just remove from local state without confirmation
+      // - No modal closes
+      // - No API request
+      // - No confirmation dialog
       setNewItems((prev) => prev.filter((item) => item.id !== itemId));
+      toast.success("Producto eliminado de la tabla");
     } else {
-      // For existing items, show confirmation and call parent callback
+      // For existing items, call parent callback (which may close modal after API call)
       await onDeleteItem?.(itemId);
     }
   };

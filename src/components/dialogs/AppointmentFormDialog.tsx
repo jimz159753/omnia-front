@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
@@ -13,6 +11,7 @@ import {
   AppointmentTicketTable,
   type NewTicketItem,
 } from "./appointment/AppointmentTicketTable";
+import { toast } from "sonner";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -82,8 +81,6 @@ export function AppointmentFormDialog({
     clients,
     products,
     loading,
-    error,
-    success,
     control,
     register,
     handleSubmit,
@@ -119,21 +116,6 @@ export function AppointmentFormDialog({
 
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto">
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <FiAlertCircle className="h-4 w-4" />
-                <AlertTitle>{t("error")}</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            {success && (
-              <Alert variant="success" className="mb-4">
-                <FiCheckCircle className="h-4 w-4" />
-                <AlertTitle>{t("success")}</AlertTitle>
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
             {loading ? (
               <div className="flex items-center justify-center">
                 <p className="text-sm text-gray-500">{t("loading")}</p>
@@ -172,11 +154,12 @@ export function AppointmentFormDialog({
                             throw new Error("Failed to delete item");
                           }
 
+                          toast.success("Elemento eliminado correctamente");
                           // Refetch ticket data
                           onSuccess?.();
                         } catch (error) {
                           console.error("Error deleting item:", error);
-                          alert("Error al eliminar el elemento.");
+                          toast.error("Error al eliminar el elemento");
                         }
                       }}
                       onDiscountChange={async (itemId, discount) => {
