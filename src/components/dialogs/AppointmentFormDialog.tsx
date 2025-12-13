@@ -58,6 +58,11 @@ export function AppointmentFormDialog({
   // State for new items added through the table
   const [newTicketItems, setNewTicketItems] = useState<NewTicketItem[]>([]);
 
+  // State for tracking discount changes
+  const [discountUpdates, setDiscountUpdates] = useState<
+    Record<string, number>
+  >({});
+
   // Update date and time when initialSlot changes (when clicking a calendar event)
   useEffect(() => {
     if (initialSlot?.start) {
@@ -105,6 +110,7 @@ export function AppointmentFormDialog({
     selectedDate,
     selectedTime,
     newItems: newTicketItems,
+    discountUpdates,
   });
 
   return (
@@ -190,6 +196,10 @@ export function AppointmentFormDialog({
                         setNewTicketItems(items);
                         console.log("New items updated:", items);
                       }}
+                      onDiscountUpdates={(updates) => {
+                        setDiscountUpdates(updates);
+                        console.log("Discount updates:", updates);
+                      }}
                       onUseCertificate={() => {
                         console.log("Use certificate");
                         // TODO: Implement use certificate
@@ -233,6 +243,11 @@ export function AppointmentFormDialog({
                   existingClientId={existingClientId}
                   setExistingClientId={setExistingClientId}
                   setValue={setValue}
+                  ticketItems={[
+                    ...(ticketData?.items || []),
+                    ...newTicketItems,
+                  ]}
+                  discounts={discountUpdates}
                 />
               </div>
             )}

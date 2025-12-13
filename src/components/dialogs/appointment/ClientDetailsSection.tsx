@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   Controller,
   UseFormRegister,
@@ -17,6 +17,13 @@ import type {
 import { FormActions } from "./FormActions";
 import { FiX } from "react-icons/fi";
 
+interface TicketItem {
+  id: string;
+  unitPrice: number;
+  discount?: number;
+  total: number;
+}
+
 interface ClientDetailsSectionProps {
   control: Control<AppointmentFormValues>;
   register: UseFormRegister<AppointmentFormValues>;
@@ -29,6 +36,8 @@ interface ClientDetailsSectionProps {
   setValue: UseFormSetValue<AppointmentFormValues>;
   isSubmitting: boolean;
   onCancel: () => void;
+  ticketItems?: TicketItem[];
+  discounts?: Record<string, number>;
 }
 
 /**
@@ -47,12 +56,27 @@ export const ClientDetailsSection = ({
   setValue,
   isSubmitting,
   onCancel,
+  ticketItems = [],
+  discounts = {},
 }: ClientDetailsSectionProps) => {
   const { t } = useTranslation("common");
 
-  // Calculate total price
-  const selectedService = services.find((s) => s.id === selectedServiceId);
-  const totalPrice = selectedService?.price || 0;
+  // Calculate total price from all ticket items
+  const totalPrice = useMemo(() => {
+    // If there are ticket items (editing mode), sum their totals with discounts
+    if (ticketItems.length > 0) {
+      return ticketItems.reduce((sum, item) => {
+        const discount = discounts[item.id] ?? item.discount ?? 0;
+        const discountAmount = (item.unitPrice * discount) / 100;
+        const itemTotal = item.unitPrice - discountAmount;
+        return sum + itemTotal;
+      }, 0);
+    }
+
+    // Otherwise, use the selected service price (new appointment mode)
+    const selectedService = services.find((s) => s.id === selectedServiceId);
+    return selectedService?.price || 0;
+  }, [ticketItems, discounts, services, selectedServiceId]);
 
   // Memoize tab change handler to prevent re-renders
   const handleTabChange = useCallback(
