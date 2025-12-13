@@ -31,3 +31,22 @@
   cursor: grabbing;
 }
 
+.rbc-events-container button {
+  z-index: 3 !important;
+}
+
+/* Time Slot Sizing */
+.rbc-time-slot {
+  min-height: 15px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  z-index: 0 !important;
+}
+
+.rbc-time-slot:hover {
+  background-color: #5faf87 !important;
+}
+
+.rbc-timeslot-group {
+  min-height: 30px !important;
+  background-color: #f0f8f4 !important;
+}
