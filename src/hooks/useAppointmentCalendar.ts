@@ -2,6 +2,9 @@ import { useState, useCallback, useEffect } from "react";
 import { View } from "react-big-calendar";
 import { toast } from "sonner";
 
+// Re-export utility function from utils
+export { formatDateWithCapitalization } from "@/lib/utils";
+
 // Types
 export interface StaffMember {
   id: string;
@@ -272,7 +275,9 @@ export const useAppointmentCalendar = () => {
       );
 
       if (hasConflict) {
-        toast.error("Time conflict: This staff member already has an appointment during this time slot.");
+        toast.error(
+          "Time conflict: This staff member already has an appointment during this time slot."
+        );
         return;
       }
 
@@ -390,4 +395,3 @@ export const useAppointmentCalendar = () => {
     fetchStaff,
   };
 };
-

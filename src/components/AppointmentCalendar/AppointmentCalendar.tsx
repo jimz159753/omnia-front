@@ -5,7 +5,10 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS, es } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useAppointmentCalendar } from "@/hooks/useAppointmentCalendar";
+import {
+  useAppointmentCalendar,
+  formatDateWithCapitalization,
+} from "@/hooks/useAppointmentCalendar";
 import type {
   StaffMember,
   CalendarEvent,
@@ -117,8 +120,15 @@ export function AppointmentCalendar() {
             <div className="flex items-center gap-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="hover:opacity-70 transition-opacity">
+                  <button className="flex items-center justify-center gap-2 hover:opacity-70 transition-opacity">
                     <FiCalendar className="w-6 h-6 text-brand-500 cursor-pointer" />
+                    <p className="text-lg font-semibold">
+                      {formatDateWithCapitalization(
+                        currentDate,
+                        locales,
+                        locale
+                      )}
+                    </p>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -135,7 +145,6 @@ export function AppointmentCalendar() {
                   />
                 </PopoverContent>
               </Popover>
-              <p className="text-2xl font-semibold">{t("calendar")}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -175,11 +184,6 @@ export function AppointmentCalendar() {
               </div>
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
-            {format(currentDate, "EEEE, MMMM d, yyyy", {
-              locale: locales[locale],
-            })}
-          </p>
         </div>
         <div>
           <div
