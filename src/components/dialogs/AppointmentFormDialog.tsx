@@ -1,18 +1,15 @@
 "use client";
 
-import React from "react";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogContent,
-} from "@/components/ui/dialog";
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -39,6 +36,22 @@ export function AppointmentFormDialog({
   initialData,
 }: AppointmentFormDialogProps) {
   const { t } = useTranslation("common");
+
+  // State for date and time pickers
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    initialSlot?.start || new Date()
+  );
+  const [selectedTime, setSelectedTime] = useState<string>(
+    initialSlot?.start
+      ? `${initialSlot.start
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${initialSlot.start
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`
+      : "09:00"
+  );
 
   // Use custom hook for all business logic
   const {
@@ -67,41 +80,63 @@ export function AppointmentFormDialog({
     initialData,
   });
 
-  // Custom DialogContent without overlay
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="border-b h-fit p-4">
-          <DialogTitle className="text-xl font-normal">
-            {initialData ? t("editAppointment") : t("createAppointment")}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="max-w-7xl w-[95vw] h-[85vh] p-4">
-          {error && (
-            <Alert variant="destructive">
-              <FiAlertCircle className="h-4 w-4" />
-              <AlertTitle>{t("error")}</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {success && (
-            <Alert variant="success">
-              <FiCheckCircle className="h-4 w-4" />
-              <AlertTitle>{t("success")}</AlertTitle>
-              <AlertDescription>{success}</AlertDescription>
-            </Alert>
-          )}
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <FiAlertCircle className="h-4 w-4" />
+                <AlertTitle>{t("error")}</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {success && (
+              <Alert variant="success" className="mb-4">
+                <FiCheckCircle className="h-4 w-4" />
+                <AlertTitle>{t("success")}</AlertTitle>
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
 
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <p className="text-sm text-gray-500">{t("loading")}</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col h-full">
-              <div className="flex gap-8 flex-1 overflow-y-auto">
-                {/* Left Side - Appointment Details */}
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <p className="text-sm text-gray-500">{t("loading")}</p>
+              </div>
+            ) : (
+              <div className="flex h-full">
+                {/* Left Side - Title, Date/Time + Appointment Details */}
                 <div className="flex-1">
+                  {/* Title with Close Button */}
+                  <div className="flex items-center justify-between border-b p-4">
+                    <DialogTitle className="text-2xl text-gray-500">
+                      {initialData
+                        ? t("editAppointment")
+                        : t("createAppointment")}
+                    </DialogTitle>
+                    {/* Date and Time Pickers */}
+                    <div className="flex items-center gap-3">
+                      <DatePicker
+                        value={selectedDate}
+                        onChange={setSelectedDate}
+                        placeholder="Select date"
+                        className="w-fit"
+                      />
+                      <span className="text-gray-400">at</span>
+                      <TimePicker
+                        value={selectedTime}
+                        onChange={setSelectedTime}
+                        placeholder="Select time"
+                        className="w-[120px]"
+                        minuteStep={5}
+                        businessHoursStart="09:00"
+                        businessHoursEnd="18:00"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Appointment Details Section */}
                   <AppointmentDetailsSection
                     control={control}
                     register={register}
@@ -129,9 +164,9 @@ export function AppointmentFormDialog({
                   setValue={setValue}
                 />
               </div>
-            </form>
-          )}
-        </div>
+            )}
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

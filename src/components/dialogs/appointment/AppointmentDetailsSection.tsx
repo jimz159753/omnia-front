@@ -52,14 +52,14 @@ export const AppointmentDetailsSection = ({
   const price = selectedService?.price || 0;
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-base font-normal">{t("appointmentDetails")}</h3>
+    <div className="flex flex-col gap-4 p-4">
+      <h3 className="text-sm font-semibold">{t("appointmentDetails")}</h3>
 
       {/* Service details in horizontal layout */}
       <div className="grid grid-cols-4 gap-3 bg-gray-50 p-4 rounded-md">
         {/* Staff */}
         <div className="space-y-2">
-          <label className="text-sm font-normal text-gray-700">
+          <label className="text-sm font-semibold text-gray-700">
             {t("staffLabel")}
           </label>
           <Controller
@@ -90,7 +90,7 @@ export const AppointmentDetailsSection = ({
 
         {/* Service */}
         <div className="space-y-2">
-          <label className="text-sm font-normal text-gray-700">
+          <label className="text-sm font-semibold text-gray-700">
             {t("serviceLabel")}
           </label>
           <Controller
@@ -121,7 +121,7 @@ export const AppointmentDetailsSection = ({
 
         {/* Duration (auto-calculated) */}
         <div className="space-y-2">
-          <label className="text-sm font-normal text-gray-700">
+          <label className="text-sm font-semibold text-gray-700">
             {t("durationLabel")}
           </label>
           <input
@@ -135,7 +135,7 @@ export const AppointmentDetailsSection = ({
 
         {/* Price (auto-calculated) */}
         <div className="space-y-2">
-          <label className="text-sm font-normal text-gray-700">
+          <label className="text-sm font-semibold text-gray-700">
             {t("price")}
           </label>
           <input
@@ -149,7 +149,7 @@ export const AppointmentDetailsSection = ({
       </div>
 
       {/* Notes Checkbox */}
-      <div className="space-y-3">
+      <div className="border-t p-4">
         <div
           className="flex items-center gap-3"
           onClick={(e) => e.stopPropagation()}
@@ -171,7 +171,7 @@ export const AppointmentDetailsSection = ({
           />
           <label
             htmlFor="include-notes"
-            className="text-sm font-normal text-gray-800 cursor-pointer select-none"
+            className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
             onClick={(e) => e.stopPropagation()}
           >
             {t("addAppointmentNote")}
@@ -182,7 +182,7 @@ export const AppointmentDetailsSection = ({
       {/* Notes Textarea */}
       {includeNotes && (
         <div className="space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
-          <label className="text-sm font-normal text-gray-700">
+          <label className="text-sm font-semibold text-gray-700">
             {t("notesLabel")}
           </label>
           <textarea
