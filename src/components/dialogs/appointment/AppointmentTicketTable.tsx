@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
@@ -10,6 +10,7 @@ import {
   type Control,
 } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AddServiceDialog } from "./AddServiceDialog";
 
 interface TicketItem {
   id: string;
@@ -18,7 +19,15 @@ interface TicketItem {
   total: number;
   discount?: number;
   product?: { name: string } | null;
-  service?: { name: string } | null;
+  service?: { name: string; id: string } | null;
+  serviceId?: string;
+  productId?: string;
+  isNew?: boolean; // Flag to identify newly added items
+}
+
+interface NewTicketItem extends TicketItem {
+  staffId?: string;
+  staffName?: string;
 }
 
 interface TicketData {
@@ -40,15 +49,28 @@ interface TicketData {
 
 interface AppointmentTicketTableProps {
   ticketData?: TicketData | null;
+  selectedStatus?: string;
   onStatusChange?: (status: string) => void;
   onDeleteItem?: (itemId: string) => void;
   onDiscountChange?: (itemId: string, discount: number) => void;
-  onAddService?: () => void;
+  onAddService?: (data: {
+    staffId: string;
+    serviceId: string;
+    time: string;
+  }) => void;
   onAddProduct?: () => void;
   onUseCertificate?: () => void;
   onAddTip?: () => void;
   includeNotes?: boolean;
   setIncludeNotes?: (value: boolean) => void;
+  users?: Array<{ id: string; email: string; name?: string }>;
+  services?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    duration: number;
+  }>;
+  onNewItemsChange?: (items: NewTicketItem[]) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control?: Control<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,6 +78,9 @@ interface AppointmentTicketTableProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors?: FieldErrors<any>;
 }
+
+// Export NewTicketItem for use in parent components
+export type { NewTicketItem };
 
 type TicketStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled";
 
@@ -105,6 +130,7 @@ const serviceStatusButtons: StatusButton[] = [
 
 export function AppointmentTicketTable({
   ticketData,
+  selectedStatus: selectedStatusProp,
   onStatusChange,
   onDeleteItem,
   onDiscountChange,
@@ -116,11 +142,34 @@ export function AppointmentTicketTable({
   setIncludeNotes,
   control,
   register,
+  users = [],
+  services = [],
+  onNewItemsChange,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
+
+  // Use prop if provided, otherwise use ticket data status, fallback to "Pending"
+  const initialStatus = selectedStatusProp || ticketData?.status || "Pending";
   const [selectedStatus, setSelectedStatus] = useState<TicketStatus>(
-    (ticketData?.status as TicketStatus) || "Pending"
+    initialStatus as TicketStatus
   );
+
+  // Add service dialog state
+  const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState(false);
+
+  // Local state for new items added through the dialog
+  const [newItems, setNewItems] = useState<NewTicketItem[]>([]);
+
+  // Sync local state when prop or ticket data changes
+  useEffect(() => {
+    const newStatus = selectedStatusProp || ticketData?.status || "Pending";
+    setSelectedStatus(newStatus as TicketStatus);
+  }, [selectedStatusProp, ticketData?.status]);
+
+  // Notify parent component when new items change
+  useEffect(() => {
+    onNewItemsChange?.(newItems);
+  }, [newItems, onNewItemsChange]);
 
   // Local state for discount values
   const [discounts, setDiscounts] = useState<Record<string, number>>({});
@@ -130,20 +179,89 @@ export function AppointmentTicketTable({
     onStatusChange?.(status);
   };
 
+  const handleAddService = (data: {
+    staffId: string;
+    serviceId: string;
+    time: string;
+  }) => {
+    // Find the selected service and staff
+    const selectedService = services.find((s) => s.id === data.serviceId);
+    const selectedStaff = users.find((u) => u.id === data.staffId);
+
+    if (!selectedService) {
+      console.error("Service not found");
+      return;
+    }
+
+    // Create a new item for the table
+    const newItem: NewTicketItem = {
+      id: `new-${Date.now()}-${Math.random()}`, // Temporary ID
+      quantity: 1,
+      unitPrice: selectedService.price,
+      total: selectedService.price,
+      discount: 0,
+      service: {
+        name: selectedService.name,
+        id: selectedService.id,
+      },
+      serviceId: selectedService.id,
+      product: null,
+      isNew: true,
+      staffId: data.staffId,
+      staffName: selectedStaff?.name || selectedStaff?.email || "N/A",
+    };
+
+    // Add to local state
+    setNewItems((prev) => [...prev, newItem]);
+
+    // Also notify parent if callback is provided
+    onAddService?.(data);
+
+    setIsAddServiceDialogOpen(false);
+  };
+
   const handleDeleteItem = (itemId: string) => {
     if (confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
-      onDeleteItem?.(itemId);
+      // Check if it's a new item
+      const isNewItem = newItems.some((item) => item.id === itemId);
+
+      if (isNewItem) {
+        // Remove from local state
+        setNewItems((prev) => prev.filter((item) => item.id !== itemId));
+      } else {
+        // Call parent callback for existing items
+        onDeleteItem?.(itemId);
+      }
     }
   };
 
   const handleDiscountChange = (itemId: string, discountPercent: number) => {
     const discount = Math.max(0, Math.min(100, discountPercent));
     setDiscounts((prev) => ({ ...prev, [itemId]: discount }));
+
+    // Check if it's a new item and update its total
+    const isNewItem = newItems.some((item) => item.id === itemId);
+    if (isNewItem) {
+      setNewItems((prev) =>
+        prev.map((item) => {
+          if (item.id === itemId) {
+            const discountAmount = (item.unitPrice * discount) / 100;
+            return {
+              ...item,
+              discount,
+              total: item.unitPrice - discountAmount,
+            };
+          }
+          return item;
+        })
+      );
+    }
+
     onDiscountChange?.(itemId, discount);
   };
 
   // Transform ticket items to display format
-  const items =
+  const existingItems =
     ticketData?.items?.map((item) => {
       const itemId = item.id || Math.random().toString();
       const discount = discounts[itemId] ?? item.discount ?? 0;
@@ -161,6 +279,27 @@ export function AppointmentTicketTable({
         total: finalTotal,
       };
     }) || [];
+
+  // Transform new items to display format
+  const newItemsFormatted = newItems.map((item) => {
+    const discount = discounts[item.id] ?? item.discount ?? 0;
+    const originalPrice = item.unitPrice;
+    const discountAmount = (originalPrice * discount) / 100;
+    const finalTotal = originalPrice - discountAmount;
+
+    return {
+      id: item.id,
+      serviceName: item.service?.name || item.product?.name || "N/A",
+      clientName: ticketData?.client?.name || "N/A",
+      staffName: item.staffName || "N/A",
+      price: originalPrice,
+      discount: discount,
+      total: finalTotal,
+    };
+  });
+
+  // Combine existing and new items
+  const items = [...existingItems, ...newItemsFormatted];
 
   return (
     <div className="flex flex-col h-full">
@@ -184,7 +323,7 @@ export function AppointmentTicketTable({
                 <span
                   className={`w-3 h-3 rounded-sm ${statusButton.iconColor}`}
                 />
-                {statusButton.label}
+                <p className="text-sm">{statusButton.label}</p>
               </button>
             );
           })}
@@ -199,29 +338,29 @@ export function AppointmentTicketTable({
             <div className="flex gap-3 text-sm">
               <button
                 type="button"
-                onClick={onAddService}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => setIsAddServiceDialogOpen(true)}
+                className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
                 + Agregar servicio
               </button>
               <button
                 type="button"
                 onClick={onAddProduct}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
                 + Agregar producto
               </button>
               <button
                 type="button"
                 onClick={onUseCertificate}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
                 + Usar certificado
               </button>
               <button
                 type="button"
                 onClick={onAddTip}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
                 + Agregar propina
               </button>
@@ -242,43 +381,52 @@ export function AppointmentTicketTable({
             </div>
 
             {/* Table Body */}
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="grid grid-cols-[2fr,1.5fr,1.5fr,1fr,1fr,1fr,auto] gap-4 px-4 py-4 bg-white border-b border-gray-200 last:border-b-0 items-center"
-              >
-                <div className="text-sm text-gray-900">{item.serviceName}</div>
-                <div className="text-sm text-gray-900">{item.clientName}</div>
-                <div className="text-sm text-gray-900">{item.staffName}</div>
-                <div className="text-sm text-gray-900 text-right">
-                  {item.price}
-                </div>
-                <div className="text-sm text-gray-900 text-right">
-                  <input
-                    type="number"
-                    value={item.discount}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value) || 0;
-                      handleDiscountChange(item.id, value);
-                    }}
-                    className="w-16 px-2 py-1 text-center bg-gray-50 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    min="0"
-                    max="100"
-                    step="1"
-                  />
-                </div>
-                <div className="text-sm font-semibold text-gray-900 text-right">
-                  ${item.total.toFixed(2)}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteItem(item.id)}
-                  className="text-gray-400 hover:text-red-600 transition-colors"
-                >
-                  <FiX className="w-5 h-5" />
-                </button>
+            {items.length === 0 ? (
+              <div className="px-4 py-8 text-center text-gray-500 text-sm">
+                No hay servicios agregados. Haz clic en &quot;+ Agregar
+                servicio&quot; para comenzar.
               </div>
-            ))}
+            ) : (
+              items.map((item) => (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-[2fr,1.5fr,1.5fr,1fr,1fr,1fr,auto] gap-4 px-4 py-4 bg-white border-b border-gray-200 last:border-b-0 items-center"
+                >
+                  <div className="text-sm text-gray-900">
+                    {item.serviceName}
+                  </div>
+                  <div className="text-sm text-gray-900">{item.clientName}</div>
+                  <div className="text-sm text-gray-900">{item.staffName}</div>
+                  <div className="text-sm text-gray-900 text-right">
+                    {item.price}
+                  </div>
+                  <div className="text-sm text-gray-900 text-right">
+                    <input
+                      type="number"
+                      value={item.discount}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        handleDiscountChange(item.id, value);
+                      }}
+                      className="w-16 px-2 py-1 text-center bg-gray-50 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      min="0"
+                      max="100"
+                      step="1"
+                    />
+                  </div>
+                  <div className="text-sm font-semibold text-gray-900 text-right">
+                    ${item.total.toFixed(2)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="text-gray-400 hover:text-red-600 transition-colors"
+                  >
+                    <FiX className="w-5 h-5" />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
         <div className="border-t p-4">
@@ -325,6 +473,15 @@ export function AppointmentTicketTable({
           </div>
         )}
       </div>
+
+      {/* Add Service Dialog */}
+      <AddServiceDialog
+        open={isAddServiceDialogOpen}
+        onOpenChange={setIsAddServiceDialogOpen}
+        onAddService={handleAddService}
+        users={users}
+        services={services}
+      />
     </div>
   );
 }

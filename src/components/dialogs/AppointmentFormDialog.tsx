@@ -9,7 +9,7 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
-import { AppointmentTicketTable } from "./appointment/AppointmentTicketTable";
+import { AppointmentTicketTable, type NewTicketItem } from "./appointment/AppointmentTicketTable";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -53,6 +53,9 @@ export function AppointmentFormDialog({
       : "09:00"
   );
 
+  // State for new items added through the table
+  const [newTicketItems, setNewTicketItems] = useState<NewTicketItem[]>([]);
+
   // Update date and time when initialSlot changes (when clicking a calendar event)
   useEffect(() => {
     if (initialSlot?.start) {
@@ -89,6 +92,8 @@ export function AppointmentFormDialog({
     existingClientId,
     setExistingClientId,
     ticketData,
+    selectedStatus,
+    setSelectedStatus,
   } = useAppointmentDetails({
     open,
     onOpenChange,
@@ -145,9 +150,9 @@ export function AppointmentFormDialog({
                   {initialData ? (
                     <AppointmentTicketTable
                       ticketData={ticketData}
+                      selectedStatus={selectedStatus}
                       onStatusChange={(status) => {
-                        console.log("Status changed to:", status);
-                        // TODO: Implement status change API call
+                        setSelectedStatus(status);
                       }}
                       onDeleteItem={(itemId) => {
                         console.log("Delete item:", itemId);
@@ -160,9 +165,10 @@ export function AppointmentFormDialog({
                         );
                         // TODO: Implement discount update API call
                       }}
-                      onAddService={() => {
-                        console.log("Add service");
-                        // TODO: Implement add service
+                      onAddService={(data) => {
+                        console.log("Add service:", data);
+                        // Service is already added to the table locally
+                        // Will be saved when clicking "Guardar Cita"
                       }}
                       onAddProduct={() => {
                         console.log("Add product");
@@ -176,11 +182,17 @@ export function AppointmentFormDialog({
                         console.log("Add tip");
                         // TODO: Implement add tip
                       }}
+                      onNewItemsChange={(items) => {
+                        setNewTicketItems(items);
+                        console.log("New items updated:", items);
+                      }}
                       includeNotes={includeNotes}
                       setIncludeNotes={setIncludeNotes}
                       control={control}
                       register={register}
                       errors={errors}
+                      users={users}
+                      services={services}
                     />
                   ) : (
                     <AppointmentDetailsSection

@@ -360,7 +360,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, startTime, endTime, staffId, clientId, notes, items, quantity, total, duration } = body;
+    const { id, startTime, endTime, staffId, clientId, notes, items, quantity, total, duration, status } = body;
 
     console.log("PUT /api/tickets - Updating ticket:", id, body);
 
@@ -381,6 +381,7 @@ export async function PUT(request: NextRequest) {
       notes?: string;
       quantity?: number;
       total?: number;
+      status?: string;
     } = {};
 
     let startDate: Date | null = null;
@@ -411,6 +412,9 @@ export async function PUT(request: NextRequest) {
     }
     if (duration !== undefined) {
       updateData.duration = duration;
+    }
+    if (status !== undefined) {
+      updateData.status = status;
     }
 
     // Calculate duration if both times are being updated

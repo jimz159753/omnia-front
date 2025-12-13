@@ -99,6 +99,7 @@ export const useAppointmentDetails = ({
   const [includeNotes, setIncludeNotes] = useState(false);
   const [existingClientId, setExistingClientId] = useState("");
   const [ticketData, setTicketData] = useState<TicketData | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("Pending");
 
   // Form management
   const form = useForm<AppointmentFormValues>({
@@ -161,9 +162,11 @@ export const useAppointmentDetails = ({
       }
       const json = await response.json();
       const ticket = json.data?.data?.[0] || json.data?.[0] || json.data;
-      
+
       if (ticket) {
         setTicketData(ticket);
+        // Set the initial status when loading ticket data
+        setSelectedStatus(ticket.status || "Pending");
       }
     } catch (err) {
       console.error("Failed to load ticket data:", err);
@@ -396,6 +399,7 @@ export const useAppointmentDetails = ({
           id: ticketId,
           clientId,
           staffId: values.staffId,
+          status: selectedStatus, // Include the selected status
           items: [
             {
               serviceId: values.serviceId,
@@ -418,9 +422,9 @@ export const useAppointmentDetails = ({
         throw new Error(data.error || "Failed to update appointment");
       }
 
-      return await ticketResponse.json();
+      console.log("Ticket updated successfully");
     },
-    []
+    [selectedStatus]
   );
 
   /**
@@ -605,5 +609,7 @@ export const useAppointmentDetails = ({
     setIncludeNotes,
     existingClientId,
     setExistingClientId,
+    selectedStatus,
+    setSelectedStatus,
   };
 };
