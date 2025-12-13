@@ -93,6 +93,7 @@ export function AppointmentFormDialog({
     existingClientId,
     setExistingClientId,
     ticketData,
+    setTicketData,
     selectedStatus,
     setSelectedStatus,
   } = useAppointmentDetails({
@@ -155,47 +156,27 @@ export function AppointmentFormDialog({
                           }
 
                           toast.success("Elemento eliminado correctamente");
-                          // Refetch ticket data
-                          onSuccess?.();
+
+                          // Manually update ticketData to remove the item without closing dialog
+                          if (ticketData) {
+                            setTicketData({
+                              ...ticketData,
+                              items: ticketData.items.filter(
+                                (item) => item.id !== itemId
+                              ),
+                            });
+                          }
                         } catch (error) {
                           console.error("Error deleting item:", error);
                           toast.error("Error al eliminar el elemento");
                         }
                       }}
                       onDiscountChange={async (itemId, discount) => {
-                        try {
-                          // Find the item to get its unitPrice
-                          const item = ticketData?.items?.find(
-                            (i) => i.id === itemId
-                          );
-                          if (!item) {
-                            console.error("Item not found");
-                            return;
-                          }
-
-                          // Calculate new total based on discount
-                          const discountAmount =
-                            (item.unitPrice * discount) / 100;
-                          const newTotal = item.unitPrice - discountAmount;
-
-                          const response = await fetch("/api/ticket-items", {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              id: itemId,
-                              total: newTotal,
-                            }),
-                          });
-
-                          if (!response.ok) {
-                            throw new Error("Failed to update discount");
-                          }
-
-                          // Refetch ticket data
-                          onSuccess?.();
-                        } catch (error) {
-                          console.error("Error updating discount:", error);
-                        }
+                        // Just update local state, no API call
+                        // Will be saved when clicking "Guardar Cita"
+                        console.log(
+                          `Discount changed for item ${itemId}: ${discount}%`
+                        );
                       }}
                       onAddProduct={(data) => {
                         console.log(

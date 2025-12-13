@@ -53,7 +53,7 @@ interface AppointmentTicketTableProps {
   selectedStatus?: string;
   onStatusChange?: (status: string) => void;
   onDeleteItem?: (itemId: string) => Promise<void>;
-  onDiscountChange?: (itemId: string, discount: number) => Promise<void>;
+  onDiscountChange?: (itemId: string, discount: number) => void;
   onAddProduct?: (data: {
     productId: string;
     staffId: string;
@@ -66,6 +66,7 @@ interface AppointmentTicketTableProps {
   users?: Array<{ id: string; email: string; name?: string }>;
   products?: Array<{ id: string; name: string; cost: number }>;
   onNewItemsChange?: (items: NewTicketItem[]) => void;
+  onDiscountUpdates?: (updates: Record<string, number>) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control?: Control<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,6 +139,7 @@ export function AppointmentTicketTable({
   users = [],
   products = [],
   onNewItemsChange,
+  onDiscountUpdates,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
 
@@ -153,6 +155,9 @@ export function AppointmentTicketTable({
   // Local state for new items added through the dialog
   const [newItems, setNewItems] = useState<NewTicketItem[]>([]);
 
+  // Local state for discount values
+  const [discounts, setDiscounts] = useState<Record<string, number>>({});
+
   // Sync local state when prop or ticket data changes
   useEffect(() => {
     const newStatus = selectedStatusProp || ticketData?.status || "Pending";
@@ -164,8 +169,10 @@ export function AppointmentTicketTable({
     onNewItemsChange?.(newItems);
   }, [newItems, onNewItemsChange]);
 
-  // Local state for discount values
-  const [discounts, setDiscounts] = useState<Record<string, number>>({});
+  // Notify parent when discounts change
+  useEffect(() => {
+    onDiscountUpdates?.(discounts);
+  }, [discounts, onDiscountUpdates]);
 
   const handleStatusChange = (status: TicketStatus) => {
     setSelectedStatus(status);
@@ -239,10 +246,7 @@ export function AppointmentTicketTable({
     }
   };
 
-  const handleDiscountChange = async (
-    itemId: string,
-    discountPercent: number
-  ) => {
+  const handleDiscountChange = (itemId: string, discountPercent: number) => {
     const discount = Math.max(0, Math.min(100, discountPercent));
     setDiscounts((prev) => ({ ...prev, [itemId]: discount }));
 
@@ -262,10 +266,10 @@ export function AppointmentTicketTable({
           return item;
         })
       );
-    } else {
-      // Call parent callback for existing items
-      await onDiscountChange?.(itemId, discount);
     }
+
+    // Notify parent (just for logging, no API call)
+    onDiscountChange?.(itemId, discount);
   };
 
   // Transform ticket items to display format

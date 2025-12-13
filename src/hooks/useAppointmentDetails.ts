@@ -648,6 +648,7 @@ export const useAppointmentDetails = ({
     error,
     success,
     ticketData,
+    setTicketData,
 
     // Form
     form,

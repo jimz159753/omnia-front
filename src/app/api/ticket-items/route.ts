@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
         quantity: quantity || 1,
         unitPrice: unitPrice || 0,
         total: total || unitPrice || 0,
+        discount: discount || 0,
       },
       include: {
         product: true,
@@ -140,7 +141,7 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, quantity, unitPrice, total } = body;
+    const { id, quantity, unitPrice, total, discount } = body;
 
     console.log("PUT /api/ticket-items - Updating ticket item:", id, body);
 
@@ -168,6 +169,7 @@ export async function PUT(request: NextRequest) {
       quantity?: number;
       unitPrice?: number;
       total?: number;
+      discount?: number;
     } = {};
 
     if (quantity !== undefined) {
@@ -178,6 +180,13 @@ export async function PUT(request: NextRequest) {
     }
     if (total !== undefined) {
       updateData.total = total;
+    }
+    if (discount !== undefined) {
+      updateData.discount = discount;
+      // Recalculate total based on discount if unitPrice is available
+      const finalUnitPrice = unitPrice !== undefined ? unitPrice : ticketItem.unitPrice;
+      const discountAmount = (finalUnitPrice * discount) / 100;
+      updateData.total = finalUnitPrice - discountAmount;
     }
 
     // Update the ticket item
