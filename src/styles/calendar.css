@@ -16,14 +16,27 @@
   background-color: rgba(0, 123, 255, 0.1) !important;
 }
 
-/* Smooth transition for opacity changes */
+/* Calendar Event Styling */
 .rbc-event {
   transition: opacity 0.2s ease-in-out;
+  background-color: #5faf87 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
 }
 
-/* Ensure the cursor changes when hovering over draggable events */
 .rbc-event:hover {
   cursor: grab;
+  background-color: #4a9a70 !important;
+}
+
+.rbc-event-label {
+  color: white !important;
+}
+
+.rbc-event-content {
+  color: white !important;
+  font-weight: 500;
 }
 
 /* When actively dragging */
@@ -43,10 +56,26 @@
 }
 
 .rbc-time-slot:hover {
-  background-color: #5faf87 !important;
+  background-color: #8fcbac !important;
 }
 
 .rbc-timeslot-group {
   min-height: 30px !important;
   background-color: #f0f8f4 !important;
+}
+
+.rbc-allday-cell {
+  display: none !important;
+}
+
+.rbc-time-header {
+  border-right: 0px solid #e0e0e0 !important;
+}
+
+.rbc-row {
+  border-bottom: 0px solid #e0e0e0 !important;
+}
+
+.rbc-header {
+  border-bottom: 0px solid #e0e0e0 !important;
 }
