@@ -9,7 +9,10 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
-import { AppointmentTicketTable } from "./appointment/AppointmentTicketTable";
+import {
+  AppointmentTicketTable,
+  type NewTicketItem,
+} from "./appointment/AppointmentTicketTable";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -53,6 +56,9 @@ export function AppointmentFormDialog({
       : "09:00"
   );
 
+  // State for new items added through the table
+  const [newTicketItems, setNewTicketItems] = useState<NewTicketItem[]>([]);
+
   // Update date and time when initialSlot changes (when clicking a calendar event)
   useEffect(() => {
     if (initialSlot?.start) {
@@ -74,6 +80,7 @@ export function AppointmentFormDialog({
     services,
     users,
     clients,
+    products,
     loading,
     error,
     success,
@@ -99,6 +106,7 @@ export function AppointmentFormDialog({
     initialData,
     selectedDate,
     selectedTime,
+    newItems: newTicketItems,
   });
 
   return (
@@ -151,24 +159,72 @@ export function AppointmentFormDialog({
                       onStatusChange={(status) => {
                         setSelectedStatus(status);
                       }}
-                      onDeleteItem={(itemId) => {
-                        console.log("Delete item:", itemId);
-                        // TODO: Implement delete item API call
+                      onDeleteItem={async (itemId) => {
+                        try {
+                          const response = await fetch(
+                            `/api/ticket-items?id=${itemId}`,
+                            {
+                              method: "DELETE",
+                            }
+                          );
+
+                          if (!response.ok) {
+                            throw new Error("Failed to delete item");
+                          }
+
+                          // Refetch ticket data
+                          onSuccess?.();
+                        } catch (error) {
+                          console.error("Error deleting item:", error);
+                          alert("Error al eliminar el elemento.");
+                        }
                       }}
-                      onDiscountChange={(itemId, discount) => {
+                      onDiscountChange={async (itemId, discount) => {
+                        try {
+                          // Find the item to get its unitPrice
+                          const item = ticketData?.items?.find(
+                            (i) => i.id === itemId
+                          );
+                          if (!item) {
+                            console.error("Item not found");
+                            return;
+                          }
+
+                          // Calculate new total based on discount
+                          const discountAmount =
+                            (item.unitPrice * discount) / 100;
+                          const newTotal = item.unitPrice - discountAmount;
+
+                          const response = await fetch("/api/ticket-items", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              id: itemId,
+                              total: newTotal,
+                            }),
+                          });
+
+                          if (!response.ok) {
+                            throw new Error("Failed to update discount");
+                          }
+
+                          // Refetch ticket data
+                          onSuccess?.();
+                        } catch (error) {
+                          console.error("Error updating discount:", error);
+                        }
+                      }}
+                      onAddProduct={(data) => {
                         console.log(
-                          `Discount changed for item ${itemId}:`,
-                          discount
+                          "Product added to table (local state):",
+                          data
                         );
-                        // TODO: Implement discount update API call
+                        // Product is now in the table's newItems state
+                        // Will be saved to database when clicking "Guardar Cita"
                       }}
-                      onAddService={() => {
-                        console.log("Add service");
-                        // TODO: Implement add service
-                      }}
-                      onAddProduct={() => {
-                        console.log("Add product");
-                        // TODO: Implement add product
+                      onNewItemsChange={(items) => {
+                        setNewTicketItems(items);
+                        console.log("New items updated:", items);
                       }}
                       onUseCertificate={() => {
                         console.log("Use certificate");
@@ -183,6 +239,8 @@ export function AppointmentFormDialog({
                       control={control}
                       register={register}
                       errors={errors}
+                      users={users}
+                      products={products}
                     />
                   ) : (
                     <AppointmentDetailsSection

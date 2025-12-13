@@ -50,6 +50,15 @@ export interface UseAppointmentDetailsProps {
   } | null;
   selectedDate?: Date;
   selectedTime?: string;
+  newItems?: Array<{
+    productId?: string;
+    serviceId?: string;
+    staffId?: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    discount?: number;
+  }>;
 }
 
 export interface TicketData {
@@ -70,8 +79,9 @@ export interface TicketData {
     quantity: number;
     unitPrice: number;
     total: number;
-    product?: { name: string } | null;
-    service?: { name: string } | null;
+    discount?: number;
+    product?: { name: string; id: string } | null;
+    service?: { name: string; id: string } | null;
   }>;
   total: number;
 }
@@ -88,11 +98,15 @@ export const useAppointmentDetails = ({
   initialData,
   selectedDate,
   selectedTime,
+  newItems = [],
 }: UseAppointmentDetailsProps) => {
   // State
   const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [products, setProducts] = useState<
+    Array<{ id: string; name: string; cost: number }>
+  >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -127,20 +141,26 @@ export const useAppointmentDetails = ({
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [servicesRes, usersRes, clientsRes] = await Promise.all([
-        fetch("/api/services"),
-        fetch("/api/users"),
-        fetch("/api/clients"),
-      ]);
+      const [servicesRes, usersRes, clientsRes, productsRes] =
+        await Promise.all([
+          fetch("/api/services"),
+          fetch("/api/users"),
+          fetch("/api/clients"),
+          fetch("/api/products"),
+        ]);
 
       const servicesData = await servicesRes.json();
       const usersData = await usersRes.json();
       const clientsData = await clientsRes.json();
+      const productsData = await productsRes.json();
 
       setServices(servicesData.data || []);
       setUsers(Array.isArray(usersData) ? usersData : usersData.data || []);
       setClients(
         Array.isArray(clientsData) ? clientsData : clientsData.data || []
+      );
+      setProducts(
+        Array.isArray(productsData) ? productsData : productsData.data || []
       );
     } catch (err) {
       console.error("Failed to load form data:", err);
@@ -156,12 +176,17 @@ export const useAppointmentDetails = ({
   const fetchTicketData = useCallback(async (ticketId: string) => {
     setLoading(true);
     try {
+      console.log("Fetching ticket data for ID:", ticketId);
       const response = await fetch(`/api/tickets?id=${ticketId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch ticket data");
       }
       const json = await response.json();
+      console.log("Ticket data response:", json);
       const ticket = json.data?.data?.[0] || json.data?.[0] || json.data;
+
+      console.log("Parsed ticket:", ticket);
+      console.log("Ticket items:", ticket?.items);
 
       if (ticket) {
         setTicketData(ticket);
@@ -391,6 +416,7 @@ export const useAppointmentDetails = ({
         appointmentDetails;
 
       console.log("Updating ticket:", ticketId);
+      console.log("New items to add:", newItems);
 
       const ticketResponse = await fetch("/api/tickets", {
         method: "PUT",
@@ -423,8 +449,37 @@ export const useAppointmentDetails = ({
       }
 
       console.log("Ticket updated successfully");
+
+      // Add all new items to the ticket
+      if (newItems && newItems.length > 0) {
+        console.log("Adding new items to ticket:", newItems);
+        for (const item of newItems) {
+          try {
+            const itemResponse = await fetch("/api/ticket-items", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ticketId,
+                productId: item.productId || null,
+                serviceId: item.serviceId || null,
+                quantity: item.quantity || 1,
+                unitPrice: item.unitPrice,
+                total: item.total,
+              }),
+            });
+
+            if (!itemResponse.ok) {
+              console.error("Failed to add item:", item);
+            } else {
+              console.log("Item added successfully:", item);
+            }
+          } catch (error) {
+            console.error("Error adding item:", error);
+          }
+        }
+      }
     },
-    [selectedStatus]
+    [selectedStatus, newItems]
   );
 
   /**
@@ -588,6 +643,7 @@ export const useAppointmentDetails = ({
     services,
     users,
     clients,
+    products,
     loading,
     error,
     success,

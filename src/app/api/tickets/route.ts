@@ -24,6 +24,41 @@ const generateUniqueTicketId = async () => {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get("id");
+    
+    // If ID is provided, fetch single ticket with items
+    if (id) {
+      const ticket = await prisma.ticket.findUnique({
+        where: { id },
+        include: {
+          client: true,
+          staff: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          items: {
+            include: {
+              product: true,
+              service: true,
+            },
+          },
+        },
+      });
+
+      if (!ticket) {
+        return NextResponse.json(
+          { error: "Ticket not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ data: ticket });
+    }
+
+    // Otherwise, fetch paginated list
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "5");
     const search = searchParams.get("search") || "";

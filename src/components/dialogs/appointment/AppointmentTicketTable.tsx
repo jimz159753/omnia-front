@@ -10,6 +10,7 @@ import {
   type Control,
 } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AddProductDialog } from "./AddProductDialog";
 
 interface TicketItem {
   id: string;
@@ -17,8 +18,16 @@ interface TicketItem {
   unitPrice: number;
   total: number;
   discount?: number;
-  product?: { name: string } | null;
-  service?: { name: string } | null;
+  product?: { name: string; id: string } | null;
+  service?: { name: string; id: string } | null;
+  productId?: string;
+  serviceId?: string;
+  isNew?: boolean;
+}
+
+interface NewTicketItem extends TicketItem {
+  staffId?: string;
+  staffName?: string;
 }
 
 interface TicketData {
@@ -42,14 +51,20 @@ interface AppointmentTicketTableProps {
   ticketData?: TicketData | null;
   selectedStatus?: string;
   onStatusChange?: (status: string) => void;
-  onDeleteItem?: (itemId: string) => void;
-  onDiscountChange?: (itemId: string, discount: number) => void;
-  onAddService?: () => void;
-  onAddProduct?: () => void;
+  onDeleteItem?: (itemId: string) => Promise<void>;
+  onDiscountChange?: (itemId: string, discount: number) => Promise<void>;
+  onAddProduct?: (data: {
+    productId: string;
+    staffId: string;
+    ticketId: string;
+  }) => void;
   onUseCertificate?: () => void;
   onAddTip?: () => void;
   includeNotes?: boolean;
   setIncludeNotes?: (value: boolean) => void;
+  users?: Array<{ id: string; email: string; name?: string }>;
+  products?: Array<{ id: string; name: string; cost: number }>;
+  onNewItemsChange?: (items: NewTicketItem[]) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control?: Control<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +72,8 @@ interface AppointmentTicketTableProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors?: FieldErrors<any>;
 }
+
+export type { NewTicketItem };
 
 type TicketStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled";
 
@@ -110,7 +127,6 @@ export function AppointmentTicketTable({
   onStatusChange,
   onDeleteItem,
   onDiscountChange,
-  onAddService,
   onAddProduct,
   onUseCertificate,
   onAddTip,
@@ -118,6 +134,9 @@ export function AppointmentTicketTable({
   setIncludeNotes,
   control,
   register,
+  users = [],
+  products = [],
+  onNewItemsChange,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
 
@@ -127,11 +146,22 @@ export function AppointmentTicketTable({
     initialStatus as TicketStatus
   );
 
+  // Add product dialog state
+  const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
+
+  // Local state for new items added through the dialog
+  const [newItems, setNewItems] = useState<NewTicketItem[]>([]);
+
   // Sync local state when prop or ticket data changes
   useEffect(() => {
     const newStatus = selectedStatusProp || ticketData?.status || "Pending";
     setSelectedStatus(newStatus as TicketStatus);
   }, [selectedStatusProp, ticketData?.status]);
+
+  // Notify parent when new items change
+  useEffect(() => {
+    onNewItemsChange?.(newItems);
+  }, [newItems, onNewItemsChange]);
 
   // Local state for discount values
   const [discounts, setDiscounts] = useState<Record<string, number>>({});
@@ -141,20 +171,99 @@ export function AppointmentTicketTable({
     onStatusChange?.(status);
   };
 
-  const handleDeleteItem = (itemId: string) => {
+  const handleAddProduct = async (data: {
+    staffId: string;
+    productId: string;
+  }) => {
+    // Find the selected product and staff
+    const selectedProduct = products.find((p) => p.id === data.productId);
+    const selectedStaff = users.find((u) => u.id === data.staffId);
+
+    if (!selectedProduct) {
+      console.error("Product not found");
+      alert("Producto no encontrado");
+      return;
+    }
+
+    // Create a new item for the table (local state only)
+    const newItem: NewTicketItem = {
+      id: `new-${Date.now()}-${Math.random()}`, // Temporary ID
+      quantity: 1,
+      unitPrice: selectedProduct.cost,
+      total: selectedProduct.cost,
+      discount: 0,
+      product: {
+        name: selectedProduct.name,
+        id: selectedProduct.id,
+      },
+      productId: selectedProduct.id,
+      service: null,
+      isNew: true,
+      staffId: data.staffId,
+      staffName: selectedStaff?.name || selectedStaff?.email || "N/A",
+    };
+
+    // Add to local state for display
+    setNewItems((prev) => [...prev, newItem]);
+
+    // Notify parent (optional callback)
+    if (ticketData?.id) {
+      onAddProduct?.({
+        productId: data.productId,
+        staffId: data.staffId,
+        ticketId: ticketData.id,
+      });
+    }
+
+    setIsAddProductDialogOpen(false);
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
     if (confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
-      onDeleteItem?.(itemId);
+      // Check if it's a new item
+      const isNewItem = newItems.some((item) => item.id === itemId);
+
+      if (isNewItem) {
+        // Remove from local state
+        setNewItems((prev) => prev.filter((item) => item.id !== itemId));
+      } else {
+        // Call parent callback for existing items
+        await onDeleteItem?.(itemId);
+      }
     }
   };
 
-  const handleDiscountChange = (itemId: string, discountPercent: number) => {
+  const handleDiscountChange = async (
+    itemId: string,
+    discountPercent: number
+  ) => {
     const discount = Math.max(0, Math.min(100, discountPercent));
     setDiscounts((prev) => ({ ...prev, [itemId]: discount }));
-    onDiscountChange?.(itemId, discount);
+
+    // Check if it's a new item and update its total
+    const isNewItem = newItems.some((item) => item.id === itemId);
+    if (isNewItem) {
+      setNewItems((prev) =>
+        prev.map((item) => {
+          if (item.id === itemId) {
+            const discountAmount = (item.unitPrice * discount) / 100;
+            return {
+              ...item,
+              discount,
+              total: item.unitPrice - discountAmount,
+            };
+          }
+          return item;
+        })
+      );
+    } else {
+      // Call parent callback for existing items
+      await onDiscountChange?.(itemId, discount);
+    }
   };
 
   // Transform ticket items to display format
-  const items =
+  const existingItems =
     ticketData?.items?.map((item) => {
       const itemId = item.id || Math.random().toString();
       const discount = discounts[itemId] ?? item.discount ?? 0;
@@ -172,6 +281,27 @@ export function AppointmentTicketTable({
         total: finalTotal,
       };
     }) || [];
+
+  // Transform new items to display format
+  const newItemsFormatted = newItems.map((item) => {
+    const discount = discounts[item.id] ?? item.discount ?? 0;
+    const originalPrice = item.unitPrice;
+    const discountAmount = (originalPrice * discount) / 100;
+    const finalTotal = originalPrice - discountAmount;
+
+    return {
+      id: item.id,
+      serviceName: item.service?.name || item.product?.name || "N/A",
+      clientName: ticketData?.client?.name || "N/A",
+      staffName: item.staffName || "N/A",
+      price: originalPrice,
+      discount: discount,
+      total: finalTotal,
+    };
+  });
+
+  // Combine existing and new items
+  const items = [...existingItems, ...newItemsFormatted];
 
   return (
     <div className="flex flex-col h-full">
@@ -210,14 +340,7 @@ export function AppointmentTicketTable({
             <div className="flex gap-3 text-sm">
               <button
                 type="button"
-                onClick={onAddService}
-                className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
-              >
-                + Agregar servicio
-              </button>
-              <button
-                type="button"
-                onClick={onAddProduct}
+                onClick={() => setIsAddProductDialogOpen(true)}
                 className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
                 + Agregar producto
@@ -345,6 +468,15 @@ export function AppointmentTicketTable({
           </div>
         )}
       </div>
+
+      {/* Add Product Dialog */}
+      <AddProductDialog
+        open={isAddProductDialogOpen}
+        onOpenChange={setIsAddProductDialogOpen}
+        onAddProduct={handleAddProduct}
+        users={users}
+        products={products}
+      />
     </div>
   );
 }
