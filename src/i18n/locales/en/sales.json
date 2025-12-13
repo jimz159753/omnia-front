@@ -13,6 +13,7 @@
   "ticketNumber": "Ticket #",
   "client": "Client",
   "seller": "Done by",
+  "items": "Items",
   "itemsLabel": "Items",
   "itemsEmpty": "No items",
   "status": "Status",

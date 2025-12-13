@@ -76,6 +76,48 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       header: tCommon("client"),
     },
     {
+      accessorKey: "items",
+      header: tSales("items"),
+      cell: ({ row }) => {
+        const items = row.original.items || [];
+        if (items.length === 0) {
+          return <div className="text-gray-400 text-sm">-</div>;
+        }
+
+        // Get all item names (products or services)
+        const itemNames = items
+          .map((item) => {
+            if (item.service) {
+              return item.service.name;
+            }
+            if (item.product) {
+              return item.product.name;
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        // Display items
+        if (itemNames.length === 0) {
+          return <div className="text-gray-400 text-sm">-</div>;
+        }
+
+        if (itemNames.length === 1) {
+          return <div className="text-sm text-gray-900">{itemNames[0]}</div>;
+        }
+
+        // If multiple items, show first item + count
+        return (
+          <div className="text-sm text-gray-900">
+            <div>{itemNames[0]}</div>
+            <div className="text-xs text-gray-500">
+              +{itemNames.length - 1} más
+            </div>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "quantity",
       header: tCommon("quantity"),
       cell: ({ row }) => {
