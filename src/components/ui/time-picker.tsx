@@ -88,7 +88,7 @@ export function TimePicker({
             className
           )}
         >
-          <FiClock className="mr-2 h-4 w-4" />
+          <FiClock className="mr-2 h-4 w-4 text-brand-500" />
           {value || <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>

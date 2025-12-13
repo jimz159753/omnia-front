@@ -116,8 +116,8 @@ export function AppointmentCalendar() {
     <div>
       <div>
         <div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-3">
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="flex items-center justify-center gap-2 hover:opacity-70 transition-opacity">
@@ -145,31 +145,22 @@ export function AppointmentCalendar() {
                   />
                 </PopoverContent>
               </Popover>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsUserDialogOpen(true)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-brand-500 rounded-md hover:bg-brand-600 transition-colors flex items-center gap-2"
-              >
-                <FiUserPlus className="w-4 h-4" />
-                Add Staff
-              </button>
-              <button
-                onClick={() => handleNavigate(new Date())}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                {t("today")}
-              </button>
-              <div className="flex items-center border border-gray-300 rounded-md">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => {
                     const newDate = new Date(currentDate);
                     newDate.setDate(currentDate.getDate() - 1);
                     handleNavigate(newDate);
                   }}
-                  className="p-2 hover:bg-gray-50 transition-colors"
+                  className="p-1 hover:bg-gray-50 transition-colors"
                 >
-                  <FiChevronLeft className="w-5 h-5" />
+                  <FiChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleNavigate(new Date())}
+                  className="px-2 py-1 text-sm font-semibold rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  {t("today")}
                 </button>
                 <button
                   onClick={() => {
@@ -177,11 +168,20 @@ export function AppointmentCalendar() {
                     newDate.setDate(currentDate.getDate() + 1);
                     handleNavigate(newDate);
                   }}
-                  className="p-2 hover:bg-gray-50 transition-colors border-l border-gray-300"
+                  className="p-1 hover:bg-gray-50 transition-colors"
                 >
-                  <FiChevronRight className="w-5 h-5" />
+                  <FiChevronRight className="w-4 h-4" />
                 </button>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsUserDialogOpen(true)}
+                className="px-4 py-2 text-sm font-semibold text-white bg-brand-500 rounded-md hover:bg-brand-600 transition-colors flex items-center gap-2"
+              >
+                <FiUserPlus className="w-4 h-4" />
+                {t("addStaff")}
+              </button>
             </div>
           </div>
         </div>

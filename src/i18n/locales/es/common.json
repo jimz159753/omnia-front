@@ -50,6 +50,7 @@
   "saleDetails": "Detalles de la venta",
   "productLabel": "Producto",
   "staffLabel": "Personal",
+  "addStaff": "Agregar Personal",
   "selectProduct": "Selecciona un producto",
   "selectStaff": "Selecciona al staff",
   "addSaleNote": "¿Agregar nota de venta?",

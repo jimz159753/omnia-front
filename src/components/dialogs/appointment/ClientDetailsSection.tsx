@@ -69,7 +69,7 @@ export const ClientDetailsSection = ({
   );
 
   return (
-    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l">
+    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gray-50">
       <div className="flex-1 overflow-y-auto">
         <div className="flex justify-end m-6 ml-auto">
           <button
