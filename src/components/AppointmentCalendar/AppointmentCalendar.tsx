@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { Calendar, dateFnsLocalizer, View } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS, es } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAppointmentCalendar } from "@/hooks/useAppointmentCalendar";
+import type {
+  StaffMember,
+  CalendarEvent,
+} from "@/hooks/useAppointmentCalendar";
 import {
   FiCalendar,
   FiChevronLeft,
@@ -14,7 +18,6 @@ import {
 } from "react-icons/fi";
 import { UserDialog } from "@/components/dialogs/UserDialog";
 import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
-import { toast } from "sonner";
 import {
   Popover,
   PopoverContent,
@@ -49,356 +52,50 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-interface StaffMember {
-  id: string;
-  name: string;
-  role: string;
-  position: string;
-}
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  resourceId?: string; // Staff member ID
-  ticketData?: {
-    clientId: string;
-    clientName: string;
-    serviceId?: string;
-    notes?: string;
-    status: string;
-  };
-}
-
 // Create the DnD Calendar with proper types
 const DnDCalendar = withDragAndDrop<CalendarEvent, StaffMember>(Calendar);
 
+// Custom resource header component
+const CustomResourceHeader = ({ resource }: { resource: StaffMember }) => {
+  return (
+    <div className="flex flex-col items-center justify-center py-1">
+      <span className="font-semibold text-sm">{resource.name}</span>
+      {resource.position && (
+        <span className="text-xs opacity-80 font-normal">
+          {resource.position}
+        </span>
+      )}
+    </div>
+  );
+};
+
 export function AppointmentCalendar() {
   const { t, i18n } = useTranslation();
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<View>("day");
-  const [staff, setStaff] = useState<StaffMember[]>([]);
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
-  const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<{
-    start: Date;
-    end: Date;
-    resourceId?: string | number;
-  } | null>(null);
-  const [selectedEventData, setSelectedEventData] = useState<{
-    ticketId?: string;
-    clientId?: string;
-    serviceId?: string;
-    notes?: string;
-  } | null>(null);
-  const [deleteConfirmEvent, setDeleteConfirmEvent] =
-    useState<CalendarEvent | null>(null);
 
-  // Fetch staff members
-  const fetchStaff = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/users");
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.data) {
-          // Filter active users only
-          const activeStaff = json.data
-            .filter((user: { isActive: boolean }) => user.isActive)
-            .map(
-              (user: {
-                id: string;
-                name: string;
-                role: string;
-                position: string;
-              }) => ({
-                id: user.id,
-                name: user.name,
-                role: user.role,
-                position: user.position || "",
-              })
-            );
-          setStaff(activeStaff);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch staff:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStaff();
-    fetchAppointments();
-  }, []);
-
-  const handleNavigate = useCallback((newDate: Date) => {
-    setCurrentDate(newDate);
-  }, []);
-
-  const handleViewChange = useCallback((newView: View) => {
-    setView(newView);
-  }, []);
-
-  const handleSelectSlot = useCallback(
-    ({
-      start,
-      end,
-      resourceId,
-    }: {
-      start: Date;
-      end: Date;
-      resourceId?: string | number;
-    }) => {
-      if (isAppointmentDialogOpen) return;
-      setSelectedSlot({ start, end, resourceId });
-      setIsAppointmentDialogOpen(true);
-    },
-    [isAppointmentDialogOpen]
-  );
-
-  const handleSelectEvent = useCallback(
-    (event: CalendarEvent) => {
-      if (isAppointmentDialogOpen) return;
-      // Open the appointment dialog with the event's time slot and data pre-filled
-      console.log("Event clicked:", event);
-      setSelectedSlot({
-        start: event.start,
-        end: event.end,
-        resourceId: event.resourceId,
-      });
-      // Set the event data if available (for editing)
-      if (event.ticketData) {
-        setSelectedEventData({
-          ticketId: event.id, // Use the event ID as the ticket ID
-          clientId: event.ticketData.clientId,
-          serviceId: event.ticketData.serviceId,
-          notes: event.ticketData.notes,
-        });
-      }
-      setIsAppointmentDialogOpen(true);
-    },
-    [isAppointmentDialogOpen]
-  );
-
-  // Handle delete event
-  const handleDeleteEvent = async (event: CalendarEvent) => {
-    try {
-      const response = await fetch(`/api/tickets?id=${event.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete event");
-      }
-
-      // Remove from local state
-      setEvents((prev) => prev.filter((e) => e.id !== event.id));
-      toast.success(t("eventDeleted") || "Event deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete event:", error);
-      toast.error(t("eventDeleteError") || "Failed to delete event");
-    } finally {
-      setDeleteConfirmEvent(null);
-    }
-  };
-
-  // Custom resource header component showing name and position
-  const CustomResourceHeader = ({ resource }: { resource: StaffMember }) => {
-    return (
-      <div className="flex flex-col items-center justify-center py-1">
-        <span className="font-semibold text-sm">{resource.name}</span>
-        {resource.position && (
-          <span className="text-xs opacity-80 font-normal">
-            {resource.position}
-          </span>
-        )}
-      </div>
-    );
-  };
-
-  // Fetch appointments/tickets
-  const fetchAppointments = async () => {
-    try {
-      // Fetch all tickets without pagination for calendar view
-      const res = await fetch("/api/tickets?pageSize=1000");
-      if (res.ok) {
-        const json = await res.json();
-        console.log("Tickets API response:", json);
-
-        const ticketsData = json?.data?.data || json?.data || [];
-
-        if (ticketsData.length > 0) {
-          // Map tickets to calendar events
-          const calendarEvents = ticketsData.map(
-            (ticket: {
-              id: string;
-              clientId: string;
-              client?: { name: string };
-              items?: Array<{
-                serviceId?: string;
-                service?: { name: string };
-                product?: { name: string };
-              }>;
-              notes?: string;
-              status: string;
-              createdAt: string;
-              startTime?: string;
-              endTime?: string;
-              staffId: string;
-            }) => {
-              const itemName =
-                ticket.items?.[0]?.service?.name ||
-                ticket.items?.[0]?.product?.name ||
-                "Item";
-
-              // Use startTime/endTime if available, otherwise fallback to createdAt
-              const start = ticket.startTime
-                ? new Date(ticket.startTime)
-                : new Date(ticket.createdAt);
-              const end = ticket.endTime
-                ? new Date(ticket.endTime)
-                : new Date(start.getTime() + 60 * 60 * 1000); // Default 1 hour if no endTime
-
-              return {
-                id: ticket.id,
-                title: `${ticket.client?.name || "Client"} - ${itemName}`,
-                start,
-                end,
-                resourceId: ticket.staffId,
-                ticketData: {
-                  clientId: ticket.clientId,
-                  clientName: ticket.client?.name || "Unknown Client",
-                  serviceId: ticket.items?.[0]?.serviceId,
-                  notes: ticket.notes || "",
-                  status: ticket.status,
-                },
-              };
-            }
-          );
-          console.log("Mapped calendar events:", calendarEvents);
-          setEvents(calendarEvents);
-        } else {
-          console.log("No tickets found, setting empty events");
-          setEvents([]);
-        }
-      } else {
-        console.error("Failed to fetch tickets:", res.status);
-      }
-    } catch (error) {
-      console.error("Failed to fetch appointments:", error);
-    }
-  };
-
-  const handleAppointmentSuccess = () => {
-    console.log("Appointment created, refreshing calendar...");
-    setIsAppointmentDialogOpen(false);
-    // Delay to ensure dialog closes and backend processes
-    setTimeout(() => {
-      fetchAppointments();
-    }, 1000);
-  };
-
-  // Check for time conflicts
-  const checkTimeConflict = useCallback(
-    (
-      proposedStart: Date,
-      proposedEnd: Date,
-      staffId: string | number | undefined,
-      excludeEventId?: string
-    ): boolean => {
-      return events.some((event) => {
-        // Skip the event being moved/resized
-        if (excludeEventId && event.id === excludeEventId) {
-          return false;
-        }
-
-        // Only check events for the same staff member
-        if (event.resourceId !== staffId?.toString()) {
-          return false;
-        }
-
-        // Check for overlap
-        // Two time ranges overlap if: start1 < end2 AND start2 < end1
-        const overlaps = proposedStart < event.end && proposedEnd > event.start;
-
-        return overlaps;
-      });
-    },
-    [events]
-  );
-
-  // Handle event drag to new time
-  const onEventDrop = useCallback(
-    async (data: {
-      event: CalendarEvent;
-      start: string | Date;
-      end: string | Date;
-      resourceId?: string | number;
-      isAllDay?: boolean;
-    }) => {
-      const proposedStart = new Date(data.start);
-      const proposedEnd = new Date(data.end);
-      const targetStaffId = data.resourceId || data.event.resourceId;
-
-      // Check for time conflicts
-      const hasConflict = checkTimeConflict(
-        proposedStart,
-        proposedEnd,
-        targetStaffId,
-        data.event.id
-      );
-
-      if (hasConflict) {
-        toast.error(t("timeConflictError"));
-        return; // Don't update if there's a conflict
-      }
-
-      // Optimistically update UI
-      const updatedEvents = events.map((existingEvent) => {
-        if (existingEvent.id === data.event.id) {
-          return {
-            ...existingEvent,
-            start: proposedStart,
-            end: proposedEnd,
-            resourceId: targetStaffId?.toString() || existingEvent.resourceId,
-          };
-        }
-        return existingEvent;
-      });
-      setEvents(updatedEvents);
-
-      // Sync with backend
-      try {
-        const response = await fetch(`/api/tickets`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: data.event.id,
-            startTime: proposedStart.toISOString(),
-            endTime: proposedEnd.toISOString(),
-            staffId: targetStaffId,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update event");
-        }
-
-        toast.success("Event moved successfully");
-      } catch (error) {
-        console.error("Failed to update event:", error);
-        toast.error("Failed to update event");
-        // Revert optimistic update
-        setEvents(events);
-      }
-    },
-    [events, checkTimeConflict, t]
-  );
+  // Use custom hook for all calendar logic
+  const {
+    currentDate,
+    view,
+    staff,
+    events,
+    loading,
+    isUserDialogOpen,
+    isAppointmentDialogOpen,
+    selectedSlot,
+    selectedEventData,
+    deleteConfirmEvent,
+    setIsUserDialogOpen,
+    setDeleteConfirmEvent,
+    handleNavigate,
+    handleViewChange,
+    handleSelectSlot,
+    handleSelectEvent,
+    handleDeleteEvent,
+    handleAppointmentSuccess,
+    handleAppointmentDialogClose,
+    onEventDrop,
+    fetchStaff,
+  } = useAppointmentCalendar();
 
   const locale = i18n.language === "es" ? "es-ES" : "en-US";
 
@@ -547,13 +244,7 @@ export function AppointmentCalendar() {
 
       <AppointmentFormDialog
         open={isAppointmentDialogOpen}
-        onOpenChange={(open) => {
-          setIsAppointmentDialogOpen(open);
-          if (!open) {
-            setSelectedSlot(null);
-            setSelectedEventData(null);
-          }
-        }}
+        onOpenChange={handleAppointmentDialogClose}
         onSuccess={handleAppointmentSuccess}
         initialSlot={
           selectedSlot
