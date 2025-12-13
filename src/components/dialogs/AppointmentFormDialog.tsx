@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
@@ -53,6 +53,22 @@ export function AppointmentFormDialog({
       : "09:00"
   );
 
+  // Update date and time when initialSlot changes (when clicking a calendar event)
+  useEffect(() => {
+    if (initialSlot?.start) {
+      setSelectedDate(initialSlot.start);
+      setSelectedTime(
+        `${initialSlot.start
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${initialSlot.start
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`
+      );
+    }
+  }, [initialSlot]);
+
   // Use custom hook for all business logic
   const {
     services,
@@ -82,7 +98,12 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 [&>button]:hidden">
+        {/* Hidden DialogTitle for accessibility */}
+        <DialogTitle className="sr-only">
+          {initialData ? t("editAppointment") : t("createAppointment")}
+        </DialogTitle>
+
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto">
             {error && (
@@ -110,11 +131,11 @@ export function AppointmentFormDialog({
                 <div className="flex-1">
                   {/* Title with Close Button */}
                   <div className="flex items-center justify-between border-b p-4">
-                    <DialogTitle className="text-2xl text-gray-500">
+                    <h2 className="text-2xl font-semibold">
                       {initialData
                         ? t("editAppointment")
                         : t("createAppointment")}
-                    </DialogTitle>
+                    </h2>
                     {/* Date and Time Pickers */}
                     <div className="flex items-center gap-3">
                       <DatePicker
