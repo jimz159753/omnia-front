@@ -9,7 +9,7 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
-import { AppointmentTicketTable, type NewTicketItem } from "./appointment/AppointmentTicketTable";
+import { AppointmentTicketTable } from "./appointment/AppointmentTicketTable";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -52,9 +52,6 @@ export function AppointmentFormDialog({
           .padStart(2, "0")}`
       : "09:00"
   );
-
-  // State for new items added through the table
-  const [newTicketItems, setNewTicketItems] = useState<NewTicketItem[]>([]);
 
   // Update date and time when initialSlot changes (when clicking a calendar event)
   useEffect(() => {
@@ -165,10 +162,9 @@ export function AppointmentFormDialog({
                         );
                         // TODO: Implement discount update API call
                       }}
-                      onAddService={(data) => {
-                        console.log("Add service:", data);
-                        // Service is already added to the table locally
-                        // Will be saved when clicking "Guardar Cita"
+                      onAddService={() => {
+                        console.log("Add service");
+                        // TODO: Implement add service
                       }}
                       onAddProduct={() => {
                         console.log("Add product");
@@ -182,17 +178,11 @@ export function AppointmentFormDialog({
                         console.log("Add tip");
                         // TODO: Implement add tip
                       }}
-                      onNewItemsChange={(items) => {
-                        setNewTicketItems(items);
-                        console.log("New items updated:", items);
-                      }}
                       includeNotes={includeNotes}
                       setIncludeNotes={setIncludeNotes}
                       control={control}
                       register={register}
                       errors={errors}
-                      users={users}
-                      services={services}
                     />
                   ) : (
                     <AppointmentDetailsSection
