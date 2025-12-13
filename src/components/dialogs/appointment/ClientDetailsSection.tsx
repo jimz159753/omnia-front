@@ -15,7 +15,7 @@ import type {
   AppointmentFormValues,
 } from "@/hooks/useAppointmentDetails";
 import { FormActions } from "./FormActions";
-import { FiX } from "react-icons/fi";
+import { FiX, FiTrash2 } from "react-icons/fi";
 
 interface TicketItem {
   id: string;
@@ -38,6 +38,8 @@ interface ClientDetailsSectionProps {
   onCancel: () => void;
   ticketItems?: TicketItem[];
   discounts?: Record<string, number>;
+  ticketId?: string;
+  onDelete?: () => void;
 }
 
 /**
@@ -58,6 +60,8 @@ export const ClientDetailsSection = ({
   onCancel,
   ticketItems = [],
   discounts = {},
+  ticketId,
+  onDelete,
 }: ClientDetailsSectionProps) => {
   const { t } = useTranslation("common");
 
@@ -95,7 +99,18 @@ export const ClientDetailsSection = ({
   return (
     <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gray-50">
       <div className="flex-1 overflow-y-auto">
-        <div className="flex justify-end m-6 ml-auto">
+        <div className="flex justify-between p-6">
+          {/* Show trash icon only if there's a ticket (editing mode) */}
+          {ticketId && onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="rounded-sm opacity-70 text-gray-500 hover:bg-gray-100 p-2 rounded-md  transition-opacity hover:opacity-100 hover:text-red-600 focus:outline-none"
+              title="Delete ticket"
+            >
+              <FiTrash2 className="h-5 w-5" />
+            </button>
+          )}
           <button
             type="button"
             onClick={onCancel}

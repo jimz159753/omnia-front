@@ -63,6 +63,42 @@ export function AppointmentFormDialog({
     Record<string, number>
   >({});
 
+  // Handle ticket deletion
+  const handleDeleteTicket = async () => {
+    if (!initialData?.ticketId && !ticketData?.id) {
+      toast.error("No se puede eliminar: ticket no encontrado");
+      return;
+    }
+
+    const ticketIdToDelete = ticketData?.id || initialData?.ticketId;
+
+    // Confirm deletion
+    if (
+      !window.confirm(
+        "¿Estás seguro de que deseas eliminar este ticket? Esta acción no se puede deshacer."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/tickets?id=${ticketIdToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete ticket");
+      }
+
+      toast.success("Ticket eliminado correctamente");
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      toast.error("Error al eliminar el ticket");
+    }
+  };
+
   // Update date and time when initialSlot changes (when clicking a calendar event)
   useEffect(() => {
     if (initialSlot?.start) {
@@ -248,6 +284,8 @@ export function AppointmentFormDialog({
                     ...newTicketItems,
                   ]}
                   discounts={discountUpdates}
+                  ticketId={ticketData?.id || initialData?.ticketId}
+                  onDelete={handleDeleteTicket}
                 />
               </div>
             )}

@@ -208,8 +208,8 @@ export function AppointmentCalendar() {
               onEventDrop={onEventDrop}
               selectable
               resizable={false}
-              step={5}
-              timeslots={12}
+              step={15}
+              timeslots={4}
               min={new Date(2024, 0, 1, 8, 0, 0)}
               max={new Date(2024, 0, 1, 20, 0, 0)}
               defaultView="day"

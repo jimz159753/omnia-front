@@ -299,6 +299,13 @@ export const useAppointmentDetails = ({
       excludeTicketId?: string
     ): Promise<boolean> => {
       try {
+        console.log("Checking time conflict for:", {
+          staffId,
+          startTime,
+          endTime,
+          excludeTicketId,
+        });
+
         const response = await fetch("/api/tickets");
         if (!response.ok) {
           console.error("Failed to fetch tickets for conflict check");
@@ -307,6 +314,8 @@ export const useAppointmentDetails = ({
 
         const json = await response.json();
         const tickets = json?.data?.data || json?.data || [];
+
+        console.log("Fetched tickets for conflict check:", tickets.length);
 
         // Check for overlapping appointments with the same staff
         const hasConflict = tickets.some(
@@ -318,6 +327,7 @@ export const useAppointmentDetails = ({
           }) => {
             // Skip the ticket being edited
             if (excludeTicketId && ticket.id === excludeTicketId) {
+              console.log("Skipping ticket being edited:", ticket.id);
               return false;
             }
 
@@ -340,6 +350,7 @@ export const useAppointmentDetails = ({
 
             if (overlaps) {
               console.log("Time conflict detected:", {
+                ticketId: ticket.id,
                 existing: { start: existingStart, end: existingEnd },
                 proposed: { start: startTime, end: endTime },
               });
@@ -349,6 +360,7 @@ export const useAppointmentDetails = ({
           }
         );
 
+        console.log("Has conflict:", hasConflict);
         return hasConflict;
       } catch (error) {
         console.error("Error checking time conflict:", error);
@@ -544,11 +556,19 @@ export const useAppointmentDetails = ({
         console.log("Appointment details calculated:", appointmentDetails);
 
         // Check for time conflicts
+        console.log("About to check time conflict with:", {
+          staffId: values.staffId,
+          startTime: appointmentDetails.startTime,
+          endTime: appointmentDetails.endTime,
+          excludeTicketId: isEditing ? initialData?.ticketId : undefined,
+          ticketDataId: ticketData?.id,
+        });
+
         const hasConflict = await checkTimeConflict(
           values.staffId,
           appointmentDetails.startTime,
           appointmentDetails.endTime,
-          isEditing ? initialData?.ticketId : undefined
+          isEditing ? (ticketData?.id || initialData?.ticketId) : undefined
         );
 
         if (hasConflict) {
