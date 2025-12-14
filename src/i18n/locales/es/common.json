@@ -94,6 +94,8 @@
   "addNewDescription": "Elija el tipo de elemento que desea agregar",
   "eventDeleted": "Evento eliminado correctamente",
   "eventDeleteError": "Error al eliminar el evento",
+  "eventMovedSuccess": "Evento movido correctamente",
+  "eventMoveError": "Error al mover el evento",
   "deleteAppointment": "Eliminar Cita",
   "deleteAppointmentDescription": "¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer.",
   "timeConflictError": "Conflicto de horario: Este miembro del personal ya tiene una cita programada durante este horario.",

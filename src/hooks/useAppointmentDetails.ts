@@ -85,6 +85,7 @@ export interface TicketData {
     discount?: number;
     product?: { name: string; id: string } | null;
     service?: { name: string; id: string } | null;
+    type?: "product" | "service";
   }>;
   total: number;
 }
@@ -491,6 +492,7 @@ export const useAppointmentDetails = ({
                     id: itemId,
                     discount,
                     total: newTotal,
+                    type: item.type || (item.product ? "product" : "service"),
                   }),
                 });
 

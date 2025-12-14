@@ -39,9 +39,13 @@ export async function GET(request: NextRequest) {
               email: true,
             },
           },
-          items: {
+          products: {
             include: {
               product: true,
+            },
+          },
+          services: {
+            include: {
               service: true,
             },
           },
@@ -55,7 +59,37 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({ data: ticket });
+      // Transform the data to match the expected format
+      const transformedTicket = {
+        ...ticket,
+        items: [
+          ...ticket.products.map((tp) => ({
+            id: tp.id,
+            quantity: tp.quantity,
+            unitPrice: tp.unitPrice,
+            total: tp.total,
+            discount: tp.discount,
+            product: tp.product,
+            service: null,
+            type: "product" as const,
+          })),
+          ...ticket.services.map((ts) => ({
+            id: ts.id,
+            quantity: ts.quantity,
+            unitPrice: ts.unitPrice,
+            total: ts.total,
+            discount: ts.discount,
+            product: null,
+            service: ts.service,
+            type: "service" as const,
+          })),
+        ],
+      };
+
+      // Remove the products and services arrays
+      const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+
+      return NextResponse.json({ data: ticketWithoutArrays });
     }
 
     // Otherwise, fetch paginated list
@@ -83,7 +117,7 @@ export async function GET(request: NextRequest) {
               },
             },
             {
-            items: {
+            products: {
               some: {
               product: {
                 name: { contains: search, mode: "insensitive" as const },
@@ -92,7 +126,7 @@ export async function GET(request: NextRequest) {
               },
             },
             {
-            items: {
+            services: {
               some: {
               service: {
                 name: { contains: search, mode: "insensitive" as const },
@@ -159,9 +193,13 @@ export async function GET(request: NextRequest) {
             email: true,
           },
         },
-        items: {
+        products: {
           include: {
             product: true,
+          },
+        },
+        services: {
+          include: {
             service: true,
           },
         },
@@ -173,8 +211,37 @@ export async function GET(request: NextRequest) {
       take: pageSize,
     });
 
+    // Transform the data to match the expected format
+    const transformedTickets = tickets.map((ticket) => ({
+      ...ticket,
+      items: [
+        ...ticket.products.map((tp) => ({
+          id: tp.id,
+          quantity: tp.quantity,
+          unitPrice: tp.unitPrice,
+          total: tp.total,
+          discount: tp.discount,
+          product: tp.product,
+          service: null,
+          type: "product" as const,
+        })),
+        ...ticket.services.map((ts) => ({
+          id: ts.id,
+          quantity: ts.quantity,
+          unitPrice: ts.unitPrice,
+          total: ts.total,
+          discount: ts.discount,
+          product: null,
+          service: ts.service,
+          type: "service" as const,
+        })),
+      ],
+      products: undefined,
+      services: undefined,
+    }));
+
     return NextResponse.json({
-      data: tickets,
+      data: transformedTickets,
       pagination: {
         page,
         pageSize,
@@ -272,7 +339,22 @@ export async function POST(request: NextRequest) {
     let totalQuantity = 0;
     let computedTotal = 0;
     const productQuantityMap = new Map<string, number>();
-    const itemData = items.map((item) => {
+    const productItems: Array<{
+      productId: string;
+      quantity: number;
+      unitPrice: number;
+      total: number;
+      discount?: number;
+    }> = [];
+    const serviceItems: Array<{
+      serviceId: string;
+      quantity: number;
+      unitPrice: number;
+      total: number;
+      discount?: number;
+    }> = [];
+
+    items.forEach((item) => {
       const qty = Math.max(1, Number(item.quantity) || 1);
       totalQuantity += qty;
       const inferredUnit =
@@ -285,17 +367,26 @@ export async function POST(request: NextRequest) {
           ? Number(item.total)
           : (inferredUnit ?? 0) * qty;
       computedTotal += lineTotal;
+
       if (item.productId) {
         const prev = productQuantityMap.get(item.productId) || 0;
         productQuantityMap.set(item.productId, prev + qty);
+        productItems.push({
+          productId: item.productId,
+          quantity: qty,
+          unitPrice: inferredUnit ?? 0,
+          total: lineTotal,
+          discount: item.discount || 0,
+        });
+      } else if (item.serviceId) {
+        serviceItems.push({
+          serviceId: item.serviceId,
+          quantity: qty,
+          unitPrice: inferredUnit ?? 0,
+          total: lineTotal,
+          discount: item.discount || 0,
+        });
       }
-      return {
-        productId: item.productId || null,
-        serviceId: item.serviceId || null,
-        quantity: qty,
-        unitPrice: inferredUnit ?? 0,
-        total: lineTotal,
-      };
     });
 
     const ticketId = await generateUniqueTicketId();
@@ -350,9 +441,16 @@ export async function POST(request: NextRequest) {
           startTime: startTime ? new Date(startTime) : null,
           endTime: endTime ? new Date(endTime) : null,
           duration: durationInMinutes,
-          items: {
-            create: itemData,
-          },
+          ...(productItems.length > 0 && {
+            products: {
+              create: productItems,
+            },
+          }),
+          ...(serviceItems.length > 0 && {
+            services: {
+              create: serviceItems,
+            },
+          }),
         },
         include: {
           client: true,
@@ -363,9 +461,13 @@ export async function POST(request: NextRequest) {
               email: true,
             },
           },
-          items: {
+          products: {
             include: {
               product: true,
+            },
+          },
+          services: {
+            include: {
               service: true,
             },
           },
@@ -373,8 +475,37 @@ export async function POST(request: NextRequest) {
       });
     });
 
+    // Transform the response to match expected format
+    const transformedTicket = {
+      ...ticket,
+      items: [
+        ...ticket.products.map((tp) => ({
+          id: tp.id,
+          quantity: tp.quantity,
+          unitPrice: tp.unitPrice,
+          total: tp.total,
+          discount: tp.discount,
+          product: tp.product,
+          service: null,
+          type: "product" as const,
+        })),
+        ...ticket.services.map((ts) => ({
+          id: ts.id,
+          quantity: ts.quantity,
+          unitPrice: ts.unitPrice,
+          total: ts.total,
+          discount: ts.discount,
+          product: null,
+          service: ts.service,
+          type: "service" as const,
+        })),
+      ],
+    };
+
+    const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+
     return NextResponse.json(
-      { data: ticket, message: "Ticket created successfully" },
+      { data: ticketWithoutArrays, message: "Ticket created successfully" },
       { status: 201 }
     );
   } catch (error) {
@@ -478,23 +609,37 @@ export async function PUT(request: NextRequest) {
 
     // Handle items update if provided
     if (items && Array.isArray(items)) {
-      // Delete existing items and create new ones
-      await prisma.ticketItem.deleteMany({
-        where: { ticketId: id },
-      });
+      // Delete existing items from both tables
+      await Promise.all([
+        prisma.ticketProduct.deleteMany({ where: { ticketId: id } }),
+        prisma.ticketService.deleteMany({ where: { ticketId: id } }),
+      ]);
 
       // Create new items
       for (const item of items) {
-        await prisma.ticketItem.create({
-          data: {
-            ticketId: id,
-            productId: item.productId || null,
-            serviceId: item.serviceId || null,
-            quantity: item.quantity || 1,
-            unitPrice: item.unitPrice || 0,
-            total: item.total || 0,
-          },
-        });
+        if (item.productId) {
+          await prisma.ticketProduct.create({
+            data: {
+              ticketId: id,
+              productId: item.productId,
+              quantity: item.quantity || 1,
+              unitPrice: item.unitPrice || 0,
+              total: item.total || 0,
+              discount: item.discount || 0,
+            },
+          });
+        } else if (item.serviceId) {
+          await prisma.ticketService.create({
+            data: {
+              ticketId: id,
+              serviceId: item.serviceId,
+              quantity: item.quantity || 1,
+              unitPrice: item.unitPrice || 0,
+              total: item.total || 0,
+              discount: item.discount || 0,
+            },
+          });
+        }
       }
     }
 
@@ -510,17 +655,50 @@ export async function PUT(request: NextRequest) {
             email: true,
           },
         },
-        items: {
+        products: {
           include: {
             product: true,
+          },
+        },
+        services: {
+          include: {
             service: true,
           },
         },
       },
     });
 
+    // Transform the response to match expected format
+    const transformedTicket = {
+      ...updatedTicket,
+      items: [
+        ...updatedTicket.products.map((tp) => ({
+          id: tp.id,
+          quantity: tp.quantity,
+          unitPrice: tp.unitPrice,
+          total: tp.total,
+          discount: tp.discount,
+          product: tp.product,
+          service: null,
+          type: "product" as const,
+        })),
+        ...updatedTicket.services.map((ts) => ({
+          id: ts.id,
+          quantity: ts.quantity,
+          unitPrice: ts.unitPrice,
+          total: ts.total,
+          discount: ts.discount,
+          product: null,
+          service: ts.service,
+          type: "service" as const,
+        })),
+      ],
+    };
+
+    const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+
     return NextResponse.json(
-      { data: updatedTicket, message: "Ticket updated successfully" },
+      { data: ticketWithoutArrays, message: "Ticket updated successfully" },
       { status: 200 }
     );
   } catch (error) {
@@ -549,10 +727,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // First delete related ticket items
-    await prisma.ticketItem.deleteMany({
-      where: { ticketId: id },
-    });
+    // First delete related ticket products and services
+    await Promise.all([
+      prisma.ticketProduct.deleteMany({ where: { ticketId: id } }),
+      prisma.ticketService.deleteMany({ where: { ticketId: id } }),
+    ]);
 
     // Then delete the ticket
     await prisma.ticket.delete({

@@ -94,6 +94,8 @@
   "addNewDescription": "Choose the type of item you want to add",
   "eventDeleted": "Event deleted successfully",
   "eventDeleteError": "Failed to delete event",
+  "eventMovedSuccess": "Event moved successfully",
+  "eventMoveError": "Failed to move event",
   "deleteAppointment": "Delete Appointment",
   "deleteAppointmentDescription": "Are you sure you want to delete this appointment? This action cannot be undone.",
   "timeConflictError": "Time conflict: This staff member already has an appointment scheduled during this time slot.",

@@ -184,10 +184,12 @@ export function AppointmentFormDialog({
                       onStatusChange={(status) => {
                         setSelectedStatus(status);
                       }}
-                      onDeleteItem={async (itemId) => {
+                      onDeleteItem={async (itemId, itemType) => {
                         try {
                           const response = await fetch(
-                            `/api/ticket-items?id=${itemId}`,
+                            `/api/ticket-items?id=${itemId}${
+                              itemType ? `&type=${itemType}` : ""
+                            }`,
                             {
                               method: "DELETE",
                             }

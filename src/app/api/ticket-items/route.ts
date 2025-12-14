@@ -22,30 +22,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the ticket item
-    const ticketItem = await prisma.ticketItem.create({
-      data: {
-        ticketId,
-        productId: productId || null,
-        serviceId: serviceId || null,
-        quantity: quantity || 1,
-        unitPrice: unitPrice || 0,
-        total: total || unitPrice || 0,
-        discount: discount || 0,
-      },
-      include: {
-        product: true,
-        service: true,
-      },
-    });
+    let ticketItem;
+
+    // Create either a TicketProduct or TicketService
+    if (productId) {
+      ticketItem = await prisma.ticketProduct.create({
+        data: {
+          ticketId,
+          productId,
+          quantity: quantity || 1,
+          unitPrice: unitPrice || 0,
+          total: total || unitPrice || 0,
+          discount: discount || 0,
+        },
+        include: {
+          product: true,
+        },
+      });
+    } else {
+      ticketItem = await prisma.ticketService.create({
+        data: {
+          ticketId,
+          serviceId: serviceId!,
+          quantity: quantity || 1,
+          unitPrice: unitPrice || 0,
+          total: total || unitPrice || 0,
+          discount: discount || 0,
+        },
+        include: {
+          service: true,
+        },
+      });
+    }
 
     // Update the ticket total
-    const ticketItems = await prisma.ticketItem.findMany({
-      where: { ticketId },
-    });
+    const [ticketProducts, ticketServices] = await Promise.all([
+      prisma.ticketProduct.findMany({ where: { ticketId } }),
+      prisma.ticketService.findMany({ where: { ticketId } }),
+    ]);
 
-    const ticketTotal = ticketItems.reduce((sum, item) => sum + item.total, 0);
-    const ticketQuantity = ticketItems.reduce((sum, item) => sum + item.quantity, 0);
+    const ticketTotal =
+      ticketProducts.reduce((sum, item) => sum + item.total, 0) +
+      ticketServices.reduce((sum, item) => sum + item.total, 0);
+
+    const ticketQuantity =
+      ticketProducts.reduce((sum, item) => sum + item.quantity, 0) +
+      ticketServices.reduce((sum, item) => sum + item.quantity, 0);
 
     await prisma.ticket.update({
       where: { id: ticketId },
@@ -77,8 +99,9 @@ export async function DELETE(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
+    const type = searchParams.get("type"); // 'product' or 'service'
 
-    console.log("DELETE /api/ticket-items - Deleting ticket item:", id);
+    console.log("DELETE /api/ticket-items - Deleting ticket item:", id, type);
 
     if (!id) {
       return NextResponse.json(
@@ -87,33 +110,79 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Get the ticket item to find the ticketId
-    const ticketItem = await prisma.ticketItem.findUnique({
-      where: { id },
-    });
+    let ticketId: string;
 
-    if (!ticketItem) {
-      return NextResponse.json(
-        { error: "Ticket item not found" },
-        { status: 404 }
-      );
+    // Try to find and delete from both tables
+    if (type === "product") {
+      const ticketProduct = await prisma.ticketProduct.findUnique({
+        where: { id },
+      });
+
+      if (!ticketProduct) {
+        return NextResponse.json(
+          { error: "Ticket item not found" },
+          { status: 404 }
+        );
+      }
+
+      ticketId = ticketProduct.ticketId;
+      await prisma.ticketProduct.delete({ where: { id } });
+    } else if (type === "service") {
+      const ticketService = await prisma.ticketService.findUnique({
+        where: { id },
+      });
+
+      if (!ticketService) {
+        return NextResponse.json(
+          { error: "Ticket item not found" },
+          { status: 404 }
+        );
+      }
+
+      ticketId = ticketService.ticketId;
+      await prisma.ticketService.delete({ where: { id } });
+    } else {
+      // Try both if type is not specified
+      const ticketProduct = await prisma.ticketProduct.findUnique({
+        where: { id },
+      });
+
+      if (ticketProduct) {
+        ticketId = ticketProduct.ticketId;
+        await prisma.ticketProduct.delete({ where: { id } });
+      } else {
+        const ticketService = await prisma.ticketService.findUnique({
+          where: { id },
+        });
+
+        if (!ticketService) {
+          return NextResponse.json(
+            { error: "Ticket item not found" },
+            { status: 404 }
+          );
+        }
+
+        ticketId = ticketService.ticketId;
+        await prisma.ticketService.delete({ where: { id } });
+      }
     }
 
-    // Delete the ticket item
-    await prisma.ticketItem.delete({
-      where: { id },
-    });
-
     // Update the ticket total
-    const ticketItems = await prisma.ticketItem.findMany({
-      where: { ticketId: ticketItem.ticketId },
-    });
+    const [ticketProducts, ticketServices] = await Promise.all([
+      prisma.ticketProduct.findMany({ where: { ticketId } }),
+      prisma.ticketService.findMany({ where: { ticketId } }),
+    ]);
 
-    const ticketTotal = ticketItems.reduce((sum, item) => sum + item.total, 0);
-    const ticketQuantity = ticketItems.reduce((sum, item) => sum + item.quantity, 0);
+    const ticketTotal =
+      ticketProducts.reduce((sum, item) => sum + item.total, 0) +
+      ticketServices.reduce((sum, item) => sum + item.total, 0);
+
+    const ticketQuantity =
+      ticketProducts.reduce((sum, item) => sum + item.quantity, 0) +
+      ticketServices.reduce((sum, item) => sum + item.quantity, 0);
 
     await prisma.ticket.update({
-      where: { id: ticketItem.ticketId },
+      where: { id: ticketId },
       data: {
         total: ticketTotal,
         quantity: ticketQuantity,
@@ -141,7 +210,7 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, quantity, unitPrice, total, discount } = body;
+    const { id, quantity, unitPrice, total, discount, type } = body;
 
     console.log("PUT /api/ticket-items - Updating ticket item:", id, body);
 
@@ -149,18 +218,6 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: "Ticket item ID is required" },
         { status: 400 }
-      );
-    }
-
-    // Get the current ticket item
-    const ticketItem = await prisma.ticketItem.findUnique({
-      where: { id },
-    });
-
-    if (!ticketItem) {
-      return NextResponse.json(
-        { error: "Ticket item not found" },
-        { status: 404 }
       );
     }
 
@@ -183,31 +240,138 @@ export async function PUT(request: NextRequest) {
     }
     if (discount !== undefined) {
       updateData.discount = discount;
-      // Recalculate total based on discount if unitPrice is available
-      const finalUnitPrice = unitPrice !== undefined ? unitPrice : ticketItem.unitPrice;
-      const discountAmount = (finalUnitPrice * discount) / 100;
-      updateData.total = finalUnitPrice - discountAmount;
     }
 
-    // Update the ticket item
-    const updatedTicketItem = await prisma.ticketItem.update({
-      where: { id },
-      data: updateData,
-      include: {
-        product: true,
-        service: true,
-      },
-    });
+    let updatedTicketItem;
+    let ticketId: string;
+
+    // Try to find and update from both tables
+    if (type === "product") {
+      const ticketProduct = await prisma.ticketProduct.findUnique({
+        where: { id },
+      });
+
+      if (!ticketProduct) {
+        return NextResponse.json(
+          { error: "Ticket item not found" },
+          { status: 404 }
+        );
+      }
+
+      ticketId = ticketProduct.ticketId;
+
+      // Recalculate total based on discount if needed
+      if (discount !== undefined) {
+        const finalUnitPrice =
+          unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
+        const discountAmount = (finalUnitPrice * discount) / 100;
+        updateData.total = finalUnitPrice - discountAmount;
+      }
+
+      updatedTicketItem = await prisma.ticketProduct.update({
+        where: { id },
+        data: updateData,
+        include: {
+          product: true,
+        },
+      });
+    } else if (type === "service") {
+      const ticketService = await prisma.ticketService.findUnique({
+        where: { id },
+      });
+
+      if (!ticketService) {
+        return NextResponse.json(
+          { error: "Ticket item not found" },
+          { status: 404 }
+        );
+      }
+
+      ticketId = ticketService.ticketId;
+
+      // Recalculate total based on discount if needed
+      if (discount !== undefined) {
+        const finalUnitPrice =
+          unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
+        const discountAmount = (finalUnitPrice * discount) / 100;
+        updateData.total = finalUnitPrice - discountAmount;
+      }
+
+      updatedTicketItem = await prisma.ticketService.update({
+        where: { id },
+        data: updateData,
+        include: {
+          service: true,
+        },
+      });
+    } else {
+      // Try both if type is not specified
+      const ticketProduct = await prisma.ticketProduct.findUnique({
+        where: { id },
+      });
+
+      if (ticketProduct) {
+        ticketId = ticketProduct.ticketId;
+
+        // Recalculate total based on discount if needed
+        if (discount !== undefined) {
+          const finalUnitPrice =
+            unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
+          const discountAmount = (finalUnitPrice * discount) / 100;
+          updateData.total = finalUnitPrice - discountAmount;
+        }
+
+        updatedTicketItem = await prisma.ticketProduct.update({
+          where: { id },
+          data: updateData,
+          include: {
+            product: true,
+          },
+        });
+      } else {
+        const ticketService = await prisma.ticketService.findUnique({
+          where: { id },
+        });
+
+        if (!ticketService) {
+          return NextResponse.json(
+            { error: "Ticket item not found" },
+            { status: 404 }
+          );
+        }
+
+        ticketId = ticketService.ticketId;
+
+        // Recalculate total based on discount if needed
+        if (discount !== undefined) {
+          const finalUnitPrice =
+            unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
+          const discountAmount = (finalUnitPrice * discount) / 100;
+          updateData.total = finalUnitPrice - discountAmount;
+        }
+
+        updatedTicketItem = await prisma.ticketService.update({
+          where: { id },
+          data: updateData,
+          include: {
+            service: true,
+          },
+        });
+      }
+    }
 
     // Update the ticket total
-    const ticketItems = await prisma.ticketItem.findMany({
-      where: { ticketId: ticketItem.ticketId },
-    });
+    const [ticketProducts, ticketServices] = await Promise.all([
+      prisma.ticketProduct.findMany({ where: { ticketId } }),
+      prisma.ticketService.findMany({ where: { ticketId } }),
+    ]);
 
-    const ticketTotal = ticketItems.reduce((sum, item) => sum + item.total, 0);
+    const ticketTotal =
+      ticketProducts.reduce((sum, item) => sum + item.total, 0) +
+      ticketServices.reduce((sum, item) => sum + item.total, 0);
 
     await prisma.ticket.update({
-      where: { id: ticketItem.ticketId },
+      where: { id: ticketId },
       data: {
         total: ticketTotal,
       },
@@ -230,4 +394,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

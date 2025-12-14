@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { View } from "react-big-calendar";
 import { toast } from "sonner";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Re-export utility function from utils
 export { formatDateWithCapitalization } from "@/lib/utils";
@@ -46,6 +47,8 @@ interface SelectedEventData {
  * Handles data fetching, event management, drag and drop, and conflicts
  */
 export const useAppointmentCalendar = () => {
+  const { t } = useTranslation("common");
+  
   // State
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("day");
@@ -275,9 +278,7 @@ export const useAppointmentCalendar = () => {
       );
 
       if (hasConflict) {
-        toast.error(
-          "Time conflict: This staff member already has an appointment during this time slot."
-        );
+        toast.error(t("timeConflictError"));
         return;
       }
 
@@ -312,14 +313,14 @@ export const useAppointmentCalendar = () => {
           throw new Error("Failed to update event");
         }
 
-        toast.success("Event moved successfully");
+        toast.success(t("eventMovedSuccess"));
       } catch (error) {
         console.error("Failed to update event:", error);
-        toast.error("Failed to update event");
+        toast.error(t("eventMoveError"));
         setEvents(events);
       }
     },
-    [events, checkTimeConflict]
+    [events, checkTimeConflict, t]
   );
 
   /**
@@ -336,14 +337,14 @@ export const useAppointmentCalendar = () => {
       }
 
       setEvents((prev) => prev.filter((e) => e.id !== event.id));
-      toast.success("Event deleted successfully");
+      toast.success(t("eventDeleted"));
     } catch (error) {
       console.error("Failed to delete event:", error);
-      toast.error("Failed to delete event");
+      toast.error(t("eventDeleteError"));
     } finally {
       setDeleteConfirmEvent(null);
     }
-  }, []);
+  }, [t]);
 
   /**
    * Handle appointment dialog success

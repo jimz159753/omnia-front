@@ -30,22 +30,23 @@ model User {
 }
 
 model Ticket {
-  id        String       @id @default(uuid())
+  id        String          @id @default(uuid())
   clientId  String
-  client    Client       @relation(fields: [clientId], references: [id])
-  staffId   String       @map("sellerId")
-  staff     User         @relation(fields: [staffId], references: [id])
-  total     Float        @default(0)
-  quantity  Int          @default(1)
+  client    Client          @relation(fields: [clientId], references: [id])
+  staffId   String          @map("sellerId")
+  staff     User            @relation(fields: [staffId], references: [id])
+  total     Float           @default(0)
+  quantity  Int             @default(1)
   status    String
-  notes     String       @default("")
-  discount  Float        @default(0) // Discount percentage (0-100)
+  notes     String          @default("")
+  discount  Float           @default(0) // Discount percentage (0-100)
   startTime DateTime?
   endTime   DateTime?
-  duration  Int?         @map("duration") // Duration in minutes
-  items     TicketItem[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  duration  Int?            @map("duration") // Duration in minutes
+  products  TicketProduct[]
+  services  TicketService[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 }
 
 model Client {
@@ -94,56 +95,74 @@ model Provider {
 }
 
 model Product {
-  id            String       @id @default(uuid())
+  id            String          @id @default(uuid())
   image         String
   sku           String
   name          String
   description   String
   price         Float
   categoryId    String?
-  category      Category?    @relation("ProductCategory", fields: [categoryId], references: [id])
+  category      Category?       @relation("ProductCategory", fields: [categoryId], references: [id])
   subCategoryId String?
-  subCategory   SubCategory? @relation("ProductSubCategory", fields: [subCategoryId], references: [id])
+  subCategory   SubCategory?    @relation("ProductSubCategory", fields: [subCategoryId], references: [id])
   stock         Int
   cost          Float
   providerId    String
-  provider      Provider     @relation(fields: [providerId], references: [id])
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  ticketItems   TicketItem[]
+  provider      Provider        @relation(fields: [providerId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  tickets       TicketProduct[]
 }
 
 model Service {
-  id            String       @id @default(uuid())
+  id            String          @id @default(uuid())
   image         String
   name          String
   categoryId    String?
-  category      Category?    @relation("ServiceCategory", fields: [categoryId], references: [id])
+  category      Category?       @relation("ServiceCategory", fields: [categoryId], references: [id])
   subCategoryId String?
-  subCategory   SubCategory? @relation("ServiceSubCategory", fields: [subCategoryId], references: [id])
+  subCategory   SubCategory?    @relation("ServiceSubCategory", fields: [subCategoryId], references: [id])
   duration      Int
   description   String
   price         Float
   commission    Float
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  ticketItems   TicketItem[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  tickets       TicketService[]
 }
 
-model TicketItem {
+model TicketProduct {
   id        String   @id @default(uuid())
   ticketId  String
-  ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  productId String?
-  product   Product? @relation(fields: [productId], references: [id])
-  serviceId String?
-  service   Service? @relation(fields: [serviceId], references: [id])
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int      @default(1)
   unitPrice Float    @default(0)
   discount  Float    @default(0) // Discount percentage (0-100)
   total     Float    @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([productId])
+}
+
+model TicketService {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  quantity  Int      @default(1)
+  unitPrice Float    @default(0)
+  discount  Float    @default(0) // Discount percentage (0-100)
+  total     Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([serviceId])
 }
 
 model Business {

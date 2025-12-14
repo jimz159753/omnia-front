@@ -16,6 +16,7 @@ export type {
   ClientFilter,
 } from "@/types/clients";
 import { getTicketColumns } from "@/app/(dashboard)/dashboard/clients/ticketColumns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface PaginationInfo {
   page: number;
@@ -58,6 +59,7 @@ export type UseClientsPageReturn = {
 };
 
 export function useClientsPage(): UseClientsPageReturn {
+  const { i18n } = useTranslation();
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
@@ -119,7 +121,7 @@ export function useClientsPage(): UseClientsPageReturn {
 
   const ticketColumns: ColumnDef<TicketRow>[] = useMemo(
     () => getTicketColumns(),
-    []
+    [i18n.language]
   );
 
   const allFilteredTickets = useMemo(() => {

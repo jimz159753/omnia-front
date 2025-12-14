@@ -19,10 +19,14 @@ export async function GET(request: NextRequest) {
       include: {
         tickets: {
           include: {
-            items: {
+            products: {
               include: {
-                product: { select: { name: true } },
-                service: { select: { name: true } },
+                product: { select: { name: true, id: true } },
+              },
+            },
+            services: {
+              include: {
+                service: { select: { name: true, id: true } },
               },
             },
             staff: {
@@ -38,7 +42,40 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(clients);
+
+    // Transform the data to match the expected format (with items array)
+    const transformedClients = clients.map((client) => ({
+      ...client,
+      tickets: client.tickets.map((ticket) => ({
+        ...ticket,
+        items: [
+          ...ticket.products.map((tp) => ({
+            id: tp.id,
+            quantity: tp.quantity,
+            unitPrice: tp.unitPrice,
+            total: tp.total,
+            discount: tp.discount,
+            product: tp.product,
+            service: null,
+            type: "product" as const,
+          })),
+          ...ticket.services.map((ts) => ({
+            id: ts.id,
+            quantity: ts.quantity,
+            unitPrice: ts.unitPrice,
+            total: ts.total,
+            discount: ts.discount,
+            product: null,
+            service: ts.service,
+            type: "service" as const,
+          })),
+        ],
+        products: undefined,
+        services: undefined,
+      })),
+    }));
+
+    return NextResponse.json(transformedClients);
   } catch (error) {
     console.error("Error fetching clients:", error);
     return NextResponse.json(

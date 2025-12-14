@@ -24,6 +24,7 @@ interface TicketItem {
   productId?: string;
   serviceId?: string;
   isNew?: boolean;
+  type?: "product" | "service";
 }
 
 interface NewTicketItem extends TicketItem {
@@ -52,7 +53,7 @@ interface AppointmentTicketTableProps {
   ticketData?: TicketData | null;
   selectedStatus?: string;
   onStatusChange?: (status: string) => void;
-  onDeleteItem?: (itemId: string) => Promise<void>;
+  onDeleteItem?: (itemId: string, itemType?: "product" | "service") => Promise<void>;
   onDiscountChange?: (itemId: string, discount: number) => void;
   onAddProduct?: (data: {
     productId: string;
@@ -241,8 +242,13 @@ export function AppointmentTicketTable({
       setNewItems((prev) => prev.filter((item) => item.id !== itemId));
       toast.success("Producto eliminado de la tabla");
     } else {
-      // For existing items, call parent callback (which may close modal after API call)
-      await onDeleteItem?.(itemId);
+      // For existing items, find the item to get its type
+      const allItems = [...(ticketData?.items || []), ...newItems];
+      const item = allItems.find((i) => i.id === itemId);
+      const itemType = item?.type || (item?.product ? "product" : "service");
+      
+      // Call parent callback (which may close modal after API call)
+      await onDeleteItem?.(itemId, itemType);
     }
   };
 
