@@ -96,5 +96,11 @@
   "eventDeleteError": "Error al eliminar el evento",
   "deleteAppointment": "Eliminar Cita",
   "deleteAppointmentDescription": "¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer.",
-  "timeConflictError": "Conflicto de horario: Este miembro del personal ya tiene una cita programada durante este horario."
+  "timeConflictError": "Conflicto de horario: Este miembro del personal ya tiene una cita programada durante este horario.",
+  "appointmentUpdatedSuccess": "Cita actualizada correctamente",
+  "appointmentCreatedSuccess": "Cita creada correctamente",
+  "formDataLoadError": "Error al cargar los datos del formulario",
+  "ticketDataLoadError": "Error al cargar los datos del ticket",
+  "appointmentUpdateError": "Error al actualizar la cita",
+  "appointmentCreateError": "Error al crear la cita"
 }

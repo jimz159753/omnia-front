@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Types
 export interface Service {
@@ -102,6 +104,8 @@ export const useAppointmentDetails = ({
   newItems = [],
   discountUpdates = {},
 }: UseAppointmentDetailsProps) => {
+  const { t } = useTranslation("common");
+
   // State
   const [services, setServices] = useState<Service[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -166,42 +170,49 @@ export const useAppointmentDetails = ({
       );
     } catch (err) {
       console.error("Failed to load form data:", err);
-      setError("Failed to load form data");
+      const errorMessage = t("formDataLoadError");
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   /**
    * Fetch ticket details for editing
    */
-  const fetchTicketData = useCallback(async (ticketId: string) => {
-    setLoading(true);
-    try {
-      console.log("Fetching ticket data for ID:", ticketId);
-      const response = await fetch(`/api/tickets?id=${ticketId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch ticket data");
-      }
-      const json = await response.json();
-      console.log("Ticket data response:", json);
-      const ticket = json.data?.data?.[0] || json.data?.[0] || json.data;
+  const fetchTicketData = useCallback(
+    async (ticketId: string) => {
+      setLoading(true);
+      try {
+        console.log("Fetching ticket data for ID:", ticketId);
+        const response = await fetch(`/api/tickets?id=${ticketId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch ticket data");
+        }
+        const json = await response.json();
+        console.log("Ticket data response:", json);
+        const ticket = json.data?.data?.[0] || json.data?.[0] || json.data;
 
-      console.log("Parsed ticket:", ticket);
-      console.log("Ticket items:", ticket?.items);
+        console.log("Parsed ticket:", ticket);
+        console.log("Ticket items:", ticket?.items);
 
-      if (ticket) {
-        setTicketData(ticket);
-        // Set the initial status when loading ticket data
-        setSelectedStatus(ticket.status || "Pending");
+        if (ticket) {
+          setTicketData(ticket);
+          // Set the initial status when loading ticket data
+          setSelectedStatus(ticket.status || "Pending");
+        }
+      } catch (err) {
+        console.error("Failed to load ticket data:", err);
+        const errorMessage = t("ticketDataLoadError");
+        toast.error(errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load ticket data:", err);
-      setError("Failed to load ticket data");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [t]
+  );
 
   /**
    * Create or get existing client
@@ -463,14 +474,16 @@ export const useAppointmentDetails = ({
         console.log("Updating discounts for existing items:", discountUpdates);
         for (const [itemId, discount] of Object.entries(discountUpdates)) {
           // Only update if it's an existing item (not a new item with temporary ID)
-          const isExistingItem = ticketData.items.some((item) => item.id === itemId);
+          const isExistingItem = ticketData.items.some(
+            (item) => item.id === itemId
+          );
           if (isExistingItem) {
             try {
               const item = ticketData.items.find((i) => i.id === itemId);
               if (item) {
                 const discountAmount = (item.unitPrice * discount) / 100;
                 const newTotal = item.unitPrice - discountAmount;
-                
+
                 const discountResponse = await fetch("/api/ticket-items", {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
@@ -484,7 +497,10 @@ export const useAppointmentDetails = ({
                 if (!discountResponse.ok) {
                   console.error("Failed to update discount for item:", itemId);
                 } else {
-                  console.log("Discount updated successfully for item:", itemId);
+                  console.log(
+                    "Discount updated successfully for item:",
+                    itemId
+                  );
                 }
               }
             } catch (error) {
@@ -568,13 +584,12 @@ export const useAppointmentDetails = ({
           values.staffId,
           appointmentDetails.startTime,
           appointmentDetails.endTime,
-          isEditing ? (ticketData?.id || initialData?.ticketId) : undefined
+          isEditing ? ticketData?.id || initialData?.ticketId : undefined
         );
 
         if (hasConflict) {
-          throw new Error(
-            "Time conflict: This staff member already has an appointment scheduled during this time slot."
-          );
+          toast.error(t("timeConflictError"));
+          return;
         }
 
         if (isEditing && initialData?.ticketId) {
@@ -585,11 +600,11 @@ export const useAppointmentDetails = ({
             values,
             appointmentDetails
           );
-          setSuccess("Appointment updated successfully");
+          toast.success(t("appointmentUpdatedSuccess"));
         } else {
           // Create new appointment
           await createAppointment(clientId, values, appointmentDetails);
-          setSuccess("Appointment created successfully");
+          toast.success(t("appointmentCreatedSuccess"));
         }
 
         reset();
@@ -603,11 +618,14 @@ export const useAppointmentDetails = ({
           `Error ${isEditing ? "updating" : "creating"} appointment:`,
           err
         );
-        setError(
+        const errorMessage =
           err instanceof Error
             ? err.message
-            : `Failed to ${isEditing ? "update" : "create"} appointment`
-        );
+            : t(
+                isEditing ? "appointmentUpdateError" : "appointmentCreateError"
+              );
+        toast.error(errorMessage);
+        setError(errorMessage);
       }
     },
     [
@@ -622,6 +640,8 @@ export const useAppointmentDetails = ({
       onSuccess,
       selectedDate,
       selectedTime,
+      ticketData?.id,
+      t,
     ]
   );
 
