@@ -209,7 +209,7 @@ export function AppointmentCalendar() {
               selectable
               resizable={false}
               step={5}
-              timeslots={30}
+              timeslots={12}
               min={new Date(2024, 0, 1, 8, 0, 0)}
               max={new Date(2024, 0, 1, 20, 0, 0)}
               defaultView="day"

@@ -50,13 +50,9 @@
 
 /* Time Slot Sizing */
 .rbc-time-slot {
-  min-height: 15px !important;
+  min-height: 10px !important;
   border-bottom: 1px solid #e0e0e0 !important;
   z-index: 0 !important;
-}
-
-.rbc-time-slot:hover {
-  background-color: #8fcbac !important;
 }
 
 .rbc-timeslot-group {
@@ -78,4 +74,12 @@
 
 .rbc-header {
   border-bottom: 0px solid #e0e0e0 !important;
+}
+
+.rbc-time-gutter .rbc-time-slot {
+  border-bottom: 0px solid #e0e0e0 !important;
+}
+
+.rbc-time-content .rbc-timeslot-group {
+  position: relative !important;
 }
