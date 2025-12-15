@@ -10,7 +10,9 @@ import { TicketItems } from "./ticket/TicketItems";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useBusiness } from "@/hooks/useBusiness";
 import { formatTicketDateTime } from "@/lib/dateUtils";
+import { downloadTicketPDF } from "@/lib/pdfUtils";
 import { formatCurrency } from "@/utils";
+import { toast } from "sonner";
 
 /**
  * Type definitions following TypeScript standards from guidelines
@@ -64,10 +66,30 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
   const { dateStr, timeStr } = formatTicketDateTime(ticket?.createdAt);
 
   // 2. Event handlers (using useCallback for optimization)
-  const handleDownloadPdf = useCallback(() => {
-    // TODO: Implement PDF download
-    console.log("Download PDF:", ticket?.id);
-  }, [ticket?.id]);
+  const handleDownloadPdf = useCallback(async () => {
+    if (!ticket) {
+      toast.error("No ticket data available");
+      return;
+    }
+
+    try {
+      await downloadTicketPDF(ticket, business || {}, {
+        ticketDetails: t("ticketDetails"),
+        ticketID: t("ticketID"),
+        clientLabel: t("clientLabel"),
+        staffLabel: t("staffLabel"),
+        itemsLabel: t("itemsLabel"),
+        qtyLabel: t("qtyLabel"),
+        itemsEmpty: t("itemsEmpty"),
+        totalLabel: t("totalLabel"),
+        thanks: t("thanks"),
+      });
+      toast.success(t("pdfDownloadSuccess") || "PDF downloaded successfully");
+    } catch (error) {
+      console.error("PDF download error:", error);
+      toast.error(t("pdfDownloadError") || "Failed to download PDF");
+    }
+  }, [ticket, business, t]);
 
   const handleSendEmail = useCallback(() => {
     // TODO: Implement email functionality

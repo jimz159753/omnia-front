@@ -27,5 +27,7 @@
   "email": "Correo",
   "ticketID": "Ticket ID",
   "totalLabel": "TOTAL",
-  "thanks": "¡GRACIAS POR TU COMPRA!"
+  "thanks": "¡GRACIAS POR TU COMPRA!",
+  "pdfDownloadSuccess": "PDF descargado exitosamente",
+  "pdfDownloadError": "Error al descargar PDF"
 }
