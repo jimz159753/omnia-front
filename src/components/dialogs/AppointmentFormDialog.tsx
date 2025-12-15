@@ -63,6 +63,11 @@ export function AppointmentFormDialog({
     Record<string, number>
   >({});
 
+  // State for tracking quantity changes
+  const [quantityUpdates, setQuantityUpdates] = useState<
+    Record<string, number>
+  >({});
+
   // Handle ticket deletion
   const handleDeleteTicket = async () => {
     if (!initialData?.ticketId && !ticketData?.id) {
@@ -147,6 +152,7 @@ export function AppointmentFormDialog({
     selectedTime,
     newItems: newTicketItems,
     discountUpdates,
+    quantityUpdates,
   });
 
   return (
@@ -238,6 +244,10 @@ export function AppointmentFormDialog({
                         setDiscountUpdates(updates);
                         console.log("Discount updates:", updates);
                       }}
+                      onQuantityUpdates={(updates) => {
+                        setQuantityUpdates(updates);
+                        console.log("Quantity updates:", updates);
+                      }}
                       onUseCertificate={() => {
                         console.log("Use certificate");
                         // TODO: Implement use certificate
@@ -285,6 +295,7 @@ export function AppointmentFormDialog({
                     ...(ticketData?.items || []),
                     ...newTicketItems,
                   ]}
+                  quantities={quantityUpdates}
                   discounts={discountUpdates}
                   ticketId={ticketData?.id || initialData?.ticketId}
                   onDelete={handleDeleteTicket}

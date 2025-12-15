@@ -19,6 +19,7 @@ import { FiX, FiTrash2 } from "react-icons/fi";
 
 interface TicketItem {
   id: string;
+  quantity: number;
   unitPrice: number;
   discount?: number;
   total: number;
@@ -37,6 +38,7 @@ interface ClientDetailsSectionProps {
   isSubmitting: boolean;
   onCancel: () => void;
   ticketItems?: TicketItem[];
+  quantities?: Record<string, number>;
   discounts?: Record<string, number>;
   ticketId?: string;
   onDelete?: () => void;
@@ -59,6 +61,7 @@ export const ClientDetailsSection = ({
   isSubmitting,
   onCancel,
   ticketItems = [],
+  quantities = {},
   discounts = {},
   ticketId,
   onDelete,
@@ -66,13 +69,20 @@ export const ClientDetailsSection = ({
   const { t } = useTranslation("common");
 
   // Calculate total price from all ticket items
+  // Recalculates based on current quantities and discounts from the table
   const totalPrice = useMemo(() => {
-    // If there are ticket items (editing mode), sum their totals with discounts
+    // If there are ticket items (editing mode), sum their totals with current quantities and discounts
     if (ticketItems.length > 0) {
       return ticketItems.reduce((sum, item) => {
+        // Get current quantity and discount (may have changed in the table)
+        const quantity = quantities[item.id] ?? item.quantity ?? 1;
         const discount = discounts[item.id] ?? item.discount ?? 0;
-        const discountAmount = (item.unitPrice * discount) / 100;
-        const itemTotal = item.unitPrice - discountAmount;
+
+        // Calculate total: (unitPrice × quantity) - discount
+        const subtotal = item.unitPrice * quantity;
+        const discountAmount = (subtotal * discount) / 100;
+        const itemTotal = subtotal - discountAmount;
+
         return sum + itemTotal;
       }, 0);
     }
@@ -80,7 +90,7 @@ export const ClientDetailsSection = ({
     // Otherwise, use the selected service price (new appointment mode)
     const selectedService = services.find((s) => s.id === selectedServiceId);
     return selectedService?.price || 0;
-  }, [ticketItems, discounts, services, selectedServiceId]);
+  }, [ticketItems, quantities, discounts, services, selectedServiceId]);
 
   // Memoize tab change handler to prevent re-renders
   const handleTabChange = useCallback(

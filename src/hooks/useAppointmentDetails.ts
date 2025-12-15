@@ -62,6 +62,7 @@ export interface UseAppointmentDetailsProps {
     discount?: number;
   }>;
   discountUpdates?: Record<string, number>;
+  quantityUpdates?: Record<string, number>;
 }
 
 export interface TicketData {
@@ -104,6 +105,7 @@ export const useAppointmentDetails = ({
   selectedTime,
   newItems = [],
   discountUpdates = {},
+  quantityUpdates = {},
 }: UseAppointmentDetailsProps) => {
   const { t } = useTranslation("common");
 
@@ -470,43 +472,59 @@ export const useAppointmentDetails = ({
 
       console.log("Ticket updated successfully");
 
-      // Update discounts for existing items
-      if (ticketData && Object.keys(discountUpdates).length > 0) {
-        console.log("Updating discounts for existing items:", discountUpdates);
-        for (const [itemId, discount] of Object.entries(discountUpdates)) {
-          // Only update if it's an existing item (not a new item with temporary ID)
-          const isExistingItem = ticketData.items.some(
-            (item) => item.id === itemId
-          );
-          if (isExistingItem) {
-            try {
-              const item = ticketData.items.find((i) => i.id === itemId);
-              if (item) {
-                const discountAmount = (item.unitPrice * discount) / 100;
-                const newTotal = item.unitPrice - discountAmount;
+      // Update quantities and discounts for existing items
+      if (ticketData) {
+        // Collect all items that need updates (either quantity or discount changed)
+        const itemsToUpdate = new Set([
+          ...Object.keys(quantityUpdates),
+          ...Object.keys(discountUpdates),
+        ]);
 
-                const discountResponse = await fetch("/api/ticket-items", {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    id: itemId,
-                    discount,
-                    total: newTotal,
-                    type: item.type || (item.product ? "product" : "service"),
-                  }),
-                });
+        if (itemsToUpdate.size > 0) {
+          console.log("Updating quantities/discounts for existing items");
+          for (const itemId of itemsToUpdate) {
+            // Only update if it's an existing item (not a new item with temporary ID)
+            const isExistingItem = ticketData.items.some(
+              (item) => item.id === itemId
+            );
+            if (isExistingItem) {
+              try {
+                const item = ticketData.items.find((i) => i.id === itemId);
+                if (item) {
+                  // Get current values, using updated values if they exist
+                  const quantity = quantityUpdates[itemId] ?? item.quantity ?? 1;
+                  const discount = discountUpdates[itemId] ?? item.discount ?? 0;
+                  
+                  // Calculate total: (unitPrice × quantity) - discount
+                  const subtotal = item.unitPrice * quantity;
+                  const discountAmount = (subtotal * discount) / 100;
+                  const newTotal = subtotal - discountAmount;
 
-                if (!discountResponse.ok) {
-                  console.error("Failed to update discount for item:", itemId);
-                } else {
-                  console.log(
-                    "Discount updated successfully for item:",
-                    itemId
-                  );
+                  const updateResponse = await fetch("/api/ticket-items", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      id: itemId,
+                      quantity,
+                      discount,
+                      total: newTotal,
+                      type: item.type || (item.product ? "product" : "service"),
+                    }),
+                  });
+
+                  if (!updateResponse.ok) {
+                    console.error("Failed to update item:", itemId);
+                  } else {
+                    console.log(
+                      "Item updated successfully:",
+                      itemId,
+                      { quantity, discount, total: newTotal }
+                    );
+                  }
                 }
+              } catch (error) {
+                console.error("Error updating item:", itemId, error);
               }
-            } catch (error) {
-              console.error("Error updating discount for item:", itemId, error);
             }
           }
         }
@@ -542,7 +560,7 @@ export const useAppointmentDetails = ({
         }
       }
     },
-    [selectedStatus, newItems, discountUpdates, ticketData]
+    [selectedStatus, newItems, discountUpdates, quantityUpdates, ticketData]
   );
 
   /**

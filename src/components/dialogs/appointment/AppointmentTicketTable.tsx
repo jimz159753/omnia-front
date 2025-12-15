@@ -53,7 +53,10 @@ interface AppointmentTicketTableProps {
   ticketData?: TicketData | null;
   selectedStatus?: string;
   onStatusChange?: (status: string) => void;
-  onDeleteItem?: (itemId: string, itemType?: "product" | "service") => Promise<void>;
+  onDeleteItem?: (
+    itemId: string,
+    itemType?: "product" | "service"
+  ) => Promise<void>;
   onDiscountChange?: (itemId: string, discount: number) => void;
   onAddProduct?: (data: {
     productId: string;
@@ -68,6 +71,7 @@ interface AppointmentTicketTableProps {
   products?: Array<{ id: string; name: string; cost: number }>;
   onNewItemsChange?: (items: NewTicketItem[]) => void;
   onDiscountUpdates?: (updates: Record<string, number>) => void;
+  onQuantityUpdates?: (updates: Record<string, number>) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control?: Control<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,6 +145,7 @@ export function AppointmentTicketTable({
   products = [],
   onNewItemsChange,
   onDiscountUpdates,
+  onQuantityUpdates,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
 
@@ -159,6 +164,9 @@ export function AppointmentTicketTable({
   // Local state for discount values
   const [discounts, setDiscounts] = useState<Record<string, number>>({});
 
+  // Local state for quantity values
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
   // Sync local state when prop or ticket data changes
   useEffect(() => {
     const newStatus = selectedStatusProp || ticketData?.status || "Pending";
@@ -174,6 +182,11 @@ export function AppointmentTicketTable({
   useEffect(() => {
     onDiscountUpdates?.(discounts);
   }, [discounts, onDiscountUpdates]);
+
+  // Notify parent when quantities change
+  useEffect(() => {
+    onQuantityUpdates?.(quantities);
+  }, [quantities, onQuantityUpdates]);
 
   const handleStatusChange = (status: TicketStatus) => {
     setSelectedStatus(status);
@@ -246,9 +259,34 @@ export function AppointmentTicketTable({
       const allItems = [...(ticketData?.items || []), ...newItems];
       const item = allItems.find((i) => i.id === itemId);
       const itemType = item?.type || (item?.product ? "product" : "service");
-      
+
       // Call parent callback (which may close modal after API call)
       await onDeleteItem?.(itemId, itemType);
+    }
+  };
+
+  const handleQuantityChange = (itemId: string, newQuantity: number) => {
+    const quantity = Math.max(1, newQuantity);
+    setQuantities((prev) => ({ ...prev, [itemId]: quantity }));
+
+    // Check if it's a new item and update its total
+    const isNewItem = newItems.some((item) => item.id === itemId);
+    if (isNewItem) {
+      setNewItems((prev) =>
+        prev.map((item) => {
+          if (item.id === itemId) {
+            const discount = discounts[itemId] ?? item.discount ?? 0;
+            const subtotal = item.unitPrice * quantity;
+            const discountAmount = (subtotal * discount) / 100;
+            return {
+              ...item,
+              quantity,
+              total: subtotal - discountAmount,
+            };
+          }
+          return item;
+        })
+      );
     }
   };
 
@@ -262,11 +300,13 @@ export function AppointmentTicketTable({
       setNewItems((prev) =>
         prev.map((item) => {
           if (item.id === itemId) {
-            const discountAmount = (item.unitPrice * discount) / 100;
+            const quantity = quantities[itemId] ?? item.quantity ?? 1;
+            const subtotal = item.unitPrice * quantity;
+            const discountAmount = (subtotal * discount) / 100;
             return {
               ...item,
               discount,
-              total: item.unitPrice - discountAmount,
+              total: subtotal - discountAmount,
             };
           }
           return item;
@@ -282,17 +322,20 @@ export function AppointmentTicketTable({
   const existingItems =
     ticketData?.items?.map((item) => {
       const itemId = item.id || Math.random().toString();
+      const quantity = quantities[itemId] ?? item.quantity ?? 1;
       const discount = discounts[itemId] ?? item.discount ?? 0;
-      const originalPrice = item.unitPrice;
-      const discountAmount = (originalPrice * discount) / 100;
-      const finalTotal = originalPrice - discountAmount;
+      const unitPrice = item.unitPrice;
+      const subtotal = unitPrice * quantity;
+      const discountAmount = (subtotal * discount) / 100;
+      const finalTotal = subtotal - discountAmount;
 
       return {
         id: itemId,
         serviceName: item.service?.name || item.product?.name || "N/A",
         clientName: ticketData.client?.name || "N/A",
         staffName: ticketData.staff?.name || ticketData.staff?.email || "N/A",
-        price: originalPrice,
+        quantity: quantity,
+        price: unitPrice,
         discount: discount,
         total: finalTotal,
       };
@@ -300,17 +343,20 @@ export function AppointmentTicketTable({
 
   // Transform new items to display format
   const newItemsFormatted = newItems.map((item) => {
+    const quantity = quantities[item.id] ?? item.quantity ?? 1;
     const discount = discounts[item.id] ?? item.discount ?? 0;
-    const originalPrice = item.unitPrice;
-    const discountAmount = (originalPrice * discount) / 100;
-    const finalTotal = originalPrice - discountAmount;
+    const unitPrice = item.unitPrice;
+    const subtotal = unitPrice * quantity;
+    const discountAmount = (subtotal * discount) / 100;
+    const finalTotal = subtotal - discountAmount;
 
     return {
       id: item.id,
       serviceName: item.service?.name || item.product?.name || "N/A",
       clientName: ticketData?.client?.name || "N/A",
       staffName: item.staffName || "N/A",
-      price: originalPrice,
+      quantity: quantity,
+      price: unitPrice,
       discount: discount,
       total: finalTotal,
     };
@@ -381,10 +427,11 @@ export function AppointmentTicketTable({
           {/* Table */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-[2fr,1.5fr,1.5fr,1fr,1fr,1fr,auto] gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+            <div className="grid grid-cols-[2fr,1.5fr,1.5fr,0.8fr,1fr,1fr,1fr,auto] gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
               <div>Servicio</div>
               <div>Cliente</div>
               <div>Empleado</div>
+              <div className="text-center">Cant.</div>
               <div className="text-right">Price</div>
               <div className="text-right">Desc. %</div>
               <div className="text-right">Total:</div>
@@ -401,15 +448,28 @@ export function AppointmentTicketTable({
               items.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-[2fr,1.5fr,1.5fr,1fr,1fr,1fr,auto] gap-4 px-4 py-4 bg-white border-b border-gray-200 last:border-b-0 items-center"
+                  className="grid grid-cols-[2fr,1.5fr,1.5fr,0.8fr,1fr,1fr,1fr,auto] gap-4 px-4 py-4 bg-white border-b border-gray-200 last:border-b-0 items-center"
                 >
                   <div className="text-sm text-gray-900">
                     {item.serviceName}
                   </div>
                   <div className="text-sm text-gray-900">{item.clientName}</div>
                   <div className="text-sm text-gray-900">{item.staffName}</div>
+                  <div className="text-sm text-gray-900 flex justify-center">
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10) || 1;
+                        handleQuantityChange(item.id, value);
+                      }}
+                      className="w-14 px-2 py-1 text-center bg-gray-50 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      min="1"
+                      step="1"
+                    />
+                  </div>
                   <div className="text-sm text-gray-900 text-right">
-                    {item.price}
+                    ${item.price.toFixed(2)}
                   </div>
                   <div className="text-sm text-gray-900 text-right">
                     <input

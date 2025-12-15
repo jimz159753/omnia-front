@@ -27,16 +27,16 @@ export async function POST(request: NextRequest) {
     // Create either a TicketProduct or TicketService
     if (productId) {
       ticketItem = await prisma.ticketProduct.create({
-        data: {
-          ticketId,
+      data: {
+        ticketId,
           productId,
-          quantity: quantity || 1,
-          unitPrice: unitPrice || 0,
-          total: total || unitPrice || 0,
-          discount: discount || 0,
-        },
-        include: {
-          product: true,
+        quantity: quantity || 1,
+        unitPrice: unitPrice || 0,
+        total: total || unitPrice || 0,
+        discount: discount || 0,
+      },
+      include: {
+        product: true,
         },
       });
     } else {
@@ -50,9 +50,9 @@ export async function POST(request: NextRequest) {
           discount: discount || 0,
         },
         include: {
-          service: true,
-        },
-      });
+        service: true,
+      },
+    });
     }
 
     // Update the ticket total
@@ -129,15 +129,15 @@ export async function DELETE(request: NextRequest) {
       await prisma.ticketProduct.delete({ where: { id } });
     } else if (type === "service") {
       const ticketService = await prisma.ticketService.findUnique({
-        where: { id },
-      });
+      where: { id },
+    });
 
       if (!ticketService) {
-        return NextResponse.json(
-          { error: "Ticket item not found" },
-          { status: 404 }
-        );
-      }
+      return NextResponse.json(
+        { error: "Ticket item not found" },
+        { status: 404 }
+      );
+    }
 
       ticketId = ticketService.ticketId;
       await prisma.ticketService.delete({ where: { id } });
@@ -152,8 +152,8 @@ export async function DELETE(request: NextRequest) {
         await prisma.ticketProduct.delete({ where: { id } });
       } else {
         const ticketService = await prisma.ticketService.findUnique({
-          where: { id },
-        });
+      where: { id },
+    });
 
         if (!ticketService) {
           return NextResponse.json(
@@ -260,13 +260,18 @@ export async function PUT(request: NextRequest) {
 
       ticketId = ticketProduct.ticketId;
 
-      // Recalculate total based on discount if needed
-      if (discount !== undefined) {
-        const finalUnitPrice =
-          unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
-        const discountAmount = (finalUnitPrice * discount) / 100;
-        updateData.total = finalUnitPrice - discountAmount;
-      }
+      // Recalculate total based on quantity and discount
+      const finalUnitPrice =
+        unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
+      const finalQuantity =
+        quantity !== undefined ? quantity : ticketProduct.quantity;
+      const finalDiscount =
+        discount !== undefined ? discount : ticketProduct.discount;
+      
+      // Calculate: (unitPrice × quantity) - discount
+      const subtotal = finalUnitPrice * finalQuantity;
+      const discountAmount = (subtotal * finalDiscount) / 100;
+      updateData.total = subtotal - discountAmount;
 
       updatedTicketItem = await prisma.ticketProduct.update({
         where: { id },
@@ -289,13 +294,18 @@ export async function PUT(request: NextRequest) {
 
       ticketId = ticketService.ticketId;
 
-      // Recalculate total based on discount if needed
-      if (discount !== undefined) {
-        const finalUnitPrice =
-          unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
-        const discountAmount = (finalUnitPrice * discount) / 100;
-        updateData.total = finalUnitPrice - discountAmount;
-      }
+      // Recalculate total based on quantity and discount
+      const finalUnitPrice =
+        unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
+      const finalQuantity =
+        quantity !== undefined ? quantity : ticketService.quantity;
+      const finalDiscount =
+        discount !== undefined ? discount : ticketService.discount;
+      
+      // Calculate: (unitPrice × quantity) - discount
+      const subtotal = finalUnitPrice * finalQuantity;
+      const discountAmount = (subtotal * finalDiscount) / 100;
+      updateData.total = subtotal - discountAmount;
 
       updatedTicketItem = await prisma.ticketService.update({
         where: { id },
@@ -313,19 +323,24 @@ export async function PUT(request: NextRequest) {
       if (ticketProduct) {
         ticketId = ticketProduct.ticketId;
 
-        // Recalculate total based on discount if needed
-        if (discount !== undefined) {
-          const finalUnitPrice =
-            unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
-          const discountAmount = (finalUnitPrice * discount) / 100;
-          updateData.total = finalUnitPrice - discountAmount;
-        }
+        // Recalculate total based on quantity and discount
+        const finalUnitPrice =
+          unitPrice !== undefined ? unitPrice : ticketProduct.unitPrice;
+        const finalQuantity =
+          quantity !== undefined ? quantity : ticketProduct.quantity;
+        const finalDiscount =
+          discount !== undefined ? discount : ticketProduct.discount;
+        
+        // Calculate: (unitPrice × quantity) - discount
+        const subtotal = finalUnitPrice * finalQuantity;
+        const discountAmount = (subtotal * finalDiscount) / 100;
+        updateData.total = subtotal - discountAmount;
 
         updatedTicketItem = await prisma.ticketProduct.update({
-          where: { id },
-          data: updateData,
-          include: {
-            product: true,
+      where: { id },
+      data: updateData,
+      include: {
+        product: true,
           },
         });
       } else {
@@ -342,21 +357,26 @@ export async function PUT(request: NextRequest) {
 
         ticketId = ticketService.ticketId;
 
-        // Recalculate total based on discount if needed
-        if (discount !== undefined) {
-          const finalUnitPrice =
-            unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
-          const discountAmount = (finalUnitPrice * discount) / 100;
-          updateData.total = finalUnitPrice - discountAmount;
-        }
+        // Recalculate total based on quantity and discount
+        const finalUnitPrice =
+          unitPrice !== undefined ? unitPrice : ticketService.unitPrice;
+        const finalQuantity =
+          quantity !== undefined ? quantity : ticketService.quantity;
+        const finalDiscount =
+          discount !== undefined ? discount : ticketService.discount;
+        
+        // Calculate: (unitPrice × quantity) - discount
+        const subtotal = finalUnitPrice * finalQuantity;
+        const discountAmount = (subtotal * finalDiscount) / 100;
+        updateData.total = subtotal - discountAmount;
 
         updatedTicketItem = await prisma.ticketService.update({
           where: { id },
           data: updateData,
           include: {
-            service: true,
-          },
-        });
+        service: true,
+      },
+    });
       }
     }
 
