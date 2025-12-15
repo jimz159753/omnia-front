@@ -328,6 +328,7 @@ export function AppointmentTicketTable({
       const subtotal = unitPrice * quantity;
       const discountAmount = (subtotal * discount) / 100;
       const finalTotal = subtotal - discountAmount;
+      const isService = !!item.service || item.type === "service";
 
       return {
         id: itemId,
@@ -338,6 +339,7 @@ export function AppointmentTicketTable({
         price: unitPrice,
         discount: discount,
         total: finalTotal,
+        isService: isService,
       };
     }) || [];
 
@@ -349,6 +351,7 @@ export function AppointmentTicketTable({
     const subtotal = unitPrice * quantity;
     const discountAmount = (subtotal * discount) / 100;
     const finalTotal = subtotal - discountAmount;
+    const isService = !!item.service || item.type === "service";
 
     return {
       id: item.id,
@@ -359,6 +362,7 @@ export function AppointmentTicketTable({
       price: unitPrice,
       discount: discount,
       total: finalTotal,
+      isService: isService,
     };
   });
 
@@ -456,17 +460,23 @@ export function AppointmentTicketTable({
                   <div className="text-sm text-gray-900">{item.clientName}</div>
                   <div className="text-sm text-gray-900">{item.staffName}</div>
                   <div className="text-sm text-gray-900 flex justify-center">
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value, 10) || 1;
-                        handleQuantityChange(item.id, value);
-                      }}
-                      className="w-14 px-2 py-1 text-center bg-gray-50 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      min="1"
-                      step="1"
-                    />
+                    {item.isService ? (
+                      // For services, show quantity as read-only text
+                      <span className="text-center">{item.quantity}</span>
+                    ) : (
+                      // For products, show editable input
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value, 10) || 1;
+                          handleQuantityChange(item.id, value);
+                        }}
+                        className="w-14 px-2 py-1 text-center bg-gray-50 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        min="1"
+                        step="1"
+                      />
+                    )}
                   </div>
                   <div className="text-sm text-gray-900 text-right">
                     ${item.price.toFixed(2)}
@@ -488,13 +498,18 @@ export function AppointmentTicketTable({
                   <div className="text-sm font-semibold text-gray-900 text-right">
                     ${item.total.toFixed(2)}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteItem(item.id)}
-                    className="text-gray-400 hover:text-red-600 transition-colors"
-                  >
-                    <FiX className="w-5 h-5" />
-                  </button>
+                  {/* Show delete button only for products */}
+                  {!item.isService && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteItem(item.id)}
+                      className="text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                      <FiX className="w-5 h-5" />
+                    </button>
+                  )}
+                  {/* Empty space for services to maintain grid alignment */}
+                  {item.isService && <div className="w-8"></div>}
                 </div>
               ))
             )}
