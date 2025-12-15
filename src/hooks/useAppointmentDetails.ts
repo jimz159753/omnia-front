@@ -492,9 +492,11 @@ export const useAppointmentDetails = ({
                 const item = ticketData.items.find((i) => i.id === itemId);
                 if (item) {
                   // Get current values, using updated values if they exist
-                  const quantity = quantityUpdates[itemId] ?? item.quantity ?? 1;
-                  const discount = discountUpdates[itemId] ?? item.discount ?? 0;
-                  
+                  const quantity =
+                    quantityUpdates[itemId] ?? item.quantity ?? 1;
+                  const discount =
+                    discountUpdates[itemId] ?? item.discount ?? 0;
+
                   // Calculate total: (unitPrice × quantity) - discount
                   const subtotal = item.unitPrice * quantity;
                   const discountAmount = (subtotal * discount) / 100;
@@ -515,11 +517,11 @@ export const useAppointmentDetails = ({
                   if (!updateResponse.ok) {
                     console.error("Failed to update item:", itemId);
                   } else {
-                    console.log(
-                      "Item updated successfully:",
-                      itemId,
-                      { quantity, discount, total: newTotal }
-                    );
+                    console.log("Item updated successfully:", itemId, {
+                      quantity,
+                      discount,
+                      total: newTotal,
+                    });
                   }
                 }
               } catch (error) {
