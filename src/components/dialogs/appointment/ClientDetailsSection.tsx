@@ -109,7 +109,9 @@ export const ClientDetailsSection = ({
   return (
     <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gray-50">
       <div className="flex-1 overflow-y-auto">
-        <div className="flex justify-between p-6">
+        <div
+          className={`flex p-6 ${ticketId ? "justify-between" : "justify-end"}`}
+        >
           {/* Show trash icon only if there's a ticket (editing mode) */}
           {ticketId && onDelete && (
             <button

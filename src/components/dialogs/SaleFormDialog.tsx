@@ -244,7 +244,7 @@ export function SaleFormDialog({
               </div>
 
               {/* Sale Details Section */}
-              <div className="p-6 border-b">
+              <div className="p-6">
                 <h3 className="text-sm font-semibold mb-3">
                   Detalles de la venta
                 </h3>
@@ -341,7 +341,7 @@ export function SaleFormDialog({
               </div>
 
               {/* Notes Section */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-6 pt-0">
                 <div className="border-t pt-4">
                   <div
                     className="flex items-center gap-3"
