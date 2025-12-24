@@ -14,6 +14,8 @@ services:
     build:
       context: .
       target: runtime
+      args:
+        DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
     image: nextjs-prod
     ports:
       - "3000:3000"

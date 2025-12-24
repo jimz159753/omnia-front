@@ -11,8 +11,10 @@
   RUN npx prisma generate
   
   # ---------- build ----------
-  FROM deps AS build
-  RUN npx next build
+    FROM deps AS build
+    ARG DATABASE_URL
+    ENV DATABASE_URL=$DATABASE_URL
+    RUN npx next build
   
   # ---------- runtime ----------
   FROM node:20-alpine AS runtime
