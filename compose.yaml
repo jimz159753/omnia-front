@@ -5,44 +5,30 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - omnia_network
-    command: postgres -c listen_addresses='*'
 
   app:
     build:
       context: .
-      target: development
-    image: nextjs-dev
+      target: runtime
+    image: nextjs-prod
     ports:
       - "3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
     environment:
-      NODE_ENV: development
-      DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres"
-      NEXTAUTH_SECRET: "your-random-secret-key"
-      NEXTAUTH_URL: "http://localhost:3000"
-      CAL_BASE_URL: "https://api.cal.com/v2"
-      CAL_BEARER_TOKEN: "cal_live_2d2c9e790385a392a1c58f4886964e74"
-      CAL_USERNAME: "prueba140992"
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
     depends_on:
       - db
     networks:
       - omnia_network
-    command: npm run dev
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-        - action: sync+exec
-          path: package.json
-          target: /app/package.json
-          exec:
-            command: npm install
 
 volumes:
   postgres_data:
