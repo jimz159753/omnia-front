@@ -1,37 +1,37 @@
-FROM node:20-alpine AS base
-
-WORKDIR /app
-
-# Install OpenSSL for Prisma compatibility
-RUN apk add --no-cache openssl
-
-# Install dependencies including Prisma
-COPY package*.json ./
-RUN npm install
-
-# Copy source code
-COPY . .
-
-# Generate Prisma client with correct binary targets
-RUN npx prisma generate
-
-USER app
-
-# Development stage
-FROM base AS development
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
-
-# Production stage
-FROM base AS production
-# Build the application (skip Prisma migration during build)
-RUN npx next build
-
-# Copy static assets for standalone build
-RUN cp -r .next/static .next/standalone/.next/static
-RUN cp -r public .next/standalone/public
-
-EXPOSE 3000
-
-# Use standalone server for production
-CMD ["node", ".next/standalone/server.js"]
+# ---------- deps ----------
+  FROM node:20-alpine AS deps
+  WORKDIR /app
+  
+  RUN apk add --no-cache openssl
+  
+  COPY package*.json ./
+  RUN npm install
+  
+  COPY . .
+  RUN npx prisma generate
+  
+  # ---------- build ----------
+    FROM deps AS build
+    ARG DATABASE_URL
+    ENV DATABASE_URL=$DATABASE_URL
+    RUN npx next build
+  
+  # ---------- runtime ----------
+  FROM node:20-alpine AS runtime
+  WORKDIR /app
+  
+  RUN apk add --no-cache openssl \
+    && addgroup -S app \
+    && adduser -S app -G app \
+    && mkdir -p /tmp \
+    && chown -R app:app /tmp
+  
+  COPY --from=build /app/.next/standalone ./
+  COPY --from=build /app/.next/static ./.next/static
+  COPY --from=build /app/public ./public
+  
+  USER app
+  
+  EXPOSE 3000
+  CMD ["node", "server.js"]
+  
