@@ -12,6 +12,8 @@ COPY . .
 # Generate Prisma client with correct binary targets
 RUN npx prisma generate
 
+USER app
+
 # Development stage
 FROM base AS development
 EXPOSE 3000
