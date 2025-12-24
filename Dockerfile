@@ -5,7 +5,7 @@
     RUN apk add --no-cache openssl
     
     COPY package*.json ./
-    RUN npm ci
+    RUN npm install
     
     COPY . .
     RUN npx prisma generate
