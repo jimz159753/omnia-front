@@ -12,8 +12,6 @@
   
   # ---------- build ----------
     FROM deps AS build
-    ARG DATABASE_URL
-    ENV DATABASE_URL=$DATABASE_URL
     RUN npx next build
   
   # ---------- runtime ----------
