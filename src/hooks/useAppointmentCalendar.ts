@@ -48,7 +48,7 @@ interface SelectedEventData {
  */
 export const useAppointmentCalendar = () => {
   const { t } = useTranslation("common");
-  
+
   // State
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>("day");
@@ -101,6 +101,7 @@ export const useAppointmentCalendar = () => {
 
   /**
    * Fetch appointments/tickets from API
+   * Only tickets with startTime and endTime are shown (scheduled appointments)
    */
   const fetchAppointments = useCallback(async () => {
     try {
@@ -110,7 +111,13 @@ export const useAppointmentCalendar = () => {
         const ticketsData = json?.data?.data || json?.data || [];
 
         if (ticketsData.length > 0) {
-          const calendarEvents = ticketsData.map(
+          // Filter only tickets with scheduled times (appointments)
+          const appointmentsOnly = ticketsData.filter(
+            (ticket: { startTime?: string; endTime?: string }) =>
+              ticket.startTime && ticket.endTime
+          );
+
+          const calendarEvents = appointmentsOnly.map(
             (ticket: {
               id: string;
               clientId: string;
@@ -123,8 +130,8 @@ export const useAppointmentCalendar = () => {
               notes?: string;
               status: string;
               createdAt: string;
-              startTime?: string;
-              endTime?: string;
+              startTime: string;
+              endTime: string;
               staffId: string;
             }) => {
               const itemName =
@@ -132,18 +139,11 @@ export const useAppointmentCalendar = () => {
                 ticket.items?.[0]?.product?.name ||
                 "Item";
 
-              const start = ticket.startTime
-                ? new Date(ticket.startTime)
-                : new Date(ticket.createdAt);
-              const end = ticket.endTime
-                ? new Date(ticket.endTime)
-                : new Date(start.getTime() + 60 * 60 * 1000);
-
               return {
                 id: ticket.id,
                 title: `${ticket.client?.name || "Client"} - ${itemName}`,
-                start,
-                end,
+                start: new Date(ticket.startTime),
+                end: new Date(ticket.endTime),
                 resourceId: ticket.staffId,
                 ticketData: {
                   clientId: ticket.clientId,
@@ -326,25 +326,28 @@ export const useAppointmentCalendar = () => {
   /**
    * Handle delete event
    */
-  const handleDeleteEvent = useCallback(async (event: CalendarEvent) => {
-    try {
-      const response = await fetch(`/api/tickets?id=${event.id}`, {
-        method: "DELETE",
-      });
+  const handleDeleteEvent = useCallback(
+    async (event: CalendarEvent) => {
+      try {
+        const response = await fetch(`/api/tickets?id=${event.id}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete event");
+        if (!response.ok) {
+          throw new Error("Failed to delete event");
+        }
+
+        setEvents((prev) => prev.filter((e) => e.id !== event.id));
+        toast.success(t("eventDeleted"));
+      } catch (error) {
+        console.error("Failed to delete event:", error);
+        toast.error(t("eventDeleteError"));
+      } finally {
+        setDeleteConfirmEvent(null);
       }
-
-      setEvents((prev) => prev.filter((e) => e.id !== event.id));
-      toast.success(t("eventDeleted"));
-    } catch (error) {
-      console.error("Failed to delete event:", error);
-      toast.error(t("eventDeleteError"));
-    } finally {
-      setDeleteConfirmEvent(null);
-    }
-  }, [t]);
+    },
+    [t]
+  );
 
   /**
    * Handle appointment dialog success
