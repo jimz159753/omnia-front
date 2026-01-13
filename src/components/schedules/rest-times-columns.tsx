@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 export interface RestTime {
@@ -34,7 +34,7 @@ export const getRestTimesColumns = ({
   {
     accessorKey: "dayOfWeek",
     header: t("day"),
-    cell: ({ row }) => {
+    cell: ({ row }: { row: Row<RestTime> }) => {
       const day = row.getValue("dayOfWeek") as string;
       return (
         <span className="font-medium capitalize">
@@ -46,7 +46,7 @@ export const getRestTimesColumns = ({
   {
     accessorKey: "startTime",
     header: t("startTime"),
-    cell: ({ row }) => {
+    cell: ({ row }: { row: Row<RestTime> }) => {
       const time = row.getValue("startTime") as string;
       return <span className="text-gray-600">{formatTo12Hour(time)}</span>;
     },
@@ -54,7 +54,7 @@ export const getRestTimesColumns = ({
   {
     accessorKey: "endTime",
     header: t("endTime"),
-    cell: ({ row }) => {
+    cell: ({ row }: { row: Row<RestTime> }) => {
       const time = row.getValue("endTime") as string;
       return <span className="text-gray-600">{formatTo12Hour(time)}</span>;
     },
@@ -62,7 +62,7 @@ export const getRestTimesColumns = ({
   {
     id: "actions",
     header: () => <div className="text-right">{t("actions")}</div>,
-    cell: ({ row }) => {
+    cell: ({ row }: { row: Row<RestTime> }) => {
       const restTime = row.original;
 
       return (

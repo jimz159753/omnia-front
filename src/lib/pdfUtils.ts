@@ -57,7 +57,7 @@ interface Translations {
 /**
  * Generate and download PDF for a ticket
  * Follows SRP - Only responsible for PDF generation and download
- * 
+ *
  * @param ticket - The ticket data to generate PDF for
  * @param business - Business information (name, logo)
  * @param translations - Translated text for PDF labels
@@ -71,7 +71,7 @@ export const downloadTicketPDF = async (
   try {
     // Generate PDF blob
     const blob = await pdf(
-      TicketPDF({ ticket, business, translations })
+      TicketPDF({ ticket, business, translations }) as any
     ).toBlob();
 
     // Create download link
@@ -96,7 +96,7 @@ export const downloadTicketPDF = async (
 /**
  * Generate PDF blob without downloading
  * Useful for email attachments or preview
- * 
+ *
  * @param ticket - The ticket data to generate PDF for
  * @param business - Business information (name, logo)
  * @param translations - Translated text for PDF labels
@@ -109,7 +109,7 @@ export const generateTicketPDFBlob = async (
 ): Promise<Blob> => {
   try {
     const blob = await pdf(
-      TicketPDF({ ticket, business, translations })
+      TicketPDF({ ticket, business, translations }) as any
     ).toBlob();
     return blob;
   } catch (error) {
@@ -117,4 +117,3 @@ export const generateTicketPDFBlob = async (
     throw new Error("Failed to generate PDF blob");
   }
 };
-
