@@ -22,6 +22,8 @@ services:
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev
+    volumes:
+      - uploads_data:/app/public/uploads:rw
     security_opt:
       - no-new-privileges:true
     environment:
@@ -34,6 +36,7 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:
 
 networks:
   omnia_network:
