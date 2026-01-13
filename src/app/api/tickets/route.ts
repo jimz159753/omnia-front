@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
-    
+
     // If ID is provided, fetch single ticket with items
     if (id) {
       const ticket = await prisma.ticket.findUnique({
@@ -87,7 +87,11 @@ export async function GET(request: NextRequest) {
       };
 
       // Remove the products and services arrays
-      const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+      const {
+        products: _,
+        services: __,
+        ...ticketWithoutArrays
+      } = transformedTicket;
 
       return NextResponse.json({ data: ticketWithoutArrays });
     }
@@ -110,39 +114,39 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push({
-          OR: [
-            {
-              client: {
-                name: { contains: search, mode: "insensitive" as const },
-              },
+        OR: [
+          {
+            client: {
+              name: { contains: search, mode: "insensitive" as const },
             },
-            {
+          },
+          {
             products: {
               some: {
-              product: {
-                name: { contains: search, mode: "insensitive" as const },
+                product: {
+                  name: { contains: search, mode: "insensitive" as const },
                 },
               },
-              },
             },
-            {
+          },
+          {
             services: {
               some: {
-              service: {
-                name: { contains: search, mode: "insensitive" as const },
+                service: {
+                  name: { contains: search, mode: "insensitive" as const },
                 },
               },
-              },
             },
-            { status: { contains: search, mode: "insensitive" as const } },
-          ],
+          },
+          { status: { contains: search, mode: "insensitive" as const } },
+        ],
       });
     }
 
     if (status && status !== "all") {
       conditions.push({ status });
     }
-    
+
     // Date filtering
     if (dateFilter && dateFilter !== "all") {
       const now = new Date();
@@ -154,7 +158,15 @@ export async function GET(request: NextRequest) {
         filterEndDate = new Date(now.setHours(23, 59, 59, 999));
       } else if (dateFilter === "thisMonth") {
         filterStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        filterEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        filterEndDate = new Date(
+          now.getFullYear(),
+          now.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        );
       } else if (dateFilter === "calendar" && specificDate) {
         const selectedDate = new Date(specificDate);
         filterStartDate = new Date(selectedDate.setHours(0, 0, 0, 0));
@@ -174,7 +186,7 @@ export async function GET(request: NextRequest) {
         },
       });
     }
-    
+
     // If we have conditions, combine them with AND
     if (conditions.length > 0) {
       where.AND = conditions;
@@ -289,6 +301,7 @@ export async function POST(request: NextRequest) {
       quantity?: number;
       unitPrice?: number;
       total?: number;
+      discount?: number;
     }> = Array.isArray(incomingItems) ? incomingItems : [];
 
     // Legacy single product/service payload support
@@ -426,7 +439,9 @@ export async function POST(request: NextRequest) {
       } else if (startTime && endTime) {
         const start = new Date(startTime);
         const end = new Date(endTime);
-        durationInMinutes = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
+        durationInMinutes = Math.round(
+          (end.getTime() - start.getTime()) / (1000 * 60)
+        );
       }
 
       return tx.ticket.create({
@@ -502,7 +517,11 @@ export async function POST(request: NextRequest) {
       ],
     };
 
-    const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+    const {
+      products: _,
+      services: __,
+      ...ticketWithoutArrays
+    } = transformedTicket;
 
     return NextResponse.json(
       { data: ticketWithoutArrays, message: "Ticket created successfully" },
@@ -526,7 +545,19 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, startTime, endTime, staffId, clientId, notes, items, quantity, total, duration, status } = body;
+    const {
+      id,
+      startTime,
+      endTime,
+      staffId,
+      clientId,
+      notes,
+      items,
+      quantity,
+      total,
+      duration,
+      status,
+    } = body;
 
     console.log("PUT /api/tickets - Updating ticket:", id, body);
 
@@ -584,8 +615,15 @@ export async function PUT(request: NextRequest) {
     }
 
     // Calculate duration if both times are being updated
-    if (startTime !== undefined && endTime !== undefined && startDate && endDate) {
-      const durationInMinutes = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60));
+    if (
+      startTime !== undefined &&
+      endTime !== undefined &&
+      startDate &&
+      endDate
+    ) {
+      const durationInMinutes = Math.round(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60)
+      );
       updateData.duration = durationInMinutes;
     } else if (startTime !== undefined || endTime !== undefined) {
       // If only one time is updated, fetch the ticket to calculate with the existing time
@@ -597,7 +635,7 @@ export async function PUT(request: NextRequest) {
       if (existingTicket) {
         const finalStartTime = startDate || existingTicket.startTime;
         const finalEndTime = endDate || existingTicket.endTime;
-        
+
         if (finalStartTime && finalEndTime) {
           const durationInMinutes = Math.round(
             (finalEndTime.getTime() - finalStartTime.getTime()) / (1000 * 60)
@@ -695,7 +733,11 @@ export async function PUT(request: NextRequest) {
       ],
     };
 
-    const { products: _, services: __, ...ticketWithoutArrays } = transformedTicket;
+    const {
+      products: _,
+      services: __,
+      ...ticketWithoutArrays
+    } = transformedTicket;
 
     return NextResponse.json(
       { data: ticketWithoutArrays, message: "Ticket updated successfully" },

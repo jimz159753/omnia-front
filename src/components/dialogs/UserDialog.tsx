@@ -23,24 +23,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { BiSave } from "react-icons/bi";
 
-const baseUserSchema = z.object({
+const userFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   role: z.enum(["admin", "user"]),
   position: z.string().optional(),
   isActive: z.boolean(),
   avatar: z.string().optional(),
+  password: z.string().optional(),
 });
 
-const createUserSchema = baseUserSchema.extend({
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-const editUserSchema = baseUserSchema.extend({
-  password: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal("")),
-});
-
-type UserFormValues = z.infer<typeof createUserSchema>;
+type UserFormValues = z.infer<typeof userFormSchema>;
 
 interface User {
   id: string;
@@ -69,19 +62,15 @@ export function UserDialog({
   const { t: tCommon } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const schema = useMemo(
-    () => (editingUser ? editUserSchema : createUserSchema),
-    [editingUser]
-  );
-
   const {
     control,
     handleSubmit,
     reset,
     register,
     formState: { errors },
+    setError,
   } = useForm<UserFormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -118,6 +107,24 @@ export function UserDialog({
   }, [editingUser, reset, open]);
 
   const onSubmit = async (values: UserFormValues) => {
+    // Validate password for new users
+    if (!editingUser && (!values.password || values.password.length < 6)) {
+      setError("password", {
+        type: "manual",
+        message: "Password must be at least 6 characters",
+      });
+      return;
+    }
+
+    // Validate password for editing users (if provided)
+    if (editingUser && values.password && values.password.length > 0 && values.password.length < 6) {
+      setError("password", {
+        type: "manual",
+        message: "Password must be at least 6 characters",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();

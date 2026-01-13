@@ -57,8 +57,8 @@ export function useServiceForm({
           price: item.price.toString(),
           commission: item.commission.toString(),
           duration: item.duration.toString(),
-          categoryId: item.categoryId,
-          subCategoryId: item.subCategoryId,
+          categoryId: item.categoryId ?? "",
+          subCategoryId: item.subCategoryId ?? "",
           image: item.image || "",
         });
       } else {
@@ -163,9 +163,7 @@ export function useServiceForm({
         );
       }
 
-      setSuccess(
-        `Service ${isEditMode ? "updated" : "created"} successfully!`
-      );
+      setSuccess(`Service ${isEditMode ? "updated" : "created"} successfully!`);
 
       // Close modal and refresh data
       setTimeout(() => {
@@ -205,4 +203,3 @@ export function useServiceForm({
     handleSubmit,
   };
 }
-
