@@ -8,6 +8,7 @@ import {
 } from "react-hook-form";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
+import ClientMultiCombobox from "@/components/clients/ClientMultiCombobox";
 import { useTranslation } from "@/hooks/useTranslation";
 import type {
   Client,
@@ -97,9 +98,11 @@ export const ClientDetailsSection = ({
     (v: string) => {
       if (v === "new") {
         setValue("existingClientId", "", { shouldDirty: false });
+        setValue("existingClientIds", [], { shouldDirty: false });
         setExistingClientId("");
       } else if (clients.length > 0) {
         setValue("existingClientId", clients[0].id, { shouldDirty: false });
+        setValue("existingClientIds", [], { shouldDirty: false });
         setExistingClientId(clients[0].id);
       }
     },
@@ -144,14 +147,21 @@ export const ClientDetailsSection = ({
             {existingClientId ? (
               <Controller
                 control={control}
-                name="existingClientId"
-                rules={{ required: "Client is required" }}
+                name="existingClientIds"
+                rules={{
+                  validate: (value) => {
+                    if (!value || value.length === 0) {
+                      return "At least one client is required";
+                    }
+                    return true;
+                  },
+                }}
                 render={({ field }) => (
-                  <ClientCombobox
+                  <ClientMultiCombobox
                     clients={clients}
-                    value={field.value}
+                    value={field.value || []}
                     onChange={field.onChange}
-                    error={errors.existingClientId?.message as string}
+                    error={errors.existingClientIds?.message as string}
                   />
                 )}
               />

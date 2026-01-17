@@ -33,6 +33,7 @@ export interface AppointmentFormValues {
   clientInstagram: string;
   clientAddress: string;
   existingClientId: string;
+  existingClientIds: string[]; // Array of client IDs for multi-select
 }
 
 export interface UseAppointmentDetailsProps {
@@ -137,6 +138,7 @@ export const useAppointmentDetails = ({
       clientInstagram: "",
       clientAddress: "",
       existingClientId: "",
+      existingClientIds: [],
     },
   });
 
@@ -204,6 +206,13 @@ export const useAppointmentDetails = ({
           setTicketData(ticket);
           // Set the initial status when loading ticket data
           setSelectedStatus(ticket.status || "Pending");
+
+          // Set client selection when loading ticket
+          if (ticket.client?.id) {
+            console.log("Setting client from ticket:", ticket.client.id);
+            setValue("existingClientId", ticket.client.id);
+            setExistingClientId(ticket.client.id);
+          }
         }
       } catch (err) {
         console.error("Failed to load ticket data:", err);
@@ -214,7 +223,7 @@ export const useAppointmentDetails = ({
         setLoading(false);
       }
     },
-    [t]
+    [t, setValue]
   );
 
   /**
@@ -583,9 +592,6 @@ export const useAppointmentDetails = ({
       );
 
       try {
-        const clientId = await getOrCreateClient(values);
-        console.log("Client created/found with ID:", clientId);
-
         const appointmentDetails = calculateAppointmentDetails(
           values.serviceId,
           selectedDate,
@@ -593,29 +599,32 @@ export const useAppointmentDetails = ({
         );
         console.log("Appointment details calculated:", appointmentDetails);
 
-        // Check for time conflicts
-        console.log("About to check time conflict with:", {
-          staffId: values.staffId,
-          startTime: appointmentDetails.startTime,
-          endTime: appointmentDetails.endTime,
-          excludeTicketId: isEditing ? initialData?.ticketId : undefined,
-          ticketDataId: ticketData?.id,
-        });
+        // Check for time conflicts (DISABLED - allow multiple appointments at same time)
+        // console.log("About to check time conflict with:", {
+        //   staffId: values.staffId,
+        //   startTime: appointmentDetails.startTime,
+        //   endTime: appointmentDetails.endTime,
+        //   excludeTicketId: isEditing ? initialData?.ticketId : undefined,
+        //   ticketDataId: ticketData?.id,
+        // });
 
-        const hasConflict = await checkTimeConflict(
-          values.staffId,
-          appointmentDetails.startTime,
-          appointmentDetails.endTime,
-          isEditing ? ticketData?.id || initialData?.ticketId : undefined
-        );
+        // const hasConflict = await checkTimeConflict(
+        //   values.staffId,
+        //   appointmentDetails.startTime,
+        //   appointmentDetails.endTime,
+        //   isEditing ? ticketData?.id || initialData?.ticketId : undefined
+        // );
 
-        if (hasConflict) {
-          toast.error(t("timeConflictError"));
-          return;
-        }
+        // if (hasConflict) {
+        //   toast.error(t("timeConflictError"));
+        //   return;
+        // }
 
         if (isEditing && initialData?.ticketId) {
-          // Update existing appointment
+          // Update existing appointment - single client only
+          const clientId = await getOrCreateClient(values);
+          console.log("Client created/found with ID:", clientId);
+
           await updateAppointment(
             initialData.ticketId,
             clientId,
@@ -624,9 +633,36 @@ export const useAppointmentDetails = ({
           );
           toast.success(t("appointmentUpdatedSuccess"));
         } else {
-          // Create new appointment
-          await createAppointment(clientId, values, appointmentDetails);
-          toast.success(t("appointmentCreatedSuccess"));
+          // Create new appointment(s) - support multiple clients
+          const clientIds: string[] = [];
+
+          // Handle multiple existing clients
+          if (values.existingClientIds && values.existingClientIds.length > 0) {
+            clientIds.push(...values.existingClientIds);
+          } else {
+            // Handle new client creation or single existing client (fallback)
+            const clientId = await getOrCreateClient(values);
+            console.log("Client created/found with ID:", clientId);
+            clientIds.push(clientId);
+          }
+
+          console.log(
+            `Creating ${clientIds.length} appointment(s) for clients:`,
+            clientIds
+          );
+
+          // Create a separate ticket for each client
+          const promises = clientIds.map((clientId) =>
+            createAppointment(clientId, values, appointmentDetails)
+          );
+
+          await Promise.all(promises);
+
+          toast.success(
+            clientIds.length > 1
+              ? `${clientIds.length} appointments created successfully`
+              : t("appointmentCreatedSuccess")
+          );
         }
 
         reset();

@@ -20,6 +20,7 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   resourceId?: string;
+  status?: string; // Added for status-based styling
   ticketData?: {
     clientId: string;
     clientName: string;
@@ -134,10 +135,15 @@ export const useAppointmentCalendar = () => {
               endTime: string;
               staffId: string;
             }) => {
-              const itemName =
-                ticket.items?.[0]?.service?.name ||
-                ticket.items?.[0]?.product?.name ||
-                "Item";
+              // Always prioritize service name, even if products exist
+              const serviceItem = ticket.items?.find((item) => item.service);
+              const serviceName = serviceItem?.service?.name;
+              
+              // Fallback to product if no service exists
+              const productItem = ticket.items?.find((item) => item.product);
+              const productName = productItem?.product?.name;
+              
+              const itemName = serviceName || productName || "Item";
 
               return {
                 id: ticket.id,
@@ -145,6 +151,7 @@ export const useAppointmentCalendar = () => {
                 start: new Date(ticket.startTime),
                 end: new Date(ticket.endTime),
                 resourceId: ticket.staffId,
+                status: ticket.status, // Add status for styling
                 ticketData: {
                   clientId: ticket.clientId,
                   clientName: ticket.client?.name || "Unknown Client",
@@ -270,17 +277,18 @@ export const useAppointmentCalendar = () => {
       const proposedEnd = new Date(data.end);
       const targetStaffId = data.resourceId || data.event.resourceId;
 
-      const hasConflict = checkTimeConflict(
-        proposedStart,
-        proposedEnd,
-        targetStaffId,
-        data.event.id
-      );
+      // DISABLED: Allow multiple appointments at same time
+      // const hasConflict = checkTimeConflict(
+      //   proposedStart,
+      //   proposedEnd,
+      //   targetStaffId,
+      //   data.event.id
+      // );
 
-      if (hasConflict) {
-        toast.error(t("timeConflictError"));
-        return;
-      }
+      // if (hasConflict) {
+      //   toast.error(t("timeConflictError"));
+      //   return;
+      // }
 
       // Optimistically update UI
       const updatedEvents = events.map((existingEvent) => {
@@ -320,7 +328,7 @@ export const useAppointmentCalendar = () => {
         setEvents(events);
       }
     },
-    [events, checkTimeConflict, t]
+    [events, t]
   );
 
   /**

@@ -37,6 +37,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { CustomEvent } from "./CustomEvent";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "@/styles/calendar.css";
@@ -230,6 +231,9 @@ export function AppointmentCalendar() {
               components={{
                 resourceHeader: ({ resource }) => (
                   <CustomResourceHeader resource={resource} />
+                ),
+                event: ({ event }: { event: CalendarEvent }) => (
+                  <CustomEvent event={event} title={event.title} />
                 ),
               }}
             />

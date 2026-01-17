@@ -24,6 +24,7 @@ services:
       - /tmp:rw,noexec,nosuid,nodev
     volumes:
       - uploads_data:/app/public/uploads:rw
+      - cache_data:/app/.next/cache:rw
     security_opt:
       - no-new-privileges:true
     environment:
@@ -37,6 +38,7 @@ services:
 volumes:
   postgres_data:
   uploads_data:
+  cache_data:
 
 networks:
   omnia_network:
