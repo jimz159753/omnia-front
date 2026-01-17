@@ -6,23 +6,23 @@ interface CustomEventProps {
   title: string;
 }
 
-// Status color mapping
+// Status color mapping - matches AppointmentTicketTable status buttons
 const statusColors: Record<string, { bg: string; hover: string }> = {
   Pending: {
-    bg: "#FFA500", // Orange
-    hover: "#FF8C00",
+    bg: "#EAB308", // Yellow (Tailwind yellow-500)
+    hover: "#CA8A04", // Yellow-600
   },
   Confirmed: {
-    bg: "#5faf87", // Green (default)
-    hover: "#4a9a70",
+    bg: "#3B82F6", // Blue (Tailwind blue-500)
+    hover: "#2563EB", // Blue-600
   },
   Completed: {
-    bg: "#4169E1", // Royal Blue
-    hover: "#3557C1",
+    bg: "#22C55E", // Green (Tailwind green-500)
+    hover: "#16A34A", // Green-600
   },
   Cancelled: {
-    bg: "#DC143C", // Crimson Red
-    hover: "#B8112C",
+    bg: "#EF4444", // Red (Tailwind red-500)
+    hover: "#DC2626", // Red-600
   },
   "No Show": {
     bg: "#808080", // Gray
