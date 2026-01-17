@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns } from "./columns";
 import { useTickets } from "@/hooks/useTickets";
@@ -36,6 +36,59 @@ const Sales = () => {
     handleDateFilterChange,
     handleDateSelect,
   } = useTickets();
+
+  // State for metrics
+  const [metrics, setMetrics] = useState({
+    ticketsThisWeek: 0,
+    scheduledServices: 0,
+    activeClients: 0,
+  });
+
+  // Calculate metrics from data
+  useEffect(() => {
+    const calculateMetrics = async () => {
+      try {
+        // Fetch all tickets for accurate metrics
+        const allTicketsRes = await fetch("/api/tickets?pageSize=10000");
+        const allTicketsData = await allTicketsRes.json();
+        const allTickets = allTicketsData?.data?.data || allTicketsData?.data || [];
+
+        // Calculate tickets this week
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+        startOfWeek.setHours(0, 0, 0, 0);
+        
+        const ticketsThisWeek = allTickets.filter((ticket: any) => {
+          const ticketDate = new Date(ticket.createdAt);
+          return ticketDate >= startOfWeek;
+        }).length;
+
+        // Calculate scheduled services (appointments with future startTime)
+        const scheduledServices = allTickets.filter((ticket: any) => {
+          if (!ticket.startTime) return false;
+          const startTime = new Date(ticket.startTime);
+          return startTime > now;
+        }).length;
+
+        // Calculate active clients (unique clients from all tickets)
+        const uniqueClientIds = new Set(
+          allTickets.map((ticket: any) => ticket.clientId).filter(Boolean)
+        );
+        const activeClients = uniqueClientIds.size;
+
+        setMetrics({
+          ticketsThisWeek,
+          scheduledServices,
+          activeClients,
+        });
+      } catch (error) {
+        console.error("Error calculating metrics:", error);
+      }
+    };
+
+    calculateMetrics();
+  }, [data]); // Recalculate when data changes
 
   const exportToCSV = () => {
     try {
@@ -105,20 +158,20 @@ const Sales = () => {
   const squareCards = [
     {
       title: tSales("ticketsThisWeek"),
-      value: "28",
-      description: "+12% from last week",
+      value: metrics.ticketsThisWeek.toString(),
+      description: tSales("ticketsThisWeekDesc") || "Created this week",
       icon: <FiShoppingBag className="w-4 h-4" />,
     },
     {
       title: tSales("scheduledServices"),
-      value: "14",
-      description: "+3 pending this week",
+      value: metrics.scheduledServices.toString(),
+      description: tSales("scheduledServicesDesc") || "Upcoming appointments",
       icon: <FiPackage className="w-4 h-4" />,
     },
     {
       title: tSales("activeClients"),
-      value: "42",
-      description: "+8 new this month",
+      value: metrics.activeClients.toString(),
+      description: tSales("activeClientsDesc") || "Total unique clients",
       icon: <FiUser className="w-4 h-4" />,
     },
   ];
