@@ -207,10 +207,11 @@ export const useAppointmentDetails = ({
           // Set the initial status when loading ticket data
           setSelectedStatus(ticket.status || "Pending");
 
-          // Set client selection when loading ticket
+          // Set client selection when loading ticket (for both single and multi-select)
           if (ticket.client?.id) {
             console.log("Setting client from ticket:", ticket.client.id);
             setValue("existingClientId", ticket.client.id);
+            setValue("existingClientIds", [ticket.client.id]); // Set as array for multi-select
             setExistingClientId(ticket.client.id);
           }
         }
