@@ -40,10 +40,11 @@ model Ticket {
   status    String
   notes     String          @default("")
   discount  Float           @default(0) // Discount percentage (0-100)
-  startTime DateTime?
-  endTime   DateTime?
-  duration  Int?            @map("duration") // Duration in minutes
-  products  TicketProduct[]
+  startTime             DateTime?
+  endTime               DateTime?
+  duration              Int?            @map("duration") // Duration in minutes
+  googleCalendarEventId String? // Google Calendar event ID for sync
+  products              TicketProduct[]
   services  TicketService[]
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt

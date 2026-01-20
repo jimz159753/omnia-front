@@ -30,6 +30,11 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      # Google Calendar API (Optional - for appointment sync)
+      # See GOOGLE_CALENDAR_SETUP.md for setup instructions
+      GOOGLE_SERVICE_ACCOUNT_EMAIL: ${GOOGLE_SERVICE_ACCOUNT_EMAIL:-}
+      GOOGLE_PRIVATE_KEY: ${GOOGLE_PRIVATE_KEY:-}
+      GOOGLE_CALENDAR_ID: ${GOOGLE_CALENDAR_ID:-primary}
     depends_on:
       - db
     networks:

@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {
+  createGoogleCalendarEvent,
+  updateGoogleCalendarEvent,
+  deleteGoogleCalendarEvent,
+  GoogleCalendarEvent,
+} from "@/services/googleCalendarService";
 
 const randomSegment = (length = 6) => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -523,6 +529,47 @@ export async function POST(request: NextRequest) {
       ...ticketWithoutArrays
     } = transformedTicket;
 
+    // ✅ SYNC TO GOOGLE CALENDAR (only if appointment)
+    if (ticket.startTime && ticket.endTime) {
+      const service = ticket.services[0]?.service;
+      const serviceName = service?.name || "Appointment";
+      const clientName = ticket.client?.name || "Client";
+      const staffName = ticket.staff?.name || "Staff";
+
+      const googleEvent: GoogleCalendarEvent = {
+        summary: `${serviceName} - ${clientName}`,
+        description: `Staff: ${staffName}\nStatus: ${ticket.status}\nNotes: ${ticket.notes || "N/A"}`,
+        start: {
+          dateTime: ticket.startTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        end: {
+          dateTime: ticket.endTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        // Don't add attendees for service accounts (requires Domain-Wide Delegation)
+        // Client info is in the description instead
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: "popup", minutes: 30 }, // 30 min before
+          ],
+        },
+      };
+
+      const googleEventId = await createGoogleCalendarEvent(googleEvent);
+
+      // Save the Google Calendar event ID to the ticket
+      if (googleEventId) {
+        await prisma.ticket.update({
+          where: { id: ticket.id },
+          data: { googleCalendarEventId: googleEventId },
+        });
+        // Add to response
+        ticketWithoutArrays.googleCalendarEventId = googleEventId;
+      }
+    }
+
     return NextResponse.json(
       { data: ticketWithoutArrays, message: "Ticket created successfully" },
       { status: 201 }
@@ -739,6 +786,53 @@ export async function PUT(request: NextRequest) {
       ...ticketWithoutArrays
     } = transformedTicket;
 
+    // ✅ SYNC TO GOOGLE CALENDAR (only if appointment)
+    if (updatedTicket.startTime && updatedTicket.endTime) {
+      const service = updatedTicket.services[0]?.service;
+      const serviceName = service?.name || "Appointment";
+      const clientName = updatedTicket.client?.name || "Client";
+      const staffName = updatedTicket.staff?.name || "Staff";
+
+      const googleEvent: GoogleCalendarEvent = {
+        summary: `${serviceName} - ${clientName}`,
+        description: `Staff: ${staffName}\nStatus: ${updatedTicket.status}\nNotes: ${updatedTicket.notes || "N/A"}`,
+        start: {
+          dateTime: updatedTicket.startTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        end: {
+          dateTime: updatedTicket.endTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        // Don't add attendees for service accounts (requires Domain-Wide Delegation)
+        // Client info is in the description instead
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: "popup", minutes: 30 }, // 30 min before
+          ],
+        },
+      };
+
+      if (updatedTicket.googleCalendarEventId) {
+        // Update existing event
+        await updateGoogleCalendarEvent(
+          updatedTicket.googleCalendarEventId,
+          googleEvent
+        );
+      } else {
+        // Create new event if it doesn't exist
+        const googleEventId = await createGoogleCalendarEvent(googleEvent);
+        if (googleEventId) {
+          await prisma.ticket.update({
+            where: { id: updatedTicket.id },
+            data: { googleCalendarEventId: googleEventId },
+          });
+          ticketWithoutArrays.googleCalendarEventId = googleEventId;
+        }
+      }
+    }
+
     return NextResponse.json(
       { data: ticketWithoutArrays, message: "Ticket updated successfully" },
       { status: 200 }
@@ -769,6 +863,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // Get ticket to retrieve Google Calendar event ID
+    const ticket = await prisma.ticket.findUnique({
+      where: { id },
+      select: { googleCalendarEventId: true },
+    });
+
     // First delete related ticket products and services
     await Promise.all([
       prisma.ticketProduct.deleteMany({ where: { ticketId: id } }),
@@ -779,6 +879,11 @@ export async function DELETE(request: NextRequest) {
     await prisma.ticket.delete({
       where: { id },
     });
+
+    // ✅ DELETE FROM GOOGLE CALENDAR
+    if (ticket?.googleCalendarEventId) {
+      await deleteGoogleCalendarEvent(ticket.googleCalendarEventId);
+    }
 
     return NextResponse.json(
       { message: "Ticket deleted successfully" },
