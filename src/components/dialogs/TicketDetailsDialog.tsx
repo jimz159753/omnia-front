@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import { TicketDialogHeader } from "./ticket/TicketDialogHeader";
@@ -64,6 +64,7 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
   const { t } = useTranslation("sales");
   const { business } = useBusiness(open);
   const { dateStr, timeStr } = formatTicketDateTime(ticket?.createdAt);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   // 2. Event handlers (using useCallback for optimization)
   const handleDownloadPdf = useCallback(async () => {
@@ -91,10 +92,49 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
     }
   }, [ticket, business, t]);
 
-  const handleSendEmail = useCallback(() => {
-    // TODO: Implement email functionality
-    console.log("Send email:", ticket?.id);
-  }, [ticket?.id]);
+  const handleSendEmail = useCallback(async () => {
+    if (!ticket?.id) {
+      toast.error(t("noTicketData") || "No ticket data available");
+      return;
+    }
+
+    // Check if client has email
+    if (!ticket.client?.email) {
+      toast.error(t("noClientEmail") || "Client does not have an email address");
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const response = await fetch("/api/email/send-ticket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ticketId: ticket.id,
+          recipientEmail: ticket.client.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send email");
+      }
+
+      toast.success(t("emailSentSuccess") || `Email sent to ${data.sentTo}`);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("emailSentError") || "Failed to send email"
+      );
+    } finally {
+      setIsSendingEmail(false);
+    }
+  }, [ticket, t]);
 
   // 3. Early returns
   if (!ticket) {
@@ -111,6 +151,7 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
           onSendEmail={handleSendEmail}
           pdfLabel={t("pdf")}
           emailLabel={t("email")}
+          isEmailLoading={isSendingEmail}
         />
 
         <div className="flex flex-col gap-2 items-center justify-center p-6">

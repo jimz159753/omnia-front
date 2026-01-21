@@ -32,6 +32,11 @@
   "totalLabel": "TOTAL",
   "thanks": "THANKS FOR YOUR PURCHASE!",
   "pdfDownloadSuccess": "PDF downloaded successfully",
-  "pdfDownloadError": "Failed to download PDF"
+  "pdfDownloadError": "Failed to download PDF",
+  "noTicketData": "No ticket data available",
+  "noClientEmail": "Client does not have an email address",
+  "emailSentSuccess": "Email sent successfully",
+  "emailSentError": "Failed to send email",
+  "sendingEmail": "Sending..."
 }
 
