@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { BiBuilding, BiLogoWhatsapp, BiUser } from "react-icons/bi";
+import { FcGoogle } from "react-icons/fc";
 
 export default function SettingsLayout({
   children,
@@ -48,6 +49,16 @@ export default function SettingsLayout({
         },
         { path: "/dashboard/settings/credits", label: t("whatsappCredits") },
         { path: "/dashboard/settings/chatbot", label: t("whatsappChatBot") },
+      ],
+    },
+    {
+      header: t("googleHeader"),
+      icon: <FcGoogle className="w-5 h-5" />,
+      items: [
+        {
+          path: "/dashboard/settings/google-calendar",
+          label: t("googleCalendar"),
+        },
       ],
     },
   ];

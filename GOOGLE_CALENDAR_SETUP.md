@@ -1,13 +1,24 @@
 # Google Calendar Integration Setup
 
-This application supports automatic synchronization of appointments to Google Calendar. This is an **optional feature** - the app works perfectly without it.
+This application supports two types of Google Calendar integration:
+
+1. **Service Account** (automatic appointment sync to a specific calendar)
+2. **OAuth2 User Authentication** (users can connect their own Google accounts and manage multiple calendars)
+
+Both are **optional features** - the app works perfectly without them.
 
 ## What Gets Synced?
 
 - ✅ **Appointments only** (tickets with `startTime` and `endTime`)
 - ❌ **NOT synced**: Regular sales/tickets without scheduled times
 
-## Setup Instructions
+---
+
+## Part A: Service Account Setup (Appointment Sync)
+
+This section covers setting up automatic appointment synchronization to a specific Google Calendar.
+
+### Setup Instructions
 
 ### 1. Create a Google Cloud Project
 
@@ -163,8 +174,102 @@ The integration gracefully skips sync operations if credentials are not configur
 - Regularly rotate service account keys
 - Use minimal permissions (only Calendar API access needed)
 
+---
+
+## Part B: OAuth2 User Authentication (Calendar Management)
+
+This section covers setting up OAuth2 authentication so users can connect their own Google accounts and manage multiple calendars from the app settings.
+
+### 1. Create OAuth 2.0 Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your project (or use the same one from Part A)
+3. Go to **APIs & Services** > **Credentials**
+4. Click **Create Credentials** > **OAuth client ID**
+5. If prompted, configure the OAuth consent screen:
+   - **User Type**: External (or Internal if using Google Workspace)
+   - **App name**: Omnia App (or your app name)
+   - **User support email**: Your email
+   - **Developer contact**: Your email
+   - **Scopes**: Add `https://www.googleapis.com/auth/calendar` and `https://www.googleapis.com/auth/calendar.events`
+   - **Test users**: Add your email (for testing)
+6. After configuring consent screen, create OAuth client ID:
+   - **Application type**: Web application
+   - **Name**: Omnia Web Client (or any name)
+   - **Authorized redirect URIs**: Add:
+     - `http://localhost:3000/api/google-calendar/oauth/callback` (for local development)
+     - `https://yourdomain.com/api/google-calendar/oauth/callback` (for production)
+7. Click **Create**
+8. Download or copy the **Client ID** and **Client Secret**
+
+### 2. Add OAuth Environment Variables
+
+Add these variables to your `.env` file:
+
+```bash
+# Google OAuth 2.0 (for user calendar management)
+GOOGLE_OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_OAUTH_CLIENT_SECRET=your-client-secret
+NEXT_PUBLIC_URL=http://localhost:3000  # or your production URL
+```
+
+### 3. Update Docker Environment (if using Docker)
+
+The OAuth environment variables are already configured in `compose.yaml`. Make sure your `.env` file contains the variables above.
+
+### 4. Restart the Application
+
+```bash
+npm run dev
+# or if using Docker:
+docker compose down
+docker compose up --build -d
+```
+
+### 5. Connect Google Account in Settings
+
+1. Navigate to **Settings** > **Google** > **Google Calendar**
+2. Click **Connect Google Calendar**
+3. Sign in with your Google account
+4. Grant the requested permissions
+5. You'll be redirected back to the settings page
+6. Your calendars will be automatically synced
+
+### 6. Manage Calendars
+
+From the Google Calendar settings page, you can:
+- **View all your calendars** with their current colors
+- **Create new calendars** with custom names, descriptions, and colors
+- **Change calendar colors** by clicking the color circles
+- **Enable/disable calendars** for sync
+- **Disconnect your Google account** if needed
+
+## How OAuth2 Integration Works
+
+### User Authentication
+1. User clicks "Connect Google Calendar" in settings
+2. User is redirected to Google's OAuth consent screen
+3. User grants calendar access permissions
+4. Google redirects back with an authorization code
+5. App exchanges code for access and refresh tokens
+6. Tokens are securely stored in the database
+7. User's calendars are automatically fetched and saved
+
+### Token Management
+- Access tokens expire after 1 hour
+- Refresh tokens are used to automatically get new access tokens
+- Token refresh happens transparently when needed
+- Tokens are stored encrypted in the database
+
+### Calendar Operations
+- **List Calendars**: Fetched from database (synced from Google)
+- **Create Calendar**: Creates in Google Calendar and saves to database
+- **Update Color**: Updates both Google Calendar and database
+- **Enable/Disable**: Controls which calendars are shown in the app
+
 ## Support
 
 For issues with Google Calendar API, refer to:
 - [Google Calendar API Documentation](https://developers.google.com/calendar)
 - [Service Accounts Documentation](https://cloud.google.com/iam/docs/service-accounts)
+- [OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)

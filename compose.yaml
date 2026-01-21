@@ -27,14 +27,20 @@ services:
       - cache_data:/app/.next/cache:rw
     security_opt:
       - no-new-privileges:true
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-      # Google Calendar API (Optional - for appointment sync)
+      # Google Calendar API (Service Account - for appointment sync)
       # See GOOGLE_CALENDAR_SETUP.md for setup instructions
       GOOGLE_SERVICE_ACCOUNT_EMAIL: ${GOOGLE_SERVICE_ACCOUNT_EMAIL:-}
       GOOGLE_PRIVATE_KEY: ${GOOGLE_PRIVATE_KEY:-}
       GOOGLE_CALENDAR_ID: ${GOOGLE_CALENDAR_ID:-primary}
+      # Google Calendar OAuth (User authentication - for calendar management)
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
+      NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:-http://localhost:3000}
     depends_on:
       - db
     networks:

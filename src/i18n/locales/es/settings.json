@@ -145,5 +145,7 @@
   "userDeleteError": "Error al eliminar usuario",
   "usersLoadError": "Error al cargar usuarios",
   "confirmDeleteUser": "¿Estás seguro de que deseas eliminar este usuario?",
-  "leaveBlankToKeep": "Dejar en blanco para mantener la contraseña actual"
+  "leaveBlankToKeep": "Dejar en blanco para mantener la contraseña actual",
+  "googleHeader": "GOOGLE",
+  "googleCalendar": "Google Calendar"
 }
