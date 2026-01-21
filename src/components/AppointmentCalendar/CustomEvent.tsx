@@ -142,6 +142,8 @@ export const CustomEvent: React.FC<CustomEventProps> = ({ event, title }) => {
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             lineHeight: 1.3,
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
           }}
         >
           {clientName || title}
@@ -159,6 +161,8 @@ export const CustomEvent: React.FC<CustomEventProps> = ({ event, title }) => {
               whiteSpace: "nowrap",
               lineHeight: 1.3,
               marginTop: "2px",
+              textTransform: "uppercase",
+              letterSpacing: "0.3px",
             }}
           >
             {serviceName}
