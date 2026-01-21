@@ -23,35 +23,37 @@
    ============================================ */
 
 .rbc-event {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s ease-in-out;
   border: none !important;
   border-radius: 6px !important;
-  padding: 6px 10px !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  overflow: visible !important;
 }
 
 .rbc-event:hover {
   cursor: grab;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-  transform: translateY(-1px);
+  z-index: 10 !important;
 }
 
 .rbc-event-label {
-  color: white !important;
-  font-size: 12px !important;
+  display: none !important;
 }
 
 .rbc-event-content {
-  color: white !important;
-  font-weight: 500;
-  font-size: 13px !important;
-  line-height: 1.4 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* When actively dragging */
 .rbc-event:active {
   cursor: grabbing;
-  transform: scale(0.98);
+}
+
+/* Remove default selected styles */
+.rbc-selected {
+  background-color: transparent !important;
 }
 
 .rbc-events-container button {
