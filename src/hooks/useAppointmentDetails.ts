@@ -70,6 +70,9 @@ export interface UseAppointmentDetailsProps {
 export interface TicketData {
   id: string;
   status: string;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  duration?: number;
   client: {
     id: string;
     name: string;
@@ -603,12 +606,58 @@ export const useAppointmentDetails = ({
       );
 
       try {
-        const appointmentDetails = calculateAppointmentDetails(
-          values.serviceId,
-          selectedDate,
-          selectedTime
-        );
-        console.log("Appointment details calculated:", appointmentDetails);
+        // When editing, check if times have actually changed
+        let appointmentDetails;
+        let timesChanged = false;
+        
+        if (isEditing && ticketData && ticketData.startTime && ticketData.endTime) {
+          // Check if the user has changed the time
+          const originalStartTime = new Date(ticketData.startTime);
+          
+          if (selectedDate && selectedTime) {
+            const [hours, minutes] = selectedTime.split(":").map(Number);
+            const newStartTime = new Date(selectedDate);
+            newStartTime.setHours(hours, minutes, 0, 0);
+            
+            // Compare timestamps - if they're different, times were changed
+            timesChanged = originalStartTime.getTime() !== newStartTime.getTime();
+          }
+          
+          if (!timesChanged) {
+            // Preserve original times and duration
+            const startTime = new Date(ticketData.startTime);
+            const endTime = new Date(ticketData.endTime);
+            const durationInMinutes = ticketData.duration || Math.round((endTime.getTime() - startTime.getTime()) / 60000);
+            
+            appointmentDetails = {
+              unitPrice: ticketData.total || 0,
+              startTime,
+              endTime,
+              durationInMinutes,
+            };
+            console.log("✅ Preserving original appointment times and duration:", {
+              startTime: startTime.toISOString(),
+              endTime: endTime.toISOString(),
+              durationInMinutes
+            });
+          } else {
+            // Times were changed, calculate new end time
+            appointmentDetails = calculateAppointmentDetails(
+              values.serviceId,
+              selectedDate,
+              selectedTime
+            );
+            console.log("⏰ Times changed, calculated new appointment details:", appointmentDetails);
+          }
+        } else {
+          // Creating new appointment
+          appointmentDetails = calculateAppointmentDetails(
+            values.serviceId,
+            selectedDate,
+            selectedTime
+          );
+          console.log("🆕 Creating new appointment with details:", appointmentDetails);
+        }
 
         // Check for time conflicts (DISABLED - allow multiple appointments at same time)
         // console.log("About to check time conflict with:", {

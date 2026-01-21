@@ -19,7 +19,7 @@
 /* Calendar Event Styling */
 .rbc-event {
   transition: opacity 0.2s ease-in-out;
-  background-color: #5faf87 !important;
+  /* Background color is now managed by CustomEvent component based on Google Calendar or status */
   border: none !important;
   border-radius: 4px !important;
   padding: 4px 8px !important;
@@ -27,7 +27,7 @@
 
 .rbc-event:hover {
   cursor: grab;
-  background-color: #4a9a70 !important;
+  /* Hover color is now managed by CustomEvent component */
 }
 
 .rbc-event-label {

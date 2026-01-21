@@ -30,15 +30,44 @@ const statusColors: Record<string, { bg: string; hover: string }> = {
   },
 };
 
+// Helper function to darken a color for hover effect
+const darkenColor = (color: string, amount: number = 20): string => {
+  // Convert hex to RGB
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  // Darken each component
+  const newR = Math.max(0, r - amount);
+  const newG = Math.max(0, g - amount);
+  const newB = Math.max(0, b - amount);
+  
+  // Convert back to hex
+  return `#${newR.toString(16).padStart(2, "0")}${newG.toString(16).padStart(2, "0")}${newB.toString(16).padStart(2, "0")}`;
+};
+
 export const CustomEvent: React.FC<CustomEventProps> = ({ event, title }) => {
   const status = event.status || "Pending";
-  const colors = statusColors[status] || statusColors.Pending;
+  
+  // Use Google Calendar color if available, otherwise use status colors
+  let bgColor: string;
+  let hoverColor: string;
+  
+  if (event.backgroundColor) {
+    bgColor = event.backgroundColor;
+    hoverColor = darkenColor(event.backgroundColor);
+  } else {
+    const colors = statusColors[status] || statusColors.Pending;
+    bgColor = colors.bg;
+    hoverColor = colors.hover;
+  }
 
   return (
     <div
       className="custom-event"
       style={{
-        backgroundColor: colors.bg,
+        backgroundColor: bgColor,
         height: "100%",
         padding: "4px 8px",
         borderRadius: "4px",
@@ -50,10 +79,10 @@ export const CustomEvent: React.FC<CustomEventProps> = ({ event, title }) => {
         cursor: "grab",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = colors.hover;
+        e.currentTarget.style.backgroundColor = hoverColor;
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = colors.bg;
+        e.currentTarget.style.backgroundColor = bgColor;
       }}
     >
       {title}

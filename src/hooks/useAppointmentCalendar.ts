@@ -21,6 +21,7 @@ export interface CalendarEvent {
   end: Date;
   resourceId?: string;
   status?: string; // Added for status-based styling
+  backgroundColor?: string; // Google Calendar color
   ticketData?: {
     clientId: string;
     clientName: string;
@@ -118,6 +119,24 @@ export const useAppointmentCalendar = () => {
               ticket.startTime && ticket.endTime
           );
 
+          // Fetch calendar colors for appointments with googleCalendarId
+          const calendarColorMap: Record<string, string> = {};
+          try {
+            const calendarsRes = await fetch("/api/google-calendar/calendars");
+            if (calendarsRes.ok) {
+              const calendarsData = await calendarsRes.json();
+              console.log("📅 Fetched calendar data:", calendarsData);
+              if (calendarsData.calendars) {
+                calendarsData.calendars.forEach((calendar: { calendarId: string; backgroundColor: string }) => {
+                  calendarColorMap[calendar.calendarId] = calendar.backgroundColor;
+                });
+                console.log("🎨 Calendar color map:", calendarColorMap);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to fetch calendar colors:", error);
+          }
+
           const calendarEvents = appointmentsOnly.map(
             (ticket: {
               id: string;
@@ -134,6 +153,7 @@ export const useAppointmentCalendar = () => {
               startTime: string;
               endTime: string;
               staffId: string;
+              googleCalendarId?: string;
             }) => {
               // Always prioritize service name, even if products exist
               const serviceItem = ticket.items?.find((item) => item.service);
@@ -145,6 +165,16 @@ export const useAppointmentCalendar = () => {
               
               const itemName = serviceName || productName || "Item";
 
+              // Get calendar color if available
+              const backgroundColor = ticket.googleCalendarId
+                ? calendarColorMap[ticket.googleCalendarId]
+                : undefined;
+
+              // Debug logging
+              if (ticket.googleCalendarId) {
+                console.log(`🎯 Ticket ${ticket.id} has googleCalendarId: ${ticket.googleCalendarId}, color: ${backgroundColor}`);
+              }
+
               return {
                 id: ticket.id,
                 title: `${ticket.client?.name || "Client"} - ${itemName}`,
@@ -152,6 +182,7 @@ export const useAppointmentCalendar = () => {
                 end: new Date(ticket.endTime),
                 resourceId: ticket.staffId,
                 status: ticket.status, // Add status for styling
+                backgroundColor, // Google Calendar color
                 ticketData: {
                   clientId: ticket.clientId,
                   clientName: ticket.client?.name || "Unknown Client",
@@ -162,6 +193,10 @@ export const useAppointmentCalendar = () => {
               };
             }
           );
+          
+          console.log("📊 Total calendar events:", calendarEvents.length);
+          console.log("🎨 Events with colors:", calendarEvents.filter((e: CalendarEvent) => e.backgroundColor).length);
+          
           setEvents(calendarEvents);
         } else {
           setEvents([]);
