@@ -34,6 +34,7 @@ export interface AppointmentFormValues {
   clientAddress: string;
   existingClientId: string;
   existingClientIds: string[]; // Array of client IDs for multi-select
+  googleCalendarId: string; // Selected Google Calendar ID
 }
 
 export interface UseAppointmentDetailsProps {
@@ -139,6 +140,7 @@ export const useAppointmentDetails = ({
       clientAddress: "",
       existingClientId: "",
       existingClientIds: [],
+      googleCalendarId: "",
     },
   });
 
@@ -427,6 +429,7 @@ export const useAppointmentDetails = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           duration: durationInMinutes,
+          googleCalendarId: values.googleCalendarId || undefined,
         }),
       });
 

@@ -3,6 +3,7 @@ import {
   UseFormRegister,
   Control,
   FieldErrors,
+  UseFormSetValue,
 } from "react-hook-form";
 import {
   Select,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
+import { GoogleCalendarSelector } from "./GoogleCalendarSelector";
 import type {
   Service,
   User,
@@ -28,6 +30,9 @@ interface AppointmentDetailsSectionProps {
   includeNotes: boolean;
   setIncludeNotes: (value: boolean) => void;
   selectedServiceId: string;
+  userId: string;
+  setValue: UseFormSetValue<AppointmentFormValues>;
+  selectedCalendarId?: string;
 }
 
 /**
@@ -43,6 +48,9 @@ export const AppointmentDetailsSection = ({
   includeNotes,
   setIncludeNotes,
   selectedServiceId,
+  userId,
+  setValue,
+  selectedCalendarId,
 }: AppointmentDetailsSectionProps) => {
   const { t } = useTranslation("common");
 
@@ -193,6 +201,16 @@ export const AppointmentDetailsSection = ({
           />
         </div>
       )}
+
+      {/* Google Calendar Selector */}
+      <div className="border-t pt-4">
+        <GoogleCalendarSelector
+          value={selectedCalendarId}
+          onChange={(calendarId) => setValue("googleCalendarId", calendarId)}
+          userId={userId}
+          error={errors.googleCalendarId?.message}
+        />
+      </div>
     </div>
   );
 };

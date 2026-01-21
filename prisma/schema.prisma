@@ -44,6 +44,7 @@ model Ticket {
   endTime               DateTime?
   duration              Int?            @map("duration") // Duration in minutes
   googleCalendarEventId String? // Google Calendar event ID for sync
+  googleCalendarId      String? // Which Google Calendar to save to (calendarId from GoogleCalendar table)
   products              TicketProduct[]
   services  TicketService[]
   createdAt DateTime        @default(now())

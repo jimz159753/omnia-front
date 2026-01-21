@@ -130,6 +130,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // 🔥 AUTO-SHARE: Share new calendar with service account
+    const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    if (serviceAccountEmail && newCalendar.id) {
+      try {
+        await calendar.acl.insert({
+          calendarId: newCalendar.id,
+          requestBody: {
+            role: "writer", // Can create/edit/delete events
+            scope: {
+              type: "user",
+              value: serviceAccountEmail,
+            },
+          },
+        });
+        console.log(`✅ Auto-shared new calendar "${name}" with service account`);
+      } catch (aclError) {
+        console.error(`⚠️ Could not share new calendar "${name}":`, aclError);
+        // Continue even if sharing fails
+      }
+    }
+
     // Save to database
     const googleAccount = await prisma.googleAccount.findUnique({
       where: { userId },

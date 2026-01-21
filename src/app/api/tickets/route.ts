@@ -292,6 +292,7 @@ export async function POST(request: NextRequest) {
       startTime,
       endTime,
       duration,
+      googleCalendarId,
     } = body;
 
     if (!clientId || !staffId || !status) {
@@ -462,6 +463,7 @@ export async function POST(request: NextRequest) {
           startTime: startTime ? new Date(startTime) : null,
           endTime: endTime ? new Date(endTime) : null,
           duration: durationInMinutes,
+          googleCalendarId: googleCalendarId || null,
           ...(productItems.length > 0 && {
             products: {
               create: productItems,
@@ -557,7 +559,10 @@ export async function POST(request: NextRequest) {
         },
       };
 
-      const googleEventId = await createGoogleCalendarEvent(googleEvent);
+      const googleEventId = await createGoogleCalendarEvent(
+        googleEvent,
+        ticket.googleCalendarId || undefined
+      );
 
       // Save the Google Calendar event ID to the ticket
       if (googleEventId) {
@@ -818,11 +823,15 @@ export async function PUT(request: NextRequest) {
         // Update existing event
         await updateGoogleCalendarEvent(
           updatedTicket.googleCalendarEventId,
-          googleEvent
+          googleEvent,
+          updatedTicket.googleCalendarId || undefined
         );
       } else {
         // Create new event if it doesn't exist
-        const googleEventId = await createGoogleCalendarEvent(googleEvent);
+        const googleEventId = await createGoogleCalendarEvent(
+          googleEvent,
+          updatedTicket.googleCalendarId || undefined
+        );
         if (googleEventId) {
           await prisma.ticket.update({
             where: { id: updatedTicket.id },
@@ -863,10 +872,10 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Get ticket to retrieve Google Calendar event ID
+    // Get ticket to retrieve Google Calendar event ID and calendar ID
     const ticket = await prisma.ticket.findUnique({
       where: { id },
-      select: { googleCalendarEventId: true },
+      select: { googleCalendarEventId: true, googleCalendarId: true },
     });
 
     // First delete related ticket products and services
@@ -882,7 +891,10 @@ export async function DELETE(request: NextRequest) {
 
     // ✅ DELETE FROM GOOGLE CALENDAR
     if (ticket?.googleCalendarEventId) {
-      await deleteGoogleCalendarEvent(ticket.googleCalendarEventId);
+      await deleteGoogleCalendarEvent(
+        ticket.googleCalendarEventId,
+        ticket.googleCalendarId || undefined
+      );
     }
 
     return NextResponse.json(

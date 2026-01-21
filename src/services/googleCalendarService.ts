@@ -36,9 +36,12 @@ export interface GoogleCalendarEvent {
 
 /**
  * Create a Google Calendar event
+ * @param eventData - Event details
+ * @param targetCalendarId - Optional calendar ID from GoogleCalendar table (user-selected calendar)
  */
 export const createGoogleCalendarEvent = async (
-  eventData: GoogleCalendarEvent
+  eventData: GoogleCalendarEvent,
+  targetCalendarId?: string
 ): Promise<string | null> => {
   try {
     // Skip if Google Calendar is not configured
@@ -48,7 +51,8 @@ export const createGoogleCalendarEvent = async (
     }
 
     const auth = getAuthClient();
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || 'primary';
+    // Use provided calendar ID, fallback to env var, then to 'primary'
+    const calendarId = targetCalendarId || process.env.GOOGLE_CALENDAR_ID || 'primary';
     const calendar = google.calendar({ version: 'v3', auth });
 
     const response = await calendar.events.insert({
@@ -56,7 +60,7 @@ export const createGoogleCalendarEvent = async (
       requestBody: eventData,
     });
 
-    console.log('Google Calendar event created:', response.data.id);
+    console.log('Google Calendar event created:', response.data.id, 'in calendar:', calendarId);
     return response.data.id || null;
   } catch (error) {
     console.error('Error creating Google Calendar event:', error);
@@ -66,10 +70,14 @@ export const createGoogleCalendarEvent = async (
 
 /**
  * Update a Google Calendar event
+ * @param eventId - Google Calendar event ID
+ * @param eventData - Updated event details
+ * @param targetCalendarId - Optional calendar ID from GoogleCalendar table
  */
 export const updateGoogleCalendarEvent = async (
   eventId: string,
-  eventData: GoogleCalendarEvent
+  eventData: GoogleCalendarEvent,
+  targetCalendarId?: string
 ): Promise<boolean> => {
   try {
     // Skip if Google Calendar is not configured
@@ -79,7 +87,8 @@ export const updateGoogleCalendarEvent = async (
     }
 
     const auth = getAuthClient();
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || 'primary';
+    // Use provided calendar ID, fallback to env var, then to 'primary'
+    const calendarId = targetCalendarId || process.env.GOOGLE_CALENDAR_ID || 'primary';
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.update({
@@ -88,7 +97,7 @@ export const updateGoogleCalendarEvent = async (
       requestBody: eventData,
     });
 
-    console.log('Google Calendar event updated:', eventId);
+    console.log('Google Calendar event updated:', eventId, 'in calendar:', calendarId);
     return true;
   } catch (error) {
     console.error('Error updating Google Calendar event:', error);
@@ -98,9 +107,12 @@ export const updateGoogleCalendarEvent = async (
 
 /**
  * Delete a Google Calendar event
+ * @param eventId - Google Calendar event ID
+ * @param targetCalendarId - Optional calendar ID from GoogleCalendar table
  */
 export const deleteGoogleCalendarEvent = async (
-  eventId: string
+  eventId: string,
+  targetCalendarId?: string
 ): Promise<boolean> => {
   try {
     // Skip if Google Calendar is not configured
@@ -110,7 +122,8 @@ export const deleteGoogleCalendarEvent = async (
     }
 
     const auth = getAuthClient();
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || 'primary';
+    // Use provided calendar ID, fallback to env var, then to 'primary'
+    const calendarId = targetCalendarId || process.env.GOOGLE_CALENDAR_ID || 'primary';
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({
@@ -118,7 +131,7 @@ export const deleteGoogleCalendarEvent = async (
       eventId,
     });
 
-    console.log('Google Calendar event deleted:', eventId);
+    console.log('Google Calendar event deleted:', eventId, 'from calendar:', calendarId);
     return true;
   } catch (error) {
     console.error('Error deleting Google Calendar event:', error);

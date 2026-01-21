@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
@@ -38,6 +39,7 @@ export function AppointmentFormDialog({
   initialData,
 }: AppointmentFormDialogProps) {
   const { t } = useTranslation("common");
+  const { user } = useAuth();
 
   // State for date and time pickers
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -274,6 +276,9 @@ export function AppointmentFormDialog({
                       includeNotes={includeNotes}
                       setIncludeNotes={setIncludeNotes}
                       selectedServiceId={watch("serviceId")}
+                      userId={user?.id || ""}
+                      setValue={setValue}
+                      selectedCalendarId={watch("googleCalendarId")}
                     />
                   )}
                 </div>

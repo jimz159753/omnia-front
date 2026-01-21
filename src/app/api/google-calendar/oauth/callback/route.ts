@@ -92,14 +92,18 @@ export async function GET(request: NextRequest) {
     const calendarsResponse = await calendar.calendarList.list();
     const calendars = calendarsResponse.data.items || [];
 
+    // Get service account email from environment
+    const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+
     const googleAccount = await prisma.googleAccount.findUnique({
       where: { userId },
     });
 
     if (googleAccount) {
-      // Save calendars to database
+      // Save calendars to database AND share with service account
       for (const cal of calendars) {
         if (cal.id) {
+          // Save to database
           await prisma.googleCalendar.upsert({
             where: { calendarId: cal.id },
             update: {
@@ -117,6 +121,43 @@ export async function GET(request: NextRequest) {
               isPrimary: cal.primary || false,
             },
           });
+
+          // 🔥 AUTO-SHARE: Add service account as writer to the calendar
+          if (serviceAccountEmail && cal.id !== "primary") {
+            try {
+              // Check if service account already has access
+              const existingAcl = await calendar.acl.list({
+                calendarId: cal.id,
+              });
+
+              const alreadyShared = existingAcl.data.items?.some(
+                (rule) => rule.scope?.value === serviceAccountEmail
+              );
+
+              if (!alreadyShared) {
+                // Share calendar with service account
+                await calendar.acl.insert({
+                  calendarId: cal.id,
+                  requestBody: {
+                    role: "writer", // Can create/edit/delete events
+                    scope: {
+                      type: "user",
+                      value: serviceAccountEmail,
+                    },
+                  },
+                });
+                console.log(`✅ Shared calendar "${cal.summary}" with service account`);
+              } else {
+                console.log(`✓ Calendar "${cal.summary}" already shared with service account`);
+              }
+            } catch (aclError) {
+              console.error(
+                `⚠️ Could not share calendar "${cal.summary}":`,
+                aclError
+              );
+              // Continue even if sharing fails - not critical
+            }
+          }
         }
       }
     }
