@@ -609,6 +609,7 @@ export async function PUT(request: NextRequest) {
       total,
       duration,
       status,
+      googleCalendarId,
     } = body;
 
     console.log("PUT /api/tickets - Updating ticket:", id, body);
@@ -631,6 +632,7 @@ export async function PUT(request: NextRequest) {
       quantity?: number;
       total?: number;
       status?: string;
+      googleCalendarId?: string | null;
     } = {};
 
     let startDate: Date | null = null;
@@ -664,6 +666,9 @@ export async function PUT(request: NextRequest) {
     }
     if (status !== undefined) {
       updateData.status = status;
+    }
+    if (googleCalendarId !== undefined) {
+      updateData.googleCalendarId = googleCalendarId || null;
     }
 
     // Calculate duration if both times are being updated

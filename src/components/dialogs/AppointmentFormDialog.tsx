@@ -8,6 +8,7 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
+import { GoogleCalendarSelector } from "./appointment/GoogleCalendarSelector";
 import {
   AppointmentTicketTable,
   type NewTicketItem,
@@ -265,21 +266,36 @@ export function AppointmentFormDialog({
                       errors={errors}
                       users={users}
                       products={products}
+                      userId={user?.id}
+                      googleCalendarId={watch("googleCalendarId")}
+                      onGoogleCalendarChange={(calendarId) =>
+                        setValue("googleCalendarId", calendarId)
+                      }
                     />
                   ) : (
-                    <AppointmentDetailsSection
-                      control={control}
-                      register={register}
-                      errors={errors}
-                      users={users}
-                      services={services}
-                      includeNotes={includeNotes}
-                      setIncludeNotes={setIncludeNotes}
-                      selectedServiceId={watch("serviceId")}
-                      userId={user?.id || ""}
-                      setValue={setValue}
-                      selectedCalendarId={watch("googleCalendarId")}
-                    />
+                    <>
+                      <AppointmentDetailsSection
+                        control={control}
+                        register={register}
+                        errors={errors}
+                        users={users}
+                        services={services}
+                        includeNotes={includeNotes}
+                        setIncludeNotes={setIncludeNotes}
+                        selectedServiceId={watch("serviceId")}
+                      />
+                      {/* Google Calendar Selector for new appointments */}
+                      <div className="border-t pt-4 px-4 pb-4">
+                        <GoogleCalendarSelector
+                          value={watch("googleCalendarId")}
+                          onChange={(calendarId) =>
+                            setValue("googleCalendarId", calendarId)
+                          }
+                          userId={user?.id || ""}
+                          error={errors.googleCalendarId?.message}
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
 

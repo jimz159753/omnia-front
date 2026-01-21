@@ -216,6 +216,12 @@ export const useAppointmentDetails = ({
             setValue("existingClientIds", [ticket.client.id]); // Set as array for multi-select
             setExistingClientId(ticket.client.id);
           }
+
+          // Set Google Calendar selection when loading ticket
+          if (ticket.googleCalendarId) {
+            console.log("Setting Google Calendar from ticket:", ticket.googleCalendarId);
+            setValue("googleCalendarId", ticket.googleCalendarId);
+          }
         }
       } catch (err) {
         console.error("Failed to load ticket data:", err);
@@ -475,6 +481,7 @@ export const useAppointmentDetails = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           duration: durationInMinutes,
+          googleCalendarId: values.googleCalendarId || undefined,
         }),
       });
 

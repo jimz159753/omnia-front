@@ -11,6 +11,7 @@ import {
 } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddProductDialog } from "./AddProductDialog";
+import { GoogleCalendarSelector } from "./GoogleCalendarSelector";
 import { toast } from "sonner";
 
 interface TicketItem {
@@ -78,6 +79,10 @@ interface AppointmentTicketTableProps {
   register?: UseFormRegister<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors?: FieldErrors<any>;
+  // Google Calendar props
+  userId?: string;
+  googleCalendarId?: string;
+  onGoogleCalendarChange?: (calendarId: string) => void;
 }
 
 export type { NewTicketItem };
@@ -146,6 +151,9 @@ export function AppointmentTicketTable({
   onNewItemsChange,
   onDiscountUpdates,
   onQuantityUpdates,
+  userId,
+  googleCalendarId,
+  onGoogleCalendarChange,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
 
@@ -555,6 +563,16 @@ export function AppointmentTicketTable({
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
               placeholder={t("notesPlaceholderAppointment")}
               rows={4}
+            />
+          </div>
+        )}
+        {/* Google Calendar Selector */}
+        {userId && onGoogleCalendarChange && (
+          <div className="border-t pt-4 mt-4">
+            <GoogleCalendarSelector
+              value={googleCalendarId}
+              onChange={onGoogleCalendarChange}
+              userId={userId}
             />
           </div>
         )}
