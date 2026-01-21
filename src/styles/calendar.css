@@ -1,4 +1,6 @@
-/* Calendar Event Drag Styles */
+/* ============================================
+   CALENDAR EVENT DRAG STYLES
+   ============================================ */
 
 /* Style for the event being dragged */
 .rbc-addons-dnd-dragging {
@@ -13,73 +15,180 @@
 
 /* Add a visual indicator when dragging over a valid drop area */
 .rbc-addons-dnd-over {
-  background-color: rgba(0, 123, 255, 0.1) !important;
+  background-color: rgba(59, 130, 246, 0.08) !important;
 }
 
-/* Calendar Event Styling */
+/* ============================================
+   CALENDAR EVENT STYLING
+   ============================================ */
+
 .rbc-event {
-  transition: opacity 0.2s ease-in-out;
-  /* Background color is now managed by CustomEvent component based on Google Calendar or status */
+  transition: all 0.2s ease-in-out;
   border: none !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
 }
 
 .rbc-event:hover {
   cursor: grab;
-  /* Hover color is now managed by CustomEvent component */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px);
 }
 
 .rbc-event-label {
   color: white !important;
+  font-size: 12px !important;
 }
 
 .rbc-event-content {
   color: white !important;
   font-weight: 500;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
 }
 
 /* When actively dragging */
 .rbc-event:active {
   cursor: grabbing;
+  transform: scale(0.98);
 }
 
 .rbc-events-container button {
   z-index: 3 !important;
 }
 
-/* Time Slot Sizing */
+/* ============================================
+   TIME SLOTS & GRID
+   ============================================ */
+
 .rbc-time-slot {
   min-height: 10px !important;
-  border-bottom: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
   z-index: 0 !important;
 }
 
 .rbc-timeslot-group {
-  min-height: 30px !important;
-  background-color: #f0f8f4 !important;
+  min-height: 120px !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
+
+/* Main calendar content area */
+.rbc-time-content {
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+.rbc-time-content .rbc-timeslot-group {
+  position: relative !important;
+}
+
+.rbc-day-slot {
+  background-color: #fafbfc !important;
+}
+
+/* ============================================
+   TIME GUTTER (LEFT SIDE HOURS)
+   ============================================ */
+
+.rbc-time-gutter {
+  width: 100px !important;
+  background-color: #f8fafc !important;
+  border-right: 2px solid #e2e8f0 !important;
+}
+
+/* Hour labels - Make the timeslot group match the content area height */
+.rbc-time-gutter .rbc-timeslot-group {
+  background-color: transparent !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  min-height: 120px !important;
+  height: 120px !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Hide all time slots except the first one */
+.rbc-time-gutter .rbc-time-slot {
+  border-bottom: none !important;
+  flex: 0 0 auto !important;
+}
+
+.rbc-time-gutter .rbc-time-slot:not(:first-child) {
+  display: none !important;
+}
+
+/* Style the first time slot to fill the entire hour height */
+.rbc-time-gutter .rbc-time-slot:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 100% !important;
+  height: 120px !important;
+  min-height: 120px !important;
+}
+
+.rbc-time-gutter .rbc-time-slot:first-child .rbc-label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  width: 100% !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Fallback for direct label children */
+.rbc-label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* ============================================
+   CURRENT TIME INDICATOR
+   ============================================ */
+
+.rbc-current-time-indicator {
+  background-color: #ef4444 !important;
+  height: 2px !important;
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ============================================
+   HEADERS & MISC
+   ============================================ */
 
 .rbc-allday-cell {
   display: none !important;
 }
 
 .rbc-time-header {
-  border-right: 0px solid #e0e0e0 !important;
-}
-
-.rbc-row {
-  border-bottom: 0px solid #e0e0e0 !important;
+  border-right: none !important;
+  border-bottom: 2px solid #e2e8f0 !important;
 }
 
 .rbc-header {
-  border-bottom: 0px solid #e0e0e0 !important;
+  padding: 12px 8px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  border-bottom: none !important;
+  background-color: #f8fafc !important;
 }
 
-.rbc-time-gutter .rbc-time-slot {
-  border-bottom: 0px solid #e0e0e0 !important;
-}
-
-.rbc-time-content .rbc-timeslot-group {
-  position: relative !important;
+.rbc-row {
+  border-bottom: none !important;
 }
