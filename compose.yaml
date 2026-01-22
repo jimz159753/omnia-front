@@ -41,6 +41,11 @@ services:
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:-http://localhost:3000}
+      # Twilio WhatsApp API (for sending reminders)
+      # See WHATSAPP_SETUP.md for setup instructions
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_WHATSAPP_NUMBER: ${TWILIO_WHATSAPP_NUMBER:-}
     depends_on:
       - db
     networks:

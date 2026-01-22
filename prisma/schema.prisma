@@ -30,25 +30,25 @@ model User {
 }
 
 model Ticket {
-  id        String          @id @default(uuid())
-  clientId  String
-  client    Client          @relation(fields: [clientId], references: [id])
-  staffId   String          @map("sellerId")
-  staff     User            @relation(fields: [staffId], references: [id])
-  total     Float           @default(0)
-  quantity  Int             @default(1)
-  status    String
-  notes     String          @default("")
-  discount  Float           @default(0) // Discount percentage (0-100)
+  id                    String          @id @default(uuid())
+  clientId              String
+  client                Client          @relation(fields: [clientId], references: [id])
+  staffId               String          @map("sellerId")
+  staff                 User            @relation(fields: [staffId], references: [id])
+  total                 Float           @default(0)
+  quantity              Int             @default(1)
+  status                String
+  notes                 String          @default("")
+  discount              Float           @default(0) // Discount percentage (0-100)
   startTime             DateTime?
   endTime               DateTime?
   duration              Int?            @map("duration") // Duration in minutes
   googleCalendarEventId String? // Google Calendar event ID for sync
   googleCalendarId      String? // Which Google Calendar to save to (calendarId from GoogleCalendar table)
   products              TicketProduct[]
-  services  TicketService[]
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  services              TicketService[]
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 }
 
 model Client {
@@ -240,15 +240,29 @@ model GoogleCalendar {
 }
 
 model CashTransaction {
-  id          String   @id @default(uuid())
-  type        String   // "income" or "expense"
-  amount      Float
-  description String
-  category    String   @default("general") // e.g., "sales", "tips", "rent", "supplies", "utilities"
-  paymentMethod String @default("cash") // "cash", "card", "transfer"
-  reference   String?  // Optional reference number or ticket ID
-  notes       String?
-  userId      String   // Who registered this transaction
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  type          String // "income" or "expense"
+  amount        Float
+  description   String
+  category      String   @default("general") // e.g., "sales", "tips", "rent", "supplies", "utilities"
+  paymentMethod String   @default("cash") // "cash", "card", "transfer"
+  reference     String? // Optional reference number or ticket ID
+  notes         String?
+  userId        String // Who registered this transaction
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model WhatsAppReminder {
+  id              String   @id @default(uuid())
+  type            String // "appointment", "followup", "birthday", "custom"
+  name            String
+  isEnabled       Boolean  @default(true)
+  timing          Int      @default(24) // Hours before (for appointment) or days after (for followup)
+  timingUnit      String   @default("hours") // "hours", "days"
+  messageTemplate String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([type])
 }

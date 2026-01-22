@@ -12,6 +12,7 @@ RUN npx prisma generate
 
 # ---------- build ----------
 FROM deps AS build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npx next build
 
 # ---------- runtime ----------
