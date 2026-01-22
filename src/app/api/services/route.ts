@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       include: {
         category: {
           include: {
-            subCategory: true,
+            subCategories: true,
           },
         },
         subCategory: true,
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       include: {
         category: {
           include: {
-            subCategory: true,
+            subCategories: true,
           },
         },
         subCategory: true,
@@ -243,7 +243,7 @@ export async function PUT(request: NextRequest) {
       include: {
         category: {
           include: {
-            subCategory: true,
+            subCategories: true,
           },
         },
         subCategory: true,

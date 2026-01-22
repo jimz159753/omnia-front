@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
       include: {
-        subCategory: true,
+        subCategories: true,
       },
       orderBy: {
         name: "asc",
@@ -27,15 +27,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, description } = body;
 
-    if (!name || !description) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Name and description are required" },
+        { error: "Name is required" },
         { status: 400 }
       );
     }
 
     const category = await prisma.category.create({
-      data: { name, description },
+      data: { name, description: description || "" },
     });
 
     return NextResponse.json(
@@ -46,6 +46,68 @@ export async function POST(request: Request) {
     console.error("Error creating category:", error);
     return NextResponse.json(
       { error: "Failed to create category" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const { name, description } = body;
+
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    const category = await prisma.category.update({
+      where: { id },
+      data: { name, description },
+    });
+
+    return NextResponse.json({
+      data: category,
+      message: "Category updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating category:", error);
+    return NextResponse.json(
+      { error: "Failed to update category" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    // First delete all subcategories associated with this category
+    await prisma.subCategory.deleteMany({
+      where: { categoryId: id },
+    });
+
+    await prisma.category.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    return NextResponse.json(
+      { error: "Failed to delete category" },
       { status: 500 }
     );
   }

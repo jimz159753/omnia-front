@@ -8,15 +8,10 @@ import { useProductMeta } from "@/hooks/useProductMeta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductFormModal } from "../../../../components/products/ProductFormModal";
 import { DeleteConfirmDialog } from "../../../../components/products/DeleteConfirmDialog";
+import { ProvidersDialog } from "../../../../components/products/ProvidersDialog";
+import { CategoriesDialog } from "../../../../components/products/CategoriesDialog";
+import { SubCategoriesDialog } from "../../../../components/products/SubCategoriesDialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   FiBox,
   FiPackage,
@@ -27,6 +22,11 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
+
+// Types for form state setters
+type ProviderFormSetter = (form: { name: string }) => void;
+type CategoryFormSetter = (form: { name: string; description: string }) => void;
+type SubCategoryFormSetter = (form: { name: string; description: string; categoryId: string }) => void;
 
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,22 +47,50 @@ const Products = () => {
   } = useProducts();
 
   const {
+    // Data
+    providers,
     categories,
+    subCategories,
+    // Loading states
+    loadingProviders,
+    loadingCategories,
+    loadingSubCategories,
+    // Modal states
     providerModalOpen,
     categoryModalOpen,
     subCategoryModalOpen,
-    providerForm,
-    categoryForm,
-    subCategoryForm,
     setProviderModalOpen,
     setCategoryModalOpen,
     setSubCategoryModalOpen,
+    // Form states
+    providerForm,
+    categoryForm,
+    subCategoryForm,
     setProviderForm,
     setCategoryForm,
     setSubCategoryForm,
+    // Editing states
+    editingProvider,
+    editingCategory,
+    editingSubCategory,
+    // Provider actions
     handleCreateProvider,
+    handleUpdateProvider,
+    handleDeleteProvider,
+    startEditProvider,
+    cancelEditProvider,
+    // Category actions
     handleCreateCategory,
+    handleUpdateCategory,
+    handleDeleteCategory,
+    startEditCategory,
+    cancelEditCategory,
+    // SubCategory actions
     handleCreateSubCategory,
+    handleUpdateSubCategory,
+    handleDeleteSubCategory,
+    startEditSubCategory,
+    cancelEditSubCategory,
   } = useProductMeta();
 
   const { t: tProducts } = useTranslation("products");
@@ -279,240 +307,54 @@ const Products = () => {
         item={deletingItem}
       />
 
-      {/* Provider Modal */}
-      <Dialog open={providerModalOpen} onOpenChange={setProviderModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Provider</DialogTitle>
-            <DialogDescription>Register a new provider.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="prov-name"
-              >
-                Name
-              </label>
-              <input
-                id="prov-name"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={providerForm.name}
-                onChange={(e) =>
-                  setProviderForm((p: typeof providerForm) => ({
-                    ...p,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Provider name"
-              />
-            </div>
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="prov-name"
-              >
-                Name<span className="text-red-500">*</span>
-              </label>
-              <input
-                id="prov-name"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={providerForm.name}
-                onChange={(e) =>
-                  setProviderForm((p: typeof providerForm) => ({
-                    ...p,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Provider name"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <button
-              type="button"
-              onClick={() => setProviderModalOpen(false)}
-              className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleCreateProvider}
-              className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
-            >
-              Save
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Provider Dialog */}
+      <ProvidersDialog
+        open={providerModalOpen}
+        onOpenChange={setProviderModalOpen}
+        providers={providers}
+        loading={loadingProviders}
+        providerForm={providerForm}
+        setProviderForm={setProviderForm}
+        editingProvider={editingProvider}
+        onCreateProvider={handleCreateProvider}
+        onUpdateProvider={handleUpdateProvider}
+        onDeleteProvider={handleDeleteProvider}
+        onStartEdit={startEditProvider}
+        onCancelEdit={cancelEditProvider}
+      />
 
-      {/* Category Modal */}
-      <Dialog open={categoryModalOpen} onOpenChange={setCategoryModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Category</DialogTitle>
-            <DialogDescription>Register a new category.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="cat-name"
-              >
-                Name
-              </label>
-              <input
-                id="cat-name"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={categoryForm.name}
-                onChange={(e) =>
-                  setCategoryForm((p: typeof categoryForm) => ({
-                    ...p,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Category name"
-              />
-            </div>
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="cat-desc"
-              >
-                Description
-              </label>
-              <textarea
-                id="cat-desc"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
-                value={categoryForm.description}
-                onChange={(e) =>
-                  setCategoryForm((p: typeof categoryForm) => ({
-                    ...p,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Category description"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <button
-              type="button"
-              onClick={() => setCategoryModalOpen(false)}
-              className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleCreateCategory}
-              className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
-            >
-              Save
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Category Dialog */}
+      <CategoriesDialog
+        open={categoryModalOpen}
+        onOpenChange={setCategoryModalOpen}
+        categories={categories}
+        loading={loadingCategories}
+        categoryForm={categoryForm}
+        setCategoryForm={setCategoryForm}
+        editingCategory={editingCategory}
+        onCreateCategory={handleCreateCategory}
+        onUpdateCategory={handleUpdateCategory}
+        onDeleteCategory={handleDeleteCategory}
+        onStartEdit={startEditCategory}
+        onCancelEdit={cancelEditCategory}
+      />
 
-      {/* SubCategory Modal */}
-      <Dialog
+      {/* SubCategory Dialog */}
+      <SubCategoriesDialog
         open={subCategoryModalOpen}
         onOpenChange={setSubCategoryModalOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add SubCategory</DialogTitle>
-            <DialogDescription>
-              Register a new subcategory under an existing category.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="sub-name"
-              >
-                Name
-              </label>
-              <input
-                id="sub-name"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={subCategoryForm.name}
-                onChange={(e) =>
-                  setSubCategoryForm((p: typeof subCategoryForm) => ({
-                    ...p,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Subcategory name"
-              />
-            </div>
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="sub-desc"
-              >
-                Description
-              </label>
-              <textarea
-                id="sub-desc"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
-                value={subCategoryForm.description}
-                onChange={(e) =>
-                  setSubCategoryForm((p: typeof subCategoryForm) => ({
-                    ...p,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Subcategory description"
-              />
-            </div>
-            <div className="space-y-1">
-              <label
-                className="text-sm font-medium text-gray-700"
-                htmlFor="sub-cat"
-              >
-                Category
-              </label>
-              <select
-                id="sub-cat"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                value={subCategoryForm.categoryId}
-                onChange={(e) =>
-                  setSubCategoryForm((p: typeof subCategoryForm) => ({
-                    ...p,
-                    categoryId: e.target.value,
-                  }))
-                }
-              >
-                <option value="">Select category</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <button
-              type="button"
-              onClick={() => setSubCategoryModalOpen(false)}
-              className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleCreateSubCategory}
-              className="px-4 py-2 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors"
-            >
-              Save
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        subCategories={subCategories}
+        categories={categories}
+        loading={loadingSubCategories}
+        subCategoryForm={subCategoryForm}
+        setSubCategoryForm={setSubCategoryForm}
+        editingSubCategory={editingSubCategory}
+        onCreateSubCategory={handleCreateSubCategory}
+        onUpdateSubCategory={handleUpdateSubCategory}
+        onDeleteSubCategory={handleDeleteSubCategory}
+        onStartEdit={startEditSubCategory}
+        onCancelEdit={cancelEditSubCategory}
+      />
     </>
   );
 };

@@ -64,21 +64,21 @@ model Client {
 }
 
 model Category {
-  id          String       @id @default(uuid())
-  name        String
-  description String
-  products    Product[]    @relation("ProductCategory")
-  subCategory SubCategory? @relation("CategorySubCategory")
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  services    Service[]    @relation("ServiceCategory")
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  products      Product[]     @relation("ProductCategory")
+  subCategories SubCategory[] @relation("CategorySubCategory")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  services      Service[]     @relation("ServiceCategory")
 }
 
 model SubCategory {
   id          String    @id @default(uuid())
   name        String
   description String
-  categoryId  String    @unique
+  categoryId  String
   category    Category  @relation("CategorySubCategory", fields: [categoryId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
