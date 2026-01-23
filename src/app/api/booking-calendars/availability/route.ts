@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get("slug");
     const serviceId = searchParams.get("serviceId");
     const date = searchParams.get("date"); // Format: YYYY-MM-DD
+    const timezoneOffset = parseInt(searchParams.get("timezoneOffset") || "0"); // User's timezone offset in minutes
 
     if (!slug) {
       return NextResponse.json(
@@ -79,14 +80,25 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // Get existing appointments for this day (using consistent date parsing)
-      const dayStart = new Date(year, month - 1, day, 0, 0, 0, 0);
-      const dayEnd = new Date(year, month - 1, day, 23, 59, 59, 999);
+      // Get existing appointments for this day
+      // The user selected a date in their local timezone, we need to convert to UTC
+      // getTimezoneOffset() returns positive for behind UTC (e.g., 360 for UTC-6)
+      // To convert local to UTC, we ADD the offset
+      // Example: CST (UTC-6) offset=360, Jan 23 00:00 local = Jan 23 00:00 + 6 hours = Jan 23 06:00 UTC
+      const localMidnight = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+      const dayStart = new Date(localMidnight.getTime() + Math.abs(timezoneOffset) * 60000);
+      const localEndOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+      const dayEnd = new Date(localEndOfDay.getTime() + Math.abs(timezoneOffset) * 60000);
 
+      console.log(`🔍 Checking appointments for ${date} (offset: ${timezoneOffset} min)`);
+      console.log(`📅 Day range (UTC): ${dayStart.toISOString()} to ${dayEnd.toISOString()}`);
+
+      // Find appointments that overlap with this day
+      // An appointment overlaps if: appointment.start < dayEnd AND appointment.end > dayStart
       const existingAppointments = await prisma.ticket.findMany({
         where: {
-          startTime: { gte: dayStart },
-          endTime: { lte: dayEnd },
+          startTime: { lt: dayEnd },
+          endTime: { gt: dayStart },
           status: { not: "cancelled" },
         },
         select: {
@@ -94,6 +106,13 @@ export async function GET(request: NextRequest) {
           endTime: true,
         },
       });
+
+      console.log(`📋 Found ${existingAppointments.length} appointments:`, 
+        existingAppointments.map(a => ({ 
+          start: a.startTime?.toISOString(), 
+          end: a.endTime?.toISOString() 
+        }))
+      );
 
       // Calculate available slots
       const slots = calculateAvailableSlots(
@@ -103,7 +122,9 @@ export async function GET(request: NextRequest) {
         existingAppointments,
         restTimes.filter(
           (rt) => rt.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase()
-        )
+        ),
+        dayStart, // Pass the UTC day start
+        timezoneOffset // Pass timezone offset
       );
 
       return NextResponse.json({
@@ -160,7 +181,9 @@ function calculateAvailableSlots(
   endTime: string,
   serviceDuration: number,
   existingAppointments: Array<{ startTime: Date | null; endTime: Date | null }>,
-  restTimes: Array<{ startTime: string; endTime: string }>
+  restTimes: Array<{ startTime: string; endTime: string }>,
+  dayStartUTC: Date, // The UTC start of the day
+  timezoneOffset: number // Timezone offset in minutes
 ): Array<{ time: string; available: boolean }> {
   const slots: Array<{ time: string; available: boolean }> = [];
 
@@ -178,18 +201,20 @@ function calculateAvailableSlots(
     const slotTime = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`;
     const slotEnd = minutes + serviceDuration;
 
+    // Create Date objects for this slot
+    // Start from dayStartUTC and add the minutes into the day
+    const slotStartDate = new Date(dayStartUTC.getTime() + minutes * 60000);
+    const slotEndDate = new Date(slotStartDate.getTime() + serviceDuration * 60000);
+
     // Check if slot conflicts with existing appointments
     let isAvailable = true;
 
     for (const appointment of existingAppointments) {
       if (appointment.startTime && appointment.endTime) {
-        const apptStartMinutes =
-          appointment.startTime.getHours() * 60 + appointment.startTime.getMinutes();
-        const apptEndMinutes =
-          appointment.endTime.getHours() * 60 + appointment.endTime.getMinutes();
-
-        // Check for overlap
-        if (minutes < apptEndMinutes && slotEnd > apptStartMinutes) {
+        // Both are Date objects in UTC, compare directly
+        // Slot overlaps if: slot.start < appt.end AND slot.end > appt.start
+        if (slotStartDate < appointment.endTime && slotEndDate > appointment.startTime) {
+          console.log(`❌ Slot ${slotTime} conflicts with appointment ${appointment.startTime.toISOString()} - ${appointment.endTime.toISOString()}`);
           isAvailable = false;
           break;
         }

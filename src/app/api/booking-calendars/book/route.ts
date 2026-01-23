@@ -82,43 +82,47 @@ export async function POST(request: NextRequest) {
 
     // Parse date and time with timezone consideration
     // Date format: "2026-01-23", Time format: "14:00"
-    // timezoneOffset is in minutes (e.g., -360 for CST/Mexico City which is UTC-6)
+    // timezoneOffset from getTimezoneOffset() is POSITIVE for behind UTC (e.g., 360 for CST/UTC-6)
+    // To convert local time to UTC, we ADD the offset (in absolute value)
     const [hours, minutes] = time.split(":").map(Number);
     
     // Parse the date components
     const [year, month, day] = date.split("-").map(Number);
     
-    // Create a date in UTC, then adjust for the user's timezone
-    // If user is in CST (UTC-6), offset is -360 minutes
-    // We need to ADD the offset to get UTC time
+    // Create a date representing the user's local time in UTC format
     const localDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
     
-    // Adjust for timezone: if offset is -360 (CST), we add 360 minutes (6 hours) to get UTC
-    const startTime = new Date(localDateTime.getTime() + timezoneOffset * 60000);
+    // Convert to actual UTC by adding the timezone offset
+    // Example: CST 2:00 PM (offset=360) → UTC 2:00 PM + 6 hours = UTC 8:00 PM
+    const startTime = new Date(localDateTime.getTime() + Math.abs(timezoneOffset) * 60000);
 
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + service.duration);
 
     console.log(`📅 Booking: date=${date}, time=${time}, offset=${timezoneOffset}`);
-    console.log(`📅 Local time: ${localDateTime.toISOString()}`);
-    console.log(`📅 Adjusted startTime (UTC): ${startTime.toISOString()}`);
-    console.log(`📅 Adjusted endTime (UTC): ${endTime.toISOString()}`);
+    console.log(`📅 Local representation: ${localDateTime.toISOString()}`);
+    console.log(`📅 UTC startTime: ${startTime.toISOString()}`);
+    console.log(`📅 UTC endTime: ${endTime.toISOString()}`);
 
     // Check if slot is still available
+    // Two appointments overlap if: appt1.start < appt2.end AND appt1.end > appt2.start
     const existingAppointment = await prisma.ticket.findFirst({
       where: {
-        startTime: { lte: endTime },
-        endTime: { gte: startTime },
+        startTime: { lt: endTime },  // Appointment starts before new booking ends
+        endTime: { gt: startTime },  // Appointment ends after new booking starts
         status: { not: "cancelled" },
       },
     });
 
     if (existingAppointment) {
+      console.log(`❌ Conflict found with appointment: ${existingAppointment.startTime?.toISOString()} - ${existingAppointment.endTime?.toISOString()}`);
       return NextResponse.json(
         { error: "This time slot is no longer available" },
         { status: 409 }
       );
     }
+
+    console.log(`✅ No conflicts found, creating appointment`);
 
     // Create the appointment (ticket)
     const ticket = await prisma.ticket.create({

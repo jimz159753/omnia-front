@@ -107,8 +107,9 @@ export default function BookingPage() {
     setLoadingSlots(true);
     try {
       const dateStr = format(date, "yyyy-MM-dd");
+      const timezoneOffset = new Date().getTimezoneOffset(); // Get user's timezone offset
       const response = await fetch(
-        `/api/booking-calendars/availability?slug=${slug}&date=${dateStr}&serviceId=${serviceId}`
+        `/api/booking-calendars/availability?slug=${slug}&date=${dateStr}&serviceId=${serviceId}&timezoneOffset=${timezoneOffset}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -481,7 +482,7 @@ export default function BookingPage() {
                           style={{ borderColor: primaryColor }}
                         ></div>
                       </div>
-                    ) : availability && availability.slots.length > 0 ? (
+                    ) : availability && availability.slots.filter((slot) => slot.available).length > 0 ? (
                       <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                         {availability.slots
                           .filter((slot) => slot.available)
@@ -506,7 +507,9 @@ export default function BookingPage() {
                       </div>
                     ) : (
                       <div className="text-center py-8 text-gray-500">
-                        No available times for this date
+                        <BiTime className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        <p>No available times for this date</p>
+                        <p className="text-sm mt-1">Please select another date</p>
                       </div>
                     )}
                   </div>
