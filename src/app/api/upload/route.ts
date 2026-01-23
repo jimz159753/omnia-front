@@ -39,21 +39,31 @@ export async function POST(request: NextRequest) {
     const filename = `${timestamp}-${originalName}`;
 
     // Save to public/uploads directory
+    // In Docker standalone mode, we need to use the correct path
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     const filePath = path.join(uploadDir, filename);
 
     // Create uploads directory if it doesn't exist
     const fs = require("fs");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      await writeFile(filePath, buffer);
+      console.log(`File uploaded successfully: ${filePath}`);
+
+      // Return the public URL
+      const url = `/uploads/${filename}`;
+
+      return NextResponse.json({ url }, { status: 200 });
+    } catch (fsError) {
+      console.error("File system error:", fsError);
+      return NextResponse.json(
+        { error: "Failed to save file to disk" },
+        { status: 500 }
+      );
     }
-
-    await writeFile(filePath, buffer);
-
-    // Return the public URL
-    const url = `/uploads/${filename}`;
-
-    return NextResponse.json({ url }, { status: 200 });
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(

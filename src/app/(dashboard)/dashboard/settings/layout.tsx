@@ -30,6 +30,10 @@ export default function SettingsLayout({
           path: "/dashboard/settings/schedules",
           label: t("businessSchedules"),
         },
+        {
+          path: "/dashboard/settings/calendar-schedules",
+          label: t("calendarSchedules") || "Calendar Schedules",
+        },
       ],
     },
     {
