@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {
+  createGoogleCalendarEvent,
+  GoogleCalendarEvent,
+} from "@/services/googleCalendarService";
 
 // POST - Create a booking/appointment from public booking page
 export async function POST(request: NextRequest) {
@@ -155,6 +159,43 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // ✅ SYNC TO GOOGLE CALENDAR
+    if (ticket.startTime && ticket.endTime) {
+      const googleEvent: GoogleCalendarEvent = {
+        summary: `${service.name} - ${client.name}`,
+        description: `Booking via ${calendar.name}\nStaff: ${staff.name}\nStatus: pending\nNotes: ${notes || "N/A"}\nPhone: ${client.phone}`,
+        start: {
+          dateTime: ticket.startTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        end: {
+          dateTime: ticket.endTime.toISOString(),
+          timeZone: "America/Mexico_City",
+        },
+        // Add client email as attendee
+        attendees: client.email && !client.email.includes('@booking.temp') 
+          ? [{ email: client.email }] 
+          : undefined,
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: "popup", minutes: 30 }, // 30 min before
+          ],
+        },
+      };
+
+      const googleEventId = await createGoogleCalendarEvent(googleEvent);
+
+      // Save the Google Calendar event ID to the ticket
+      if (googleEventId) {
+        await prisma.ticket.update({
+          where: { id: ticket.id },
+          data: { googleCalendarEventId: googleEventId },
+        });
+        console.log(`📅 Created Google Calendar event: ${googleEventId}`);
+      }
+    }
 
     return NextResponse.json(
       {

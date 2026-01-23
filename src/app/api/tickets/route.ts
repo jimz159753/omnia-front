@@ -549,8 +549,8 @@ export async function POST(request: NextRequest) {
           dateTime: ticket.endTime.toISOString(),
           timeZone: "America/Mexico_City",
         },
-        // Don't add attendees for service accounts (requires Domain-Wide Delegation)
-        // Client info is in the description instead
+        // Add client email as attendee
+        attendees: ticket.client?.email ? [{ email: ticket.client.email }] : undefined,
         reminders: {
           useDefault: false,
           overrides: [
@@ -798,6 +798,13 @@ export async function PUT(request: NextRequest) {
 
     // ✅ SYNC TO GOOGLE CALENDAR (only if appointment)
     if (updatedTicket.startTime && updatedTicket.endTime) {
+      console.log("📅 Syncing to Google Calendar...");
+      console.log("   - Ticket ID:", updatedTicket.id);
+      console.log("   - googleCalendarEventId:", updatedTicket.googleCalendarEventId);
+      console.log("   - googleCalendarId:", updatedTicket.googleCalendarId);
+      console.log("   - Start time:", updatedTicket.startTime.toISOString());
+      console.log("   - End time:", updatedTicket.endTime.toISOString());
+
       const service = updatedTicket.services[0]?.service;
       const serviceName = service?.name || "Appointment";
       const clientName = updatedTicket.client?.name || "Client";
@@ -814,8 +821,8 @@ export async function PUT(request: NextRequest) {
           dateTime: updatedTicket.endTime.toISOString(),
           timeZone: "America/Mexico_City",
         },
-        // Don't add attendees for service accounts (requires Domain-Wide Delegation)
-        // Client info is in the description instead
+        // Add client email as attendee
+        attendees: updatedTicket.client?.email ? [{ email: updatedTicket.client.email }] : undefined,
         reminders: {
           useDefault: false,
           overrides: [
@@ -826,25 +833,57 @@ export async function PUT(request: NextRequest) {
 
       if (updatedTicket.googleCalendarEventId) {
         // Update existing event
-        await updateGoogleCalendarEvent(
+        console.log("📝 Updating existing Google Calendar event:", updatedTicket.googleCalendarEventId);
+        const updateResult = await updateGoogleCalendarEvent(
           updatedTicket.googleCalendarEventId,
           googleEvent,
           updatedTicket.googleCalendarId || undefined
         );
+        console.log("   - Update result:", updateResult ? "SUCCESS" : "FAILED");
       } else {
         // Create new event if it doesn't exist
+        console.log("➕ Creating new Google Calendar event...");
+        
+        // If no googleCalendarId is set, get the first enabled calendar and save it
+        let calendarToUse = updatedTicket.googleCalendarId;
+        if (!calendarToUse) {
+          const defaultCalendar = await prisma.googleCalendar.findFirst({
+            where: { isEnabled: true },
+            select: { calendarId: true, name: true },
+          });
+          if (defaultCalendar) {
+            calendarToUse = defaultCalendar.calendarId;
+            console.log("   - Using default calendar:", defaultCalendar.name);
+          }
+        }
+        
         const googleEventId = await createGoogleCalendarEvent(
           googleEvent,
-          updatedTicket.googleCalendarId || undefined
+          calendarToUse || undefined
         );
         if (googleEventId) {
+          // Save both the event ID and the calendar ID to the ticket
+          const updatePayload: { googleCalendarEventId: string; googleCalendarId?: string } = {
+            googleCalendarEventId: googleEventId,
+          };
+          
+          // Also save the calendar ID if it wasn't set
+          if (!updatedTicket.googleCalendarId && calendarToUse) {
+            updatePayload.googleCalendarId = calendarToUse;
+          }
+          
           await prisma.ticket.update({
             where: { id: updatedTicket.id },
-            data: { googleCalendarEventId: googleEventId },
+            data: updatePayload,
           });
           ticketWithoutArrays.googleCalendarEventId = googleEventId;
+          console.log("   - Created event ID:", googleEventId);
+        } else {
+          console.log("   - Failed to create event");
         }
       }
+    } else {
+      console.log("⏭️ Skipping Google Calendar sync - no start/end time");
     }
 
     return NextResponse.json(
