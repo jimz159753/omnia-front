@@ -314,6 +314,8 @@ export const deleteGoogleCalendarEvent = async (
 
     const calendar = google.calendar({ version: 'v3', auth });
 
+    console.log(`🔄 Calling Google Calendar API to delete event: ${eventId}`);
+    
     await calendar.events.delete({
       calendarId,
       eventId,
@@ -321,10 +323,25 @@ export const deleteGoogleCalendarEvent = async (
 
     console.log('✅ Google Calendar event deleted:', eventId, 'from calendar:', calendarId);
     return true;
-  } catch (error) {
+  } catch (error: any) {
+    // Check if it's a "not found" error - this is okay, means event doesn't exist
+    if (error?.code === 404 || error?.status === 404) {
+      console.log('⚠️ Event not found in calendar (may have been already deleted):', eventId);
+      return true; // Consider this a success - event doesn't exist
+    }
+    
+    // Check if it's a "gone" error - event was already deleted
+    if (error?.code === 410 || error?.status === 410) {
+      console.log('⚠️ Event was already deleted:', eventId);
+      return true; // Consider this a success
+    }
+    
     console.error('❌ Error deleting Google Calendar event:', error);
     if (error instanceof Error) {
       console.error('Error details:', error.message);
+    }
+    if (error?.code) {
+      console.error('Error code:', error.code);
     }
     return false;
   }

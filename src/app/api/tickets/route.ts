@@ -702,6 +702,15 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Get the OLD Google Calendar info BEFORE updating (needed for calendar change detection)
+    const oldTicketCalendarInfo = await prisma.ticket.findUnique({
+      where: { id },
+      select: { 
+        googleCalendarId: true, 
+        googleCalendarEventId: true 
+      },
+    });
+
     // Handle items update if provided
     if (items && Array.isArray(items)) {
       // Delete existing items from both tables
@@ -831,8 +840,48 @@ export async function PUT(request: NextRequest) {
         },
       };
 
-      if (updatedTicket.googleCalendarEventId) {
-        // Update existing event
+      // Check if the calendar changed
+      const oldCalendarId = oldTicketCalendarInfo?.googleCalendarId;
+      const newCalendarId = updatedTicket.googleCalendarId;
+      const calendarChanged = oldCalendarId && newCalendarId && oldCalendarId !== newCalendarId;
+      
+      if (calendarChanged && updatedTicket.googleCalendarEventId) {
+        // Calendar changed! Need to delete from old calendar and create in new calendar
+        console.log("🔄 Calendar changed from", oldCalendarId?.substring(0, 20) + "...", "to", newCalendarId?.substring(0, 20) + "...");
+        
+        // Delete from old calendar first
+        console.log("🗑️ Deleting event from old calendar...");
+        const deleteResult = await deleteGoogleCalendarEvent(
+          updatedTicket.googleCalendarEventId,
+          oldCalendarId
+        );
+        
+        if (deleteResult) {
+          console.log("✅ Successfully deleted from old calendar");
+        } else {
+          console.log("⚠️ Delete from old calendar failed or skipped, but will still create in new calendar");
+        }
+        
+        // Create in new calendar (proceed even if delete failed - event might not exist in old calendar)
+        console.log("➕ Creating event in new calendar...");
+        const newGoogleEventId = await createGoogleCalendarEvent(
+          googleEvent,
+          newCalendarId
+        );
+        
+        if (newGoogleEventId) {
+          // Update the ticket with the new event ID
+          await prisma.ticket.update({
+            where: { id: updatedTicket.id },
+            data: { googleCalendarEventId: newGoogleEventId },
+          });
+          ticketWithoutArrays.googleCalendarEventId = newGoogleEventId;
+          console.log("✅ Event moved to new calendar, new event ID:", newGoogleEventId);
+        } else {
+          console.log("❌ Failed to create event in new calendar");
+        }
+      } else if (updatedTicket.googleCalendarEventId) {
+        // Same calendar, just update the event
         console.log("📝 Updating existing Google Calendar event:", updatedTicket.googleCalendarEventId);
         const updateResult = await updateGoogleCalendarEvent(
           updatedTicket.googleCalendarEventId,
