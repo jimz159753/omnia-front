@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 export interface User {
   id: string;
   email: string;
+  name?: string | null;
+  avatar?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,6 +38,25 @@ export const useAuth = () => {
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      const response = await fetch("/api/auth/google");
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
+      } else {
+        throw new Error("Failed to get authorization URL");
+      }
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -112,6 +133,7 @@ export const useAuth = () => {
     isLoading,
     isAuthenticated,
     login,
+    loginWithGoogle,
     register,
     logout,
     checkAuth,

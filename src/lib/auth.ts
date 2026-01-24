@@ -6,6 +6,8 @@ import { hashPassword, validateEmail, validatePassword } from "@/utils/auth";
 export interface User {
   id: string;
   email: string;
+  name?: string | null;
+  avatar?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,6 +71,8 @@ export const auth = {
         select: {
           id: true,
           email: true,
+          name: true,
+          avatar: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -108,6 +112,8 @@ export const auth = {
         user: {
           id: user.id,
           email: user.email,
+          name: user.name || undefined,
+          avatar: user.avatar || undefined,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -159,6 +165,8 @@ export const auth = {
         select: {
           id: true,
           email: true,
+          name: true,
+          avatar: true,
           createdAt: true,
           updatedAt: true,
         },

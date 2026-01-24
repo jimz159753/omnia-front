@@ -1,110 +1,152 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { CustomInput } from "@/components/ui/CustomInput";
-import { CustomButton } from "@/components/ui/CustomButton";
 import { CustomAlert } from "@/components/ui/CustomAlert";
 import Link from "next/link";
 import Image from "next/image";
 import omniaLogo from "@/assets/images/omnia_logo.png";
+import { useSearchParams } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { FiLoader, FiCheck } from "react-icons/fi";
 
-const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+function RegisterContent() {
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const { register, isLoading } = useAuth();
-  const router = useRouter();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { loginWithGoogle, isLoading } = useAuth();
+  const searchParams = useSearchParams();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+  // Check for OAuth callback errors
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+      window.history.replaceState({}, "", "/register");
     }
+  }, [searchParams]);
+
+  const handleGoogleRegister = async () => {
+    setError("");
+    setIsGoogleLoading(true);
 
     try {
-      await register(email, password);
-      setSuccess("Registration successful! Redirecting to dashboard...");
-
-      // Clear form
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      router.push("/dashboard");
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Registration failed");
-      console.error("Registration error:", error);
+      await loginWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google registration failed");
+      setIsGoogleLoading(false);
     }
   };
 
+  const features = [
+    "Manage appointments & bookings",
+    "Track sales & inventory",
+    "Send WhatsApp reminders",
+    "Sync with Google Calendar",
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+          {/* Logo and Title */}
           <div className="text-center flex flex-col items-center justify-center gap-4">
-            <Image src={omniaLogo} alt="Logo" width={200} height={200} />
-            <p className="text-gray-600">Create your account</p>
+            <Image src={omniaLogo} alt="Logo" width={180} height={180} />
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
+              <p className="mt-2 text-gray-600">Get started with Omnia in seconds</p>
+            </div>
           </div>
 
-          {error && <CustomAlert severity="error">{error}</CustomAlert>}
+          {/* Error Alert */}
+          {error && (
+            <CustomAlert severity="error">
+              {error}
+            </CustomAlert>
+          )}
 
-          {success && <CustomAlert severity="success">{success}</CustomAlert>}
+          {/* Google Sign Up Button */}
+          <button
+            onClick={handleGoogleRegister}
+            disabled={isLoading || isGoogleLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-500/25"
+          >
+            {isGoogleLoading ? (
+              <>
+                <FiLoader className="w-5 h-5 animate-spin" />
+                <span>Creating your account...</span>
+              </>
+            ) : (
+              <>
+                <FcGoogle className="w-6 h-6 bg-white rounded-full p-0.5" />
+                <span>Sign up with Google</span>
+              </>
+            )}
+          </button>
 
-          <div className="space-y-4">
-            <CustomInput
-              label="Email"
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
-            />
-            <CustomInput
-              label="Password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading}
-              helperText="At least 8 characters with uppercase, lowercase, and number"
-            />
-            <CustomInput
-              label="Confirm Password"
-              type="password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              disabled={isLoading}
-            />
+          {/* Features List */}
+          <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+            <p className="text-sm font-medium text-gray-700">What you&apos;ll get:</p>
+            <ul className="space-y-2">
+              {features.map((feature, index) => (
+                <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
+                  <FiCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <CustomButton type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Creating account..." : "Register"}
-          </CustomButton>
+          {/* Info */}
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              <span>No password needed - secure Google authentication</span>
+            </div>
+            
+            <p className="text-xs text-gray-400">
+              By creating an account, you agree to our Terms of Service and Privacy Policy
+            </p>
+          </div>
 
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-            >
-              Login here
-            </Link>
-          </p>
-        </form>
+          {/* Footer */}
+          <div className="pt-4 border-t border-gray-100">
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
+              >
+                Sign in here
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom Text */}
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} Omnia. All rights reserved.
+        </p>
       </div>
     </div>
   );
-};
+}
 
-export default Register;
+function RegisterFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex items-center gap-2">
+        <FiLoader className="w-6 h-6 animate-spin text-brand-500" />
+        <span className="text-gray-600">Loading...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function Register() {
+  return (
+    <Suspense fallback={<RegisterFallback />}>
+      <RegisterContent />
+    </Suspense>
+  );
+}
