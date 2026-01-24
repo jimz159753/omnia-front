@@ -30,16 +30,16 @@ export function normalizeTicketStatus(
   status: string | null | undefined
 ): TicketStatus | undefined {
   if (!status) return undefined;
-  const normalized = status;
+  const normalized = status.toLowerCase();
 
   // Check legacy aliases first
-  if (normalized in LEGACY_ALIASES) return LEGACY_ALIASES[normalized];
+  if (status in LEGACY_ALIASES) return LEGACY_ALIASES[status];
 
   // Check against enum values (case-insensitive)
-  if (normalized === "Pending") return TicketStatus.Pending;
-  if (normalized === "Confirmed") return TicketStatus.Confirmed;
-  if (normalized === "Done") return TicketStatus.Done;
-  if (normalized === "Canceled") return TicketStatus.Canceled;
+  if (normalized === "pending") return TicketStatus.Pending;
+  if (normalized === "confirmed") return TicketStatus.Confirmed;
+  if (normalized === "done") return TicketStatus.Done;
+  if (normalized === "canceled" || normalized === "cancelled") return TicketStatus.Canceled;
 
   return undefined;
 }

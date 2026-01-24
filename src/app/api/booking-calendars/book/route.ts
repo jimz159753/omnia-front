@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
         id: ticketId,
         clientId: client.id,
         staffId: staff.id,
-        status: "pending",
+        status: "Pending",
         total: service.price,
         quantity: 1,
         notes: notes || `Booked via ${calendar.name}`,
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
     if (ticket.startTime && ticket.endTime) {
       const googleEvent: GoogleCalendarEvent = {
         summary: `${service.name} - ${client.name}`,
-        description: `Booking via ${calendar.name}\nStaff: ${staff.name}\nStatus: pending\nNotes: ${notes || "N/A"}\nPhone: ${client.phone}`,
+        description: `Booking via ${calendar.name}\nStaff: ${staff.name}\nStatus: Pending\nNotes: ${notes || "N/A"}\nPhone: ${client.phone}`,
         start: {
           dateTime: ticket.startTime.toISOString(),
           timeZone: "America/Mexico_City",

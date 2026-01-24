@@ -146,18 +146,7 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
         const r = row as RowWithGetValue;
         const status = (r.getValue("status") as string) || "";
         const statusLabel = getStatusLabel(status);
-
-        // Define status colors directly
-        let colorClasses = "bg-gray-100 text-gray-800";
-        if (status === "Pending") {
-          colorClasses = "bg-yellow-100 text-yellow-800";
-        } else if (status === "Confirmed") {
-          colorClasses = "bg-blue-100 text-blue-800";
-        } else if (status === "Done") {
-          colorClasses = "bg-green-100 text-green-800";
-        } else if (status === "Canceled") {
-          colorClasses = "bg-red-100 text-red-800";
-        }
+        const colorClasses = getStatusBadgeClass(status);
 
         return (
           <span
