@@ -301,22 +301,23 @@ model WhatsAppMessageLog {
 }
 
 model BookingCalendar {
-  id              String                   @id @default(uuid())
-  slug            String                   @unique // Unique URL slug for sharing
-  name            String // Display name for the calendar
-  fullName        String // Full name of the person/business
-  email           String
-  phone           String
-  description     String?                  @db.Text
-  backgroundImage String? // URL to the background image
-  logoImage       String? // Logo image
-  primaryColor    String                   @default("#059669") // Brand color
-  isActive        Boolean                  @default(true)
-  showOnMainPage  Boolean                  @default(false) // Display this calendar on the public main page
-  slots           Int                      @default(1) // Number of concurrent appointments allowed per time slot
-  services        BookingCalendarService[]
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
+  id               String                   @id @default(uuid())
+  slug             String                   @unique // Unique URL slug for sharing
+  name             String // Display name for the calendar
+  fullName         String // Full name of the person/business
+  email            String
+  phone            String
+  description      String?                  @db.Text
+  backgroundImage  String? // URL to the background image
+  logoImage        String? // Logo image
+  primaryColor     String                   @default("#059669") // Brand color
+  isActive         Boolean                  @default(true)
+  showOnMainPage   Boolean                  @default(false) // Display this calendar on the public main page
+  slots            Int                      @default(1) // Number of concurrent appointments allowed per time slot
+  googleCalendarId String? // Google Calendar ID to sync appointments to
+  services         BookingCalendarService[]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
 }
 
 model BookingCalendarService {

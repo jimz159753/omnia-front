@@ -48,33 +48,48 @@ async function getAuthClient(userId: string) {
 export async function GET(request: NextRequest) {
   try {
     const userId = request.nextUrl.searchParams.get("userId");
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
+
+    // If userId is provided, get calendars for that specific user
+    if (userId) {
+      const googleAccount = await prisma.googleAccount.findUnique({
+        where: { userId },
+      });
+
+      if (!googleAccount) {
+        return NextResponse.json(
+          { error: "Google account not connected", connected: false },
+          { status: 404 }
+        );
+      }
+
+      const calendars = await prisma.googleCalendar.findMany({
+        where: { googleAccountId: googleAccount.id },
+        orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
+      });
+
+      return NextResponse.json({
+        connected: true,
+        email: googleAccount.email,
+        calendars,
+      });
     }
 
-    // Get from database
-    const googleAccount = await prisma.googleAccount.findUnique({
-      where: { userId },
-    });
-
-    if (!googleAccount) {
-      return NextResponse.json(
-        { error: "Google account not connected", connected: false },
-        { status: 404 }
-      );
-    }
-
-    const calendars = await prisma.googleCalendar.findMany({
-      where: { googleAccountId: googleAccount.id },
+    // If no userId, get all available calendars from all connected accounts
+    const allCalendars = await prisma.googleCalendar.findMany({
+      where: { isEnabled: true },
       orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
     });
 
+    // Map to a simplified format for the booking calendar selector
+    const calendars = allCalendars.map((cal) => ({
+      calendarId: cal.calendarId,
+      summary: cal.name,
+      backgroundColor: cal.backgroundColor,
+      primary: cal.isPrimary,
+    }));
+
     return NextResponse.json({
-      connected: true,
-      email: googleAccount.email,
+      connected: calendars.length > 0,
       calendars,
     });
   } catch (error) {

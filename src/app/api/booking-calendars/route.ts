@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
       logoImage,
       primaryColor,
       slots,
+      googleCalendarId,
       serviceIds,
     } = body;
 
@@ -130,6 +131,7 @@ export async function POST(request: NextRequest) {
         logoImage: logoImage || null,
         primaryColor: primaryColor || "#059669",
         slots: slots || 1,
+        googleCalendarId: googleCalendarId || null,
         services: {
           create:
             serviceIds?.map((serviceId: string) => ({
@@ -174,6 +176,7 @@ export async function PUT(request: NextRequest) {
       isActive,
       showOnMainPage,
       slots,
+      googleCalendarId,
       serviceIds,
     } = body;
 
@@ -237,6 +240,7 @@ export async function PUT(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : existingCalendar.isActive,
         showOnMainPage: showOnMainPage !== undefined ? showOnMainPage : existingCalendar.showOnMainPage,
         slots: slots !== undefined ? slots : existingCalendar.slots,
+        googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : existingCalendar.googleCalendarId,
       },
     });
 
