@@ -39,27 +39,27 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
     try {
       setLoading(true);
 
-      // Calculate date range for last 5 days
+      // Calculate date range for last 7 days
       const today = new Date();
-      const fiveDaysAgo = new Date(today);
-      fiveDaysAgo.setDate(today.getDate() - 4);
-      fiveDaysAgo.setHours(0, 0, 0, 0);
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
 
-      // Get tickets from the last 5 days with date filter
+      // Get tickets from the last 7 days with date filter
       const params = new URLSearchParams({
         pageSize: "100",
         dateFilter: "custom",
-        startDate: fiveDaysAgo.toISOString(),
+        startDate: sevenDaysAgo.toISOString(),
       });
 
       const response = await fetch(`/api/tickets?${params}`);
       const data = await response.json();
       const tickets = data.data || [];
 
-      // Get last 5 days
-      const last5Days: DayData[] = [];
+      // Get last 7 days
+      const last7Days: DayData[] = [];
 
-      for (let i = 4; i >= 0; i--) {
+      for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         date.setHours(0, 0, 0, 0);
@@ -82,14 +82,14 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
           year: "numeric",
         });
 
-        last5Days.push({
+        last7Days.push({
           date: `${dayNumber}`,
           fullDate: fullDate,
           tickets: ticketsOnDay,
         });
       }
 
-      setChartData(last5Days);
+      setChartData(last7Days);
     } catch (error) {
       console.error("Failed to fetch tickets data:", error);
       setChartData([]);
@@ -102,7 +102,7 @@ export function TicketsLineChart({ className }: TicketsLineChartProps) {
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4">
         <CardTitle className="text-sm font-medium">
-          Tickets (Last 5 Days)
+          Tickets (Last 7 Days)
         </CardTitle>
         <FiTrendingUp className="w-4 h-4 text-muted-foreground" />
       </CardHeader>
