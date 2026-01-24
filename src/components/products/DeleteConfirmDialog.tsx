@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
@@ -23,16 +24,17 @@ export function DeleteConfirmDialog({
   onConfirm,
   item,
 }: DeleteConfirmDialogProps) {
+  const { t } = useTranslation("products");
+
   if (!item) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Product</DialogTitle>
+          <DialogTitle>{t("deleteProduct") || "Delete Product"}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the product &quot;{item.name}&quot;?
-            This action cannot be undone.
+            {t("confirmDeleteProduct") || `Are you sure you want to delete the product "${item.name}"? This action cannot be undone.`}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
@@ -40,13 +42,13 @@ export function DeleteConfirmDialog({
             onClick={() => onOpenChange(false)}
             className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
           >
-            Cancel
+            {t("cancel") || "Cancel"}
           </button>
           <button
             onClick={onConfirm}
             className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors"
           >
-            Delete
+            {t("deleteProduct") || "Delete"}
           </button>
         </DialogFooter>
       </DialogContent>

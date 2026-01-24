@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { FiEdit2, FiTrash2, FiPlus, FiX } from "react-icons/fi";
 import { SubCategory, Category } from "@/hooks/useProductMeta";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SubCategoriesDialogProps {
   open: boolean;
@@ -41,6 +42,8 @@ export function SubCategoriesDialog({
   onStartEdit,
   onCancelEdit,
 }: SubCategoriesDialogProps) {
+  const { t } = useTranslation("products");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingSubCategory) {
@@ -54,7 +57,7 @@ export function SubCategoriesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">SubCategories</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{t("subcategories") || "SubCategories"}</DialogTitle>
         </DialogHeader>
 
         {/* Add/Edit Form */}
@@ -62,7 +65,7 @@ export function SubCategoriesDialog({
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Name <span className="text-red-500">*</span>
+                {t("name") || "Name"} <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -74,12 +77,12 @@ export function SubCategoriesDialog({
                     categoryId: subCategoryForm.categoryId,
                   })
                 }
-                placeholder="SubCategory name"
+                placeholder={t("subcategoryName") || "SubCategory name"}
               />
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Description
+                {t("productDescription") || "Description"}
               </label>
               <input
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -91,12 +94,12 @@ export function SubCategoriesDialog({
                     categoryId: subCategoryForm.categoryId,
                   })
                 }
-                placeholder="SubCategory description"
+                placeholder={t("subcategoryDescription") || "SubCategory description"}
               />
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Category <span className="text-red-500">*</span>
+                {t("category") || "Category"} <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -110,7 +113,7 @@ export function SubCategoriesDialog({
                   });
                 }}
               >
-                <option value="">Select category</option>
+                <option value="">{t("selectCategory") || "Select category"}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -127,7 +130,7 @@ export function SubCategoriesDialog({
                 className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
               >
                 <FiX className="w-4 h-4" />
-                Cancel
+                {t("cancel") || "Cancel"}
               </button>
             )}
             <button
@@ -137,12 +140,12 @@ export function SubCategoriesDialog({
               {editingSubCategory ? (
                 <>
                   <FiEdit2 className="w-4 h-4" />
-                  Update
+                  {t("update") || "Update"}
                 </>
               ) : (
                 <>
                   <FiPlus className="w-4 h-4" />
-                  Add
+                  {t("add") || "Add"}
                 </>
               )}
             </button>
@@ -157,23 +160,23 @@ export function SubCategoriesDialog({
             </div>
           ) : subCategories.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
-              No subcategories found. Add your first subcategory above.
+              {t("noSubcategoriesFound") || "No subcategories found. Add your first subcategory above."}
             </div>
           ) : (
             <table className="w-full">
               <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">
-                    Name
+                    {t("name") || "Name"}
                   </th>
                   <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">
-                    Description
+                    {t("productDescription") || "Description"}
                   </th>
                   <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">
-                    Category
+                    {t("category") || "Category"}
                   </th>
                   <th className="text-right px-4 py-3 text-sm font-semibold text-gray-700 w-24">
-                    Actions
+                    {t("actions") || "Actions"}
                   </th>
                 </tr>
               </thead>
@@ -201,18 +204,18 @@ export function SubCategoriesDialog({
                         <button
                           onClick={() => onStartEdit(subCategory)}
                           className="p-1.5 rounded-md text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors"
-                          title="Edit"
+                          title={t("editProduct") || "Edit"}
                         >
                           <FiEdit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => {
-                            if (window.confirm("Are you sure you want to delete this subcategory?")) {
+                            if (window.confirm(t("confirmDeleteSubcategory") || "Are you sure you want to delete this subcategory?")) {
                               onDeleteSubCategory(subCategory.id);
                             }
                           }}
                           className="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete"
+                          title={t("deleteProduct") || "Delete"}
                         >
                           <FiTrash2 className="w-4 h-4" />
                         </button>
@@ -228,14 +231,14 @@ export function SubCategoriesDialog({
         {/* Footer */}
         <div className="border-t pt-4 flex justify-between items-center">
           <span className="text-sm text-gray-500">
-            {subCategories.length} subcategor{subCategories.length !== 1 ? "ies" : "y"}
+            {subCategories.length} {subCategories.length !== 1 ? t("subcategoriesCount") || "subcategories" : t("subcategoryCount") || "subcategory"}
           </span>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
           >
-            Close
+            {t("close") || "Close"}
           </button>
         </div>
       </DialogContent>

@@ -189,19 +189,19 @@ const Products = () => {
 
   const squareCards = [
     {
-      title: "Total Products",
+      title: tProducts("totalProducts") || "Total Products",
       value: totalProducts.toString(),
       icon: <FiShoppingBag className="w-4 h-4" />,
     },
 
     {
-      title: "Low Stock Items",
+      title: tProducts("lowStockItems") || "Low Stock Items",
       value: lowStockItems.toString(),
       icon: <FiBox className="w-4 h-4" />,
     },
 
     {
-      title: "Warehouse Value",
+      title: tProducts("warehouseValue") || "Warehouse Value",
       value: new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
@@ -209,7 +209,7 @@ const Products = () => {
       icon: <FiPackage className="w-4 h-4" />,
     },
     {
-      title: "Total Value",
+      title: tProducts("totalValue") || "Total Value",
       value: new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
@@ -220,17 +220,17 @@ const Products = () => {
 
   const buttons = [
     {
-      title: "Providers",
+      title: tProducts("providers") || "Providers",
       icon: <FiUsers className="w-4 h-4 text-black" />,
       onClick: () => setProviderModalOpen(true),
     },
     {
-      title: "Categories",
+      title: tProducts("categories") || "Categories",
       icon: <FiLayers className="w-4 h-4 text-black" />,
       onClick: () => setCategoryModalOpen(true),
     },
     {
-      title: "SubCategories",
+      title: tProducts("subcategories") || "SubCategories",
       icon: <FiLayers className="w-4 h-4 text-black" />,
       onClick: () => setSubCategoryModalOpen(true),
     },
@@ -285,7 +285,7 @@ const Products = () => {
         columns={columns}
         data={data}
         searchKey="name"
-        searchPlaceholder="Search by name, SKU, or category..."
+        searchPlaceholder={tProducts("searchPlaceholder") || "Search by name, SKU, or category..."}
         searchValue={searchQuery}
         pagination={pagination}
         onPageChange={handlePageChange}

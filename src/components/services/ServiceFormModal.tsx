@@ -22,6 +22,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceSchema, type ServiceFormData } from "@/lib/validations/service";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export interface ServiceFormModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function ServiceFormModal({
   onSuccess,
   item,
 }: ServiceFormModalProps) {
+  const { t } = useTranslation("services");
   const isEditMode = !!item;
 
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
@@ -88,7 +90,7 @@ export function ServiceFormModal({
         setSubCategories(subData.data || []);
       } catch (err) {
         console.error(err);
-        setError("Failed to load form data");
+        setError(t("failedToLoadData") || "Failed to load form data");
       }
     };
 
@@ -170,7 +172,7 @@ export function ServiceFormModal({
         );
       }
 
-      setSuccess(`Service ${isEditMode ? "updated" : "created"} successfully!`);
+      setSuccess(isEditMode ? t("serviceUpdatedSuccess") : t("serviceCreatedSuccess"));
       reset();
       setImageFile(null);
       setTimeout(() => {
@@ -189,12 +191,12 @@ export function ServiceFormModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditMode ? "Update Service" : "Add Service"}
+            {isEditMode ? t("updateService") || "Update Service" : t("addService") || "Add Service"}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? "Update the details of the service."
-              : "Fill in the details to add a new service."}
+              ? t("updateServiceDescription") || "Update the details of the service."
+              : t("addServiceDescription") || "Fill in the details to add a new service."}
           </DialogDescription>
         </DialogHeader>
 
@@ -204,12 +206,12 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Name<span className="text-red-500">*</span>
+              {t("name") || "Name"}<span className="text-red-500">*</span>
             </label>
             <input
               id="name"
               {...register("name")}
-              placeholder="Enter service name"
+              placeholder={t("enterServiceName") || "Enter service name"}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {errors.name && (
@@ -224,12 +226,12 @@ export function ServiceFormModal({
               htmlFor="description"
               className="text-sm font-medium text-gray-700"
             >
-              Description
+              {t("serviceDescription") || "Description"}
             </label>
             <textarea
               id="description"
               {...register("description")}
-              placeholder="Enter service description"
+              placeholder={t("enterServiceDescription") || "Enter service description"}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
               rows={3}
             />
@@ -242,7 +244,7 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Category
+              {t("category") || "Category"}
             </label>
             <Controller
               control={control}
@@ -256,7 +258,7 @@ export function ServiceFormModal({
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder={t("selectCategory") || "Select a category"} />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
@@ -277,7 +279,7 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Subcategory
+              {t("subcategory") || "Subcategory"}
             </label>
             <Controller
               control={control}
@@ -289,7 +291,7 @@ export function ServiceFormModal({
                   disabled={!watchedCategoryId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a subcategory" />
+                    <SelectValue placeholder={t("selectSubcategory") || "Select a subcategory"} />
                   </SelectTrigger>
                   <SelectContent>
                     {subCategories
@@ -320,7 +322,7 @@ export function ServiceFormModal({
                 htmlFor="duration"
                 className="text-sm font-medium text-gray-700"
               >
-                Duration (min)<span className="text-red-500">*</span>
+                {t("durationMin") || "Duration (min)"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="duration"
@@ -343,7 +345,7 @@ export function ServiceFormModal({
                 htmlFor="price"
                 className="text-sm font-medium text-gray-700"
               >
-                Price<span className="text-red-500">*</span>
+                {t("price") || "Price"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="price"
@@ -366,7 +368,7 @@ export function ServiceFormModal({
                 htmlFor="commission"
                 className="text-sm font-medium text-gray-700"
               >
-                Commission<span className="text-red-500">*</span>
+                {t("commission") || "Commission"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="commission"
@@ -387,7 +389,7 @@ export function ServiceFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Service Image
+              {t("serviceImage") || "Service Image"}
             </label>
             <ImageDropzone
               value={watch("image")}
@@ -408,7 +410,7 @@ export function ServiceFormModal({
               disabled={loading || isSubmitting}
               className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
             >
-              Cancel
+              {t("cancel") || "Cancel"}
             </button>
             <button
               type="submit"
@@ -417,11 +419,11 @@ export function ServiceFormModal({
             >
               {loading || isSubmitting
                 ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
+                  ? t("updating") || "Updating..."
+                  : t("creating") || "Creating..."
                 : isEditMode
-                ? "Update Service"
-                : "Create Service"}
+                ? t("updateService") || "Update Service"
+                : t("createService") || "Create Service"}
             </button>
           </DialogFooter>
         </form>

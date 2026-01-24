@@ -16,6 +16,13 @@ export const productSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
       message: "Stock must be a non-negative number",
     }),
+  minStock: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine((val) => val === "" || val === undefined || (!isNaN(Number(val)) && Number(val) >= 0), {
+      message: "Min stock must be a non-negative number",
+    }),
   price: z
     .string()
     .min(1, "Price is required")

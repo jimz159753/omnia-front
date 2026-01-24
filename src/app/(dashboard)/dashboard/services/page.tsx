@@ -111,17 +111,17 @@ const Services = () => {
 
   const squareCards = [
     {
-      title: "Total Services",
+      title: tServicesTranslation("totalServices") || "Total Services",
       value: pagination.total.toString(),
       icon: <FiZap className="w-4 h-4" />,
     },
     {
-      title: "Active Services",
+      title: tServicesTranslation("activeServices") || "Active Services",
       value: data.length.toString(),
       icon: <FiCalendar className="w-4 h-4 text-brand-500" />,
     },
     {
-      title: "Avg Duration",
+      title: tServicesTranslation("avgDuration") || "Avg Duration",
       value:
         data.length > 0
           ? `${Math.round(
@@ -131,7 +131,7 @@ const Services = () => {
       icon: <FiClock className="w-4 h-4" />,
     },
     {
-      title: "Avg Price",
+      title: tServicesTranslation("avgPrice") || "Avg Price",
       value:
         data.length > 0
           ? new Intl.NumberFormat("es-MX", {

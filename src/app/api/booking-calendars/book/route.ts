@@ -5,6 +5,28 @@ import {
   GoogleCalendarEvent,
 } from "@/services/googleCalendarService";
 
+// Generate random alphanumeric segment
+const randomSegment = (length = 6) => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < length; i += 1) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+};
+
+// Generate unique ticket ID in format TK-YYYY-XXXXXX
+const generateUniqueTicketId = async () => {
+  const year = new Date().getFullYear();
+  for (let i = 0; i < 10; i += 1) {
+    const segment = randomSegment(6);
+    const id = `TK-${year}-${segment}`;
+    const existing = await prisma.ticket.findUnique({ where: { id } });
+    if (!existing) return id;
+  }
+  throw new Error("Could not generate unique ticket ID");
+};
+
 // POST - Create a booking/appointment from public booking page
 export async function POST(request: NextRequest) {
   try {
@@ -133,9 +155,13 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ Slot available: ${overlappingCount}/${maxSlots} booked, creating appointment`);
 
+    // Generate unique ticket ID in format TK-YYYY-XXXXXX
+    const ticketId = await generateUniqueTicketId();
+
     // Create the appointment (ticket)
     const ticket = await prisma.ticket.create({
       data: {
+        id: ticketId,
         clientId: client.id,
         staffId: staff.id,
         status: "pending",

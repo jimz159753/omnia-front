@@ -108,6 +108,7 @@ model Product {
   subCategoryId String?
   subCategory   SubCategory?    @relation("ProductSubCategory", fields: [subCategoryId], references: [id])
   stock         Int
+  minStock      Int             @default(0)
   cost          Float
   providerId    String
   provider      Provider        @relation(fields: [providerId], references: [id])

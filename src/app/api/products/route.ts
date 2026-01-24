@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       stock,
+      minStock,
       price,
       categoryId,
       subCategoryId,
@@ -132,16 +133,18 @@ export async function POST(request: NextRequest) {
     }
 
     const parsedStock = Number.parseInt(stock);
+    const parsedMinStock = minStock !== undefined ? Number.parseInt(minStock) : 0;
     const parsedPrice = Number.parseFloat(price);
     const parsedCost = Number.parseFloat(cost);
 
     if (
       Number.isNaN(parsedStock) ||
       Number.isNaN(parsedPrice) ||
-      Number.isNaN(parsedCost)
+      Number.isNaN(parsedCost) ||
+      Number.isNaN(parsedMinStock)
     ) {
       return NextResponse.json(
-        { error: "Invalid numeric values for stock, price, or cost" },
+        { error: "Invalid numeric values for stock, minStock, price, or cost" },
         { status: 400 }
       );
     }
@@ -152,6 +155,7 @@ export async function POST(request: NextRequest) {
         name,
         description: description || "",
         stock: parsedStock,
+        minStock: parsedMinStock,
         price: parsedPrice,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,
@@ -198,6 +202,7 @@ export async function PUT(request: NextRequest) {
       name,
       description,
       stock,
+      minStock,
       price,
       categoryId,
       subCategoryId,
@@ -224,16 +229,18 @@ export async function PUT(request: NextRequest) {
     }
 
     const parsedStock = stock !== undefined ? Number.parseInt(stock) : undefined;
+    const parsedMinStock = minStock !== undefined ? Number.parseInt(minStock) : undefined;
     const parsedPrice = price !== undefined ? Number.parseFloat(price) : undefined;
     const parsedCost = cost !== undefined ? Number.parseFloat(cost) : undefined;
 
     if (
       (parsedStock !== undefined && Number.isNaN(parsedStock)) ||
+      (parsedMinStock !== undefined && Number.isNaN(parsedMinStock)) ||
       (parsedPrice !== undefined && Number.isNaN(parsedPrice)) ||
       (parsedCost !== undefined && Number.isNaN(parsedCost))
     ) {
       return NextResponse.json(
-        { error: "Invalid numeric values for stock, price, or cost" },
+        { error: "Invalid numeric values for stock, minStock, price, or cost" },
         { status: 400 }
       );
     }
@@ -287,6 +294,7 @@ export async function PUT(request: NextRequest) {
         name,
         description: description || "",
         stock: parsedStock,
+        minStock: parsedMinStock,
         price: parsedPrice,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,

@@ -22,6 +22,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema, type ProductFormData } from "@/lib/validations/product";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export interface ProductFormModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function ProductFormModal({
   onSuccess,
   item,
 }: ProductFormModalProps) {
+  const { t } = useTranslation("products");
   const isEditMode = !!item;
 
   const [categories, setCategories] = useState<
@@ -64,6 +66,7 @@ export function ProductFormModal({
       name: "",
       description: "",
       stock: "",
+      minStock: "",
       price: "",
       categoryId: "",
       subCategoryId: "",
@@ -94,7 +97,7 @@ export function ProductFormModal({
         setProviders(provData.data || []);
       } catch (err) {
         console.error(err);
-        setError("Failed to load form data");
+        setError(t("failedToLoadData") || "Failed to load form data");
       }
     };
 
@@ -105,6 +108,7 @@ export function ProductFormModal({
         name: item.name,
         description: item.description ?? "",
         stock: item.stock.toString(),
+        minStock: item.minStock?.toString() ?? "0",
         price: item.price.toString(),
         categoryId: item.categoryId ?? "",
         subCategoryId: item.subCategoryId ?? "",
@@ -119,6 +123,7 @@ export function ProductFormModal({
         name: "",
         description: "",
         stock: "",
+        minStock: "",
         price: "",
         categoryId: "",
         subCategoryId: "",
@@ -160,6 +165,7 @@ export function ProductFormModal({
       const payload = {
         ...values,
         stock: Number(values.stock),
+        minStock: values.minStock ? Number(values.minStock) : 0,
         price: Number(values.price),
         cost: Number(values.cost),
         image: imageUrl,
@@ -176,7 +182,7 @@ export function ProductFormModal({
         throw new Error(data.error || `Failed to ${isEditMode ? "update" : "create"} product`);
       }
 
-      setSuccess(`Product ${isEditMode ? "updated" : "created"} successfully!`);
+      setSuccess(isEditMode ? t("productUpdatedSuccess") : t("productCreatedSuccess"));
       reset();
       setImageFile(null);
       setTimeout(() => {
@@ -199,12 +205,12 @@ export function ProductFormModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditMode ? "Update Product" : "Add Product"}
+            {isEditMode ? t("updateProduct") || "Update Product" : t("addProduct") || "Add Product"}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? "Update the details of the product."
-              : "Fill in the details to add a new product."}
+              ? t("updateProductDescription") || "Update the details of the product."
+              : t("addProductDescription") || "Fill in the details to add a new product."}
           </DialogDescription>
         </DialogHeader>
 
@@ -215,12 +221,12 @@ export function ProductFormModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label htmlFor="sku" className="text-sm font-medium text-gray-700">
-                SKU
+                {t("sku") || "SKU"}
               </label>
               <input
                 id="sku"
                 {...register("sku")}
-                placeholder="Enter SKU"
+                placeholder={t("enterSku") || "Enter SKU"}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {errors.sku && (
@@ -230,12 +236,12 @@ export function ProductFormModal({
 
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                Name<span className="text-red-500">*</span>
+                {t("name") || "Name"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="name"
                 {...register("name")}
-                placeholder="Enter product name"
+                placeholder={t("enterProductName") || "Enter product name"}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {errors.name && (
@@ -246,12 +252,12 @@ export function ProductFormModal({
 
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium text-gray-700">
-              Description
+              {t("productDescription") || "Description"}
             </label>
             <textarea
               id="description"
               {...register("description")}
-              placeholder="Enter product description"
+              placeholder={t("enterProductDescription") || "Enter product description"}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px]"
               rows={3}
             />
@@ -263,7 +269,7 @@ export function ProductFormModal({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Category</label>
+            <label className="text-sm font-medium text-gray-700">{t("category") || "Category"}</label>
             <Controller
               control={control}
               name="categoryId"
@@ -276,7 +282,7 @@ export function ProductFormModal({
                   }}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder={t("selectCategory") || "Select a category"} />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
@@ -297,7 +303,7 @@ export function ProductFormModal({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Subcategory</label>
+            <label className="text-sm font-medium text-gray-700">{t("subcategory") || "Subcategory"}</label>
             <Controller
               control={control}
               name="subCategoryId"
@@ -308,7 +314,7 @@ export function ProductFormModal({
                   disabled={!watchedCategoryId}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a subcategory" />
+                    <SelectValue placeholder={t("selectSubcategory") || "Select a subcategory"} />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredSubCategories.map((sub) => (
@@ -329,7 +335,7 @@ export function ProductFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Provider<span className="text-red-500">*</span>
+              {t("provider") || "Provider"}<span className="text-red-500">*</span>
             </label>
             <Controller
               control={control}
@@ -337,7 +343,7 @@ export function ProductFormModal({
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a provider" />
+                    <SelectValue placeholder={t("selectProvider") || "Select a provider"} />
                   </SelectTrigger>
                   <SelectContent>
                     {providers.map((provider) => (
@@ -356,10 +362,10 @@ export function ProductFormModal({
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label htmlFor="stock" className="text-sm font-medium text-gray-700">
-                Stock<span className="text-red-500">*</span>
+                {t("stock") || "Stock"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="stock"
@@ -376,8 +382,26 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
+              <label htmlFor="minStock" className="text-sm font-medium text-gray-700">
+                {t("minStock") || "Min Stock"}
+              </label>
+              <input
+                id="minStock"
+                type="number"
+                {...register("minStock")}
+                placeholder="0"
+                min="0"
+                step="1"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              {errors.minStock && (
+                <p className="text-red-500 text-sm mt-1">{errors.minStock.message as string}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
               <label htmlFor="price" className="text-sm font-medium text-gray-700">
-                Price<span className="text-red-500">*</span>
+                {t("price") || "Price"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="price"
@@ -395,7 +419,7 @@ export function ProductFormModal({
 
             <div className="space-y-2">
               <label htmlFor="cost" className="text-sm font-medium text-gray-700">
-                Cost<span className="text-red-500">*</span>
+                {t("cost") || "Cost"}<span className="text-red-500">*</span>
               </label>
               <input
                 id="cost"
@@ -414,7 +438,7 @@ export function ProductFormModal({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Product Image
+              {t("productImage") || "Product Image"}
             </label>
             <ImageDropzone
               value={watch("image")}
@@ -433,7 +457,7 @@ export function ProductFormModal({
               disabled={loading || isSubmitting}
               className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
             >
-              Cancel
+              {t("cancel") || "Cancel"}
             </button>
             <button
               type="submit"
@@ -442,11 +466,11 @@ export function ProductFormModal({
             >
               {loading || isSubmitting
                 ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
+                  ? t("updating") || "Updating..."
+                  : t("creating") || "Creating..."
                 : isEditMode
-                ? "Update Product"
-                : "Create Product"}
+                ? t("updateProduct") || "Update Product"
+                : t("createProduct") || "Create Product"}
             </button>
           </DialogFooter>
         </form>
