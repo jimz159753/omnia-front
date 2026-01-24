@@ -67,6 +67,7 @@ export const useAppointmentCalendar = () => {
 
   /**
    * Fetch staff members from API
+   * Only users with role "user" are shown in the appointment calendar
    */
   const fetchStaff = useCallback(async () => {
     try {
@@ -75,9 +76,12 @@ export const useAppointmentCalendar = () => {
       if (res.ok) {
         const json = await res.json();
         if (json?.data) {
-          // Filter active users only
+          // Filter active users with role "user" only (not admins)
           const activeStaff = json.data
-            .filter((user: { isActive: boolean }) => user.isActive)
+            .filter(
+              (user: { isActive: boolean; role: string }) =>
+                user.isActive && user.role === "user"
+            )
             .map(
               (user: {
                 id: string;
