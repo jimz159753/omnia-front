@@ -13,7 +13,7 @@ import { GearIcon } from "@/components/gear-icon";
 import { ClientsIcon } from "@/components/clients-icon";
 import { ShoppingCartIcon } from "@/components/shopping-cart-icon";
 import { ServicesIcon } from "@/components/services-icon";
-import { HomeIcon } from "@/components/home-icon";
+import { ChartIcon } from "@/components/chart-icon";
 import { CalendarIcon } from "@/components/calendar-icon";
 
 // Tabs
@@ -68,7 +68,7 @@ export interface IService {
 
 export const items: IMenuItem[] = [
   {
-    icon: () => <HomeIcon size={22} />,
+    icon: () => <ChartIcon size={22} />,
     title: "Analytics",
   },
   {
