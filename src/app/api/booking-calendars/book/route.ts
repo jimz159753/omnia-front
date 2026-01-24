@@ -140,10 +140,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const maxSlots = calendar.slots || 1;
+    const maxSlots = calendar.slots && calendar.slots > 0 ? calendar.slots : 1;
     const overlappingCount = existingAppointments.length;
 
-    console.log(`📊 Slot check: ${overlappingCount}/${maxSlots} appointments at this time`);
+    console.log(`📊 Slot check: overlapping=${overlappingCount}, maxSlots=${maxSlots} (from DB: ${calendar.slots})`);
 
     if (overlappingCount >= maxSlots) {
       console.log(`❌ Slot full: ${overlappingCount} existing appointments, max is ${maxSlots}`);

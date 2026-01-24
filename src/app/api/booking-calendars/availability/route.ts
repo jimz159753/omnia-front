@@ -114,6 +114,10 @@ export async function GET(request: NextRequest) {
         }))
       );
 
+      // Get max slots from calendar (ensure it's at least 1)
+      const maxSlots = calendar.slots && calendar.slots > 0 ? calendar.slots : 1;
+      console.log(`🔢 Calendar "${calendar.name}" has maxSlots: ${maxSlots} (from DB: ${calendar.slots})`);
+
       // Calculate available slots
       const slots = calculateAvailableSlots(
         daySchedule.startTime!,
@@ -125,7 +129,7 @@ export async function GET(request: NextRequest) {
         ),
         dayStart, // Pass the UTC day start
         timezoneOffset, // Pass timezone offset
-        calendar.slots // Pass max concurrent slots allowed
+        maxSlots // Pass max concurrent slots allowed
       );
 
       return NextResponse.json({
@@ -222,11 +226,13 @@ function calculateAvailableSlots(
     }
 
     // Check if slot is available (still has remaining slots)
+    // Important: overlappingCount must be LESS THAN maxSlots for slot to be available
     let isAvailable = overlappingCount < maxSlots;
-    const remainingSlots = maxSlots - overlappingCount;
+    const remainingSlots = Math.max(0, maxSlots - overlappingCount);
 
+    // Log for debugging when there are overlapping appointments
     if (overlappingCount > 0) {
-      console.log(`📊 Slot ${slotTime}: ${overlappingCount}/${maxSlots} booked, ${remainingSlots} remaining`);
+      console.log(`📊 Slot ${slotTime}: overlapping=${overlappingCount}, maxSlots=${maxSlots}, available=${isAvailable}, remaining=${remainingSlots}`);
     }
 
     // Check if slot conflicts with rest times (rest times always block all slots)

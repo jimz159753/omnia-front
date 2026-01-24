@@ -224,6 +224,10 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Calculate final slots value
+    const finalSlots = slots !== undefined ? slots : existingCalendar.slots;
+    console.log(`📝 Updating calendar "${existingCalendar.name}": slots received=${slots}, existing=${existingCalendar.slots}, final=${finalSlots}`);
+
     // Update the calendar
     const calendar = await prisma.bookingCalendar.update({
       where: { id },
@@ -239,10 +243,12 @@ export async function PUT(request: NextRequest) {
         primaryColor: primaryColor ?? existingCalendar.primaryColor,
         isActive: isActive !== undefined ? isActive : existingCalendar.isActive,
         showOnMainPage: showOnMainPage !== undefined ? showOnMainPage : existingCalendar.showOnMainPage,
-        slots: slots !== undefined ? slots : existingCalendar.slots,
+        slots: finalSlots,
         googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : existingCalendar.googleCalendarId,
       },
     });
+
+    console.log(`✅ Calendar updated, slots now: ${calendar.slots}`);
 
     // Update services if provided
     if (serviceIds !== undefined) {
