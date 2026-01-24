@@ -26,16 +26,16 @@ export default function SettingsLayout({
           label: t("businessDetailsItem"),
         },
         { path: "/dashboard/settings/users", label: t("businessUsers") },
-        {
-          path: "/dashboard/settings/schedules",
-          label: t("businessSchedules"),
-        },
       ],
     },
     {
       header: t("externalCalendarsHeader") || "EXTERNAL CALENDARS",
       icon: <BiCalendarEvent className="w-5 h-5 text-brand-500" />,
       items: [
+        {
+          path: "/dashboard/settings/schedules",
+          label: t("businessSchedules"),
+        },
         {
           path: "/dashboard/settings/calendar-schedules",
           label: t("calendarSchedules") || "Calendar Schedules",
