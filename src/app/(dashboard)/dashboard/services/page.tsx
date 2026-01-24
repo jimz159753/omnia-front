@@ -4,7 +4,6 @@ import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns, ServiceWithRelations } from "./columns";
 import { useServices } from "@/hooks/useServices";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ServiceFormModal } from "@/components/services/ServiceFormModal";
 import { DeleteConfirmDialog } from "@/components/services/DeleteConfirmDialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,29 +38,38 @@ const Services = () => {
 
   if (loading && data.length === 0) {
     return (
-      <>
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-10 w-[200px]" />
-            <Skeleton className="h-4 w-[300px]" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-[200px]" />
+              <Skeleton className="h-4 w-[300px]" />
+            </div>
+            <Skeleton className="h-11 w-[160px] rounded-xl" />
           </div>
-          <Skeleton className="h-10 w-[140px]" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
+
+        {/* Stats Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[120px]" />
-                <Skeleton className="h-4 w-4 rounded" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[100px]" />
-              </CardContent>
-            </Card>
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-6 w-[60px]" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
-        <Skeleton className="h-[400px] w-full rounded-lg" />
-      </>
+
+        {/* Table Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <Skeleton className="h-[400px] w-full rounded-xl" />
+        </div>
+      </div>
     );
   }
 
@@ -113,12 +121,18 @@ const Services = () => {
     {
       title: tServicesTranslation("totalServices") || "Total Services",
       value: pagination.total.toString(),
-      icon: <FiZap className="w-4 h-4" />,
+      icon: <FiZap className="w-5 h-5" />,
+      color: "bg-violet-500",
+      lightColor: "bg-violet-50",
+      textColor: "text-violet-600",
     },
     {
       title: tServicesTranslation("activeServices") || "Active Services",
       value: data.length.toString(),
-      icon: <FiCalendar className="w-4 h-4 text-brand-500" />,
+      icon: <FiCalendar className="w-5 h-5" />,
+      color: "bg-blue-500",
+      lightColor: "bg-blue-50",
+      textColor: "text-blue-600",
     },
     {
       title: tServicesTranslation("avgDuration") || "Avg Duration",
@@ -128,7 +142,10 @@ const Services = () => {
               data.reduce((acc, s) => acc + s.duration, 0) / data.length
             )} min`
           : "0 min",
-      icon: <FiClock className="w-4 h-4" />,
+      icon: <FiClock className="w-5 h-5" />,
+      color: "bg-amber-500",
+      lightColor: "bg-amber-50",
+      textColor: "text-amber-600",
     },
     {
       title: tServicesTranslation("avgPrice") || "Avg Price",
@@ -139,60 +156,77 @@ const Services = () => {
               currency: "MXN",
             }).format(data.reduce((acc, s) => acc + s.price, 0) / data.length)
           : "$0.00",
-      icon: <FiDollarSign className="w-4 h-4" />,
+      icon: <FiDollarSign className="w-5 h-5" />,
+      color: "bg-emerald-500",
+      lightColor: "bg-emerald-50",
+      textColor: "text-emerald-600",
     },
   ];
 
   return (
-    <>
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-4xl font-normal">
-            {tServicesTranslation("title")}
-          </p>
-          <p className="text-sm text-gray-500">
-            {tServicesTranslation("description")}
-          </p>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {tServicesTranslation("title")}
+            </h1>
+            <p className="text-gray-500 mt-1">
+              {tServicesTranslation("description")}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5"
+          >
+            <FiPlus className="w-5 h-5" />
+            {tServicesTranslation("addService")}
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setEditingItem(null);
-            setIsModalOpen(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <FiPlus className="w-4 h-4" />
-          {tServicesTranslation("addService")}
-        </button>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {squareCards.map((card) => (
-          <Card className="bg-brand-500/10 shadow-none" key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              {card.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-            </CardContent>
-          </Card>
+          <div
+            key={card.title}
+            className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg hover:border-gray-200 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${card.lightColor}`}>
+                <div className={card.textColor}>{card.icon}</div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-      <DataTable
-        columns={columns}
-        data={data}
-        searchKey="name"
-        searchPlaceholder={
-          tServicesTranslation("searchPlaceholder") || tCommon("search")
-        }
-        searchValue={searchQuery}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        loading={loading}
-      />
+
+      {/* Data Table */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="p-6">
+          <DataTable
+            columns={columns}
+            data={data}
+            searchKey="name"
+            searchPlaceholder={
+              tServicesTranslation("searchPlaceholder") || tCommon("search")
+            }
+            searchValue={searchQuery}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            loading={loading}
+          />
+        </div>
+      </div>
 
       <ServiceFormModal
         open={isModalOpen}
@@ -207,7 +241,7 @@ const Services = () => {
         onConfirm={handleDeleteConfirm}
         item={deletingItem}
       />
-    </>
+    </div>
   );
 };
 

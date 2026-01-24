@@ -1,5 +1,6 @@
 import React from "react";
 import { formatCurrency } from "@/utils";
+import { FiPackage, FiCalendar } from "react-icons/fi";
 
 interface TicketItem {
   quantity?: number;
@@ -27,23 +28,30 @@ export const TicketItems: React.FC<TicketItemsProps> = ({
   emptyLabel,
 }) => {
   return (
-    <div className="flex flex-col gap-2 border-b border-gray-200 py-10 w-full items-start justify-between">
-      <p className="text-xl text-gray-900 flex items-center justify-start">
+    <div className="w-full">
+      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
         {itemsLabel}
-      </p>
-      <div className="flex flex-col gap-3 w-full h-20 overflow-y-auto">
+      </h3>
+      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
         {items.length > 0 ? (
           items.map((item, idx) => (
             <TicketItemRow
               key={idx}
               name={item.product?.name || item.service?.name || "Item"}
               quantity={item.quantity ?? 1}
+              unitPrice={item.unitPrice || item.product?.price || item.service?.price || 0}
               total={item.total || 0}
               qtyLabel={qtyLabel}
+              isService={!!item.service}
             />
           ))
         ) : (
-          <p className="text-sm text-gray-500">{emptyLabel}</p>
+          <div className="py-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <FiPackage className="w-6 h-6 text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">{emptyLabel}</p>
+          </div>
         )}
       </div>
     </div>
@@ -53,8 +61,10 @@ export const TicketItems: React.FC<TicketItemsProps> = ({
 interface TicketItemRowProps {
   name: string;
   quantity: number;
+  unitPrice: number;
   total: number;
   qtyLabel: string;
+  isService: boolean;
 }
 
 /**
@@ -64,19 +74,39 @@ interface TicketItemRowProps {
 const TicketItemRow: React.FC<TicketItemRowProps> = ({
   name,
   quantity,
+  unitPrice,
   total,
   qtyLabel,
+  isService,
 }) => {
   return (
-    <div className="flex items-center justify-between w-full border border-gray-100 rounded-lg p-3">
-      <div className="flex flex-col">
-        <p className="text-semibold text-gray-900">{name}</p>
+    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+      {/* Icon */}
+      <div
+        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+          isService
+            ? "bg-blue-100 text-blue-600"
+            : "bg-amber-100 text-amber-600"
+        }`}
+      >
+        {isService ? (
+          <FiCalendar className="w-5 h-5" />
+        ) : (
+          <FiPackage className="w-5 h-5" />
+        )}
+      </div>
+
+      {/* Details */}
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-900 truncate">{name}</p>
         <p className="text-xs text-gray-500">
-          {qtyLabel}: {quantity}
+          {qtyLabel}: {quantity} × {formatCurrency(unitPrice)}
         </p>
       </div>
-      <div className="text-right">
-        <p className="text-semibold text-gray-900">{formatCurrency(total)}</p>
+
+      {/* Total */}
+      <div className="text-right flex-shrink-0">
+        <p className="font-semibold text-gray-900">{formatCurrency(total)}</p>
       </div>
     </div>
   );

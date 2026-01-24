@@ -1,6 +1,6 @@
 import React from "react";
 import { DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { FiDownload, FiMail, FiX } from "react-icons/fi";
+import { FiDownload, FiMail, FiX, FiLoader } from "react-icons/fi";
 
 interface TicketDialogHeaderProps {
   title: string;
@@ -24,23 +24,35 @@ export const TicketDialogHeader: React.FC<TicketDialogHeaderProps> = ({
   isEmailLoading = false,
 }) => {
   return (
-    <DialogHeader className="border-b border-gray-200 p-4">
+    <DialogHeader className="bg-gradient-to-r from-brand-500 to-brand-600 p-5 rounded-t-2xl">
       <div className="flex items-center justify-between">
-        <DialogTitle className="flex items-center gap-3">{title}</DialogTitle>
-        <div className="flex items-center gap-3">
+        <DialogTitle className="text-white font-semibold text-lg">
+          {title}
+        </DialogTitle>
+        <div className="flex items-center gap-2">
           <ActionButton
-            icon={<FiDownload />}
+            icon={<FiDownload className="w-4 h-4" />}
             label={pdfLabel}
             onClick={onDownloadPdf}
+            variant="secondary"
           />
           <ActionButton
-            icon={isEmailLoading ? <LoadingSpinner /> : <FiMail />}
-            label={isEmailLoading ? "Enviando..." : emailLabel}
+            icon={
+              isEmailLoading ? (
+                <FiLoader className="w-4 h-4 animate-spin" />
+              ) : (
+                <FiMail className="w-4 h-4" />
+              )
+            }
+            label={isEmailLoading ? "..." : emailLabel}
             onClick={onSendEmail}
             disabled={isEmailLoading}
+            variant="secondary"
           />
           <DialogClose asChild>
-            <FiX className="h-5 w-5 text-gray-500 cursor-pointer" />
+            <button className="p-2 rounded-lg hover:bg-white/20 transition-colors">
+              <FiX className="h-5 w-5 text-white" />
+            </button>
           </DialogClose>
         </div>
       </div>
@@ -48,37 +60,12 @@ export const TicketDialogHeader: React.FC<TicketDialogHeaderProps> = ({
   );
 };
 
-/**
- * Simple loading spinner component
- */
-const LoadingSpinner: React.FC = () => (
-  <svg
-    className="animate-spin h-4 w-4"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle
-      className="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="4"
-    />
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    />
-  </svg>
-);
-
 interface ActionButtonProps {
   icon: React.ReactNode;
   label: string;
   onClick?: () => void;
   disabled?: boolean;
+  variant?: "primary" | "secondary";
 }
 
 /**
@@ -90,19 +77,28 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   label,
   onClick,
   disabled = false,
+  variant = "primary",
 }) => {
+  const baseClasses =
+    "text-sm font-medium flex gap-2 items-center justify-center rounded-lg px-3 py-2 transition-all";
+
+  const variantClasses =
+    variant === "secondary"
+      ? disabled
+        ? "bg-white/10 text-white/50 cursor-not-allowed"
+        : "bg-white/20 text-white hover:bg-white/30"
+      : disabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-white text-brand-600 hover:bg-gray-50 shadow-sm";
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`text-sm font-semibold flex gap-2 items-center justify-center border border-gray-200 rounded-lg px-3 py-1.5 transition-colors ${
-        disabled
-          ? "text-gray-400 cursor-not-allowed bg-gray-50"
-          : "text-gray-900 hover:bg-gray-100"
-      }`}
+      className={`${baseClasses} ${variantClasses}`}
     >
       {icon}
-      {label}
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 };

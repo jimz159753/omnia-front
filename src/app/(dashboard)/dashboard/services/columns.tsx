@@ -3,18 +3,18 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Service, Category, SubCategory } from "@/generated/prisma";
 
-import { FiEdit, FiTrash2, FiCalendar } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiClock, FiTag } from "react-icons/fi";
 import i18next from "@/i18n";
 import Image from "next/image";
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
-  const dateStr = date.toLocaleDateString("en-US", {
+  const dateStr = date.toLocaleDateString("es-MX", {
     month: "short",
     day: "2-digit",
     year: "numeric",
   });
-  const timeStr = date.toLocaleTimeString("en-US", {
+  const timeStr = date.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -56,34 +56,38 @@ export const getColumns = ({
 
   return [
     {
-      accessorKey: "image",
-      header: translateServices("image"),
+      accessorKey: "service",
+      header: translateServices("service") || "Service",
       cell: ({ row }: CellInfo) => {
-        const src = row.getValue("image") as string;
+        const src = row.original.image as string;
+        const name = row.original.name;
+        const category = row.original.category?.name;
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center gap-3">
             {src ? (
               <Image
                 key={src}
                 src={src}
-                alt={row.original.name}
-                width={40}
-                height={40}
+                alt={name}
+                width={44}
+                height={44}
                 unoptimized
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-11 w-11 rounded-xl object-cover"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                N/A
+              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-semibold">
+                {name.charAt(0).toUpperCase()}
               </div>
             )}
+            <div>
+              <p className="font-medium text-gray-900">{name}</p>
+              {category && (
+                <p className="text-sm text-gray-500">{category}</p>
+              )}
+            </div>
           </div>
         );
       },
-    },
-    {
-      accessorKey: "name",
-      header: translateCommon("name"),
     },
     {
       accessorKey: "description",
@@ -91,32 +95,40 @@ export const getColumns = ({
       cell: ({ row }: CellInfo) => {
         const description = row.getValue("description") as string;
         return (
-          <div className="max-w-[300px] truncate" title={description}>
-            {description}
+          <div className="max-w-[250px]">
+            <p className="text-gray-600 truncate" title={description}>
+              {description || "-"}
+            </p>
           </div>
         );
-      },
-    },
-    {
-      accessorKey: "category.name",
-      header: translateServices("category"),
-      cell: ({ row }: CellInfo) => {
-        return row.original.category?.name || "N/A";
       },
     },
     {
       accessorKey: "subCategory.name",
       header: translateServices("subcategory"),
       cell: ({ row }: CellInfo) => {
-        return row.original.subCategory?.name || "N/A";
+        const subCategory = row.original.subCategory?.name;
+        return subCategory ? (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm">
+            <FiTag className="w-3 h-3" />
+            {subCategory}
+          </span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        );
       },
     },
     {
       accessorKey: "duration",
-      header: `${translateServices("duration")} (min)`,
+      header: translateServices("duration"),
       cell: ({ row }: CellInfo) => {
         const duration = row.getValue("duration") as number;
-        return <div className="font-medium">{duration} min</div>;
+        return (
+          <div className="flex items-center gap-2 text-gray-700">
+            <FiClock className="w-4 h-4 text-gray-400" />
+            <span className="font-medium">{duration} min</span>
+          </div>
+        );
       },
     },
     {
@@ -128,7 +140,9 @@ export const getColumns = ({
           style: "currency",
           currency: "MXN",
         }).format(price);
-        return <div className="font-medium">{formatted}</div>;
+        return (
+          <span className="font-semibold text-gray-900">{formatted}</span>
+        );
       },
     },
     {
@@ -140,7 +154,9 @@ export const getColumns = ({
           style: "currency",
           currency: "MXN",
         }).format(commission);
-        return <div className="text-muted-foreground">{formatted}</div>;
+        return (
+          <span className="text-gray-500">{formatted}</span>
+        );
       },
     },
     {
@@ -151,12 +167,9 @@ export const getColumns = ({
           row.getValue("createdAt") as string
         );
         return (
-          <div className="flex items-center gap-2">
-            <FiCalendar className="w-4 h-4 text-brand-500" />
-            <div className="leading-tight">
-              <div>{dateStr}</div>
-              <div className="text-xs text-gray-500">{timeStr}</div>
-            </div>
+          <div className="text-sm">
+            <p className="text-gray-900">{dateStr}</p>
+            <p className="text-gray-500">{timeStr}</p>
           </div>
         );
       },
@@ -170,18 +183,20 @@ export const getColumns = ({
         const item = row.original;
 
         return (
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-1">
             <button
               onClick={() => onUpdate(item)}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity hover:bg-brand-500/10 rounded-md p-2"
+              className="p-2 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+              title="Edit"
             >
-              <FiEdit className="w-4 h-4 cursor-pointer" />
+              <FiEdit className="w-4 h-4" />
             </button>
             <button
               onClick={() => onDelete(item)}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity text-red-500 hover:bg-red-500/10 rounded-md p-2"
+              className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title="Delete"
             >
-              <FiTrash2 className="w-4 h-4 cursor-pointer" />
+              <FiTrash2 className="w-4 h-4" />
             </button>
           </div>
         );

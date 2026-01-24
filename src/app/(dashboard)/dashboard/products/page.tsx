@@ -5,7 +5,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { getColumns, ProductWithCategory } from "./columns";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductMeta } from "@/hooks/useProductMeta";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductFormModal } from "../../../../components/products/ProductFormModal";
 import { DeleteConfirmDialog } from "../../../../components/products/DeleteConfirmDialog";
 import { ProvidersDialog } from "../../../../components/products/ProvidersDialog";
@@ -20,13 +19,9 @@ import {
   FiLayers,
   FiShoppingBag,
   FiUsers,
+  FiGrid,
 } from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
-
-// Types for form state setters
-type ProviderFormSetter = (form: { name: string }) => void;
-type CategoryFormSetter = (form: { name: string; description: string }) => void;
-type SubCategoryFormSetter = (form: { name: string; description: string; categoryId: string }) => void;
 
 const Products = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,34 +93,45 @@ const Products = () => {
 
   if (loading && data.length === 0) {
     return (
-      <>
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-10 w-[200px]" />
-            <Skeleton className="h-4 w-[300px]" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-[200px]" />
+              <Skeleton className="h-4 w-[300px]" />
+            </div>
+            <Skeleton className="h-11 w-[160px] rounded-xl" />
           </div>
-          <Skeleton className="h-10 w-[140px]" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[120px]" />
-                <Skeleton className="h-4 w-4 rounded" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[100px]" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <div className="flex gap-2 mb-4">
+
+        {/* Quick Actions Skeleton */}
+        <div className="flex gap-3">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-10 w-[140px]" />
+            <Skeleton key={i} className="h-10 w-[130px] rounded-xl" />
           ))}
         </div>
-        <Skeleton className="h-[400px] w-full rounded-lg" />
-      </>
+
+        {/* Stats Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-6 w-[60px]" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Table Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <Skeleton className="h-[400px] w-full rounded-xl" />
+        </div>
+      </div>
     );
   }
 
@@ -177,7 +183,7 @@ const Products = () => {
 
   // Calculate statistics from products data
   const totalProducts = pagination.total || 0;
-  const lowStockItems = data.filter((product) => product.stock <= 10).length;
+  const lowStockItems = data.filter((product) => product.stock <= (product.minStock || 10)).length;
   const warehouseValue = data.reduce(
     (sum, product) => sum + product.stock * product.cost,
     0
@@ -191,22 +197,29 @@ const Products = () => {
     {
       title: tProducts("totalProducts") || "Total Products",
       value: totalProducts.toString(),
-      icon: <FiShoppingBag className="w-4 h-4" />,
+      icon: <FiShoppingBag className="w-5 h-5" />,
+      color: "bg-violet-500",
+      lightColor: "bg-violet-50",
+      textColor: "text-violet-600",
     },
-
     {
       title: tProducts("lowStockItems") || "Low Stock Items",
       value: lowStockItems.toString(),
-      icon: <FiBox className="w-4 h-4" />,
+      icon: <FiBox className="w-5 h-5" />,
+      color: "bg-red-500",
+      lightColor: "bg-red-50",
+      textColor: "text-red-600",
     },
-
     {
       title: tProducts("warehouseValue") || "Warehouse Value",
       value: new Intl.NumberFormat("es-MX", {
         style: "currency",
         currency: "MXN",
       }).format(warehouseValue),
-      icon: <FiPackage className="w-4 h-4" />,
+      icon: <FiPackage className="w-5 h-5" />,
+      color: "bg-blue-500",
+      lightColor: "bg-blue-50",
+      textColor: "text-blue-600",
     },
     {
       title: tProducts("totalValue") || "Total Value",
@@ -214,84 +227,117 @@ const Products = () => {
         style: "currency",
         currency: "MXN",
       }).format(totalValue),
-      icon: <FiTrendingUp className="w-4 h-4" />,
+      icon: <FiTrendingUp className="w-5 h-5" />,
+      color: "bg-emerald-500",
+      lightColor: "bg-emerald-50",
+      textColor: "text-emerald-600",
     },
   ];
 
-  const buttons = [
+  const quickActions = [
     {
       title: tProducts("providers") || "Providers",
-      icon: <FiUsers className="w-4 h-4 text-black" />,
+      icon: <FiUsers className="w-4 h-4" />,
       onClick: () => setProviderModalOpen(true),
+      count: providers.length,
     },
     {
       title: tProducts("categories") || "Categories",
-      icon: <FiLayers className="w-4 h-4 text-black" />,
+      icon: <FiLayers className="w-4 h-4" />,
       onClick: () => setCategoryModalOpen(true),
+      count: categories.length,
     },
     {
       title: tProducts("subcategories") || "SubCategories",
-      icon: <FiLayers className="w-4 h-4 text-black" />,
+      icon: <FiGrid className="w-4 h-4" />,
       onClick: () => setSubCategoryModalOpen(true),
+      count: subCategories.length,
     },
   ];
 
   return (
-    <>
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-4xl font-normal">{tProducts("title")}</p>
-          <p className="text-sm text-gray-500">{tProducts("description")}</p>
-        </div>
-        <button
-          onClick={() => {
-            setEditingItem(null);
-            setIsModalOpen(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <FiPlus className="w-4 h-4" />
-          {tProducts("addProduct")}
-        </button>
-      </div>
-      <div className="flex gap-4 w-1/2 py-4">
-        {buttons.map((button) => (
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {tProducts("title")}
+            </h1>
+            <p className="text-gray-500 mt-1">{tProducts("description")}</p>
+          </div>
           <button
-            key={button.title}
-            className="w-fit border border-brand-500 flex justify-center items-center gap-2 px-4 py-1 text-md rounded-md hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            onClick={button.onClick}
+            onClick={() => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5"
           >
-            {button.icon}
-            <p className="text-black">{button.title}</p>
+            <FiPlus className="w-5 h-5" />
+            {tProducts("addProduct")}
+          </button>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-3">
+        {quickActions.map((action) => (
+          <button
+            key={action.title}
+            onClick={action.onClick}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all group"
+          >
+            <span className="text-gray-500 group-hover:text-brand-500 transition-colors">
+              {action.icon}
+            </span>
+            {action.title}
+            {action.count > 0 && (
+              <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors">
+                {action.count}
+              </span>
+            )}
           </button>
         ))}
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {squareCards.map((card) => (
-          <Card className="bg-brand-500/10 shadow-none" key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              {card.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-            </CardContent>
-          </Card>
+          <div
+            key={card.title}
+            className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg hover:border-gray-200 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${card.lightColor}`}>
+                <div className={card.textColor}>{card.icon}</div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-      <DataTable
-        columns={columns}
-        data={data}
-        searchKey="name"
-        searchPlaceholder={tProducts("searchPlaceholder") || "Search by name, SKU, or category..."}
-        searchValue={searchQuery}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        loading={loading}
-      />
+
+      {/* Data Table */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="p-6">
+          <DataTable
+            columns={columns}
+            data={data}
+            searchKey="name"
+            searchPlaceholder={
+              tProducts("searchPlaceholder") || "Search by name, SKU, or category..."
+            }
+            searchValue={searchQuery}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            loading={loading}
+          />
+        </div>
+      </div>
 
       <ProductFormModal
         open={isModalOpen}
@@ -355,7 +401,7 @@ const Products = () => {
         onStartEdit={startEditSubCategory}
         onCancelEdit={cancelEditSubCategory}
       />
-    </>
+    </div>
   );
 };
 

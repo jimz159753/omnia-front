@@ -13,6 +13,14 @@ import { formatTicketDateTime } from "@/lib/dateUtils";
 import { downloadTicketPDF } from "@/lib/pdfUtils";
 import { formatCurrency } from "@/utils";
 import { toast } from "sonner";
+import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
+import {
+  FiCalendar,
+  FiUser,
+  FiHash,
+  FiFileText,
+  FiClock,
+} from "react-icons/fi";
 
 /**
  * Type definitions following TypeScript standards from guidelines
@@ -28,6 +36,7 @@ interface TicketItem {
 interface TicketLike {
   id?: string;
   createdAt?: string | Date;
+  startTime?: string | Date | null;
   quantity?: number;
   status?: string;
   notes?: string | null;
@@ -66,6 +75,11 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
   const { dateStr, timeStr } = formatTicketDateTime(ticket?.createdAt);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
 
+  // Format appointment time if exists
+  const appointmentTime = ticket?.startTime
+    ? formatTicketDateTime(ticket.startTime)
+    : null;
+
   // 2. Event handlers (using useCallback for optimization)
   const handleDownloadPdf = useCallback(async () => {
     if (!ticket) {
@@ -100,7 +114,9 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
 
     // Check if client has email
     if (!ticket.client?.email) {
-      toast.error(t("noClientEmail") || "Client does not have an email address");
+      toast.error(
+        t("noClientEmail") || "Client does not have an email address"
+      );
       return;
     }
 
@@ -141,10 +157,13 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
     return null;
   }
 
+  const statusLabel = getStatusLabel(ticket.status || "");
+  const statusClasses = getStatusBadgeClass(ticket.status || "");
+
   // 4. Render
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 max-w-xl [&>button:first-of-type]:hidden">
+      <DialogContent className="p-0 max-w-lg rounded-2xl [&>button:first-of-type]:hidden overflow-hidden">
         <TicketDialogHeader
           title={t("ticketDetails")}
           onDownloadPdf={handleDownloadPdf}
@@ -154,34 +173,75 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
           isEmailLoading={isSendingEmail}
         />
 
-        <div className="flex flex-col gap-2 items-center justify-center p-6">
-          <BusinessLogo logo={business?.logo} name={business?.name} />
+        <div className="p-6 space-y-6">
+          {/* Business & Ticket Info */}
+          <div className="flex items-center justify-between">
+            <BusinessLogo logo={business?.logo} name={business?.name} />
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusClasses}`}
+            >
+              {statusLabel}
+            </span>
+          </div>
 
-          <p className="text-sm text-gray-700">{dateStr}</p>
-          <p className="text-xs text-gray-500">{timeStr}</p>
-
-          <p className="text-gray-500 mt-6">{t("ticketID")}</p>
-          <p className="font-bold text-xl text-gray-900 mb-6">
-            #{ticket.id || "-"}
-          </p>
-
-          <div className="flex flex-col gap-2 border-y border-gray-200 py-10 w-full items-center justify-center">
-            <div className="flex flex-col gap-2">
-              <p className="text-gray-500">
-                {t("clientLabel")}:{" "}
-                <span className="font-semibold text-gray-900">
-                  {ticket.client?.name || "-"}
-                </span>
-              </p>
-              <p className="text-gray-500">
-                {t("staffLabel")}:{" "}
-                <span className="font-semibold text-gray-900">
-                  {ticket.staff?.name || ticket.staff?.email || "-"}
-                </span>
-              </p>
+          {/* Ticket ID Card */}
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center">
+                  <FiHash className="w-5 h-5 text-brand-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider">
+                    {t("ticketID")}
+                  </p>
+                  <p className="font-bold text-gray-900 font-mono">
+                    {ticket.id || "-"}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-500">{dateStr}</p>
+                <p className="text-sm text-gray-700">{timeStr}</p>
+              </div>
             </div>
           </div>
 
+          {/* Client & Staff Info */}
+          <div className="grid grid-cols-2 gap-3">
+            <InfoCard
+              icon={<FiUser className="w-4 h-4" />}
+              label={t("clientLabel")}
+              value={ticket.client?.name || "-"}
+              subValue={ticket.client?.phone || ticket.client?.email}
+              color="blue"
+            />
+            <InfoCard
+              icon={<FiUser className="w-4 h-4" />}
+              label={t("staffLabel")}
+              value={ticket.staff?.name || ticket.staff?.email || "-"}
+              color="purple"
+            />
+          </div>
+
+          {/* Appointment Time (if exists) */}
+          {appointmentTime && (
+            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <FiClock className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-xs text-blue-600 uppercase tracking-wider font-medium">
+                  {t("appointmentDetails") || "Appointment"}
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {appointmentTime.dateStr} - {appointmentTime.timeStr}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Items Section */}
           <TicketItems
             items={ticket.items || []}
             itemsLabel={t("itemsLabel")}
@@ -189,19 +249,76 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
             emptyLabel={t("itemsEmpty")}
           />
 
-          <div className="flex border-b border-gray-200 py-10 w-full items-center justify-between">
-            <p className="text-xl font-bold text-gray-900 flex items-center justify-start">
-              {t("totalLabel")}
-            </p>
-            <p className="text-xl font-bold text-gray-900">
-              {formatCurrency(ticket.total || 0) || "-"}
-            </p>
+          {/* Notes (if exists) */}
+          {ticket.notes && (
+            <div className="p-4 bg-amber-50 rounded-xl">
+              <div className="flex items-start gap-3">
+                <FiFileText className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs text-amber-600 uppercase tracking-wider font-medium mb-1">
+                    Notes
+                  </p>
+                  <p className="text-gray-700 text-sm">{ticket.notes}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Total Section */}
+          <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between">
+            <span className="text-white font-medium">{t("totalLabel")}</span>
+            <span className="text-2xl font-bold text-white">
+              {formatCurrency(ticket.total || 0)}
+            </span>
           </div>
 
-          <p className="text-gray-500 text-center my-2">{t("thanks")}</p>
+          {/* Thanks Message */}
+          <p className="text-center text-sm text-gray-500">{t("thanks")}</p>
         </div>
       </DialogContent>
     </Dialog>
+  );
+};
+
+interface InfoCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  subValue?: string | null;
+  color: "blue" | "purple" | "green" | "amber";
+}
+
+const InfoCard: React.FC<InfoCardProps> = ({
+  icon,
+  label,
+  value,
+  subValue,
+  color,
+}) => {
+  const colorClasses = {
+    blue: "bg-blue-50 text-blue-600",
+    purple: "bg-purple-50 text-purple-600",
+    green: "bg-green-50 text-green-600",
+    amber: "bg-amber-50 text-amber-600",
+  };
+
+  return (
+    <div className="p-3 bg-gray-50 rounded-xl">
+      <div className="flex items-center gap-2 mb-1">
+        <div
+          className={`w-6 h-6 rounded-md flex items-center justify-center ${colorClasses[color]}`}
+        >
+          {icon}
+        </div>
+        <span className="text-xs text-gray-500 uppercase tracking-wider">
+          {label}
+        </span>
+      </div>
+      <p className="font-medium text-gray-900 truncate">{value}</p>
+      {subValue && (
+        <p className="text-xs text-gray-500 truncate">{subValue}</p>
+      )}
+    </div>
   );
 };
 

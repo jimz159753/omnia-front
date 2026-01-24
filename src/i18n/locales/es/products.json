@@ -1,5 +1,6 @@
 {
   "title": "Productos",
+  "product": "Producto",
   "addProduct": "Agregar Producto",
   "editProduct": "Editar Producto",
   "deleteProduct": "Eliminar Producto",

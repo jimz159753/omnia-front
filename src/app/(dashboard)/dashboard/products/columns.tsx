@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Product, Category, SubCategory, Provider } from "@/generated/prisma";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiAlertCircle, FiTag } from "react-icons/fi";
 import i18next from "@/i18n";
 import Image from "next/image";
 
@@ -42,47 +42,33 @@ export const getColumns = ({
 
   return [
     {
-      accessorKey: "image",
-      header: translateProducts("image"),
+      accessorKey: "product",
+      header: translateProducts("product") || "Product",
       cell: ({ row }: CellInfo) => {
-        const src = row.getValue("image") as string;
+        const src = row.original.image as string;
+        const name = row.original.name;
+        const sku = row.original.sku;
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center gap-3">
             {src ? (
               <Image
                 key={src}
                 src={src}
-                alt={row.original.name}
-                width={40}
-                height={40}
+                alt={name}
+                width={44}
+                height={44}
                 unoptimized
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-11 w-11 rounded-xl object-cover"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                N/A
+              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-semibold">
+                {name.charAt(0).toUpperCase()}
               </div>
             )}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "sku",
-      header: translateProducts("sku"),
-    },
-    {
-      accessorKey: "name",
-      header: translateCommon("name"),
-    },
-    {
-      accessorKey: "description",
-      header: translateCommon("description"),
-      cell: ({ row }: CellInfo) => {
-        const description = row.getValue("description") as string;
-        return (
-          <div className="max-w-[300px] truncate" title={description}>
-            {description}
+            <div>
+              <p className="font-medium text-gray-900">{name}</p>
+              <p className="text-sm text-gray-500 font-mono">{sku}</p>
+            </div>
           </div>
         );
       },
@@ -91,7 +77,35 @@ export const getColumns = ({
       accessorKey: "category.name",
       header: translateProducts("category"),
       cell: ({ row }: CellInfo) => {
-        return row.original.category?.name || "N/A";
+        const category = row.original.category?.name;
+        const subCategory = row.original.subCategory?.name;
+        return (
+          <div>
+            {category ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm">
+                <FiTag className="w-3 h-3" />
+                {category}
+              </span>
+            ) : (
+              <span className="text-gray-400">-</span>
+            )}
+            {subCategory && (
+              <p className="text-xs text-gray-500 mt-1">{subCategory}</p>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "provider.name",
+      header: translateProducts("provider") || "Provider",
+      cell: ({ row }: CellInfo) => {
+        const provider = row.original.provider?.name;
+        return provider ? (
+          <span className="text-gray-700">{provider}</span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        );
       },
     },
     {
@@ -99,17 +113,29 @@ export const getColumns = ({
       header: translateCommon("stock"),
       cell: ({ row }: CellInfo) => {
         const stock = row.getValue("stock") as number;
+        const minStock = row.original.minStock || 10;
+        const isLow = stock <= minStock;
+        const isCritical = stock <= Math.floor(minStock / 2);
+        
         return (
-          <div
-            className={`font-medium ${
-              stock <= 10
-                ? "text-red-500"
-                : stock <= 50
-                ? "text-yellow-500"
-                : ""
-            }`}
-          >
-            {stock}
+          <div className="flex items-center gap-2">
+            <span
+              className={`font-semibold ${
+                isCritical
+                  ? "text-red-600"
+                  : isLow
+                  ? "text-amber-600"
+                  : "text-gray-900"
+              }`}
+            >
+              {stock}
+            </span>
+            {isLow && (
+              <FiAlertCircle
+                className={`w-4 h-4 ${isCritical ? "text-red-500" : "text-amber-500"}`}
+                title={`Low stock (min: ${minStock})`}
+              />
+            )}
           </div>
         );
       },
@@ -123,7 +149,7 @@ export const getColumns = ({
           style: "currency",
           currency: "MXN",
         }).format(cost);
-        return <div className="text-muted-foreground">{formatted}</div>;
+        return <span className="text-gray-500">{formatted}</span>;
       },
     },
     {
@@ -131,11 +157,18 @@ export const getColumns = ({
       header: translateCommon("price"),
       cell: ({ row }: CellInfo) => {
         const price = parseFloat(row.getValue("price") as string);
+        const cost = parseFloat(row.original.cost as unknown as string);
+        const margin = price > 0 ? ((price - cost) / price * 100).toFixed(0) : 0;
         const formatted = new Intl.NumberFormat("es-MX", {
           style: "currency",
           currency: "MXN",
         }).format(price);
-        return <div className="font-medium">{formatted}</div>;
+        return (
+          <div>
+            <span className="font-semibold text-gray-900">{formatted}</span>
+            <p className="text-xs text-gray-500">{margin}% margin</p>
+          </div>
+        );
       },
     },
     {
@@ -147,18 +180,20 @@ export const getColumns = ({
         const item = row.original;
 
         return (
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-1">
             <button
               onClick={() => onUpdate(item)}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity hover:bg-brand-500/10 rounded-md p-2"
+              className="p-2 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+              title="Edit"
             >
-              <FiEdit className="w-4 h-4 cursor-pointer" />
+              <FiEdit className="w-4 h-4" />
             </button>
             <button
               onClick={() => onDelete(item)}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity text-red-500 hover:bg-red-500/10 rounded-md p-2"
+              className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title="Delete"
             >
-              <FiTrash2 className="w-4 h-4 cursor-pointer" />
+              <FiTrash2 className="w-4 h-4" />
             </button>
           </div>
         );

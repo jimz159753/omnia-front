@@ -2,6 +2,7 @@
   "title": "Services",
   "description": "Manage your services and offerings",
   "searchPlaceholder": "Search by service name...",
+  "service": "Service",
   "addService": "Add Service",
   "editService": "Edit Service",
   "deleteService": "Delete Service",

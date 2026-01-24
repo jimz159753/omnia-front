@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { FiShoppingBag } from "react-icons/fi";
 
 interface BusinessLogoProps {
   logo?: string | null;
@@ -13,7 +14,7 @@ interface BusinessLogoProps {
 export const BusinessLogo: React.FC<BusinessLogoProps> = ({ logo, name }) => {
   if (logo) {
     return (
-      <div className="mb-4 relative h-20 w-40">
+      <div className="relative h-16 w-32">
         <Image
           src={logo}
           alt={name || "Business logo"}
@@ -25,9 +26,11 @@ export const BusinessLogo: React.FC<BusinessLogoProps> = ({ logo, name }) => {
   }
 
   return (
-    <div className="mb-4 h-20 flex items-center justify-center">
-      <p className="text-xl font-bold text-brand-500">{name || "Business"}</p>
+    <div className="flex items-center gap-3">
+      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
+        <FiShoppingBag className="w-6 h-6 text-white" />
+      </div>
+      <span className="text-xl font-bold text-gray-900">{name || "Business"}</span>
     </div>
   );
 };
-

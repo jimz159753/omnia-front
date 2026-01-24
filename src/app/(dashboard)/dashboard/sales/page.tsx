@@ -4,10 +4,15 @@ import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getColumns } from "./columns";
 import { useTickets } from "@/hooks/useTickets";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 import TicketsLineChart from "@/components/charts/TicketsLineChart";
-import { FiDownload, FiPackage, FiShoppingBag, FiUser } from "react-icons/fi";
+import {
+  FiDownload,
+  FiCalendar,
+  FiShoppingBag,
+  FiUsers,
+  FiTrendingUp,
+} from "react-icons/fi";
 import { useTranslation } from "@/hooks/useTranslation";
 import { StatusFilter } from "@/components/filters/StatusFilter";
 import { DateFilter } from "@/components/filters/DateFilter";
@@ -42,6 +47,7 @@ const Sales = () => {
     ticketsThisWeek: 0,
     scheduledServices: 0,
     activeClients: 0,
+    totalRevenue: 0,
   });
 
   // Calculate metrics from data
@@ -51,14 +57,15 @@ const Sales = () => {
         // Fetch all tickets for accurate metrics
         const allTicketsRes = await fetch("/api/tickets?pageSize=10000");
         const allTicketsData = await allTicketsRes.json();
-        const allTickets = allTicketsData?.data?.data || allTicketsData?.data || [];
+        const allTickets =
+          allTicketsData?.data?.data || allTicketsData?.data || [];
 
         // Calculate tickets this week
         const now = new Date();
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
         startOfWeek.setHours(0, 0, 0, 0);
-        
+
         const ticketsThisWeek = allTickets.filter((ticket: any) => {
           const ticketDate = new Date(ticket.createdAt);
           return ticketDate >= startOfWeek;
@@ -77,10 +84,17 @@ const Sales = () => {
         );
         const activeClients = uniqueClientIds.size;
 
+        // Calculate total revenue
+        const totalRevenue = allTickets.reduce(
+          (sum: number, ticket: any) => sum + (ticket.total || 0),
+          0
+        );
+
         setMetrics({
           ticketsThisWeek,
           scheduledServices,
           activeClients,
+          totalRevenue,
         });
       } catch (error) {
         console.error("Error calculating metrics:", error);
@@ -157,22 +171,39 @@ const Sales = () => {
 
   const squareCards = [
     {
-      title: tSales("ticketsThisWeek"),
+      title: tSales("ticketsThisWeek") || "Tickets This Week",
       value: metrics.ticketsThisWeek.toString(),
       description: tSales("ticketsThisWeekDesc") || "Created this week",
-      icon: <FiShoppingBag className="w-4 h-4" />,
+      icon: <FiShoppingBag className="w-5 h-5" />,
+      lightColor: "bg-violet-50",
+      textColor: "text-violet-600",
     },
     {
-      title: tSales("scheduledServices"),
+      title: tSales("scheduledServices") || "Scheduled",
       value: metrics.scheduledServices.toString(),
       description: tSales("scheduledServicesDesc") || "Upcoming appointments",
-      icon: <FiPackage className="w-4 h-4" />,
+      icon: <FiCalendar className="w-5 h-5" />,
+      lightColor: "bg-blue-50",
+      textColor: "text-blue-600",
     },
     {
-      title: tSales("activeClients"),
+      title: tSales("activeClients") || "Active Clients",
       value: metrics.activeClients.toString(),
       description: tSales("activeClientsDesc") || "Total unique clients",
-      icon: <FiUser className="w-4 h-4" />,
+      icon: <FiUsers className="w-5 h-5" />,
+      lightColor: "bg-amber-50",
+      textColor: "text-amber-600",
+    },
+    {
+      title: tSales("totalRevenue") || "Total Revenue",
+      value: new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }).format(metrics.totalRevenue),
+      description: tSales("totalRevenueDesc") || "All time revenue",
+      icon: <FiTrendingUp className="w-5 h-5" />,
+      lightColor: "bg-emerald-50",
+      textColor: "text-emerald-600",
     },
   ];
 
@@ -180,108 +211,136 @@ const Sales = () => {
 
   if (loading && data.length === 0) {
     return (
-      <>
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-10 w-[200px]" />
-            <Skeleton className="h-4 w-[300px]" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-[200px]" />
+              <Skeleton className="h-4 w-[300px]" />
+            </div>
+            <Skeleton className="h-11 w-[160px] rounded-xl" />
           </div>
-          <Skeleton className="h-10 w-[140px]" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
+
+        {/* Stats Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <Card className="bg-brand-500/10 shadow-none" key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[120px]" />
-                <Skeleton className="h-4 w-4 rounded" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[80px] mb-2" />
-                <Skeleton className="h-3 w-[140px]" />
-              </CardContent>
-            </Card>
+            <div
+              key={i}
+              className="bg-white rounded-2xl border border-gray-100 p-5"
+            >
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-6 w-[60px]" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <Skeleton className="h-10 w-[320px]" />
-            <div className="flex gap-2">
-              <Skeleton className="h-10 w-[180px]" />
-              <Skeleton className="h-10 w-[180px]" />
-            </div>
-          </div>
-          <Skeleton className="h-[400px] w-full rounded-lg" />
+
+        {/* Chart Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <Skeleton className="h-[200px] w-full rounded-xl" />
         </div>
-      </>
+
+        {/* Table Skeleton */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <Skeleton className="h-[400px] w-full rounded-xl" />
+        </div>
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-4xl font-normal">{tSales("title")}</p>
-          <p className="text-sm text-gray-500">{tSales("description")}</p>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {tSales("title")}
+            </h1>
+            <p className="text-gray-500 mt-1">{tSales("description")}</p>
+          </div>
+          <button
+            onClick={exportToCSV}
+            disabled={loading || data.length === 0}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            <FiDownload className="w-5 h-5" />
+            {tSales("exportCSV")}
+          </button>
         </div>
-        <button
-          onClick={exportToCSV}
-          disabled={loading || data.length === 0}
-          className="flex items-center gap-2 px-4 py-2 text-md rounded-md border bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <FiDownload className="w-4 h-4" />
-          {tSales("exportCSV")}
-        </button>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 my-6">
-        {squareCards.map((card) => (
-          <Card className="bg-brand-500/10 shadow-none" key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              {card.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {card.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-        <TicketsLineChart className="bg-brand-500/10 shadow-none" />
       </div>
 
-      <DataTable
-        reverseFilters={true}
-        columns={columns}
-        data={data}
-        searchKey="client"
-        searchPlaceholder={tSales("searchByClient")}
-        searchValue={searchQuery}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        loading={loading}
-        onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
-        extraFilters={
-          <div className="flex gap-2">
-            <StatusFilter value={statusFilter} onChange={handleStatusChange} />
-            <DateFilter
-              value={dateFilter}
-              selectedDate={selectedDate}
-              onChange={handleDateFilterChange}
-              onDateSelect={handleDateSelect}
-            />
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {squareCards.map((card) => (
+          <div
+            key={card.title}
+            className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg hover:border-gray-200 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${card.lightColor}`}>
+                <div className={card.textColor}>{card.icon}</div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{card.description}</p>
+              </div>
+            </div>
           </div>
-        }
-      />
+        ))}
+      </div>
+
+      {/* Chart Section */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          {tSales("salesTrend") || "Sales Trend"}
+        </h3>
+        <TicketsLineChart className="bg-transparent shadow-none border-none p-0" />
+      </div>
+
+      {/* Data Table */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="p-6">
+          <DataTable
+            reverseFilters={true}
+            columns={columns}
+            data={data}
+            searchKey="client"
+            searchPlaceholder={tSales("searchByClient")}
+            searchValue={searchQuery}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            loading={loading}
+            onRowClick={(row) => setSelectedTicket(row as TicketWithRelations)}
+            extraFilters={
+              <div className="flex gap-2">
+                <StatusFilter value={statusFilter} onChange={handleStatusChange} />
+                <DateFilter
+                  value={dateFilter}
+                  selectedDate={selectedDate}
+                  onChange={handleDateFilterChange}
+                  onDateSelect={handleDateSelect}
+                />
+              </div>
+            }
+          />
+        </div>
+      </div>
+
       <TicketDetailsDialog
         open={!!selectedTicket}
         onOpenChange={(open) => !open && setSelectedTicket(null)}
         ticket={selectedTicket ?? undefined}
       />
-    </>
+    </div>
   );
 };
 

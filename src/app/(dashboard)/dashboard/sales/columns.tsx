@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
-import { FiCalendar } from "react-icons/fi";
+import { FiShoppingBag, FiUser } from "react-icons/fi";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
 import i18next from "@/i18n";
@@ -28,12 +28,12 @@ type RowWithGetValue = {
 
 const formatDateTime = (iso: string) => {
   const date = new Date(iso);
-  const dateStr = date.toLocaleDateString("en-US", {
+  const dateStr = date.toLocaleDateString("es-MX", {
     month: "short",
     day: "2-digit",
     year: "numeric",
   });
-  const timeStr = date.toLocaleTimeString("en-US", {
+  const timeStr = date.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -49,7 +49,11 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       accessorKey: "id",
       header: tSales("ticketNumber"),
       cell: ({ row }) => {
-        return <div>{row.original.id}</div>;
+        return (
+          <span className="font-mono text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+            {row.original.id}
+          </span>
+        );
       },
     },
     {
@@ -61,12 +65,9 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
           r.getValue("createdAt") as string
         );
         return (
-          <div className="flex items-center gap-2">
-            <FiCalendar className="w-4 h-4 text-brand-500" />
-            <div className="leading-tight">
-              <div>{dateStr}</div>
-              <div className="text-xs text-gray-500">{timeStr}</div>
-            </div>
+          <div className="text-sm">
+            <p className="text-gray-900 font-medium">{dateStr}</p>
+            <p className="text-gray-500">{timeStr}</p>
           </div>
         );
       },
@@ -74,6 +75,25 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
     {
       accessorKey: "client.name",
       header: tCommon("client"),
+      cell: ({ row }) => {
+        const client = row.original.client;
+        if (!client) {
+          return <span className="text-gray-400">-</span>;
+        }
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-semibold text-xs">
+              {client.name?.charAt(0).toUpperCase() || <FiUser className="w-4 h-4" />}
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">{client.name}</p>
+              {client.email && (
+                <p className="text-xs text-gray-500">{client.email}</p>
+              )}
+            </div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "items",
@@ -81,37 +101,34 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       cell: ({ row }) => {
         const items = row.original.items || [];
         if (items.length === 0) {
-          return <div className="text-gray-400 text-sm">-</div>;
+          return <span className="text-gray-400">-</span>;
         }
 
         // Get all item names (products or services)
         const itemNames = items
           .map((item) => {
-            if (item.service) {
-              return item.service.name;
-            }
-            if (item.product) {
-              return item.product.name;
-            }
+            if (item.service) return item.service.name;
+            if (item.product) return item.product.name;
             return null;
           })
           .filter(Boolean);
 
-        // Display items
         if (itemNames.length === 0) {
-          return <div className="text-gray-400 text-sm">-</div>;
+          return <span className="text-gray-400">-</span>;
         }
 
-        if (itemNames.length === 1) {
-          return <div className="text-sm text-gray-900">{itemNames[0]}</div>;
-        }
-
-        // If multiple items, show first item + count
         return (
-          <div className="text-sm text-gray-900">
-            <div>{itemNames[0]}</div>
-            <div className="text-xs text-gray-500">
-              +{itemNames.length - 1} más
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+              <FiShoppingBag className="w-4 h-4 text-gray-500" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-900">{itemNames[0]}</p>
+              {itemNames.length > 1 && (
+                <p className="text-xs text-gray-500">
+                  +{itemNames.length - 1} más
+                </p>
+              )}
             </div>
           </div>
         );
@@ -122,9 +139,9 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       header: tCommon("quantity"),
       cell: ({ row }) => {
         return (
-          <div className="font-medium text-gray-900">
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold text-sm">
             {row.original.quantity}
-          </div>
+          </span>
         );
       },
     },
@@ -133,9 +150,9 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       header: tCommon("total"),
       cell: ({ row }) => {
         return (
-          <div className="font-medium text-gray-900">
+          <span className="font-semibold text-gray-900">
             {formatCurrency(row.original.total ?? 0)}
-          </div>
+          </span>
         );
       },
     },
