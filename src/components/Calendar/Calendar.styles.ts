@@ -35,7 +35,6 @@ export const calendarStyles = (isMobile: boolean) => ({
     width: "100%",
   },
   calendar: {
-    padding: isMobile ? "0" : "20px 0",
     borderRadius: isMobile ? "0" : "15px",
     backgroundColor: "#fff",
     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",

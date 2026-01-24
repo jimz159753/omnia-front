@@ -108,9 +108,9 @@ export async function POST(request: NextRequest) {
     console.log(`📅 UTC startTime: ${startTime.toISOString()}`);
     console.log(`📅 UTC endTime: ${endTime.toISOString()}`);
 
-    // Check if slot is still available
+    // Check if slot is still available based on calendar's max slots
     // Two appointments overlap if: appt1.start < appt2.end AND appt1.end > appt2.start
-    const existingAppointment = await prisma.ticket.findFirst({
+    const existingAppointments = await prisma.ticket.findMany({
       where: {
         startTime: { lt: endTime },  // Appointment starts before new booking ends
         endTime: { gt: startTime },  // Appointment ends after new booking starts
@@ -118,15 +118,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (existingAppointment) {
-      console.log(`❌ Conflict found with appointment: ${existingAppointment.startTime?.toISOString()} - ${existingAppointment.endTime?.toISOString()}`);
+    const maxSlots = calendar.slots || 1;
+    const overlappingCount = existingAppointments.length;
+
+    console.log(`📊 Slot check: ${overlappingCount}/${maxSlots} appointments at this time`);
+
+    if (overlappingCount >= maxSlots) {
+      console.log(`❌ Slot full: ${overlappingCount} existing appointments, max is ${maxSlots}`);
       return NextResponse.json(
         { error: "This time slot is no longer available" },
         { status: 409 }
       );
     }
 
-    console.log(`✅ No conflicts found, creating appointment`);
+    console.log(`✅ Slot available: ${overlappingCount}/${maxSlots} booked, creating appointment`);
 
     // Create the appointment (ticket)
     const ticket = await prisma.ticket.create({

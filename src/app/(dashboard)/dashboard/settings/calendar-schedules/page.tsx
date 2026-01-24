@@ -56,6 +56,8 @@ interface BookingCalendar {
   logoImage: string | null;
   primaryColor: string;
   isActive: boolean;
+  showOnMainPage: boolean;
+  slots: number;
   services: BookingCalendarService[];
   createdAt: string;
 }
@@ -82,6 +84,7 @@ export default function CalendarSchedulesPage() {
     backgroundImage: "",
     logoImage: "",
     primaryColor: "#059669",
+    slots: 1,
     serviceIds: [] as string[],
   });
 
@@ -128,6 +131,7 @@ export default function CalendarSchedulesPage() {
       backgroundImage: "",
       logoImage: "",
       primaryColor: "#059669",
+      slots: 1,
       serviceIds: [],
     });
     setIsDialogOpen(true);
@@ -144,6 +148,7 @@ export default function CalendarSchedulesPage() {
       backgroundImage: calendar.backgroundImage || "",
       logoImage: calendar.logoImage || "",
       primaryColor: calendar.primaryColor,
+      slots: calendar.slots || 1,
       serviceIds: calendar.services.map((s) => s.serviceId),
     });
     setIsDialogOpen(true);
@@ -232,6 +237,30 @@ export default function CalendarSchedulesPage() {
       }
     } catch (error) {
       console.error("Error toggling calendar:", error);
+    }
+  };
+
+  const toggleShowOnMainPage = async (calendar: BookingCalendar) => {
+    try {
+      const response = await fetch("/api/booking-calendars", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: calendar.id,
+          showOnMainPage: !calendar.showOnMainPage,
+        }),
+      });
+
+      if (response.ok) {
+        fetchCalendars();
+        toast.success(
+          !calendar.showOnMainPage
+            ? t("calendarSetAsMainPage") || "Calendar set as main page calendar"
+            : t("calendarRemovedFromMainPage") || "Calendar removed from main page"
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling main page calendar:", error);
     }
   };
 
@@ -381,7 +410,7 @@ export default function CalendarSchedulesPage() {
                     <h3 className="font-semibold text-lg">{calendar.name}</h3>
                     <p className="text-sm text-gray-500">{calendar.fullName}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {calendar.services.length} {t("services") || "services"}
+                      {calendar.services.length} {t("services") || "services"} • {calendar.slots || 1} {t("slots") || "slots"}
                     </p>
                   </div>
                   <div className="flex gap-1">
@@ -425,8 +454,30 @@ export default function CalendarSchedulesPage() {
                   </div>
                 </div>
 
+                {/* Show on Main Page Toggle */}
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BiCalendar className="w-4 h-4 text-emerald-500" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {t("showOnMainPage") || "Show on Main Page"}
+                      </span>
+                    </div>
+                    <Switch
+                      checked={calendar.showOnMainPage}
+                      onCheckedChange={() => toggleShowOnMainPage(calendar)}
+                    />
+                  </div>
+                  {calendar.showOnMainPage && (
+                    <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                      <BiCheck className="w-3 h-3" />
+                      {t("displayedOnMainPage") || "This calendar is displayed on the main page"}
+                    </p>
+                  )}
+                </div>
+
                 {/* Shareable Link */}
-                <div className="mt-4 p-2 bg-gray-50 rounded-lg flex items-center gap-2">
+                <div className="mt-3 p-2 bg-gray-50 rounded-lg flex items-center gap-2">
                   <BiLink className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   <span className="text-xs text-gray-600 truncate">
                     {window.location.origin}/book/{calendar.slug}
@@ -610,23 +661,41 @@ export default function CalendarSchedulesPage() {
               </div>
             </div>
 
-            {/* Primary Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("primaryColor") || "Primary Color"}
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={formData.primaryColor}
-                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                  className="w-12 h-10 rounded cursor-pointer border-0"
-                />
+            {/* Primary Color and Slots */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("primaryColor") || "Primary Color"}
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.primaryColor}
+                    onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                    className="w-12 h-10 rounded cursor-pointer border-0"
+                  />
+                  <Input
+                    value={formData.primaryColor}
+                    onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                    className="w-32"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("slots") || "Concurrent Slots"}
+                </label>
                 <Input
-                  value={formData.primaryColor}
-                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={formData.slots}
+                  onChange={(e) => setFormData({ ...formData, slots: Math.max(1, parseInt(e.target.value) || 1) })}
                   className="w-32"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("slotsDescription") || "Number of appointments allowed at the same time"}
+                </p>
               </div>
             </div>
 

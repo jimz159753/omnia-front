@@ -5,7 +5,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BiBuilding, BiLogoWhatsapp, BiUser } from "react-icons/bi";
+import { BiBuilding, BiLogoWhatsapp, BiUser, BiCalendarEvent } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 
 export default function SettingsLayout({
@@ -30,6 +30,12 @@ export default function SettingsLayout({
           path: "/dashboard/settings/schedules",
           label: t("businessSchedules"),
         },
+      ],
+    },
+    {
+      header: t("externalCalendarsHeader") || "EXTERNAL CALENDARS",
+      icon: <BiCalendarEvent className="w-5 h-5 text-brand-500" />,
+      items: [
         {
           path: "/dashboard/settings/calendar-schedules",
           label: t("calendarSchedules") || "Calendar Schedules",

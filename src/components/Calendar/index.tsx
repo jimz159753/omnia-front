@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import Cal from "@calcom/embed-react";
+import React, { useEffect, useState } from "react";
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { calendarStyles } from "./Calendar.styles";
 import ImageCarousel from "@/components/ImageCarousel";
@@ -17,10 +16,50 @@ import tarot from "@/assets/images/tarot.webp";
 import tatuajes from "@/assets/images/tatuajes.webp";
 import terapias from "@/assets/images/terapias.webp";
 
+interface BookingCalendar {
+  id: string;
+  slug: string;
+  name: string;
+  isActive: boolean;
+  showOnMainPage: boolean;
+}
+
 const Calendar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const styles = calendarStyles(isMobile);
+  
+  const [calendarSlug, setCalendarSlug] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCalendar = async () => {
+      try {
+        const response = await fetch("/api/booking-calendars");
+        if (response.ok) {
+          const calendars: BookingCalendar[] = await response.json();
+          // Only show a calendar if it's explicitly marked for main page display
+          const mainPageCalendar = calendars.find((cal) => cal.showOnMainPage && cal.isActive);
+          
+          if (mainPageCalendar) {
+            setCalendarSlug(mainPageCalendar.slug);
+          }
+          // If no calendar is toggled for main page, don't show anything (calendarSlug stays null)
+        }
+      } catch (err) {
+        console.error("Error fetching calendar:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCalendar();
+  }, []);
+
+  // Don't render anything if no calendar is toggled for main page
+  if (!loading && !calendarSlug) {
+    return null;
+  }
 
   return (
     <section
@@ -53,14 +92,24 @@ const Calendar: React.FC = () => {
       />
 
       <div style={styles.calendarContainer}>
-        <Cal
-          calLink="espacio-omnia/cosmetologia-online"
-          style={styles.calendar}
-          config={{
-            layout: "month_view",
-            theme: "light",
-          }}
-        />
+        {loading ? (
+          <div style={{ ...styles.calendar, display: "flex", alignItems: "center", justifyContent: "center", minHeight: "500px" }}>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#86694B]"></div>
+          </div>
+        ) : (
+          <iframe
+            src={`/book/${calendarSlug}`}
+            style={{
+              ...styles.calendar,
+              border: "none",
+              minHeight: isMobile ? "700px" : "800px",
+              width: "100%",
+              maxWidth: "900px",
+            }}
+            title="Booking Calendar"
+            loading="lazy"
+          />
+        )}
       </div>
     </section>
   );

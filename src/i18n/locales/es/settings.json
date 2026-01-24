@@ -285,5 +285,14 @@
   "edit": "Editar",
   "delete": "Eliminar",
   "cancel": "Cancelar",
-  "saveChanges": "Guardar Cambios"
+  "saveChanges": "Guardar Cambios",
+  "services": "servicios",
+  "slots": "Espacios Simultáneos",
+  "slotsDescription": "Número de citas permitidas al mismo tiempo",
+  "showOnMainPage": "Mostrar en Página Principal",
+  "calendarSetAsMainPage": "Calendario configurado como principal",
+  "calendarRemovedFromMainPage": "Calendario removido de la página principal",
+  "displayedOnMainPage": "Este calendario se muestra en la página principal",
+  "externalCalendarsHeader": "CALENDARIOS EXTERNOS",
+  "externalCalendars": "Calendarios Externos"
 }

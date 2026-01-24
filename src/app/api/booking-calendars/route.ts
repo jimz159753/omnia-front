@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
       backgroundImage,
       logoImage,
       primaryColor,
+      slots,
       serviceIds,
     } = body;
 
@@ -128,6 +129,7 @@ export async function POST(request: NextRequest) {
         backgroundImage: backgroundImage || null,
         logoImage: logoImage || null,
         primaryColor: primaryColor || "#059669",
+        slots: slots || 1,
         services: {
           create:
             serviceIds?.map((serviceId: string) => ({
@@ -170,6 +172,8 @@ export async function PUT(request: NextRequest) {
       logoImage,
       primaryColor,
       isActive,
+      showOnMainPage,
+      slots,
       serviceIds,
     } = body;
 
@@ -190,6 +194,14 @@ export async function PUT(request: NextRequest) {
         { error: "Booking calendar not found" },
         { status: 404 }
       );
+    }
+
+    // If setting showOnMainPage to true, unset it from all other calendars first
+    if (showOnMainPage === true) {
+      await prisma.bookingCalendar.updateMany({
+        where: { id: { not: id }, showOnMainPage: true },
+        data: { showOnMainPage: false },
+      });
     }
 
     // Update slug if name changed
@@ -223,6 +235,8 @@ export async function PUT(request: NextRequest) {
         logoImage: logoImage !== undefined ? logoImage : existingCalendar.logoImage,
         primaryColor: primaryColor ?? existingCalendar.primaryColor,
         isActive: isActive !== undefined ? isActive : existingCalendar.isActive,
+        showOnMainPage: showOnMainPage !== undefined ? showOnMainPage : existingCalendar.showOnMainPage,
+        slots: slots !== undefined ? slots : existingCalendar.slots,
       },
     });
 

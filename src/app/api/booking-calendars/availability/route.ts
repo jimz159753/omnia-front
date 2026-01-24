@@ -124,7 +124,8 @@ export async function GET(request: NextRequest) {
           (rt) => rt.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase()
         ),
         dayStart, // Pass the UTC day start
-        timezoneOffset // Pass timezone offset
+        timezoneOffset, // Pass timezone offset
+        calendar.slots // Pass max concurrent slots allowed
       );
 
       return NextResponse.json({
@@ -183,9 +184,10 @@ function calculateAvailableSlots(
   existingAppointments: Array<{ startTime: Date | null; endTime: Date | null }>,
   restTimes: Array<{ startTime: string; endTime: string }>,
   dayStartUTC: Date, // The UTC start of the day
-  timezoneOffset: number // Timezone offset in minutes
-): Array<{ time: string; available: boolean }> {
-  const slots: Array<{ time: string; available: boolean }> = [];
+  timezoneOffset: number, // Timezone offset in minutes
+  maxSlots: number = 1 // Maximum concurrent appointments allowed
+): Array<{ time: string; available: boolean; remainingSlots?: number }> {
+  const slots: Array<{ time: string; available: boolean; remainingSlots?: number }> = [];
 
   // Parse start and end times
   const [startHour, startMin] = startTime.split(":").map(Number);
@@ -206,22 +208,28 @@ function calculateAvailableSlots(
     const slotStartDate = new Date(dayStartUTC.getTime() + minutes * 60000);
     const slotEndDate = new Date(slotStartDate.getTime() + serviceDuration * 60000);
 
-    // Check if slot conflicts with existing appointments
-    let isAvailable = true;
+    // Count how many appointments overlap with this slot
+    let overlappingCount = 0;
 
     for (const appointment of existingAppointments) {
       if (appointment.startTime && appointment.endTime) {
         // Both are Date objects in UTC, compare directly
         // Slot overlaps if: slot.start < appt.end AND slot.end > appt.start
         if (slotStartDate < appointment.endTime && slotEndDate > appointment.startTime) {
-          console.log(`❌ Slot ${slotTime} conflicts with appointment ${appointment.startTime.toISOString()} - ${appointment.endTime.toISOString()}`);
-          isAvailable = false;
-          break;
+          overlappingCount++;
         }
       }
     }
 
-    // Check if slot conflicts with rest times
+    // Check if slot is available (still has remaining slots)
+    let isAvailable = overlappingCount < maxSlots;
+    const remainingSlots = maxSlots - overlappingCount;
+
+    if (overlappingCount > 0) {
+      console.log(`📊 Slot ${slotTime}: ${overlappingCount}/${maxSlots} booked, ${remainingSlots} remaining`);
+    }
+
+    // Check if slot conflicts with rest times (rest times always block all slots)
     for (const rest of restTimes) {
       const [restStartHour, restStartMin] = rest.startTime.split(":").map(Number);
       const [restEndHour, restEndMin] = rest.endTime.split(":").map(Number);
@@ -234,7 +242,7 @@ function calculateAvailableSlots(
       }
     }
 
-    slots.push({ time: slotTime, available: isAvailable });
+    slots.push({ time: slotTime, available: isAvailable, remainingSlots: isAvailable ? remainingSlots : 0 });
   }
 
   return slots;

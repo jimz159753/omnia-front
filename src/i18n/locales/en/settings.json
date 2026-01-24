@@ -284,5 +284,14 @@
   "edit": "Edit",
   "delete": "Delete",
   "cancel": "Cancel",
-  "saveChanges": "Save Changes"
+  "saveChanges": "Save Changes",
+  "services": "services",
+  "slots": "Concurrent Slots",
+  "slotsDescription": "Number of appointments allowed at the same time",
+  "showOnMainPage": "Show on Main Page",
+  "calendarSetAsMainPage": "Calendar set as main page calendar",
+  "calendarRemovedFromMainPage": "Calendar removed from main page",
+  "displayedOnMainPage": "This calendar is displayed on the main page",
+  "externalCalendarsHeader": "EXTERNAL CALENDARS",
+  "externalCalendars": "External Calendars"
 }
