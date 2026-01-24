@@ -1,7 +1,7 @@
 {
   "title": "Clients",
   "addClient": "Add Client",
-  "editClient": "Edit Client",
+  "editClient": "Edit",
   "deleteClient": "Delete Client",
   "clientName": "Client name",
   "allClients": "All Clients",
@@ -15,16 +15,22 @@
   "newClient": "New Client",
   "existingClient": "Existing Client",
   "selectClient": "Select client",
-  "searchPlaceholder": "Search by name, email, phone, instagram, address",
+  "searchPlaceholder": "Search clients...",
   "filterAll": "All Clients",
   "filterRecent": "Recent (last 30 days)",
   "filterInactive": "Inactive (30+ days)",
   "clientsCount": "Showing {{filtered}} of {{total}} clients",
-  "noClient": "No client selected.",
+  "noClient": "Select a client to view details",
+  "noClientsFound": "No clients found",
+  "noTickets": "No tickets found",
   "email": "Email",
-  "mobile": "Mobile",
+  "mobile": "Phone",
   "instagram": "Instagram",
   "address": "Address",
-  "ticketsLabel": "Tickets"
+  "ticketsLabel": "Tickets",
+  "of": "of",
+  "totalTickets": "Total Tickets",
+  "totalSpent": "Total Spent",
+  "lastVisit": "Last Visit"
 }
 

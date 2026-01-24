@@ -10,6 +10,7 @@ import { GenericTabs } from "@/components/ui/genericTabs";
 import ClientSidebar from "./controllers";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
 import { useTranslation } from "@/hooks/useTranslation";
+import { FiUser, FiShoppingBag, FiCalendar, FiFileText } from "react-icons/fi";
 
 const Clients = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,10 +48,10 @@ const Clients = () => {
   const { t } = useTranslation("clients");
 
   const tabs = [
-    { label: t("all"), value: "all" },
-    { label: t("products"), value: "products" },
-    { label: t("appointments"), value: "appointments" },
-    { label: t("notes"), value: "notes" },
+    { label: t("all") || "All", value: "all", icon: <FiShoppingBag className="w-4 h-4" /> },
+    { label: t("products") || "Products", value: "products", icon: <FiShoppingBag className="w-4 h-4" /> },
+    { label: t("appointments") || "Appointments", value: "appointments", icon: <FiCalendar className="w-4 h-4" /> },
+    { label: t("notes") || "Notes", value: "notes", icon: <FiFileText className="w-4 h-4" /> },
   ];
 
   const tabCounts = React.useMemo(() => {
@@ -84,37 +85,30 @@ const Clients = () => {
 
   if (loading) {
     return (
-      <div className="flex">
+      <div className="flex h-[calc(100vh-80px)]">
         {/* Sidebar Skeleton */}
-        <div className="w-80 border-r p-4 space-y-4">
-          <Skeleton className="h-10 w-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <div className="flex gap-2">
-              <Skeleton className="h-8 w-20" />
-              <Skeleton className="h-8 w-20" />
-              <Skeleton className="h-8 w-20" />
-            </div>
+        <div className="w-80 border-r bg-gray-50/50 p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-10 w-10 rounded-full" />
           </div>
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <div className="space-y-2 pt-4">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full rounded-xl" />
             ))}
           </div>
         </div>
         {/* Main Content Skeleton */}
-        <div className="flex flex-col gap-4 flex-1 p-4">
-          <div className="border rounded-lg p-4 space-y-3">
-            <Skeleton className="h-6 w-[200px]" />
-            <Skeleton className="h-4 w-[150px]" />
-            <Skeleton className="h-4 w-[180px]" />
-          </div>
+        <div className="flex flex-col flex-1 p-6 space-y-6 bg-gray-50/30">
+          <Skeleton className="h-48 w-full rounded-xl" />
           <div className="flex gap-2">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-10 w-24" />
+              <Skeleton key={i} className="h-10 w-28 rounded-lg" />
             ))}
           </div>
-          <Skeleton className="h-[400px] w-full rounded-lg" />
+          <Skeleton className="h-[400px] w-full rounded-xl" />
         </div>
       </div>
     );
@@ -122,7 +116,8 @@ const Clients = () => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex h-[calc(100vh-80px)]">
+        {/* Sidebar */}
         <ClientSidebar
           clients={clients}
           filteredClients={filteredClients}
@@ -134,27 +129,77 @@ const Clients = () => {
           onFilterChange={setFilter}
           onAddClient={openAddClient}
         />
-        <div className="flex flex-col gap-4 flex-1 p-4">
-          <SelectedClient client={selectedClient} onEdit={openEditClient} />
-          <GenericTabs
-            tabs={tabs.map((tab) => ({
-              ...tab,
-              value: tab.value as typeof activeTab,
-              count: tabCounts[tab.value as keyof typeof tabCounts] ?? 0,
-            }))}
-            activeTab={activeTab}
-            onChange={(value) => setActiveTab(value as typeof activeTab)}
-          />
-          <DataTableWithSub
-            columns={ticketColumns as unknown}
-            data={filteredTickets}
-            searchKey="status"
-            onRowClick={(row) => setSelectedTicket(row as TicketRow)}
-            pagination={ticketPagination}
-            onPageChange={handleTicketPageChange}
-          />
+        
+        {/* Main Content */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/30">
+            {/* Selected Client Card */}
+            <SelectedClient client={selectedClient} onEdit={openEditClient} />
+            
+            {/* Tabs & Table */}
+            {selectedClient && (
+              <>
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  {/* Tabs Header */}
+                  <div className="px-4 pt-4 border-b border-gray-100">
+                    <div className="flex items-center gap-1">
+                      {tabs.map((tab) => {
+                        const count = tabCounts[tab.value as keyof typeof tabCounts] ?? 0;
+                        const isActive = activeTab === tab.value;
+                        return (
+                          <button
+                            key={tab.value}
+                            onClick={() => setActiveTab(tab.value as typeof activeTab)}
+                            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                              isActive
+                                ? "text-brand-600 border-brand-500"
+                                : "text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300"
+                            }`}
+                          >
+                            {tab.label}
+                            {count > 0 && (
+                              <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                isActive
+                                  ? "bg-brand-100 text-brand-700"
+                                  : "bg-gray-100 text-gray-600"
+                              }`}>
+                                {count}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Table */}
+                  <div className="p-4">
+                    {filteredTickets.length > 0 ? (
+                      <DataTableWithSub
+                        columns={ticketColumns as unknown}
+                        data={filteredTickets}
+                        searchKey="status"
+                        onRowClick={(row) => setSelectedTicket(row as TicketRow)}
+                        pagination={ticketPagination}
+                        onPageChange={handleTicketPageChange}
+                      />
+                    ) : (
+                      <div className="py-12 text-center">
+                        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                          <FiShoppingBag className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500">{t("noTickets") || "No tickets found"}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
+      
+      {/* Dialogs */}
       <TicketDetailsDialog
         open={!!selectedTicket}
         onOpenChange={(open) => !open && setSelectedTicket(null)}
