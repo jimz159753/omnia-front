@@ -28,6 +28,12 @@ export const serviceSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Duration must be a positive number (minutes)",
     }),
+  slots: z
+    .string()
+    .optional()
+    .refine((val) => !val || (!isNaN(Number(val)) && Number(val) >= 1), {
+      message: "Slots must be at least 1",
+    }),
   categoryId: z.string().optional().or(z.literal("")),
   subCategoryId: z.string().optional().or(z.literal("")),
   image: z.string().optional().or(z.literal("")),

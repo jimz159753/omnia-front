@@ -16,6 +16,9 @@
   "subcategory": "Subcategoría",
   "price": "Precio",
   "commission": "Comisión",
+  "slots": "Espacios Simultáneos",
+  "slotsPlaceholder": "Usar valor del calendario",
+  "slotsDescription": "Dejar vacío para usar el valor del calendario, o especificar un número",
   "name": "Nombre",
   "updateService": "Actualizar Servicio",
   "createService": "Crear Servicio",
@@ -37,6 +40,11 @@
   "avgPrice": "Precio Promedio",
   "confirmDelete": "Confirmar Eliminación",
   "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer.",
-  "deleting": "Eliminando..."
+  "deleting": "Eliminando...",
+  "googleCalendar": "Google Calendar",
+  "selectGoogleCalendar": "Seleccionar Google Calendar",
+  "noGoogleCalendar": "Sin Google Calendar",
+  "noGoogleCalendarsConnected": "No hay Google Calendar conectado. Conecta tu cuenta de Google en configuración para sincronizar citas.",
+  "googleCalendarSyncDescription": "Las citas de este servicio se agregarán al Google Calendar seleccionado"
 }
 

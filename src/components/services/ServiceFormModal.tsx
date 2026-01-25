@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceSchema, type ServiceFormData } from "@/lib/validations/service";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { useTranslation } from "@/hooks/useTranslation";
+import { BiLogoGoogle } from "react-icons/bi";
+
+interface GoogleCalendar {
+  calendarId: string;
+  summary: string;
+  backgroundColor: string;
+  primary?: boolean;
+}
 
 export interface ServiceFormModalProps {
   open: boolean;
@@ -46,6 +54,8 @@ export function ServiceFormModal({
   const [subCategories, setSubCategories] = useState<
     { id: string; name: string; categoryId: string }[]
   >([]);
+  const [googleCalendars, setGoogleCalendars] = useState<GoogleCalendar[]>([]);
+  const [selectedGoogleCalendar, setSelectedGoogleCalendar] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -67,6 +77,7 @@ export function ServiceFormModal({
       duration: "",
       price: "",
       commission: "",
+      slots: "",
       categoryId: "",
       subCategoryId: "",
       image: "",
@@ -80,14 +91,17 @@ export function ServiceFormModal({
     const load = async () => {
       setError("");
       try {
-        const [catRes, subRes] = await Promise.all([
+        const [catRes, subRes, gcalRes] = await Promise.all([
           fetch("/api/categories"),
           fetch("/api/subcategories"),
+          fetch("/api/google-calendar/calendars"),
         ]);
         const catData = await catRes.json();
         const subData = await subRes.json();
+        const gcalData = await gcalRes.json();
         setCategories(catData.data || []);
         setSubCategories(subData.data || []);
+        setGoogleCalendars(gcalData.calendars || []);
       } catch (err) {
         console.error(err);
         setError(t("failedToLoadData") || "Failed to load form data");
@@ -103,10 +117,12 @@ export function ServiceFormModal({
         duration: item.duration.toString(),
         price: item.price.toString(),
         commission: item.commission.toString(),
+        slots: item.slots ? item.slots.toString() : "",
         categoryId: item.categoryId ?? "",
         subCategoryId: item.subCategoryId ?? "",
         image: item.image ?? "",
       });
+      setSelectedGoogleCalendar((item as ServiceWithRelations & { googleCalendarId?: string })?.googleCalendarId || "");
       setImageFile(null);
     } else {
       reset({
@@ -115,13 +131,15 @@ export function ServiceFormModal({
         duration: "",
         price: "",
         commission: "",
+        slots: "",
         categoryId: "",
         subCategoryId: "",
         image: "",
       });
+      setSelectedGoogleCalendar("");
       setImageFile(null);
     }
-  }, [open, item, reset]);
+  }, [open, item, reset, t]);
 
   const onSubmit = async (values: ServiceFormData) => {
     setError("");
@@ -154,7 +172,9 @@ export function ServiceFormModal({
         duration: Number(values.duration),
         price: Number(values.price),
         commission: Number(values.commission),
+        slots: values.slots ? Number(values.slots) : null,
         image: imageUrl,
+        googleCalendarId: selectedGoogleCalendar || null,
       };
 
       const response = await fetch("/api/services", {
@@ -316,7 +336,7 @@ export function ServiceFormModal({
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label
                 htmlFor="duration"
@@ -340,6 +360,35 @@ export function ServiceFormModal({
               )}
             </div>
 
+            <div className="space-y-2">
+              <label
+                htmlFor="slots"
+                className="text-sm font-medium text-gray-700"
+              >
+                {t("slots") || "Concurrent Slots"}
+              </label>
+              <input
+                id="slots"
+                type="number"
+                {...register("slots")}
+                placeholder={t("slotsPlaceholder") || "Use calendar default"}
+                min="1"
+                max="100"
+                step="1"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              <p className="text-xs text-gray-500">
+                {t("slotsDescription") || "Leave empty to use calendar default, or set a specific number"}
+              </p>
+              {errors.slots && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.slots.message as string}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label
                 htmlFor="price"
@@ -401,6 +450,54 @@ export function ServiceFormModal({
                 {errors.image.message as string}
               </p>
             )}
+          </div>
+
+          {/* Google Calendar Integration */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              <div className="flex items-center gap-2">
+                <BiLogoGoogle className="w-4 h-4 text-blue-500" />
+                {t("googleCalendar") || "Google Calendar"}
+              </div>
+            </label>
+            {googleCalendars.length > 0 ? (
+              <Select
+                value={selectedGoogleCalendar}
+                onValueChange={(value) => setSelectedGoogleCalendar(value === "none" ? "" : value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("selectGoogleCalendar") || "Select a Google Calendar"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">
+                    <span className="text-gray-500">{t("noGoogleCalendar") || "No Google Calendar"}</span>
+                  </SelectItem>
+                  {googleCalendars.map((gcal) => (
+                    <SelectItem key={gcal.calendarId} value={gcal.calendarId}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: gcal.backgroundColor }}
+                        />
+                        <span>{gcal.summary}</span>
+                        {gcal.primary && (
+                          <span className="text-xs text-gray-400 ml-1">(Primary)</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="p-3 bg-gray-50 rounded-lg border border-dashed">
+                <p className="text-sm text-gray-500">
+                  {t("noGoogleCalendarsConnected") || "No Google Calendar connected. Connect your Google account in settings to sync appointments."}
+                </p>
+              </div>
+            )}
+            <p className="text-xs text-gray-500">
+              {t("googleCalendarSyncDescription") || "Appointments for this service will be added to the selected Google Calendar"}
+            </p>
           </div>
 
           <DialogFooter className="gap-2">

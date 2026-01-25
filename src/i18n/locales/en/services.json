@@ -16,6 +16,9 @@
   "subcategory": "Subcategory",
   "price": "Price",
   "commission": "Commission",
+  "slots": "Concurrent Slots",
+  "slotsPlaceholder": "Use calendar default",
+  "slotsDescription": "Leave empty to use calendar default, or set a specific number",
   "name": "Name",
   "updateService": "Update Service",
   "createService": "Create Service",
@@ -37,6 +40,11 @@
   "avgPrice": "Avg Price",
   "confirmDelete": "Confirm Delete",
   "confirmDeleteMessage": "Are you sure you want to delete this service? This action cannot be undone.",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "googleCalendar": "Google Calendar",
+  "selectGoogleCalendar": "Select a Google Calendar",
+  "noGoogleCalendar": "No Google Calendar",
+  "noGoogleCalendarsConnected": "No Google Calendar connected. Connect your Google account in settings to sync appointments.",
+  "googleCalendarSyncDescription": "Appointments for this service will be added to the selected Google Calendar"
 }
 

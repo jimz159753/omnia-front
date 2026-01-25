@@ -129,6 +129,8 @@ model Service {
   description      String
   price            Float
   commission       Float
+  slots            Int? // Number of clients that can be scheduled simultaneously (null = use calendar default)
+  googleCalendarId String? // Google Calendar ID to sync appointments for this service
   createdAt        DateTime                 @default(now())
   updatedAt        DateTime                 @updatedAt
   tickets          TicketService[]

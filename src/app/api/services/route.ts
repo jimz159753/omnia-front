@@ -68,9 +68,11 @@ export async function POST(request: NextRequest) {
       price,
       commission,
       duration,
+      slots,
       categoryId,
       subCategoryId,
       image,
+      googleCalendarId,
     } = body;
 
     // Validate required fields
@@ -129,9 +131,11 @@ export async function POST(request: NextRequest) {
         price: parseFloat(price),
         commission: parseFloat(commission),
         duration: parseInt(duration),
+        slots: slots && parseInt(slots) > 0 ? parseInt(slots) : null,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,
         image: image || "",
+        googleCalendarId: googleCalendarId || null,
       },
       include: {
         category: {
@@ -168,9 +172,11 @@ export async function PUT(request: NextRequest) {
       price,
       commission,
       duration,
+      slots,
       categoryId,
       subCategoryId,
       image,
+      googleCalendarId,
     } = body;
 
     // Validate required fields
@@ -227,6 +233,10 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Calculate slots value
+    const slotsValue = slots !== undefined ? (parseInt(String(slots)) > 0 ? parseInt(String(slots)) : null) : undefined;
+    console.log(`📝 Updating service "${name || existingService.name}": slots received=${slots} (type: ${typeof slots}), saving as=${slotsValue}`);
+
     // Update service
     const service = await prisma.service.update({
       where: { id },
@@ -236,9 +246,11 @@ export async function PUT(request: NextRequest) {
         price: price !== undefined ? parseFloat(price) : undefined,
         commission: commission !== undefined ? parseFloat(commission) : undefined,
         duration: duration !== undefined ? parseInt(duration) : undefined,
+        slots: slotsValue,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,
         image: image || "",
+        googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : undefined,
       },
       include: {
         category: {
@@ -250,6 +262,8 @@ export async function PUT(request: NextRequest) {
       },
     });
 
+    console.log(`✅ Service updated successfully: slots now = ${service.slots}`);
+    
     return NextResponse.json(
       { data: service, message: "Service updated successfully" },
       { status: 200 }

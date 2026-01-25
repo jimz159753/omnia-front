@@ -93,13 +93,20 @@ export async function GET(request: NextRequest) {
       console.log(`🔍 Checking appointments for ${date} (offset: ${timezoneOffset} min)`);
       console.log(`📅 Day range (UTC): ${dayStart.toISOString()} to ${dayEnd.toISOString()}`);
 
-      // Find appointments that overlap with this day
+      // Find appointments that overlap with this day FOR THE SAME SERVICE
       // An appointment overlaps if: appointment.start < dayEnd AND appointment.end > dayStart
+      // We only count appointments for the same service to allow different services to have their own slots
       const existingAppointments = await prisma.ticket.findMany({
         where: {
           startTime: { lt: dayEnd },
           endTime: { gt: dayStart },
           status: { not: "cancelled" },
+          // Only count tickets that have this specific service
+          services: {
+            some: {
+              serviceId: serviceId,
+            },
+          },
         },
         select: {
           startTime: true,
@@ -107,16 +114,25 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      console.log(`📋 Found ${existingAppointments.length} appointments:`, 
+      console.log(`📋 Found ${existingAppointments.length} appointments for service "${service.name}" (${serviceId}):`, 
         existingAppointments.map(a => ({ 
           start: a.startTime?.toISOString(), 
           end: a.endTime?.toISOString() 
         }))
       );
 
-      // Get max slots from calendar (ensure it's at least 1)
-      const maxSlots = calendar.slots && calendar.slots > 0 ? calendar.slots : 1;
-      console.log(`🔢 Calendar "${calendar.name}" has maxSlots: ${maxSlots} (from DB: ${calendar.slots})`);
+      // DEBUG: Log raw values from database
+      console.log(`🔍 DEBUG - Raw service object slots:`, service.slots, `type: ${typeof service.slots}`);
+      console.log(`🔍 DEBUG - Raw calendar object slots:`, calendar.slots, `type: ${typeof calendar.slots}`);
+      
+      // Get max slots from SERVICE (if explicitly set and > 1) or fall back to calendar slots
+      // Service slots only override if explicitly set to > 1 (treating 1 as "use calendar default")
+      // This is because existing services may have slots=1 from before the field was made nullable
+      const serviceSlots = service.slots != null && service.slots > 1 ? service.slots : null;
+      const calendarSlots = calendar.slots != null && calendar.slots > 0 ? calendar.slots : 1;
+      const maxSlots = serviceSlots ?? calendarSlots;
+      console.log(`🔢 Slots config - Service "${service.name}": serviceSlots=${serviceSlots} (raw: ${service.slots}), calendarSlots=${calendarSlots} (raw: ${calendar.slots}), FINAL maxSlots=${maxSlots}`);
+      console.log(`📊 Summary: Found ${existingAppointments.length} existing appointments, maxSlots=${maxSlots}, so ${existingAppointments.length < maxSlots ? 'SHOULD show as available' : 'should be FULL'}`);
 
       // Calculate available slots
       const slots = calculateAvailableSlots(
@@ -230,8 +246,8 @@ function calculateAvailableSlots(
     let isAvailable = overlappingCount < maxSlots;
     const remainingSlots = Math.max(0, maxSlots - overlappingCount);
 
-    // Log for debugging when there are overlapping appointments
-    if (overlappingCount > 0) {
+    // Log for debugging - always log when maxSlots > 1 to debug multi-slot issues
+    if (maxSlots > 1 || overlappingCount > 0) {
       console.log(`📊 Slot ${slotTime}: overlapping=${overlappingCount}, maxSlots=${maxSlots}, available=${isAvailable}, remaining=${remainingSlots}`);
     }
 
@@ -250,6 +266,10 @@ function calculateAvailableSlots(
 
     slots.push({ time: slotTime, available: isAvailable, remainingSlots: isAvailable ? remainingSlots : 0 });
   }
+
+  // Log summary of available slots
+  const availableSlots = slots.filter(s => s.available);
+  console.log(`🎯 RESULT: ${availableSlots.length}/${slots.length} slots available. Available times: ${availableSlots.map(s => s.time).join(', ') || 'NONE'}`);
 
   return slots;
 }

@@ -132,18 +132,34 @@ export async function POST(request: NextRequest) {
 
     // Check if slot is still available based on calendar's max slots
     // Two appointments overlap if: appt1.start < appt2.end AND appt1.end > appt2.start
+    // We only count appointments for the same service to allow different services to have their own slots
     const existingAppointments = await prisma.ticket.findMany({
       where: {
         startTime: { lt: endTime },  // Appointment starts before new booking ends
         endTime: { gt: startTime },  // Appointment ends after new booking starts
         status: { not: "cancelled" },
+        // Only count tickets that have this specific service
+        services: {
+          some: {
+            serviceId: serviceId,
+          },
+        },
       },
     });
 
-    const maxSlots = calendar.slots && calendar.slots > 0 ? calendar.slots : 1;
+    // DEBUG: Log raw values from database
+    console.log(`🔍 DEBUG - Raw service object slots:`, service.slots, `type: ${typeof service.slots}`);
+    console.log(`🔍 DEBUG - Raw calendar object slots:`, calendar.slots, `type: ${typeof calendar.slots}`);
+    
+    // Get max slots from SERVICE (if explicitly set and > 1) or fall back to calendar slots
+    // Service slots only override if explicitly set to > 1 (treating 1 as "use calendar default")
+    // This is because existing services may have slots=1 from before the field was made nullable
+    const serviceSlots = service.slots != null && service.slots > 1 ? service.slots : null;
+    const calendarSlots = calendar.slots != null && calendar.slots > 0 ? calendar.slots : 1;
+    const maxSlots = serviceSlots ?? calendarSlots;
     const overlappingCount = existingAppointments.length;
 
-    console.log(`📊 Slot check: overlapping=${overlappingCount}, maxSlots=${maxSlots} (from DB: ${calendar.slots})`);
+    console.log(`📊 Slot check for service "${service.name}" (${serviceId}): overlapping=${overlappingCount}, serviceSlots=${serviceSlots} (raw: ${service.slots}), calendarSlots=${calendarSlots} (raw: ${calendar.slots}), maxSlots=${maxSlots}`);
 
     if (overlappingCount >= maxSlots) {
       console.log(`❌ Slot full: ${overlappingCount} existing appointments, max is ${maxSlots}`);
@@ -192,6 +208,7 @@ export async function POST(request: NextRequest) {
     });
 
     // ✅ SYNC TO GOOGLE CALENDAR
+    // Use the service's Google Calendar if specified, otherwise use default
     if (ticket.startTime && ticket.endTime) {
       const googleEvent: GoogleCalendarEvent = {
         summary: `${service.name} - ${client.name}`,
@@ -216,7 +233,11 @@ export async function POST(request: NextRequest) {
         },
       };
 
-      const googleEventId = await createGoogleCalendarEvent(googleEvent);
+      // Use the service's Google Calendar ID if set, otherwise use default
+      const targetCalendarId = service.googleCalendarId || undefined;
+      console.log(`📅 Syncing to Google Calendar: ${targetCalendarId ? targetCalendarId.substring(0, 30) + '...' : 'default'} (service: ${service.name})`);
+      
+      const googleEventId = await createGoogleCalendarEvent(googleEvent, targetCalendarId);
 
       // Save the Google Calendar event ID to the ticket
       if (googleEventId) {

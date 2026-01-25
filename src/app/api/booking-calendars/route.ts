@@ -224,9 +224,10 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Calculate final slots value
-    const finalSlots = slots !== undefined ? slots : existingCalendar.slots;
-    console.log(`📝 Updating calendar "${existingCalendar.name}": slots received=${slots}, existing=${existingCalendar.slots}, final=${finalSlots}`);
+    // Calculate final slots value - ensure it's a number
+    const slotsNumber = slots !== undefined && slots !== "" ? parseInt(String(slots), 10) : null;
+    const finalSlots = slotsNumber !== null && !isNaN(slotsNumber) ? slotsNumber : existingCalendar.slots;
+    console.log(`📝 Updating calendar "${existingCalendar.name}": slots received=${slots} (type: ${typeof slots}), parsed=${slotsNumber}, existing=${existingCalendar.slots}, final=${finalSlots}`);
 
     // Update the calendar
     const calendar = await prisma.bookingCalendar.update({

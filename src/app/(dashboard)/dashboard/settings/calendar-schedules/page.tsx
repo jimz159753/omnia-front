@@ -18,15 +18,7 @@ import {
   BiX,
   BiUpload,
   BiImage,
-  BiLogoGoogle,
 } from "react-icons/bi";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -43,13 +35,7 @@ interface Service {
   price: number;
   description: string;
   image: string;
-}
-
-interface GoogleCalendar {
-  calendarId: string;
-  summary: string;
-  backgroundColor: string;
-  primary?: boolean;
+  slots: number | null;
 }
 
 interface BookingCalendarService {
@@ -83,7 +69,6 @@ export default function CalendarSchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [calendars, setCalendars] = useState<BookingCalendar[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [googleCalendars, setGoogleCalendars] = useState<GoogleCalendar[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCalendar, setEditingCalendar] = useState<BookingCalendar | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -101,8 +86,6 @@ export default function CalendarSchedulesPage() {
     backgroundImage: "",
     logoImage: "",
     primaryColor: "#059669",
-    slots: 1,
-    googleCalendarId: "",
     serviceIds: [] as string[],
   });
 
@@ -133,23 +116,10 @@ export default function CalendarSchedulesPage() {
     }
   }, []);
 
-  const fetchGoogleCalendars = useCallback(async () => {
-    try {
-      const response = await fetch("/api/google-calendar/calendars");
-      if (response.ok) {
-        const data = await response.json();
-        setGoogleCalendars(data.calendars || []);
-      }
-    } catch (error) {
-      console.error("Error fetching Google calendars:", error);
-    }
-  }, []);
-
   useEffect(() => {
     fetchCalendars();
     fetchServices();
-    fetchGoogleCalendars();
-  }, [fetchCalendars, fetchServices, fetchGoogleCalendars]);
+  }, [fetchCalendars, fetchServices]);
 
   const openCreateDialog = () => {
     setEditingCalendar(null);
@@ -162,8 +132,6 @@ export default function CalendarSchedulesPage() {
       backgroundImage: "",
       logoImage: "",
       primaryColor: "#059669",
-      slots: 1,
-      googleCalendarId: "",
       serviceIds: [],
     });
     setIsDialogOpen(true);
@@ -180,8 +148,6 @@ export default function CalendarSchedulesPage() {
       backgroundImage: calendar.backgroundImage || "",
       logoImage: calendar.logoImage || "",
       primaryColor: calendar.primaryColor,
-      slots: calendar.slots || 1,
-      googleCalendarId: calendar.googleCalendarId || "",
       serviceIds: calendar.services.map((s) => s.serviceId),
     });
     setIsDialogOpen(true);
@@ -443,16 +409,13 @@ export default function CalendarSchedulesPage() {
                     <h3 className="font-semibold text-lg">{calendar.name}</h3>
                     <p className="text-sm text-gray-500">{calendar.fullName}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {calendar.services.length} {t("services") || "services"} • {calendar.slots || 1} {t("slots") || "slots"}
-                    </p>
-                    {calendar.googleCalendarId && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <BiLogoGoogle className="w-3 h-3 text-blue-500" />
-                        <span className="text-xs text-blue-600">
-                          {googleCalendars.find((g) => g.calendarId === calendar.googleCalendarId)?.summary || t("googleCalendarConnected") || "Google Calendar connected"}
+                      {calendar.services.length} {t("services") || "services"}
+                      {calendar.services.some((s) => s.service.slots != null && s.service.slots > 1) && (
+                        <span className="ml-1">
+                          • {calendar.services.filter((s) => s.service.slots != null && s.service.slots > 1).length} {t("withConcurrentSlots") || "with concurrent slots"}
                         </span>
-                      </div>
-                    )}
+                      )}
+                    </p>
                   </div>
                   <div className="flex gap-1">
                     <Button
@@ -702,90 +665,24 @@ export default function CalendarSchedulesPage() {
               </div>
             </div>
 
-            {/* Primary Color and Slots */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("primaryColor") || "Primary Color"}
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={formData.primaryColor}
-                    onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                    className="w-12 h-10 rounded cursor-pointer border-0"
-                  />
-                  <Input
-                    value={formData.primaryColor}
-                    onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                    className="w-32"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("slots") || "Concurrent Slots"}
-                </label>
-                <Input
-                  type="number"
-                  min={1}
-                  max={50}
-                  value={formData.slots}
-                  onChange={(e) => setFormData({ ...formData, slots: Math.max(1, parseInt(e.target.value) || 1) })}
-                  className="w-32"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {t("slotsDescription") || "Number of appointments allowed at the same time"}
-                </p>
-              </div>
-            </div>
-
-            {/* Google Calendar Integration */}
+            {/* Primary Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <div className="flex items-center gap-2">
-                  <BiLogoGoogle className="w-4 h-4 text-blue-500" />
-                  {t("googleCalendar") || "Google Calendar"}
-                </div>
+                {t("primaryColor") || "Primary Color"}
               </label>
-              {googleCalendars.length > 0 ? (
-                <Select
-                  value={formData.googleCalendarId}
-                  onValueChange={(value) => setFormData({ ...formData, googleCalendarId: value === "none" ? "" : value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("selectGoogleCalendar") || "Select a Google Calendar"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      <span className="text-gray-500">{t("noGoogleCalendar") || "No Google Calendar"}</span>
-                    </SelectItem>
-                    {googleCalendars.map((gcal) => (
-                      <SelectItem key={gcal.calendarId} value={gcal.calendarId}>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: gcal.backgroundColor }}
-                          />
-                          <span>{gcal.summary}</span>
-                          {gcal.primary && (
-                            <span className="text-xs text-gray-400 ml-1">(Primary)</span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="p-3 bg-gray-50 rounded-lg border border-dashed">
-                  <p className="text-sm text-gray-500">
-                    {t("noGoogleCalendarsConnected") || "No Google Calendar connected. Connect your Google account in settings to sync appointments."}
-                  </p>
-                </div>
-              )}
-              <p className="text-xs text-gray-500 mt-1">
-                {t("googleCalendarDescription") || "New appointments will be automatically added to this Google Calendar"}
-              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={formData.primaryColor}
+                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                  className="w-12 h-10 rounded cursor-pointer border-0"
+                />
+                <Input
+                  value={formData.primaryColor}
+                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                  className="w-32"
+                />
+              </div>
             </div>
 
             {/* Services Selection */}
@@ -814,6 +711,11 @@ export default function CalendarSchedulesPage() {
                           {service.duration} min • ${service.price}
                         </p>
                       </div>
+                      {service.slots != null && service.slots > 1 && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                          {service.slots} {t("slots") || "slots"}
+                        </span>
+                      )}
                     </label>
                   ))
                 )}
