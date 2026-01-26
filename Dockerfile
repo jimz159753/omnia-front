@@ -26,7 +26,7 @@ RUN apk add --no-cache openssl \
   && chown -R app:app /tmp
 
 # Install prisma CLI globally for migrations
-RUN npm install -g prisma@6.14.0  
+RUN npm install -g prisma@6.14.0
 
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
@@ -38,7 +38,6 @@ COPY prisma ./prisma
 # Create necessary directories and set permissions
 RUN mkdir -p ./public/uploads \
   && mkdir -p ./.next/cache \
-  && chown -R app:app /app/uploads \
   && chown -R app:app ./public \
   && chown -R app:app ./.next \
   && chown -R app:app /app

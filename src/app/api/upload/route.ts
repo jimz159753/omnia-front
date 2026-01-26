@@ -53,8 +53,9 @@ export async function POST(request: NextRequest) {
       await writeFile(filePath, buffer);
       console.log(`File uploaded successfully: ${filePath}`);
 
-      // Return the public URL
-      const url = `/uploads/${filename}`;
+      // Return the API URL for dynamic file serving
+      // This works in Docker standalone mode where static files aren't served dynamically
+      const url = `/api/files/${filename}`;
 
       return NextResponse.json({ url }, { status: 200 });
     } catch (fsError) {

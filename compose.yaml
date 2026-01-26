@@ -19,9 +19,11 @@ services:
     image: nextjs-prod
     ports:
       - "3000:3000"
+    read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev
     volumes:
+      - uploads_data:/app/public/uploads:rw
       - cache_data:/app/.next/cache:rw
     security_opt:
       - no-new-privileges:true
