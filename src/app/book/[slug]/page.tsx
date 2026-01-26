@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 import { es, enUS } from "date-fns/locale";
@@ -13,6 +13,12 @@ import {
   BiLeftArrowAlt,
   BiCheck,
 } from "react-icons/bi";
+
+// Translations
+import enTranslations from "@/i18n/locales/en/booking.json";
+import esTranslations from "@/i18n/locales/es/booking.json";
+
+type TranslationKey = keyof typeof enTranslations;
 
 interface Service {
   id: string;
@@ -81,6 +87,29 @@ export default function BookingPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
+
+  // Language detection and translations
+  const [locale, setLocale] = useState<"en" | "es">("es");
+  
+  useEffect(() => {
+    // Detect browser language
+    const browserLang = navigator.language.toLowerCase();
+    if (browserLang.startsWith("es")) {
+      setLocale("es");
+    } else {
+      setLocale("en");
+    }
+  }, []);
+
+  const translations = useMemo(() => {
+    return locale === "es" ? esTranslations : enTranslations;
+  }, [locale]);
+
+  const t = useCallback((key: TranslationKey): string => {
+    return translations[key] || key;
+  }, [translations]);
+
+  const dateLocale = locale === "es" ? es : enUS;
 
   const fetchCalendarData = useCallback(async () => {
     try {
@@ -162,12 +191,12 @@ export default function BookingPage() {
 
   const handleSubmitBooking = async () => {
     if (!contactForm.name || !contactForm.phone) {
-      alert("Please fill in your name and phone number");
+      alert(t("fillNameAndPhone"));
       return;
     }
 
     if (!selectedService || !selectedDate || !selectedTime) {
-      alert("Please select a service, date, and time");
+      alert(t("selectServiceDateTime"));
       return;
     }
 
@@ -195,12 +224,12 @@ export default function BookingPage() {
       if (response.ok) {
         setBookingComplete(true);
       } else {
-        const error = await response.json();
-        alert(error.error || "Failed to create booking. Please try again.");
+        const errorData = await response.json();
+        alert(errorData.error || t("bookingFailed"));
       }
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      alert("Failed to create booking. Please try again.");
+    } catch (err) {
+      console.error("Error creating booking:", err);
+      alert(t("bookingFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -232,8 +261,8 @@ export default function BookingPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <BiCalendar className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Calendar Not Found</h1>
-          <p className="text-gray-500">This booking calendar doesn&apos;t exist or has been deactivated.</p>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("calendarNotFound")}</h1>
+          <p className="text-gray-500">{t("calendarNotFoundDescription")}</p>
         </div>
       </div>
     );
@@ -249,21 +278,21 @@ export default function BookingPage() {
           >
             <BiCheck className="w-10 h-10" style={{ color: primaryColor }} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Booking Confirmed!</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("bookingConfirmed")}</h1>
           <p className="text-gray-500 mb-6">
-            Your appointment has been scheduled. We&apos;ll send you a confirmation shortly.
+            {t("bookingConfirmedDescription")}
           </p>
           <div className="bg-gray-50 rounded-lg p-4 text-left space-y-2">
             <p className="text-sm">
-              <span className="text-gray-500">Service:</span>{" "}
+              <span className="text-gray-500">{t("service")}:</span>{" "}
               <span className="font-medium">{selectedService?.name}</span>
             </p>
             <p className="text-sm">
-              <span className="text-gray-500">Date:</span>{" "}
-              <span className="font-medium">{selectedDate && format(selectedDate, "MMMM d, yyyy")}</span>
+              <span className="text-gray-500">{t("date")}:</span>{" "}
+              <span className="font-medium">{selectedDate && format(selectedDate, "MMMM d, yyyy", { locale: dateLocale })}</span>
             </p>
             <p className="text-sm">
-              <span className="text-gray-500">Time:</span>{" "}
+              <span className="text-gray-500">{t("time")}:</span>{" "}
               <span className="font-medium">{selectedTime}</span>
             </p>
           </div>
@@ -351,9 +380,9 @@ export default function BookingPage() {
               ))}
             </div>
             <div className="flex justify-center gap-8 mt-2 text-xs text-gray-500">
-              <span>Service</span>
-              <span>Date & Time</span>
-              <span>Confirm</span>
+              <span>{t("stepService")}</span>
+              <span>{t("stepDateTime")}</span>
+              <span>{t("stepConfirm")}</span>
             </div>
           </div>
 
@@ -364,7 +393,7 @@ export default function BookingPage() {
               className="flex items-center gap-2 px-4 py-3 text-gray-600 hover:text-gray-800"
             >
               <BiLeftArrowAlt className="w-5 h-5" />
-              Back
+              {t("back")}
             </button>
           )}
 
@@ -373,7 +402,7 @@ export default function BookingPage() {
             {/* Step 1: Select Service */}
             {step === "service" && (
               <div>
-                <h2 className="text-xl font-semibold mb-4">Select a Service</h2>
+                <h2 className="text-xl font-semibold mb-4">{t("selectService")}</h2>
                 <div className="space-y-3">
                   {calendarData.services.map((service) => (
                     <button
@@ -399,7 +428,7 @@ export default function BookingPage() {
                         <div className="flex items-center gap-3 mt-1 text-sm">
                           <span className="flex items-center gap-1 text-gray-500">
                             <BiTime className="w-4 h-4" />
-                            {service.duration} min
+                            {service.duration} {t("min")}
                           </span>
                           <span className="font-medium" style={{ color: primaryColor }}>
                             ${service.price}
@@ -418,12 +447,12 @@ export default function BookingPage() {
                 <div className="mb-6 p-3 rounded-lg flex items-center gap-3" style={{ backgroundColor: `${primaryColor}10` }}>
                   <BiCalendar className="w-5 h-5" style={{ color: primaryColor }} />
                   <span className="font-medium">{selectedService.name}</span>
-                  <span className="text-sm text-gray-500">• {selectedService.duration} min</span>
+                  <span className="text-sm text-gray-500">• {selectedService.duration} {t("min")}</span>
                 </div>
 
                 {/* Week Navigation */}
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold">Select a Date</h3>
+                  <h3 className="font-semibold">{t("selectDate")}</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setWeekStart(addDays(weekStart, -7))}
@@ -462,7 +491,7 @@ export default function BookingPage() {
                         }`}
                         style={isSelected ? { backgroundColor: primaryColor } : undefined}
                       >
-                        <div className="text-xs uppercase">{format(date, "EEE")}</div>
+                        <div className="text-xs uppercase">{format(date, "EEE", { locale: dateLocale })}</div>
                         <div className="text-lg font-semibold">{format(date, "d")}</div>
                       </button>
                     );
@@ -473,7 +502,7 @@ export default function BookingPage() {
                 {selectedDate && (
                   <div>
                     <h3 className="font-semibold mb-3">
-                      Available Times - {format(selectedDate, "MMMM d")}
+                      {t("availableTimes")} - {format(selectedDate, "MMMM d", { locale: dateLocale })}
                     </h3>
                     {loadingSlots ? (
                       <div className="flex justify-center py-8">
@@ -508,8 +537,8 @@ export default function BookingPage() {
                     ) : (
                       <div className="text-center py-8 text-gray-500">
                         <BiTime className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>No available times for this date</p>
-                        <p className="text-sm mt-1">Please select another date</p>
+                        <p>{t("noAvailableTimes")}</p>
+                        <p className="text-sm mt-1">{t("selectAnotherDate")}</p>
                       </div>
                     )}
                   </div>
@@ -520,30 +549,30 @@ export default function BookingPage() {
             {/* Step 3: Confirm & Contact Info */}
             {step === "confirm" && selectedService && selectedDate && selectedTime && (
               <div>
-                <h2 className="text-xl font-semibold mb-4">Complete Your Booking</h2>
+                <h2 className="text-xl font-semibold mb-4">{t("completeBooking")}</h2>
 
                 {/* Booking Summary */}
                 <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  <h3 className="font-medium text-gray-700 mb-3">Booking Summary</h3>
+                  <h3 className="font-medium text-gray-700 mb-3">{t("bookingSummary")}</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Service</span>
+                      <span className="text-gray-500">{t("service")}</span>
                       <span className="font-medium">{selectedService.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Date</span>
-                      <span className="font-medium">{format(selectedDate, "MMMM d, yyyy")}</span>
+                      <span className="text-gray-500">{t("date")}</span>
+                      <span className="font-medium">{format(selectedDate, "MMMM d, yyyy", { locale: dateLocale })}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Time</span>
+                      <span className="text-gray-500">{t("time")}</span>
                       <span className="font-medium">{selectedTime}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Duration</span>
-                      <span className="font-medium">{selectedService.duration} minutes</span>
+                      <span className="text-gray-500">{t("duration")}</span>
+                      <span className="font-medium">{selectedService.duration} {t("minutes")}</span>
                     </div>
                     <div className="flex justify-between pt-2 border-t mt-2">
-                      <span className="text-gray-700 font-medium">Total</span>
+                      <span className="text-gray-700 font-medium">{t("total")}</span>
                       <span className="font-bold" style={{ color: primaryColor }}>
                         ${selectedService.price}
                       </span>
@@ -556,7 +585,7 @@ export default function BookingPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <BiUser className="inline w-4 h-4 mr-1" />
-                      Your Name *
+                      {t("yourName")} *
                     </label>
                     <input
                       type="text"
@@ -570,7 +599,7 @@ export default function BookingPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <BiPhone className="inline w-4 h-4 mr-1" />
-                      Phone Number *
+                      {t("phoneNumber")} *
                     </label>
                     <input
                       type="tel"
@@ -583,7 +612,7 @@ export default function BookingPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <BiEnvelope className="inline w-4 h-4 mr-1" />
-                      Email
+                      {t("email")}
                     </label>
                     <input
                       type="email"
@@ -595,14 +624,14 @@ export default function BookingPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Notes (Optional)
+                      {t("notes")}
                     </label>
                     <textarea
                       value={contactForm.notes}
                       onChange={(e) => setContactForm({ ...contactForm, notes: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
                       rows={3}
-                      placeholder="Any special requests..."
+                      placeholder={t("notesPlaceholder")}
                     />
                   </div>
                 </div>
@@ -617,10 +646,10 @@ export default function BookingPage() {
                   {submitting ? (
                     <span className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Processing...
+                      {t("processing")}
                     </span>
                   ) : (
-                    "Confirm Booking"
+                    t("confirmBooking")
                   )}
                 </button>
               </div>
@@ -630,7 +659,7 @@ export default function BookingPage() {
 
         {/* Footer */}
         <div className="text-center mt-6 text-sm text-gray-500">
-          Powered by <span className="font-medium">Omnia</span>
+          {t("poweredBy")} <span className="font-medium">Omnia</span>
         </div>
       </div>
     </div>
