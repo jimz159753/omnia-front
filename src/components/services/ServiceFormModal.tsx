@@ -24,6 +24,9 @@ import { serviceSchema, type ServiceFormData } from "@/lib/validations/service";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { useTranslation } from "@/hooks/useTranslation";
 import { BiLogoGoogle } from "react-icons/bi";
+import { Switch } from "@/components/ui/switch";
+import { BiCalendar, BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { toast } from "sonner";
 
 interface GoogleCalendar {
   calendarId: string;
@@ -31,6 +34,30 @@ interface GoogleCalendar {
   backgroundColor: string;
   primary?: boolean;
 }
+
+interface ServiceSchedule {
+  dayOfWeek: string;
+  isOpen: boolean;
+  startTime: string | null;
+  endTime: string | null;
+}
+
+const DAYS_OF_WEEK = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+const DEFAULT_SCHEDULES: ServiceSchedule[] = DAYS_OF_WEEK.map((day) => ({
+  dayOfWeek: day,
+  isOpen: false,
+  startTime: "09:00",
+  endTime: "18:00",
+}));
 
 export interface ServiceFormModalProps {
   open: boolean;
@@ -58,8 +85,12 @@ export function ServiceFormModal({
   const [selectedGoogleCalendar, setSelectedGoogleCalendar] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  
+  // Schedule state
+  const [useCustomSchedule, setUseCustomSchedule] = useState(false);
+  const [schedules, setSchedules] = useState<ServiceSchedule[]>(DEFAULT_SCHEDULES);
+  const [scheduleExpanded, setScheduleExpanded] = useState(false);
 
   const {
     control,
@@ -124,6 +155,32 @@ export function ServiceFormModal({
       });
       setSelectedGoogleCalendar((item as ServiceWithRelations & { googleCalendarId?: string })?.googleCalendarId || "");
       setImageFile(null);
+      
+      // Load schedules if service has custom schedules
+      const serviceWithSchedules = item as ServiceWithRelations & { 
+        useCustomSchedule?: boolean;
+        schedules?: ServiceSchedule[];
+      };
+      setUseCustomSchedule(serviceWithSchedules.useCustomSchedule || false);
+      if (serviceWithSchedules.schedules && serviceWithSchedules.schedules.length > 0) {
+        // Merge existing schedules with default ones
+        const mergedSchedules = DAYS_OF_WEEK.map((day) => {
+          const existing = serviceWithSchedules.schedules?.find(
+            (s) => s.dayOfWeek === day
+          );
+          return existing || {
+            dayOfWeek: day,
+            isOpen: false,
+            startTime: "09:00",
+            endTime: "18:00",
+          };
+        });
+        setSchedules(mergedSchedules);
+        setScheduleExpanded(true);
+      } else {
+        setSchedules(DEFAULT_SCHEDULES);
+        setScheduleExpanded(false);
+      }
     } else {
       reset({
         name: "",
@@ -138,12 +195,14 @@ export function ServiceFormModal({
       });
       setSelectedGoogleCalendar("");
       setImageFile(null);
+      setUseCustomSchedule(false);
+      setSchedules(DEFAULT_SCHEDULES);
+      setScheduleExpanded(false);
     }
   }, [open, item, reset, t]);
 
   const onSubmit = async (values: ServiceFormData) => {
     setError("");
-    setSuccess("");
     setLoading(true);
     try {
       let imageUrl = values.image;
@@ -175,6 +234,8 @@ export function ServiceFormModal({
         slots: values.slots ? Number(values.slots) : null,
         image: imageUrl,
         googleCalendarId: selectedGoogleCalendar || null,
+        useCustomSchedule,
+        schedules: useCustomSchedule ? schedules : [],
       };
 
       const response = await fetch("/api/services", {
@@ -192,13 +253,12 @@ export function ServiceFormModal({
         );
       }
 
-      setSuccess(isEditMode ? t("serviceUpdatedSuccess") : t("serviceCreatedSuccess"));
+      // Show toast immediately and close dialog
+      toast.success(isEditMode ? t("serviceUpdatedSuccess") : t("serviceCreatedSuccess"));
       reset();
       setImageFile(null);
-      setTimeout(() => {
-        onOpenChange(false);
-        onSuccess?.();
-      }, 800);
+      onOpenChange(false);
+      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -222,7 +282,6 @@ export function ServiceFormModal({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && <CustomAlert severity="error">{error}</CustomAlert>}
-          {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium text-gray-700">
@@ -498,6 +557,105 @@ export function ServiceFormModal({
             <p className="text-xs text-gray-500">
               {t("googleCalendarSyncDescription") || "Appointments for this service will be added to the selected Google Calendar"}
             </p>
+          </div>
+
+          {/* Service-Specific Schedule */}
+          <div className="space-y-3 border rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BiCalendar className="w-5 h-5 text-emerald-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  {t("customSchedule") || "Custom Availability"}
+                </span>
+              </div>
+              <Switch
+                checked={useCustomSchedule}
+                onCheckedChange={(checked) => {
+                  setUseCustomSchedule(checked);
+                  if (checked) setScheduleExpanded(true);
+                }}
+              />
+            </div>
+            <p className="text-xs text-gray-500">
+              {t("customScheduleDescription") || "Set specific days and hours when this service is available. If disabled, the business schedule will be used."}
+            </p>
+
+            {useCustomSchedule && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setScheduleExpanded(!scheduleExpanded)}
+                  className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700"
+                >
+                  {scheduleExpanded ? (
+                    <>
+                      <BiChevronUp className="w-4 h-4" />
+                      {t("hideSchedule") || "Hide schedule"}
+                    </>
+                  ) : (
+                    <>
+                      <BiChevronDown className="w-4 h-4" />
+                      {t("showSchedule") || "Show schedule"}
+                    </>
+                  )}
+                </button>
+
+                {scheduleExpanded && (
+                  <div className="space-y-3 mt-3">
+                    {schedules.map((schedule, index) => (
+                      <div
+                        key={schedule.dayOfWeek}
+                        className="flex items-center gap-3 p-3 bg-white rounded-lg border"
+                      >
+                        <div className="w-24">
+                          <Switch
+                            checked={schedule.isOpen}
+                            onCheckedChange={(checked) => {
+                              const newSchedules = [...schedules];
+                              newSchedules[index] = { ...schedule, isOpen: checked };
+                              setSchedules(newSchedules);
+                            }}
+                          />
+                        </div>
+                        <span className={`w-24 text-sm font-medium ${schedule.isOpen ? "text-gray-700" : "text-gray-400"}`}>
+                          {t(schedule.dayOfWeek.toLowerCase()) || schedule.dayOfWeek}
+                        </span>
+                        {schedule.isOpen && (
+                          <div className="flex items-center gap-2 flex-1">
+                            <input
+                              type="time"
+                              value={schedule.startTime || "09:00"}
+                              onChange={(e) => {
+                                const newSchedules = [...schedules];
+                                newSchedules[index] = { ...schedule, startTime: e.target.value };
+                                setSchedules(newSchedules);
+                              }}
+                              className="px-2 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                            />
+                            <span className="text-gray-400">-</span>
+                            <input
+                              type="time"
+                              value={schedule.endTime || "18:00"}
+                              onChange={(e) => {
+                                const newSchedules = [...schedules];
+                                newSchedules[index] = { ...schedule, endTime: e.target.value };
+                                setSchedules(newSchedules);
+                              }}
+                              className="px-2 py-1.5 text-sm border rounded-md focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                            />
+                          </div>
+                        )}
+                        {!schedule.isOpen && (
+                          <span className="text-sm text-gray-400 italic">
+                            {t("closed") || "Closed"}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <DialogFooter className="gap-2">

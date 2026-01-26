@@ -31,5 +31,7 @@
   "fillNameAndPhone": "Please fill in your name and phone number",
   "selectServiceDateTime": "Please select a service, date, and time",
   "bookingFailed": "Failed to create booking. Please try again.",
-  "min": "min"
+  "min": "min",
+  "serviceNotAvailable": "Service is not available on this day",
+  "businessClosed": "Business is closed on this day"
 }

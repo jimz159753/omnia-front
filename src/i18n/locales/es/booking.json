@@ -31,5 +31,7 @@
   "fillNameAndPhone": "Por favor ingresa tu nombre y número de teléfono",
   "selectServiceDateTime": "Por favor selecciona un servicio, fecha y hora",
   "bookingFailed": "Error al crear la reserva. Por favor intenta de nuevo.",
-  "min": "min"
+  "min": "min",
+  "serviceNotAvailable": "El servicio no está disponible este día",
+  "businessClosed": "El negocio está cerrado este día"
 }

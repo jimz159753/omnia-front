@@ -45,6 +45,18 @@
   "selectGoogleCalendar": "Seleccionar Google Calendar",
   "noGoogleCalendar": "Sin Google Calendar",
   "noGoogleCalendarsConnected": "No hay Google Calendar conectado. Conecta tu cuenta de Google en configuración para sincronizar citas.",
-  "googleCalendarSyncDescription": "Las citas de este servicio se agregarán al Google Calendar seleccionado"
+  "googleCalendarSyncDescription": "Las citas de este servicio se agregarán al Google Calendar seleccionado",
+  "customSchedule": "Disponibilidad Personalizada",
+  "customScheduleDescription": "Establece los días y horarios específicos en que este servicio está disponible. Si se desactiva, se usará el horario del negocio.",
+  "hideSchedule": "Ocultar horario",
+  "showSchedule": "Mostrar horario",
+  "monday": "Lunes",
+  "tuesday": "Martes",
+  "wednesday": "Miércoles",
+  "thursday": "Jueves",
+  "friday": "Viernes",
+  "saturday": "Sábado",
+  "sunday": "Domingo",
+  "closed": "Cerrado"
 }
 

@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
           },
         },
         subCategory: true,
+        schedules: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -59,6 +60,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
+interface ServiceScheduleInput {
+  dayOfWeek: string;
+  isOpen: boolean;
+  startTime: string | null;
+  endTime: string | null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -73,6 +81,8 @@ export async function POST(request: NextRequest) {
       subCategoryId,
       image,
       googleCalendarId,
+      useCustomSchedule,
+      schedules,
     } = body;
 
     // Validate required fields
@@ -123,7 +133,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create service
+    // Create service with schedules
     const service = await prisma.service.create({
       data: {
         name,
@@ -136,6 +146,17 @@ export async function POST(request: NextRequest) {
         subCategoryId: subCategoryId || null,
         image: image || "",
         googleCalendarId: googleCalendarId || null,
+        useCustomSchedule: useCustomSchedule || false,
+        schedules: schedules && Array.isArray(schedules) && schedules.length > 0
+          ? {
+              create: schedules.map((s: ServiceScheduleInput) => ({
+                dayOfWeek: s.dayOfWeek,
+                isOpen: s.isOpen,
+                startTime: s.startTime,
+                endTime: s.endTime,
+              })),
+            }
+          : undefined,
       },
       include: {
         category: {
@@ -144,6 +165,7 @@ export async function POST(request: NextRequest) {
           },
         },
         subCategory: true,
+        schedules: true,
       },
     });
 
@@ -177,6 +199,8 @@ export async function PUT(request: NextRequest) {
       subCategoryId,
       image,
       googleCalendarId,
+      useCustomSchedule,
+      schedules,
     } = body;
 
     // Validate required fields
@@ -237,6 +261,27 @@ export async function PUT(request: NextRequest) {
     const slotsValue = slots !== undefined ? (parseInt(String(slots)) > 0 ? parseInt(String(slots)) : null) : undefined;
     console.log(`📝 Updating service "${name || existingService.name}": slots received=${slots} (type: ${typeof slots}), saving as=${slotsValue}`);
 
+    // Update schedules if provided
+    if (schedules !== undefined && Array.isArray(schedules)) {
+      // Delete existing schedules
+      await prisma.serviceSchedule.deleteMany({
+        where: { serviceId: id },
+      });
+
+      // Create new schedules if any
+      if (schedules.length > 0) {
+        await prisma.serviceSchedule.createMany({
+          data: schedules.map((s: ServiceScheduleInput) => ({
+            serviceId: id,
+            dayOfWeek: s.dayOfWeek,
+            isOpen: s.isOpen,
+            startTime: s.startTime,
+            endTime: s.endTime,
+          })),
+        });
+      }
+    }
+
     // Update service
     const service = await prisma.service.update({
       where: { id },
@@ -251,6 +296,7 @@ export async function PUT(request: NextRequest) {
         subCategoryId: subCategoryId || null,
         image: image || "",
         googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : undefined,
+        useCustomSchedule: useCustomSchedule !== undefined ? useCustomSchedule : undefined,
       },
       include: {
         category: {
@@ -259,10 +305,11 @@ export async function PUT(request: NextRequest) {
           },
         },
         subCategory: true,
+        schedules: true,
       },
     });
 
-    console.log(`✅ Service updated successfully: slots now = ${service.slots}`);
+    console.log(`✅ Service updated successfully: slots now = ${service.slots}, useCustomSchedule = ${service.useCustomSchedule}`);
     
     return NextResponse.json(
       { data: service, message: "Service updated successfully" },

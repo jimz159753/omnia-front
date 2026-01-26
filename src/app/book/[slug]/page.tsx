@@ -20,6 +20,13 @@ import esTranslations from "@/i18n/locales/es/booking.json";
 
 type TranslationKey = keyof typeof enTranslations;
 
+interface ServiceSchedule {
+  dayOfWeek: string;
+  isOpen: boolean;
+  startTime: string | null;
+  endTime: string | null;
+}
+
 interface Service {
   id: string;
   name: string;
@@ -27,6 +34,8 @@ interface Service {
   price: number;
   description: string;
   image: string;
+  useCustomSchedule?: boolean;
+  schedules?: ServiceSchedule[];
 }
 
 interface Schedule {
@@ -241,6 +250,23 @@ export default function BookingPage() {
   const getDaySchedule = (date: Date) => {
     if (!calendarData) return null;
     const dayName = format(date, "EEEE");
+    
+    // If a service is selected and it has custom schedules, use those
+    if (selectedService?.useCustomSchedule && selectedService?.schedules && selectedService.schedules.length > 0) {
+      const serviceSchedule = selectedService.schedules.find(
+        (s) => s.dayOfWeek.toLowerCase() === dayName.toLowerCase()
+      );
+      if (serviceSchedule) {
+        return {
+          dayOfWeek: serviceSchedule.dayOfWeek,
+          isOpen: serviceSchedule.isOpen,
+          startTime: serviceSchedule.startTime,
+          endTime: serviceSchedule.endTime,
+        };
+      }
+    }
+    
+    // Fall back to business schedule
     return calendarData.schedules.find(
       (s) => s.dayOfWeek.toLowerCase() === dayName.toLowerCase()
     );

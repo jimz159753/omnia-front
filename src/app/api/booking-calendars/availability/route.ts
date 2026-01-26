@@ -24,7 +24,11 @@ export async function GET(request: NextRequest) {
         services: {
           where: { isEnabled: true },
           include: {
-            service: true,
+            service: {
+              include: {
+                schedules: true,
+              },
+            },
           },
         },
       },
@@ -65,10 +69,43 @@ export async function GET(request: NextRequest) {
         weekday: "long",
       });
 
-      // Get schedule for this day
-      const daySchedule = schedules.find(
-        (s) => s.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase()
-      );
+      // Check if service has custom schedules
+      const serviceWithSchedules = service as typeof service & { 
+        useCustomSchedule?: boolean;
+        schedules?: Array<{ dayOfWeek: string; isOpen: boolean; startTime: string | null; endTime: string | null }>;
+      };
+
+      let daySchedule: { isOpen: boolean; startTime: string | null; endTime: string | null } | null = null;
+
+      if (serviceWithSchedules.useCustomSchedule && serviceWithSchedules.schedules && serviceWithSchedules.schedules.length > 0) {
+        // Use service-specific schedule
+        const serviceSchedule = serviceWithSchedules.schedules.find(
+          (s) => s.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase()
+        );
+        if (serviceSchedule) {
+          daySchedule = {
+            isOpen: serviceSchedule.isOpen,
+            startTime: serviceSchedule.startTime,
+            endTime: serviceSchedule.endTime,
+          };
+          console.log(`📅 Using SERVICE-SPECIFIC schedule for "${service.name}" on ${dayOfWeek}: ${daySchedule.isOpen ? `${daySchedule.startTime} - ${daySchedule.endTime}` : 'CLOSED'}`);
+        }
+      }
+      
+      // Fall back to business schedule if no service-specific schedule
+      if (!daySchedule) {
+        const businessSchedule = schedules.find(
+          (s) => s.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase()
+        );
+        if (businessSchedule) {
+          daySchedule = {
+            isOpen: businessSchedule.isOpen,
+            startTime: businessSchedule.startTime,
+            endTime: businessSchedule.endTime,
+          };
+          console.log(`📅 Using BUSINESS schedule on ${dayOfWeek}: ${daySchedule.isOpen ? `${daySchedule.startTime} - ${daySchedule.endTime}` : 'CLOSED'}`);
+        }
+      }
 
       if (!daySchedule || !daySchedule.isOpen) {
         return NextResponse.json({
@@ -76,7 +113,9 @@ export async function GET(request: NextRequest) {
           dayOfWeek,
           isOpen: false,
           slots: [],
-          message: "Business is closed on this day",
+          message: serviceWithSchedules.useCustomSchedule 
+            ? "Service is not available on this day"
+            : "Business is closed on this day",
         });
       }
 
@@ -173,14 +212,22 @@ export async function GET(request: NextRequest) {
         logoImage: calendar.logoImage,
         primaryColor: calendar.primaryColor,
       },
-      services: calendar.services.map((s) => ({
-        id: s.service.id,
-        name: s.service.name,
-        duration: s.service.duration,
-        price: s.service.price,
-        description: s.service.description,
-        image: s.service.image,
-      })),
+      services: calendar.services.map((s) => {
+        const serviceWithSchedules = s.service as typeof s.service & {
+          useCustomSchedule?: boolean;
+          schedules?: Array<{ dayOfWeek: string; isOpen: boolean; startTime: string | null; endTime: string | null }>;
+        };
+        return {
+          id: s.service.id,
+          name: s.service.name,
+          duration: s.service.duration,
+          price: s.service.price,
+          description: s.service.description,
+          image: s.service.image,
+          useCustomSchedule: serviceWithSchedules.useCustomSchedule || false,
+          schedules: serviceWithSchedules.schedules || [],
+        };
+      }),
       schedules: schedules.map((s) => ({
         dayOfWeek: s.dayOfWeek,
         isOpen: s.isOpen,

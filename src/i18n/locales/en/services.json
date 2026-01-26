@@ -45,6 +45,18 @@
   "selectGoogleCalendar": "Select a Google Calendar",
   "noGoogleCalendar": "No Google Calendar",
   "noGoogleCalendarsConnected": "No Google Calendar connected. Connect your Google account in settings to sync appointments.",
-  "googleCalendarSyncDescription": "Appointments for this service will be added to the selected Google Calendar"
+  "googleCalendarSyncDescription": "Appointments for this service will be added to the selected Google Calendar",
+  "customSchedule": "Custom Availability",
+  "customScheduleDescription": "Set specific days and hours when this service is available. If disabled, the business schedule will be used.",
+  "hideSchedule": "Hide schedule",
+  "showSchedule": "Show schedule",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "closed": "Closed"
 }
 
