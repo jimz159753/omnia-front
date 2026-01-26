@@ -209,6 +209,65 @@ export const useTickets = () => {
     }
   };
 
+  const deleteTicket = async (ticketId: string) => {
+    try {
+      const response = await fetch(`/api/tickets?id=${ticketId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete ticket");
+      }
+
+      await fetchTickets(
+        page,
+        debouncedSearchQuery,
+        statusFilter,
+        dateFilter,
+        selectedDate
+      );
+      return true;
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      throw error;
+    }
+  };
+
+  const updateTicket = async (ticketId: string, payload: { 
+    status?: string;
+    notes?: string;
+    startTime?: string;
+    endTime?: string;
+  }) => {
+    try {
+      const response = await fetch(`/api/tickets`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: ticketId, ...payload }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update ticket");
+      }
+
+      await fetchTickets(
+        page,
+        debouncedSearchQuery,
+        statusFilter,
+        dateFilter,
+        selectedDate
+      );
+      return true;
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+      throw error;
+    }
+  };
+
   // Load dropdown options once
   useEffect(() => {
     const loadOptions = async () => {
@@ -250,5 +309,7 @@ export const useTickets = () => {
     handleDateSelect,
     refetch,
     createTicket,
+    deleteTicket,
+    updateTicket,
   };
 };

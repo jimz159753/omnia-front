@@ -18,6 +18,11 @@ export type {
 import { getTicketColumns } from "@/app/(dashboard)/dashboard/clients/ticketColumns";
 import { useTranslation } from "@/hooks/useTranslation";
 
+interface TicketCallbacks {
+  onEditTicket?: (ticket: TicketRow) => void;
+  onDeleteTicket?: (ticket: TicketRow) => void;
+}
+
 interface PaginationInfo {
   page: number;
   pageSize: number;
@@ -58,7 +63,7 @@ export type UseClientsPageReturn = {
   actions: ClientsPageActions;
 };
 
-export function useClientsPage(): UseClientsPageReturn {
+export function useClientsPage(ticketCallbacks?: TicketCallbacks): UseClientsPageReturn {
   const { i18n } = useTranslation();
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
@@ -120,8 +125,11 @@ export function useClientsPage(): UseClientsPageReturn {
   );
 
   const ticketColumns: ColumnDef<TicketRow>[] = useMemo(
-    () => getTicketColumns(),
-    [i18n.language]
+    () => getTicketColumns({
+      onEdit: ticketCallbacks?.onEditTicket,
+      onDelete: ticketCallbacks?.onDeleteTicket,
+    }),
+    [i18n.language, ticketCallbacks?.onEditTicket, ticketCallbacks?.onDeleteTicket]
   );
 
   const allFilteredTickets = useMemo(() => {

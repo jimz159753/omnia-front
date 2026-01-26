@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from "@/types/clients";
 import { Client, Product, Service, Ticket } from "@/generated/prisma";
-import { FiShoppingBag, FiUser } from "react-icons/fi";
+import { FiShoppingBag, FiUser, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
 import i18next from "@/i18n";
@@ -10,6 +10,7 @@ import i18next from "@/i18n";
 type TicketWithRelations = Ticket & {
   client: Client;
   items: Array<{
+    id?: string;
     quantity: number;
     unitPrice: number;
     total: number;
@@ -40,11 +41,16 @@ const formatDateTime = (iso: string) => {
   return { dateStr, timeStr };
 };
 
-export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
+interface ColumnCallbacks {
+  onEdit?: (ticket: TicketWithRelations) => void;
+  onDelete?: (ticket: TicketWithRelations) => void;
+}
+
+export const getColumns = (callbacks?: ColumnCallbacks): ColumnDef<TicketWithRelations>[] => {
   const tCommon = (key: string) => i18next.t(`common:${key}`);
   const tSales = (key: string) => i18next.t(`sales:${key}`);
 
-  return [
+  const columns: ColumnDef<TicketWithRelations>[] = [
     {
       accessorKey: "id",
       header: tSales("ticketNumber"),
@@ -126,7 +132,7 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
               <p className="text-sm text-gray-900">{itemNames[0]}</p>
               {itemNames.length > 1 && (
                 <p className="text-xs text-gray-500">
-                  +{itemNames.length - 1} más
+                  +{itemNames.length - 1} {tSales("moreItems")}
                 </p>
               )}
             </div>
@@ -175,4 +181,38 @@ export const getColumns = (): ColumnDef<TicketWithRelations>[] => {
       },
     },
   ];
+
+  // Add actions column if callbacks are provided
+  if (callbacks?.onEdit || callbacks?.onDelete) {
+    columns.push({
+      accessorKey: "actions",
+      header: tSales("actions"),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+            {callbacks?.onEdit && (
+              <button
+                onClick={() => callbacks.onEdit?.(row.original)}
+                className="p-2 rounded-lg hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-colors"
+                title={tSales("editTicket")}
+              >
+                <FiEdit2 className="w-4 h-4" />
+              </button>
+            )}
+            {callbacks?.onDelete && (
+              <button
+                onClick={() => callbacks.onDelete?.(row.original)}
+                className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
+                title={tSales("deleteTicket")}
+              >
+                <FiTrash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    });
+  }
+
+  return columns;
 };

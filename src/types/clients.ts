@@ -14,12 +14,17 @@ export interface TicketRow {
   status: string;
   createdAt: string;
   notes?: string;
+  staffId?: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
   items?: Array<{
+    id?: string;
     quantity: number;
     unitPrice: number;
     total: number;
-    product?: { name: string };
-    service?: { name: string };
+    product?: { id?: string; name: string };
+    service?: { id?: string; name: string };
   }>;
 }
 

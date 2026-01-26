@@ -17,6 +17,7 @@ import ClientCombobox from "@/components/clients/ClientCombobox";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils";
+import { TICKET_STATUSES, getStatusLabel } from "@/constants/status";
 
 interface Product {
   id: string;
@@ -36,10 +37,32 @@ interface Client {
   email: string;
 }
 
+interface EditTicketData {
+  id: string;
+  clientId?: string;
+  staffId?: string;
+  status?: string;
+  notes?: string;
+  items?: Array<{
+    id?: string;
+    productId?: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }>;
+  client?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
+}
+
 interface SaleFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  editTicket?: EditTicketData | null;
 }
 
 type FormValues = {
@@ -60,13 +83,17 @@ export function SaleFormDialog({
   open,
   onOpenChange,
   onSuccess,
+  editTicket,
 }: SaleFormDialogProps) {
   const { t } = useTranslation("common");
+  const { t: tSales } = useTranslation("sales");
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedStatus] = useState<TicketStatus>("Completed");
+  const [selectedStatus, setSelectedStatus] = useState<TicketStatus>("Completed");
+  
+  const isEditing = !!editTicket;
 
   const {
     control,
@@ -128,9 +155,43 @@ export function SaleFormDialog({
     } else {
       // Reset form when dialog closes
       reset();
+      setSelectedStatus("Completed");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, reset]);
+
+  // Populate form with edit data when editing
+  useEffect(() => {
+    if (open && editTicket && products.length > 0 && users.length > 0) {
+      // Set staff
+      if (editTicket.staffId) {
+        setValue("staffId", editTicket.staffId);
+      }
+      
+      // Set product and quantity from first item
+      const firstItem = editTicket.items?.[0];
+      if (firstItem?.productId) {
+        setValue("productId", firstItem.productId);
+        setValue("quantity", firstItem.quantity?.toString() || "1");
+      }
+      
+      // Set notes
+      if (editTicket.notes) {
+        setValue("includeNotes", true);
+        setValue("notes", editTicket.notes);
+      }
+      
+      // Set client
+      if (editTicket.clientId) {
+        setValue("existingClientId", editTicket.clientId);
+      }
+      
+      // Set status
+      if (editTicket.status) {
+        setSelectedStatus(editTicket.status as TicketStatus);
+      }
+    }
+  }, [open, editTicket, products, users, setValue]);
 
   const calculateTotal = () => {
     const quantityValue = parseInt(watch("quantity"), 10) || 1;
@@ -179,33 +240,67 @@ export function SaleFormDialog({
       const quantity = parseInt(values.quantity, 10) || 1;
       const total = unitPrice * quantity;
 
-      const ticketResponse = await fetch("/api/tickets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clientId,
-          staffId: values.staffId,
-          items: [
-            {
-              productId: values.productId,
-              quantity,
-              unitPrice,
-              total,
-            },
-          ],
-          quantity,
-          total,
-          status: selectedStatus,
-          notes: values.includeNotes ? values.notes : "",
-        }),
-      });
+      if (isEditing && editTicket) {
+        // Update existing ticket
+        const ticketResponse = await fetch("/api/tickets", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: editTicket.id,
+            clientId,
+            staffId: values.staffId,
+            items: [
+              {
+                productId: values.productId,
+                quantity,
+                unitPrice,
+                total,
+              },
+            ],
+            quantity,
+            total,
+            status: selectedStatus,
+            notes: values.includeNotes ? values.notes : "",
+          }),
+        });
 
-      if (!ticketResponse.ok) {
-        const data = await ticketResponse.json();
-        throw new Error(data.error || "Failed to create sale");
+        if (!ticketResponse.ok) {
+          const data = await ticketResponse.json();
+          throw new Error(data.error || "Failed to update sale");
+        }
+
+        toast.success(tSales("ticketUpdatedSuccess") || "Venta actualizada exitosamente");
+      } else {
+        // Create new ticket
+        const ticketResponse = await fetch("/api/tickets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clientId,
+            staffId: values.staffId,
+            items: [
+              {
+                productId: values.productId,
+                quantity,
+                unitPrice,
+                total,
+              },
+            ],
+            quantity,
+            total,
+            status: selectedStatus,
+            notes: values.includeNotes ? values.notes : "",
+          }),
+        });
+
+        if (!ticketResponse.ok) {
+          const data = await ticketResponse.json();
+          throw new Error(data.error || "Failed to create sale");
+        }
+
+        toast.success(t("ticketCreatedSuccess") || "Venta creada exitosamente");
       }
 
-      toast.success(t("ticketCreatedSuccess") || "Venta creada exitosamente");
       reset();
       setTimeout(() => {
         onOpenChange(false);
@@ -221,7 +316,9 @@ export function SaleFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-7xl h-[90vh] p-0 gap-0 [&>button]:hidden">
-        <DialogTitle className="sr-only">{t("createSale")}</DialogTitle>
+        <DialogTitle className="sr-only">
+          {isEditing ? tSales("editSale") : t("createSale")}
+        </DialogTitle>
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -233,7 +330,9 @@ export function SaleFormDialog({
             <div className="flex-1 flex flex-col h-full border-r">
               {/* Header */}
               <div className="p-6 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">{t("createSale")}</h2>
+                <h2 className="text-xl font-semibold">
+                  {isEditing ? tSales("editSale") : t("createSale")}
+                </h2>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
@@ -250,7 +349,7 @@ export function SaleFormDialog({
                 </h3>
 
                 {/* Sale details in horizontal layout */}
-                <div className="grid grid-cols-4 gap-3 bg-gray-50 p-4 rounded-md">
+                <div className={`grid ${isEditing ? 'grid-cols-5' : 'grid-cols-4'} gap-3 bg-gray-50 p-4 rounded-md`}>
                   {/* Staff */}
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700">
@@ -337,6 +436,30 @@ export function SaleFormDialog({
                       {formatCurrency(unitPrice)}
                     </div>
                   </div>
+
+                  {/* Status (only when editing) */}
+                  {isEditing && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        {t("status")}
+                      </label>
+                      <Select
+                        value={selectedStatus}
+                        onValueChange={(value) => setSelectedStatus(value as TicketStatus)}
+                      >
+                        <SelectTrigger className="h-10 bg-white">
+                          <SelectValue placeholder={tSales("selectStatus")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TICKET_STATUSES.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              {getStatusLabel(status.value)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -506,7 +629,7 @@ export function SaleFormDialog({
                   }
                   className="flex-1 px-4 py-2.5 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                  {isSubmitting ? t("saving") : t("create")}
+                  {isSubmitting ? t("saving") : isEditing ? t("save") : t("create")}
                 </button>
               </div>
             </div>

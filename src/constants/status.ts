@@ -26,6 +26,13 @@ export const STATUS_BADGE_CLASSES: Record<TicketStatus, string> = {
   [TicketStatus.Canceled]: "bg-red-100 text-red-800",
 };
 
+export const TICKET_STATUSES = [
+  { value: TicketStatus.Pending, label: STATUS_LABELS[TicketStatus.Pending] },
+  { value: TicketStatus.Confirmed, label: STATUS_LABELS[TicketStatus.Confirmed] },
+  { value: TicketStatus.Done, label: STATUS_LABELS[TicketStatus.Done] },
+  { value: TicketStatus.Canceled, label: STATUS_LABELS[TicketStatus.Canceled] },
+];
+
 export function normalizeTicketStatus(
   status: string | null | undefined
 ): TicketStatus | undefined {

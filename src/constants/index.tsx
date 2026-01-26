@@ -72,6 +72,10 @@ export const items: IMenuItem[] = [
     title: "Analytics",
   },
   {
+    icon: () => <CalendarIcon size={22} />,
+    title: "Calendar",
+  },
+  {
     icon: () => <DoubleCheckIcon size={22} />,
     title: "Sales",
   },
@@ -86,10 +90,6 @@ export const items: IMenuItem[] = [
   {
     icon: () => <ClientsIcon size={22} />,
     title: "Clients",
-  },
-  {
-    icon: () => <CalendarIcon size={22} />,
-    title: "Calendar",
   },
   {
     icon: () => null,

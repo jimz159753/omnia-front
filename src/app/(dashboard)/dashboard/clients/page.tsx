@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { ClientFormDialog } from "@/components/dialogs/ClientFormDialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,12 +9,53 @@ import SelectedClient from "./selected-client";
 import { GenericTabs } from "@/components/ui/genericTabs";
 import ClientSidebar from "./controllers";
 import TicketDetailsDialog from "@/components/dialogs/TicketDetailsDialog";
+import { SaleFormDialog } from "@/components/dialogs/SaleFormDialog";
+import { AppointmentFormDialog } from "@/components/dialogs/AppointmentFormDialog";
 import { useTranslation } from "@/hooks/useTranslation";
-import { FiUser, FiShoppingBag, FiCalendar, FiFileText } from "react-icons/fi";
+import { FiUser, FiShoppingBag, FiCalendar, FiFileText, FiAlertTriangle } from "react-icons/fi";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Clients = () => {
+  const { t } = useTranslation("clients");
+  const { t: tSales } = useTranslation("sales");
+  const { t: tCommon } = useTranslation("common");
+
+  // State for ticket edit/delete
+  const [ticketToEdit, setTicketToEdit] = useState<TicketRow | null>(null);
+  const [ticketToDelete, setTicketToDelete] = useState<TicketRow | null>(null);
+  const [saleDialogOpen, setSaleDialogOpen] = useState(false);
+  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Callbacks for ticket actions
+  const handleEditTicket = useCallback((ticket: TicketRow) => {
+    setTicketToEdit(ticket);
+    // Check if it's an appointment (has startTime)
+    if (ticket.startTime) {
+      setAppointmentDialogOpen(true);
+    } else {
+      setSaleDialogOpen(true);
+    }
+  }, []);
+
+  const handleDeleteTicket = useCallback((ticket: TicketRow) => {
+    setTicketToDelete(ticket);
+  }, []);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const clientsHook = useClientsPage() as any;
+  const clientsHook = useClientsPage({
+    onEditTicket: handleEditTicket,
+    onDeleteTicket: handleDeleteTicket,
+  }) as any;
 
   const {
     state: {
@@ -45,7 +86,37 @@ const Clients = () => {
     },
   } = clientsHook;
 
-  const { t } = useTranslation("clients");
+  // Close edit dialogs
+  const handleEditDialogClose = () => {
+    setSaleDialogOpen(false);
+    setAppointmentDialogOpen(false);
+    setTicketToEdit(null);
+  };
+
+  // Handle successful edit
+  const handleEditSuccess = () => {
+    handleEditDialogClose();
+    fetchClients();
+  };
+
+  // Confirm delete ticket
+  const confirmDeleteTicket = async () => {
+    if (!ticketToDelete) return;
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/tickets?id=${ticketToDelete.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete ticket");
+      toast.success(tSales("ticketDeletedSuccess"));
+      setTicketToDelete(null);
+      fetchClients();
+    } catch (error) {
+      toast.error(tSales("ticketDeletedError"));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const tabs = [
     { label: t("all") || "All", value: "all", icon: <FiShoppingBag className="w-4 h-4" /> },
@@ -223,6 +294,88 @@ const Clients = () => {
         onOpenChange={handleDialogChange}
         onSuccess={fetchClients}
         client={editingClient}
+      />
+
+      {/* Delete Ticket Confirmation Dialog */}
+      <Dialog open={!!ticketToDelete} onOpenChange={(open) => !open && setTicketToDelete(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-red-100">
+                <FiAlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <DialogTitle>{tSales("confirmDelete")}</DialogTitle>
+            </div>
+            <DialogDescription className="pt-2">
+              {tSales("confirmDeleteMessage")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setTicketToDelete(null)}
+              disabled={isDeleting}
+            >
+              {tSales("cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeleteTicket}
+              disabled={isDeleting}
+            >
+              {isDeleting ? tSales("deleting") : tSales("delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sale Edit Dialog */}
+      <SaleFormDialog
+        open={saleDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleEditDialogClose();
+        }}
+        onSuccess={handleEditSuccess}
+        editTicket={ticketToEdit ? {
+          id: ticketToEdit.id,
+          clientId: selectedClient?.id,
+          staffId: ticketToEdit.staffId || undefined,
+          status: ticketToEdit.status || undefined,
+          notes: ticketToEdit.notes || undefined,
+          items: ticketToEdit.items?.map(item => ({
+            id: item.id,
+            productId: item.product?.id,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            total: item.total,
+          })),
+          client: selectedClient ? {
+            id: selectedClient.id,
+            name: selectedClient.name,
+            email: selectedClient.email || "",
+            phone: selectedClient.phone || undefined,
+          } : undefined,
+        } : null}
+      />
+
+      {/* Appointment Edit Dialog */}
+      <AppointmentFormDialog
+        open={appointmentDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleEditDialogClose();
+        }}
+        onSuccess={handleEditSuccess}
+        initialSlot={ticketToEdit?.startTime ? {
+          start: new Date(ticketToEdit.startTime),
+          end: ticketToEdit.endTime ? new Date(ticketToEdit.endTime) : new Date(new Date(ticketToEdit.startTime).getTime() + 60 * 60000),
+          resourceId: ticketToEdit.staffId || undefined,
+        } : null}
+        initialData={ticketToEdit ? {
+          ticketId: ticketToEdit.id,
+          clientId: selectedClient?.id,
+          serviceId: ticketToEdit.items?.[0]?.service?.id,
+          notes: ticketToEdit.notes || undefined,
+        } : null}
       />
     </>
   );
