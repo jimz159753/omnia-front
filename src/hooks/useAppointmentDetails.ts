@@ -9,6 +9,7 @@ export interface Service {
   name: string;
   price: number;
   duration: number;
+  googleCalendarId?: string | null;
 }
 
 export interface User {
@@ -417,6 +418,10 @@ export const useAppointmentDetails = ({
       const { unitPrice, startTime, endTime, durationInMinutes } =
         appointmentDetails;
 
+      // Get the selected service's googleCalendarId
+      const selectedService = services.find((s) => s.id === values.serviceId);
+      const serviceCalendarId = selectedService?.googleCalendarId || undefined;
+
       const ticketResponse = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -438,7 +443,7 @@ export const useAppointmentDetails = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           duration: durationInMinutes,
-          googleCalendarId: values.googleCalendarId || undefined,
+          googleCalendarId: serviceCalendarId, // Use service's calendar instead of form field
         }),
       });
 
@@ -449,7 +454,7 @@ export const useAppointmentDetails = ({
 
       return await ticketResponse.json();
     },
-    []
+    [services]
   );
 
   /**
