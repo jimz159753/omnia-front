@@ -550,7 +550,7 @@ export default function GoogleCalendarPage() {
 
       {/* Create Calendar Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <BiPlus className="w-5 h-5 text-brand-500" />
@@ -651,7 +651,7 @@ export default function GoogleCalendarPage() {
 
       {/* Sharing Dialog */}
       <Dialog open={isSharingDialogOpen} onOpenChange={setIsSharingDialogOpen}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="sm:max-w-xl max-w-[95vw]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <BiShareAlt className="w-5 h-5 text-brand-500" />
@@ -664,8 +664,8 @@ export default function GoogleCalendarPage() {
           
           <div className="space-y-6 py-4">
             {/* Add User Section */}
-            <div className="flex items-end gap-3">
-              <div className="flex-1 space-y-1.5">
+            <div className="flex items-end gap-3 min-w-0">
+              <div className="flex-1 min-w-0 space-y-1.5">
                 <label className="text-sm font-medium text-gray-700">
                   {t("addByEmail") || "Add people"}
                 </label>
@@ -689,7 +689,7 @@ export default function GoogleCalendarPage() {
               <Button 
                 onClick={handleAddShare} 
                 disabled={isAddingShare || !newShareEmail}
-                className="bg-brand-500 hover:bg-brand-600 mb-0.5"
+                className="bg-brand-500 hover:bg-brand-600 mb-0.5 flex-shrink-0"
               >
                 {isAddingShare ? (
                   <FiLoader className="w-4 h-4 animate-spin" />
@@ -704,7 +704,7 @@ export default function GoogleCalendarPage() {
               <h4 className="text-sm font-medium text-gray-900 mb-3">
                 {t("peopleWithAccess") || "People with access"}
               </h4>
-              <div className="space-y-3">
+              <div className="space-y-3 w-full">
                 {aclLoading ? (
                   <div className="py-8 text-center text-gray-500">
                     <FiLoader className="w-6 h-6 animate-spin mx-auto mb-2" />
@@ -718,17 +718,17 @@ export default function GoogleCalendarPage() {
                   aclRules.map((rule) => (
                     <div
                       key={rule.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group w-full min-w-0"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-medium text-sm flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-brand-100 flex-shrink-0 flex items-center justify-center text-brand-700 font-medium text-sm">
                           {(rule.scope.value || "?").charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-900 truncate" title={rule.scope.value}>
+                          <p className="text-sm font-medium text-gray-900 truncate w-0 min-w-full max-w-full" title={rule.scope.type === 'default' ? (t("public") || 'Public') : (rule.scope.value || "")}>
                             {rule.scope.type === 'default' ? (t("public") || 'Public') : (rule.scope.value || (t("unknown") || "Unknown"))}
                           </p>
-                          <p className="text-xs text-gray-500 capitalize">
+                          <p className="text-xs text-gray-500 capitalize truncate">
                             {rule.role === "writer" ? (t("canEdit") || "Can edit") : 
                              rule.role === "owner" ? (t("owner") || "Owner") : 
                              rule.role === "reader" ? (t("canView") || "Can view") : rule.role}
@@ -741,7 +741,7 @@ export default function GoogleCalendarPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveShare(rule.id)}
-                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all flex-shrink-0"
                         >
                           <BiTrash className="w-4 h-4" />
                         </Button>
