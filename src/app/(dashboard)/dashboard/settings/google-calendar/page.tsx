@@ -445,19 +445,19 @@ export default function GoogleCalendarPage() {
                     />
                     
                     {/* Calendar info */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-full">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <h4 className="font-medium text-gray-900 truncate">
+                        <h4 className="font-medium text-gray-900 truncate" title={calendar.name}>
                           {calendar.name}
                         </h4>
                         {calendar.isPrimary && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 text-brand-700">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700 flex-shrink-0">
                             {t("primary") || "Primary"}
                           </span>
                         )}
                       </div>
                       {calendar.description && (
-                        <p className="text-sm text-gray-500 truncate">
+                        <p className="text-sm text-gray-500 truncate" title={calendar.description}>
                           {calendar.description}
                         </p>
                       )}
@@ -606,8 +606,8 @@ export default function GoogleCalendarPage() {
                     title={name}
                     className={`w-10 h-10 rounded-full transition-all hover:scale-110 ${
                       newCalendar.backgroundColor === color
-                        ? "ring-2 ring-offset-2 ring-brand-500"
-                        : "ring-1 ring-gray-200"
+                        ? "ring-2 ring-offset-2 ring-brand-500 scale-110"
+                        : "ring-1 ring-gray-100"
                     }`}
                     style={{ backgroundColor: color }}
                     onClick={() =>
@@ -720,18 +720,18 @@ export default function GoogleCalendarPage() {
                       key={rule.id}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-medium text-sm">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-medium text-sm flex-shrink-0">
                           {(rule.scope.value || "?").charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {rule.scope.type === 'default' ? 'Public' : (rule.scope.value || "Unknown")}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate" title={rule.scope.value}>
+                            {rule.scope.type === 'default' ? (t("public") || 'Public') : (rule.scope.value || (t("unknown") || "Unknown"))}
                           </p>
                           <p className="text-xs text-gray-500 capitalize">
-                            {rule.role === "writer" ? "Can edit" : 
-                             rule.role === "owner" ? "Owner" : 
-                             rule.role === "reader" ? "Can view" : rule.role}
+                            {rule.role === "writer" ? (t("canEdit") || "Can edit") : 
+                             rule.role === "owner" ? (t("owner") || "Owner") : 
+                             rule.role === "reader" ? (t("canView") || "Can view") : rule.role}
                           </p>
                         </div>
                       </div>
