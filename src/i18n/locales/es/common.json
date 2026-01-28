@@ -104,5 +104,16 @@
   "formDataLoadError": "Error al cargar los datos del formulario",
   "ticketDataLoadError": "Error al cargar los datos del ticket",
   "appointmentUpdateError": "Error al actualizar la cita",
-  "appointmentCreateError": "Error al crear la cita"
+  "appointmentCreateError": "Error al crear la cita",
+  "service": "Servicio",
+  "staff": "Personal",
+  "employee": "Empleado",
+  "discount": "Descuento",
+  "discountPercent": "Desc. %",
+  "serviceStatus": "Estatus del servicio",
+  "saleTicket": "Ticket de venta",
+  "addProduct": "Agregar producto",
+  "useCertificate": "Usar certificado",
+  "addTip": "Agregar propina",
+  "noItemsMessage": "No hay servicios agregados. Haz clic en '+ Agregar producto' para comenzar."
 }

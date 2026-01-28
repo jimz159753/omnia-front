@@ -104,5 +104,16 @@
   "formDataLoadError": "Failed to load form data",
   "ticketDataLoadError": "Failed to load ticket data",
   "appointmentUpdateError": "Failed to update appointment",
-  "appointmentCreateError": "Failed to create appointment"
+  "appointmentCreateError": "Failed to create appointment",
+  "service": "Service",
+  "staff": "Staff",
+  "employee": "Employee",
+  "discount": "Discount",
+  "discountPercent": "Disc. %",
+  "serviceStatus": "Service Status",
+  "saleTicket": "Sale Ticket",
+  "addProduct": "Add Product",
+  "useCertificate": "Use Certificate",
+  "addTip": "Add Tip",
+  "noItemsMessage": "No items added. Click '+ Add product' to start."
 }

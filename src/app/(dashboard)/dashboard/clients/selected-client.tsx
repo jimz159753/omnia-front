@@ -10,7 +10,8 @@ type Props = {
 };
 
 const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
-  const { t } = useTranslation("clients");
+  const { t, i18n } = useTranslation("clients");
+  const currentLanguage = i18n.language || "en-US";
 
   // Get client initials for avatar
   const getInitials = (name: string) => {
@@ -26,7 +27,7 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
     totalTickets: client?.tickets?.length ?? 0,
     totalSpent: client?.tickets?.reduce((sum, ticket) => sum + (ticket.total ?? 0), 0) ?? 0,
     lastVisit: client?.tickets?.[0]?.createdAt 
-      ? new Date(client.tickets[0].createdAt).toLocaleDateString("es-MX", {
+      ? new Date(client.tickets[0].createdAt).toLocaleDateString(currentLanguage, {
           day: "2-digit",
           month: "short",
           year: "numeric",
@@ -98,7 +99,7 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
               <FiDollarSign className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
-              ${stats.totalSpent.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+              {stats.totalSpent.toLocaleString(currentLanguage, { style: "currency", currency: "USD", minimumFractionDigits: 2 })}
             </p>
             <p className="text-sm text-gray-500">{t("totalSpent") || "Total Spent"}</p>
           </div>

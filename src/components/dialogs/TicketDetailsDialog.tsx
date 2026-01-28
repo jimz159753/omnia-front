@@ -69,14 +69,15 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
   ticket,
 }) => {
   // 1. Hooks (following proper order from guidelines)
-  const { t } = useTranslation("sales");
+  const { t, i18n } = useTranslation("sales");
+  const currentLanguage = i18n.language || "en-US";
   const { business } = useBusiness(open);
-  const { dateStr, timeStr } = formatTicketDateTime(ticket?.createdAt);
+  const { dateStr, timeStr } = formatTicketDateTime(ticket?.createdAt, currentLanguage);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   // Format appointment time if exists
   const appointmentTime = ticket?.startTime
-    ? formatTicketDateTime(ticket.startTime)
+    ? formatTicketDateTime(ticket.startTime, currentLanguage)
     : null;
 
   // 2. Event handlers (using useCallback for optimization)
@@ -230,38 +231,38 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
                 <FiClock className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-xs text-blue-600 uppercase tracking-wider font-medium">
-                  {t("appointmentDetails") || "Appointment"}
-                </p>
-                <p className="font-semibold text-gray-900">
-                  {appointmentTime.dateStr} - {appointmentTime.timeStr}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Items Section */}
-          <TicketItems
-            items={ticket.items || []}
-            itemsLabel={t("itemsLabel")}
-            qtyLabel={t("qtyLabel")}
-            emptyLabel={t("itemsEmpty")}
-          />
-
-          {/* Notes (if exists) */}
-          {ticket.notes && (
-            <div className="p-4 bg-amber-50 rounded-xl">
-              <div className="flex items-start gap-3">
-                <FiFileText className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs text-amber-600 uppercase tracking-wider font-medium mb-1">
-                    Notes
-                  </p>
-                  <p className="text-gray-700 text-sm">{ticket.notes}</p>
-                </div>
-              </div>
-            </div>
-          )}
+                  <p className="text-xs text-blue-600 uppercase tracking-wider font-medium">
+                   {t("appointmentDetails")}
+                 </p>
+                 <p className="font-semibold text-gray-900">
+                   {appointmentTime.dateStr} - {appointmentTime.timeStr}
+                 </p>
+               </div>
+             </div>
+           )}
+ 
+           {/* Items Section */}
+           <TicketItems
+             items={ticket.items || []}
+             itemsLabel={t("itemsLabel")}
+             qtyLabel={t("qtyLabel")}
+             emptyLabel={t("itemsEmpty")}
+           />
+ 
+           {/* Notes (if exists) */}
+           {ticket.notes && (
+             <div className="p-4 bg-amber-50 rounded-xl">
+               <div className="flex items-start gap-3">
+                 <FiFileText className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                 <div>
+                   <p className="text-xs text-amber-600 uppercase tracking-wider font-medium mb-1">
+                     {t("notes")}
+                   </p>
+                   <p className="text-gray-700 text-sm">{ticket.notes}</p>
+                 </div>
+               </div>
+             </div>
+           )}
 
           {/* Total Section */}
           <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between">

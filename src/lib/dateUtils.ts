@@ -19,16 +19,21 @@ export const getOrdinal = (day: number): string => {
  * Format date and time for ticket display
  */
 export const formatTicketDateTime = (
-  iso?: string | Date
+  iso?: string | Date,
+  locale: string = "en-US"
 ): { dateStr: string; timeStr: string } => {
   if (!iso) return { dateStr: "-", timeStr: "" };
 
   const date = iso instanceof Date ? iso : new Date(iso);
-  const month = date.toLocaleDateString("en-US", { month: "long" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const dateStr = `${month} ${day}${getOrdinal(day)}, ${year}`;
-  const timeStr = date.toLocaleTimeString("en-US", {
+  
+  // Format based on locale
+  const dateStr = date.toLocaleDateString(locale, {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+  
+  const timeStr = date.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });

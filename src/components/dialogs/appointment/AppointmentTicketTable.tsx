@@ -98,10 +98,10 @@ interface StatusButton {
   bgHoverColor: string;
 }
 
-const serviceStatusButtons: StatusButton[] = [
+const serviceStatusButtons = (t: (key: string) => string): StatusButton[] => [
   {
     value: "Pending",
-    label: "Pendiente",
+    label: t("pending"),
     iconColor: "bg-yellow-500",
     textColor: "text-yellow-700",
     bgColor: "bg-yellow-100",
@@ -109,7 +109,7 @@ const serviceStatusButtons: StatusButton[] = [
   },
   {
     value: "Confirmed",
-    label: "Confirmado",
+    label: t("confirmed"),
     iconColor: "bg-blue-500",
     textColor: "text-blue-700",
     bgColor: "bg-blue-100",
@@ -117,7 +117,7 @@ const serviceStatusButtons: StatusButton[] = [
   },
   {
     value: "Completed",
-    label: "Finalizado",
+    label: t("completed"),
     iconColor: "bg-green-500",
     textColor: "text-green-700",
     bgColor: "bg-green-100",
@@ -125,7 +125,7 @@ const serviceStatusButtons: StatusButton[] = [
   },
   {
     value: "Cancelled",
-    label: "Cancelado",
+    label: t("cancelled"),
     iconColor: "bg-red-500",
     textColor: "text-red-700",
     bgColor: "bg-red-100",
@@ -211,7 +211,7 @@ export function AppointmentTicketTable({
 
     if (!selectedProduct) {
       console.error("Product not found");
-      toast.error("Producto no encontrado");
+      toast.error(t("productNotFound") || "Producto no encontrado");
       return;
     }
 
@@ -237,7 +237,7 @@ export function AppointmentTicketTable({
     setNewItems((prev) => [...prev, newItem]);
 
     // Show success toast
-    toast.success("Producto agregado a la tabla");
+    toast.success(t("productAddedToTable") || "Producto agregado a la tabla");
 
     // Notify parent (optional callback)
     if (ticketData?.id) {
@@ -261,7 +261,7 @@ export function AppointmentTicketTable({
       // - No API request
       // - No confirmation dialog
       setNewItems((prev) => prev.filter((item) => item.id !== itemId));
-      toast.success("Producto eliminado de la tabla");
+      toast.success(t("productDeletedFromTable") || "Producto eliminado de la tabla");
     } else {
       // For existing items, find the item to get its type
       const allItems = [...(ticketData?.items || []), ...newItems];
@@ -381,9 +381,9 @@ export function AppointmentTicketTable({
     <div className="flex flex-col h-full">
       {/* Status Section */}
       <div className="p-6 border-b">
-        <h3 className="text-sm font-semibold mb-3">Estatus del servicio</h3>
+        <h3 className="text-sm font-semibold mb-3">{t("serviceStatus")}</h3>
         <div className="flex gap-2">
-          {serviceStatusButtons.map((statusButton) => {
+          {serviceStatusButtons(t).map((statusButton) => {
             const isSelected = selectedStatus === statusButton.value;
             return (
               <button
@@ -410,28 +410,28 @@ export function AppointmentTicketTable({
       <div className="flex-1 overflow-y-auto p-6">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Ticket de venta</h3>
+            <h3 className="text-sm font-semibold">{t("saleTicket")}</h3>
             <div className="flex gap-3 text-sm">
               <button
                 type="button"
                 onClick={() => setIsAddProductDialogOpen(true)}
                 className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
-                + Agregar producto
+                + {t("addProduct")}
               </button>
               <button
                 type="button"
                 onClick={onUseCertificate}
                 className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
-                + Usar certificado
+                + {t("useCertificate")}
               </button>
               <button
                 type="button"
                 onClick={onAddTip}
                 className="text-gray-600 hover:text-gray-900 transition-colors px-2 py-1 rounded-md bg-gray-100"
               >
-                + Agregar propina
+                + {t("addTip")}
               </button>
             </div>
           </div>
@@ -440,21 +440,20 @@ export function AppointmentTicketTable({
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             {/* Table Header */}
             <div className="grid grid-cols-[2fr,1.5fr,1.5fr,0.8fr,1fr,1fr,1fr,auto] gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
-              <div>Servicio</div>
-              <div>Cliente</div>
-              <div>Empleado</div>
-              <div className="text-center">Cant.</div>
-              <div className="text-right">Price</div>
-              <div className="text-right">Desc. %</div>
-              <div className="text-right">Total:</div>
+              <div>{t("service")}</div>
+              <div>{t("client")}</div>
+              <div>{t("employee")}</div>
+              <div className="text-center">{t("quantityAbbr") || t("quantity")}</div>
+              <div className="text-right">{t("price")}</div>
+              <div className="text-right">{t("discountPercent")}</div>
+              <div className="text-right">{t("total")}</div>
               <div className="w-8"></div>
             </div>
 
             {/* Table Body */}
             {items.length === 0 ? (
               <div className="px-4 py-8 text-center text-gray-500 text-sm">
-                No hay servicios agregados. Haz clic en &quot;+ Agregar
-                servicio&quot; para comenzar.
+                {t("noItemsMessage")}
               </div>
             ) : (
               items.map((item) => (
