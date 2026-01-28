@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
-import { BiUser, BiLock, BiSave } from "react-icons/bi";
+import { BiUser, BiSave } from "react-icons/bi";
+
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 
 const profileSchema = z.object({
@@ -15,23 +16,8 @@ const profileSchema = z.object({
   avatar: z.any().optional(),
 });
 
-const passwordSchema = z
-  .object({
-    currentPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
-type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export function AccountSettingsForm() {
   const { t } = useTranslation("settings");
@@ -51,15 +37,6 @@ export function AccountSettingsForm() {
       name: "",
       email: "",
     },
-  });
-
-  const {
-    register: registerPassword,
-    handleSubmit: handleSubmitPassword,
-    reset: resetPassword,
-    formState: { isSubmitting: isSubmittingPassword, errors: passwordErrors },
-  } = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordSchema),
   });
 
   useEffect(() => {
@@ -117,34 +94,7 @@ export function AccountSettingsForm() {
     }
   };
 
-  const onSubmitPassword = async (values: PasswordFormValues) => {
-    try {
-      const res = await fetch("/api/account/password", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        }),
-      });
 
-      const json = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          json.details || json.error || "Failed to change password"
-        );
-      }
-
-      toast.success(t("passwordChangeSuccess"));
-      resetPassword();
-    } catch (error) {
-      console.error("Password change error:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : t("passwordChangeError");
-      toast.error(errorMessage);
-    }
-  };
 
   return (
     <>
@@ -224,92 +174,6 @@ export function AccountSettingsForm() {
             </button>
           </div>
         </form>
-      </div>
-
-      {/* Password Change */}
-      <div className="pt-6 border-t border-gray-300">
-        <div className="pt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BiLock className="w-6 h-6 text-brand-500" />
-            <p className="text-2xl font-medium">{t("changePassword")}</p>
-          </div>
-          <p className="text-sm text-gray-500 mb-6">
-            {t("changePasswordDescription")}
-          </p>
-
-          <form
-            onSubmit={handleSubmitPassword(onSubmitPassword)}
-            className="space-y-4"
-          >
-            <div className="space-y-4 max-w-md">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">
-                  {t("currentPassword")}
-                </label>
-                <input
-                  {...registerPassword("currentPassword")}
-                  type="password"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder={t("currentPassword")}
-                />
-                {passwordErrors.currentPassword && (
-                  <p className="text-xs text-red-500">
-                    {passwordErrors.currentPassword.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">
-                  {t("newPassword")}
-                </label>
-                <input
-                  {...registerPassword("newPassword")}
-                  type="password"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder={t("newPassword")}
-                />
-                {passwordErrors.newPassword && (
-                  <p className="text-xs text-red-500">
-                    {passwordErrors.newPassword.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">
-                  {t("confirmPassword")}
-                </label>
-                <input
-                  {...registerPassword("confirmPassword")}
-                  type="password"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder={t("confirmPassword")}
-                />
-                {passwordErrors.confirmPassword && (
-                  <p className="text-xs text-red-500">
-                    {passwordErrors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <button
-                type="submit"
-                disabled={isSubmittingPassword}
-                className="rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              >
-                <BiLock className="w-5 h-5" />
-                <span>
-                  {isSubmittingPassword
-                    ? tCommon("loading") ?? "Changing..."
-                    : t("changePasswordButton")}
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
       </div>
     </>
   );
