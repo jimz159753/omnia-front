@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/hooks/useAuth";
 import { FcGoogle } from "react-icons/fc";
-import { BiPlus, BiCalendar, BiLinkExternal, BiCheck } from "react-icons/bi";
+import { BiPlus, BiCalendar, BiLinkExternal, BiCheck, BiShareAlt, BiX, BiUser, BiTrash } from "react-icons/bi";
 import { FiLoader, FiTrash2 } from "react-icons/fi";
 import { toast } from "sonner";
 import {
@@ -36,6 +36,15 @@ interface CalendarData {
   calendars: GoogleCalendar[];
 }
 
+interface AclRule {
+  id: string;
+  role: string;
+  scope: {
+    type: string;
+    value: string;
+  };
+}
+
 export default function GoogleCalendarPage() {
   const { t } = useTranslation("settings");
   const { user } = useAuth();
@@ -48,6 +57,14 @@ export default function GoogleCalendarPage() {
     description: "",
     backgroundColor: "#039BE5",
   });
+
+  // Sharing Dialog State
+  const [isSharingDialogOpen, setIsSharingDialogOpen] = useState(false);
+  const [activeCalendar, setActiveCalendar] = useState<GoogleCalendar | null>(null);
+  const [aclRules, setAclRules] = useState<AclRule[]>([]);
+  const [aclLoading, setAclLoading] = useState(false);
+  const [newShareEmail, setNewShareEmail] = useState("");
+  const [isAddingShare, setIsAddingShare] = useState(false);
 
   const predefinedColors = [
     { color: "#039BE5", name: "Blue" },
@@ -82,6 +99,88 @@ export default function GoogleCalendarPage() {
       toast.error(t("failedToFetchCalendars") || "Failed to fetch calendars");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAcl = async (calendarId: string) => {
+    try {
+      setAclLoading(true);
+      const response = await fetch(`/api/google-calendar/acl?calendarId=${calendarId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAclRules(data.items || []);
+      } else {
+        toast.error(t("failedToFetchAcl") || "Failed to load sharing settings");
+      }
+    } catch (error) {
+      console.error("Error fetching ACL:", error);
+      toast.error(t("failedToFetchAcl") || "Failed to load sharing settings");
+    } finally {
+      setAclLoading(false);
+    }
+  };
+
+  const openSharingDialog = (calendar: GoogleCalendar) => {
+    setActiveCalendar(calendar);
+    setAclRules([]);
+    setNewShareEmail("");
+    setIsSharingDialogOpen(true);
+    fetchAcl(calendar.calendarId);
+  };
+
+  const handleAddShare = async () => {
+    if (!activeCalendar || !newShareEmail) return;
+
+    try {
+      setIsAddingShare(true);
+      const response = await fetch("/api/google-calendar/acl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          calendarId: activeCalendar.calendarId,
+          email: newShareEmail,
+          role: "reader", // Default to reader
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(t("sharedSuccessfully") || "Calendar shared successfully");
+        setNewShareEmail("");
+        fetchAcl(activeCalendar.calendarId);
+      } else {
+        const data = await response.json();
+        toast.error(data.error || t("failedToShare") || "Failed to share calendar");
+      }
+    } catch (error) {
+      console.error("Error sharing calendar:", error);
+      toast.error(t("failedToShare") || "Failed to share calendar");
+    } finally {
+      setIsAddingShare(false);
+    }
+  };
+
+  const handleRemoveShare = async (ruleId: string) => {
+    if (!activeCalendar) return;
+    
+    if (!confirm(t("confirmRemoveShare") || "Are you sure you want to remove this user?")) return;
+
+    try {
+      const response = await fetch(
+        `/api/google-calendar/acl?calendarId=${activeCalendar.calendarId}&ruleId=${ruleId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        toast.success(t("shareRemoved") || "Access removed");
+        setAclRules(aclRules.filter(rule => rule.id !== ruleId));
+      } else {
+        toast.error(t("failedToRemoveShare") || "Failed to remove access");
+      }
+    } catch (error) {
+      console.error("Error removing share:", error);
+      toast.error(t("failedToRemoveShare") || "Failed to remove access");
     }
   };
 
@@ -409,6 +508,17 @@ export default function GoogleCalendarPage() {
                       </div>
                     </div>
 
+                    {/* Share Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openSharingDialog(calendar)}
+                      className="text-gray-500 hover:text-brand-600 hover:bg-brand-50"
+                      title={t("shareCalendar") || "Share Calendar"}
+                    >
+                      <BiShareAlt className="w-5 h-5" />
+                    </Button>
+
                     {/* Enable toggle */}
                     <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
                       <label
@@ -534,6 +644,120 @@ export default function GoogleCalendarPage() {
                   {t("createCalendar") || "Create Calendar"}
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sharing Dialog */}
+      <Dialog open={isSharingDialogOpen} onOpenChange={setIsSharingDialogOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BiShareAlt className="w-5 h-5 text-brand-500" />
+              {t("shareCalendar") || "Share Calendar"} - {activeCalendar?.name}
+            </DialogTitle>
+            <DialogDescription>
+              {t("shareCalendarDescription") || "Manage who has access to this calendar"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Add User Section */}
+            <div className="flex items-end gap-3">
+              <div className="flex-1 space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  {t("addByEmail") || "Add people"}
+                </label>
+                <div className="relative">
+                  <BiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="email"
+                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    placeholder="email@example.com"
+                    value={newShareEmail}
+                    onChange={(e) => setNewShareEmail(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddShare();
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <Button 
+                onClick={handleAddShare} 
+                disabled={isAddingShare || !newShareEmail}
+                className="bg-brand-500 hover:bg-brand-600 mb-0.5"
+              >
+                {isAddingShare ? (
+                  <FiLoader className="w-4 h-4 animate-spin" />
+                ) : (
+                  t("invite") || "Invite"
+                )}
+              </Button>
+            </div>
+
+            {/* List Section */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-900 mb-3">
+                {t("peopleWithAccess") || "People with access"}
+              </h4>
+              <div className="space-y-3">
+                {aclLoading ? (
+                  <div className="py-8 text-center text-gray-500">
+                    <FiLoader className="w-6 h-6 animate-spin mx-auto mb-2" />
+                    {t("loading") || "Loading..."}
+                  </div>
+                ) : aclRules.length === 0 ? (
+                  <p className="text-sm text-gray-500 italic">
+                    {t("noShares") || "Not shared with anyone yet"}
+                  </p>
+                ) : (
+                  aclRules.map((rule) => (
+                    <div
+                      key={rule.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-medium text-sm">
+                          {(rule.scope.value || "?").charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {rule.scope.type === 'default' ? 'Public' : (rule.scope.value || "Unknown")}
+                          </p>
+                          <p className="text-xs text-gray-500 capitalize">
+                            {rule.role === "writer" ? "Can edit" : 
+                             rule.role === "owner" ? "Owner" : 
+                             rule.role === "reader" ? "Can view" : rule.role}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {rule.role !== "owner" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveShare(rule.id)}
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                        >
+                          <BiTrash className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setIsSharingDialogOpen(false)}
+            >
+              {t("done") || "Done"}
             </Button>
           </DialogFooter>
         </DialogContent>
