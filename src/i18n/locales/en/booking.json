@@ -33,5 +33,9 @@
   "bookingFailed": "Failed to create booking. Please try again.",
   "min": "min",
   "serviceNotAvailable": "Service is not available on this day",
-  "businessClosed": "Business is closed on this day"
+  "businessClosed": "Business is closed on this day",
+  "namePlaceholder": "John Doe",
+  "phonePlaceholder": "+52 33 1234 5678",
+  "emailPlaceholder": "email@example.com",
+  "logoAlt": "Business Logo"
 }

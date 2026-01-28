@@ -33,5 +33,9 @@
   "bookingFailed": "Error al crear la reserva. Por favor intenta de nuevo.",
   "min": "min",
   "serviceNotAvailable": "El servicio no está disponible este día",
-  "businessClosed": "El negocio está cerrado este día"
+  "businessClosed": "El negocio está cerrado este día",
+  "namePlaceholder": "Juan Pérez",
+  "phonePlaceholder": "+52 33 1234 5678",
+  "emailPlaceholder": "correo@ejemplo.com",
+  "logoAlt": "Logo del Negocio"
 }
