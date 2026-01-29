@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import espacio_omnia from "@/assets/images/espacio_omnia.webp";
 import { navigationItems } from "@/constants";
 import { useSafeMediaQuery } from "@/hooks/useMediaQuery";
@@ -10,6 +11,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { mounted: isClient, isMatch: isMobile } =
     useSafeMediaQuery("(max-width: 600px)");
+
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -62,13 +64,17 @@ const Navbar = () => {
       }}
     >
       {/* Logo */}
-      <Image
-        src={espacio_omnia}
-        alt="Espacio Omnia"
-        width={200}
-        height={32}
-        priority
-      />
+      <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+        <Image
+          src={espacio_omnia}
+          alt="Espacio Omnia"
+          width={200}
+          height={32}
+          priority
+          style={{ cursor: "pointer" }}
+        />
+      </Link>
+
 
       {/* Desktop Navigation */}
       {!isMobile && isClient && (
