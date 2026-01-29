@@ -134,15 +134,25 @@ export async function POST(request: NextRequest) {
     });
 
     const newCalendar = response.data;
+    console.log("✅ Google calendar created:", newCalendar.id);
 
     // Update calendar color if provided
     if (backgroundColor && newCalendar.id) {
-      await calendar.calendarList.update({
-        calendarId: newCalendar.id,
-        requestBody: {
-          backgroundColor,
-        },
-      });
+      try {
+        // Use patch instead of update to be more resilient
+        await calendar.calendarList.patch({
+          calendarId: newCalendar.id,
+          requestBody: {
+            backgroundColor: backgroundColor,
+            // Google also likes a foregroundColor for contrast
+            foregroundColor: "#ffffff",
+          },
+        });
+        console.log(`✅ Set background color to ${backgroundColor} for calendar ${newCalendar.id}`);
+      } catch (colorError) {
+        console.error(`⚠️ Could not set calendar color:`, colorError);
+        // Continue even if setting color fails
+      }
     }
 
     // 🔥 AUTO-SHARE: Share new calendar with service account
@@ -159,7 +169,7 @@ export async function POST(request: NextRequest) {
             },
           },
         });
-        console.log(`✅ Auto-shared new calendar "${name}" with service account`);
+        console.log(`✅ Auto-shared new calendar "${name}" with service account: ${serviceAccountEmail}`);
       } catch (aclError) {
         console.error(`⚠️ Could not share new calendar "${name}":`, aclError);
         // Continue even if sharing fails
@@ -191,16 +201,21 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "Failed to save calendar" },
+      { error: "Failed to save calendar to database" },
       { status: 500 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating calendar:", error);
     return NextResponse.json(
-      { error: "Failed to create calendar" },
+      { 
+        error: "Failed to create calendar", 
+        details: error?.message || String(error),
+        code: error?.code
+      },
       { status: 500 }
     );
   }
+
 }
 
 // PUT - Update calendar
@@ -237,21 +252,29 @@ export async function PUT(request: NextRequest) {
     }
 
     if (Object.keys(updates).length > 0) {
-      await calendar.calendarList.update({
-        calendarId,
-        requestBody: updates,
-      });
+      try {
+        await calendar.calendarList.patch({
+          calendarId,
+          requestBody: updates,
+        });
+      } catch (listError) {
+        console.error("Error updating calendar list:", listError);
+      }
     }
 
     // Update calendar metadata if provided
     if (name || description) {
-      await calendar.calendars.update({
-        calendarId,
-        requestBody: {
-          summary: name,
-          description,
-        },
-      });
+      try {
+        await calendar.calendars.patch({
+          calendarId,
+          requestBody: {
+            summary: name,
+            description,
+          },
+        });
+      } catch (calError) {
+        console.error("Error updating calendar metadata:", calError);
+      }
     }
 
     // Update in database
@@ -269,13 +292,17 @@ export async function PUT(request: NextRequest) {
       data: updatedCalendar,
       message: "Calendar updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating calendar:", error);
     return NextResponse.json(
-      { error: "Failed to update calendar" },
+      { 
+        error: "Failed to update calendar",
+        details: error?.message || String(error)
+      },
       { status: 500 }
     );
   }
+
 }
 
 // DELETE - Disconnect Google account

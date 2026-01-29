@@ -4,8 +4,8 @@ const TermsOfService = () => {
   return (
     <div
       style={{
-        backgroundColor: "#1a1a1a",
-        color: "#ffffff",
+        backgroundColor: "#ffffff",
+        color: "#1a1a1a",
         minHeight: "100vh",
         padding: "120px 2rem 4rem",
         fontFamily: "var(--font-cabinet-grotesk)",
@@ -23,7 +23,7 @@ const TermsOfService = () => {
             fontSize: "3rem",
             marginBottom: "2rem",
             textAlign: "center",
-            background: "linear-gradient(to right, #ffffff, #a0a0a0)",
+            background: "linear-gradient(to right, #000000, #444444)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
@@ -35,7 +35,7 @@ const TermsOfService = () => {
           style={{
             lineHeight: "1.8",
             fontSize: "1.1rem",
-            color: "#cccccc",
+            color: "#444444",
           }}
         >
           <p style={{ marginBottom: "1.5rem" }}>
@@ -48,7 +48,7 @@ const TermsOfService = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             1. Uso del Sitio
@@ -63,7 +63,7 @@ const TermsOfService = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             2. Reservas y Cancelaciones
@@ -81,7 +81,7 @@ const TermsOfService = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             3. Propiedad Intelectual
@@ -96,7 +96,7 @@ const TermsOfService = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             4. Limitación de Responsabilidad
@@ -111,7 +111,7 @@ const TermsOfService = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             5. Ley Aplicable
@@ -120,12 +120,13 @@ const TermsOfService = () => {
             El uso de este sitio web y cualquier disputa que surja de dicho uso están sujetos a las leyes de México.
           </p>
 
-          <p style={{ marginTop: "3rem", fontSize: "0.9rem", color: "#888888" }}>
+          <p style={{ marginTop: "3rem", fontSize: "0.9rem", color: "#666666" }}>
             Última actualización: {new Date().toLocaleDateString("es-MX", { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
       </div>
     </div>
+
   );
 };
 

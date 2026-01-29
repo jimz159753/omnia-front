@@ -4,8 +4,8 @@ const PrivacyPolicy = () => {
   return (
     <div
       style={{
-        backgroundColor: "#1a1a1a",
-        color: "#ffffff",
+        backgroundColor: "#ffffff",
+        color: "#1a1a1a",
         minHeight: "100vh",
         padding: "120px 2rem 4rem",
         fontFamily: "var(--font-cabinet-grotesk)",
@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
             fontSize: "3rem",
             marginBottom: "2rem",
             textAlign: "center",
-            background: "linear-gradient(to right, #ffffff, #a0a0a0)",
+            background: "linear-gradient(to right, #000000, #444444)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
@@ -35,7 +35,7 @@ const PrivacyPolicy = () => {
           style={{
             lineHeight: "1.8",
             fontSize: "1.1rem",
-            color: "#cccccc",
+            color: "#444444",
           }}
         >
           <p style={{ marginBottom: "1.5rem" }}>
@@ -51,7 +51,7 @@ const PrivacyPolicy = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             1. Recopilación de Información
@@ -68,7 +68,7 @@ const PrivacyPolicy = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             2. Uso de la Información
@@ -90,7 +90,7 @@ const PrivacyPolicy = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             3. Protección de la Información
@@ -105,7 +105,7 @@ const PrivacyPolicy = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             4. Divulgación a Terceros
@@ -120,7 +120,7 @@ const PrivacyPolicy = () => {
               fontSize: "1.8rem",
               marginTop: "2.5rem",
               marginBottom: "1rem",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             5. Consentimiento
@@ -129,12 +129,13 @@ const PrivacyPolicy = () => {
             Al utilizar nuestro sitio, aceptas nuestra política de privacidad.
           </p>
 
-          <p style={{ marginTop: "3rem", fontSize: "0.9rem", color: "#888888" }}>
+          <p style={{ marginTop: "3rem", fontSize: "0.9rem", color: "#666666" }}>
             Última actualización: {new Date().toLocaleDateString("es-MX", { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
       </div>
     </div>
+
   );
 };
 

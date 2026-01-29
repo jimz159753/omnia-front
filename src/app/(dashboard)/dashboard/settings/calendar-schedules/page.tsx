@@ -183,8 +183,13 @@ export default function CalendarSchedulesPage() {
         fetchCalendars();
       } else {
         const error = await response.json();
-        toast.error(error.error || "Failed to save calendar");
+        const errorMessage = error.details 
+          ? `${error.error}: ${error.details}` 
+          : (error.error || "Failed to save calendar");
+        toast.error(errorMessage);
+        console.error("Calendar save error:", error);
       }
+
     } catch (error) {
       console.error("Error saving calendar:", error);
       toast.error("Failed to save calendar");
