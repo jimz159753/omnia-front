@@ -24,6 +24,8 @@ interface BookingCalendar {
   showOnMainPage: boolean;
 }
 
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 const Calendar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -50,11 +52,18 @@ const Calendar: React.FC = () => {
         console.error("Error fetching calendar:", err);
       } finally {
         setLoading(false);
+        // Delay refresh slightly to allow the DOM to update
+        setTimeout(() => {
+          if (typeof window !== "undefined") {
+            ScrollTrigger.refresh();
+          }
+        }, 100);
       }
     };
 
     fetchCalendar();
   }, []);
+
 
   // Don't render anything if no calendar is toggled for main page
   if (!loading && !calendarSlug) {

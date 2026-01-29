@@ -48,35 +48,34 @@ const Footer = () => {
 
   useGSAP(
     () => {
-      // Set initial state
-      gsap.set(footerRef.current, { opacity: 0, y: 50 });
-      gsap.set(".footer-section", { opacity: 0, y: 30 });
+      // Refresh ScrollTrigger after a short delay to account for dynamic content like the calendar
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
 
-      // Main footer container animation
-      gsap.to(footerRef.current, {
-        opacity: 1,
-        y: 0,
+      // Animation for the main container
+      gsap.from(footerRef.current, {
+        opacity: 0,
+        y: 50,
         duration: 0.8,
         ease: "power2.out",
         scrollTrigger: {
           trigger: footerRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
+          start: "top 95%", // More sensitive start point
           toggleActions: "play none none reverse",
         },
       });
 
       // Staggered section animations
-      gsap.to(".footer-section", {
-        opacity: 1,
-        y: 0,
+      gsap.from(".footer-section", {
+        opacity: 0,
+        y: 30,
         duration: 0.8,
         ease: "power2.inOut",
         stagger: 0.2,
         scrollTrigger: {
           trigger: footerRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
+          start: "top 95%",
           toggleActions: "play none none reverse",
         },
       });
@@ -93,8 +92,11 @@ const Footer = () => {
         color: "#ffffff",
         padding: "4rem 0 2rem",
         borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        // Initial visibility for fallback and SEO, GSAP will take over
+        visibility: "visible",
       }}
     >
+
       <div className="footer-container">
         {/* Company Information */}
         <div className="footer-section">
