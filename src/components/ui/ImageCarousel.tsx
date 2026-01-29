@@ -60,7 +60,7 @@ const carouselStyles = {
     borderRadius: "20px",
     marginTop: "10px",
     fontFamily: "var(--font-cabinet-grotesk)",
-    width: "85%",
+    width: "100%",
     textAlign: "center" as const,
   },
 };
