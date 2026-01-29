@@ -9,6 +9,8 @@ import instagram from "@/assets/images/instagram.webp";
 import tiktok from "@/assets/images/tiktok.webp";
 import whatsapp from "@/assets/images/whatsapp.webp";
 
+import Link from "next/link";
+
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
@@ -109,7 +111,7 @@ const Footer = () => {
               display: "flex",
               gap: "1.5rem",
               marginTop: "1rem",
-            }}
+          }}
           >
             <a
               style={{ cursor: "pointer" }}
@@ -274,14 +276,19 @@ const Footer = () => {
           style={{ display: "flex", flexDirection: "row", gap: "2rem" }}
         >
           <div className="footer-list-item">
-            <p className="footer-text">Política de Privacidad</p>
+            <Link href="/privacy-policy" className="footer-link">
+              Política de Privacidad
+            </Link>
           </div>
           <div className="footer-list-item">
-            <p className="footer-text">Términos de Servicio</p>
+            <Link href="/terms-of-service" className="footer-link">
+              Términos de Servicio
+            </Link>
           </div>
         </div>
       </div>
     </footer>
+
   );
 };
 
