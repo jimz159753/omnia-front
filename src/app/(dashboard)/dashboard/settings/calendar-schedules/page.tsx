@@ -60,6 +60,7 @@ interface BookingCalendar {
   showOnMainPage: boolean;
   slots: number;
   googleCalendarId: string | null;
+  mercadoPagoEnabled: boolean;
   services: BookingCalendarService[];
   createdAt: string;
 }
@@ -86,6 +87,7 @@ export default function CalendarSchedulesPage() {
     backgroundImage: "",
     logoImage: "",
     primaryColor: "#059669",
+    mercadoPagoEnabled: false,
     serviceIds: [] as string[],
   });
 
@@ -132,6 +134,7 @@ export default function CalendarSchedulesPage() {
       backgroundImage: "",
       logoImage: "",
       primaryColor: "#059669",
+      mercadoPagoEnabled: false,
       serviceIds: [],
     });
     setIsDialogOpen(true);
@@ -148,6 +151,7 @@ export default function CalendarSchedulesPage() {
       backgroundImage: calendar.backgroundImage || "",
       logoImage: calendar.logoImage || "",
       primaryColor: calendar.primaryColor,
+      mercadoPagoEnabled: calendar.mercadoPagoEnabled || false,
       serviceIds: calendar.services.map((s) => s.serviceId),
     });
     setIsDialogOpen(true);
@@ -681,6 +685,24 @@ export default function CalendarSchedulesPage() {
                   value={formData.primaryColor}
                   onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
                   className="w-32"
+                />
+              </div>
+            </div>
+
+            {/* Mercado Pago Integration */}
+            <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-semibold text-blue-900">
+                    {t("mercadoPagoIntegration") || "Mercado Pago Integration"}
+                  </h4>
+                  <p className="text-xs text-blue-700">
+                    {t("mercadoPagoDescription") || "Allow clients to pay online before finishing the checkout."}
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.mercadoPagoEnabled}
+                  onCheckedChange={(checked) => setFormData({ ...formData, mercadoPagoEnabled: checked })}
                 />
               </div>
             </div>

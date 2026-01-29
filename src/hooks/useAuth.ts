@@ -24,11 +24,17 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       const response = await fetch("/api/auth/me");
-      if (response.ok) {
+      const contentType = response.headers.get("content-type");
+      
+      if (response.ok && contentType?.includes("application/json")) {
         const data = await response.json();
         setUser(data.user);
         setIsAuthenticated(true);
       } else {
+        if (!response.ok && !contentType?.includes("application/json")) {
+          const text = await response.text();
+          console.error("Auth check returned non-JSON response:", text.substring(0, 100));
+        }
         setUser(null);
         setIsAuthenticated(false);
       }
@@ -44,6 +50,14 @@ export const useAuth = () => {
   const loginWithGoogle = async () => {
     try {
       const response = await fetch("/api/auth/google");
+      const contentType = response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+        console.error("Login with Google returned non-JSON:", text.substring(0, 200));
+        throw new Error("Server returned HTML instead of JSON. Check if the API route exists and is working.");
+      }
+
       const data = await response.json();
 
       if (data.error) {
@@ -56,6 +70,7 @@ export const useAuth = () => {
         throw new Error("Failed to get authorization URL");
       }
     } catch (error) {
+      console.error("Google login failed:", error);
       throw error;
     }
   };
