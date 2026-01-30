@@ -3,18 +3,26 @@ import React, { useEffect, useState } from "react";
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { calendarStyles } from "./Calendar.styles";
 import ImageCarousel from "@/components/ImageCarousel";
-import cejas from "@/assets/images/cejas.webp";
-import corporales from "@/assets/images/corporales.webp";
-import depilacion_1 from "@/assets/images/depilacion_1.webp";
-import depilacion_2 from "@/assets/images/depilacion_2.webp";
-import eliminacion from "@/assets/images/eliminacion.webp";
-import faciales from "@/assets/images/faciales.webp";
-import masajes from "@/assets/images/masajes.webp";
-import peptonas from "@/assets/images/peptonas.webp";
-import pestanas from "@/assets/images/pestanas.webp";
-import tarot from "@/assets/images/tarot.webp";
-import tatuajes from "@/assets/images/tatuajes.webp";
-import terapias from "@/assets/images/terapias.webp";
+import cosme_2 from "@/assets/images/cosmetology/2.webp";
+import cosme_3 from "@/assets/images/cosmetology/3.webp";
+import cosme_4 from "@/assets/images/cosmetology/4.webp";
+import cosme_5 from "@/assets/images/cosmetology/5.webp";
+import cosme_6 from "@/assets/images/cosmetology/6.webp";
+import cosme_7 from "@/assets/images/cosmetology/7.webp";
+import cosme_8 from "@/assets/images/cosmetology/8.webp";
+import cosme_9 from "@/assets/images/cosmetology/9.webp";
+import cosme_10 from "@/assets/images/cosmetology/10.webp";
+import cosme_11 from "@/assets/images/cosmetology/11.webp";
+import cosme_12 from "@/assets/images/cosmetology/12.webp";
+import cosme_13 from "@/assets/images/cosmetology/13.webp";
+import holi_2 from "@/assets/images/holistic/2.webp";
+import holi_3 from "@/assets/images/holistic/3.webp";
+import holi_4 from "@/assets/images/holistic/4.webp";
+import holi_5 from "@/assets/images/holistic/5.webp";
+import holi_6 from "@/assets/images/holistic/6.webp";
+import holi_7 from "@/assets/images/holistic/7.webp";
+import holi_8 from "@/assets/images/holistic/8.webp";
+import holi_9 from "@/assets/images/holistic/9.webp";
 
 interface BookingCalendar {
   id: string;
@@ -83,22 +91,36 @@ const Calendar: React.FC = () => {
           calendario.
         </p>
       </div>
-      <ImageCarousel
-        images={[
-          cejas.src,
-          corporales.src,
-          depilacion_1.src,
-          depilacion_2.src,
-          eliminacion.src,
-          faciales.src,
-          masajes.src,
-          peptonas.src,
-          pestanas.src,
-          tarot.src,
-          tatuajes.src,
-          terapias.src,
-        ]}
-      />
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "20px", justifyContent: "center", alignItems: "center", padding: "0 20px" }}>
+        <ImageCarousel
+          images={[
+            cosme_2.src,
+            cosme_3.src,
+            cosme_4.src,
+            cosme_5.src,
+            cosme_6.src,
+            cosme_7.src,
+            cosme_8.src,
+            cosme_9.src,
+            cosme_10.src,
+            cosme_11.src,
+            cosme_12.src,
+            cosme_13.src,
+          ]}
+        />
+        <ImageCarousel
+          images={[
+            holi_2.src,
+            holi_3.src,
+            holi_4.src,
+            holi_5.src,
+            holi_6.src,
+            holi_7.src,
+            holi_8.src,
+            holi_9.src,
+          ]}
+        />
+      </div>
 
       <div style={styles.calendarContainer}>
         {loading ? (
