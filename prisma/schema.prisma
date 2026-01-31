@@ -52,14 +52,15 @@ model Ticket {
 }
 
 model Client {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   phone     String
-  instagram String?  @unique
-  address   String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  instagram String?   @unique
+  address   String    @default("")
+  birthday  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   tickets   Ticket[]
 }
 

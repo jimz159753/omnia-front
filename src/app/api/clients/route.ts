@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log("Received client creation request:", body);
 
-    const { name, email, phone, instagram, address } = body;
+    const { name, email, phone, instagram, address, birthday } = body;
 
     if (!name || !email) {
       console.error("Missing required fields:", { name, email });
@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
       phone: phone || "",
       instagram: instagram || null,
       address: address || "",
+      birthday: birthday ? new Date(birthday) : null,
     });
 
     const client = await prisma.client.create({
@@ -115,6 +116,7 @@ export async function POST(request: NextRequest) {
         phone: phone || "",
         instagram: instagram || null,
         address: address || "",
+        birthday: birthday ? new Date(birthday) : null,
       },
     });
 
@@ -153,18 +155,19 @@ export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    const { name, email, phone, instagram, address } = await request.json();
+    const { name, email, phone, instagram, address, birthday } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: "Missing client id" }, { status: 400 });
     }
 
-    const data: Record<string, string | null> = {};
+    const data: Record<string, any> = {};
     if (name !== undefined) data.name = name;
     if (email !== undefined) data.email = email;
     if (phone !== undefined) data.phone = phone;
     if (instagram !== undefined) data.instagram = instagram || null;
     if (address !== undefined) data.address = address || "";
+    if (birthday !== undefined) data.birthday = birthday ? new Date(birthday) : null;
 
     const updated = await prisma.client.update({
       where: { id },

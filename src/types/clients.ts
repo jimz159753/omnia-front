@@ -35,6 +35,7 @@ export interface Client {
   phone: string;
   instagram: string;
   address: string;
+  birthday?: string;
   createdAt: string;
   tickets: TicketRow[];
 }

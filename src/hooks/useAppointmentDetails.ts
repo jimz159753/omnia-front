@@ -33,6 +33,7 @@ export interface AppointmentFormValues {
   clientPhone: string;
   clientInstagram: string;
   clientAddress: string;
+  clientBirthday: Date | string;
   existingClientId: string;
   existingClientIds: string[]; // Array of client IDs for multi-select
   googleCalendarId: string; // Selected Google Calendar ID
@@ -142,6 +143,7 @@ export const useAppointmentDetails = ({
       clientPhone: "",
       clientInstagram: "",
       clientAddress: "",
+      clientBirthday: undefined,
       existingClientId: "",
       existingClientIds: [],
       googleCalendarId: "",
@@ -254,6 +256,7 @@ export const useAppointmentDetails = ({
         phone: values.clientPhone || "",
         instagram: values.clientInstagram || null,
         address: values.clientAddress || "",
+        birthday: values.clientBirthday || null,
       };
 
       console.log("Creating client with payload:", clientPayload);

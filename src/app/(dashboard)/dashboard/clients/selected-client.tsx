@@ -138,6 +138,23 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
               </div>
             </div>
           )}
+
+          {client.birthday && (
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <FiCalendar className="w-4 h-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">{t("birthday") || "Birthday"}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {new Date(client.birthday).toLocaleDateString(currentLanguage, {
+                    day: "2-digit",
+                    month: "long",
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
           
           {client.address && (
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg col-span-2">

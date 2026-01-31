@@ -2,7 +2,8 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ interface ClientFormDialogProps {
     phone: string;
     instagram?: string | null;
     address?: string | null;
+    birthday?: string | null;
   } | null;
 }
 
@@ -37,6 +39,7 @@ export function ClientFormDialog({
   const [clientSuccess, setClientSuccess] = useState("");
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -48,6 +51,7 @@ export function ClientFormDialog({
       phone: client?.phone || "",
       instagram: client?.instagram || "",
       address: client?.address || "",
+      birthday: client?.birthday ? new Date(client.birthday) : undefined,
     },
   });
 
@@ -59,16 +63,15 @@ export function ClientFormDialog({
         phone: client?.phone || "",
         instagram: client?.instagram || "",
         address: client?.address || "",
+        birthday: client?.birthday ? new Date(client.birthday) : undefined,
       });
     }
   }, [open, client, reset]);
 
   const handleClientSubmit = async (values: {
-    name: string;
-    email: string;
-    phone: string;
     instagram: string;
     address: string;
+    birthday?: Date;
   }) => {
     setClientError("");
     setClientSuccess("");
@@ -175,6 +178,23 @@ export function ClientFormDialog({
               {...register("address")}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder={t("address")}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">
+              {t("birthday")}
+            </label>
+            <Controller
+              control={control}
+              name="birthday"
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value as Date | undefined}
+                  onChange={field.onChange}
+                  placeholder={t("birthday")}
+                  captionLayout="dropdown"
+                />
+              )}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
