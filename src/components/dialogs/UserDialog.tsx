@@ -69,6 +69,7 @@ export function UserDialog({
     register,
     formState: { errors },
     setError,
+    watch,
   } = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -81,6 +82,8 @@ export function UserDialog({
       avatar: "",
     },
   });
+
+  const validationEmail = watch("email");
 
   useEffect(() => {
     if (editingUser) {
@@ -107,14 +110,7 @@ export function UserDialog({
   }, [editingUser, reset, open]);
 
   const onSubmit = async (values: UserFormValues) => {
-    // Validate password for new users
-    if (!editingUser && (!values.password || values.password.length < 6)) {
-      setError("password", {
-        type: "manual",
-        message: "Password must be at least 6 characters",
-      });
-      return;
-    }
+    // Password validation only for editing users (if provided)
 
     // Validate password for editing users (if provided)
     if (editingUser && values.password && values.password.length > 0 && values.password.length < 6) {
@@ -275,20 +271,34 @@ export function UserDialog({
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("userPassword")} {editingUser && <span className="text-gray-400 normal-case">({t("leaveBlankToKeep")})</span>}
-              </label>
-              <input
-                {...register("password")}
-                type="password"
-                className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="text-xs text-red-500">{errors.password.message}</p>
-              )}
-            </div>
+            {editingUser ? (
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("userPassword")} <span className="text-gray-400 normal-case">({t("leaveBlankToKeep")})</span>
+                </label>
+                <input
+                  {...register("password")}
+                  type="password"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="••••••••"
+                />
+                {errors.password && (
+                  <p className="text-xs text-red-500">{errors.password.message}</p>
+                )}
+              </div>
+            ) : (
+              <div className="p-4 bg-purple-50 border border-purple-100 rounded-xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-purple-900 font-bold">Invitation via Email</p>
+                </div>
+                <p className="text-xs text-purple-700">An invitation will be sent to <strong>{validationEmail || "the user"}</strong> to complete registration and set their password.</p>
+              </div>
+            )}
           </div>
 
           {/* Role & Settings Card */}

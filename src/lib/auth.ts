@@ -97,6 +97,19 @@ export const auth = {
         return { success: false, error: "Invalid email or password" };
       }
 
+      // Check if user has a password (invite flow)
+      if (!user.password) {
+        return { 
+          success: false, 
+          error: "Account not activated. Please check your email for the invitation link." 
+        };
+      }
+
+      // Check if user is active
+      if (!user.isActive) {
+        return { success: false, error: "Account is deactivated. Please contact support." };
+      }
+
       // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
 

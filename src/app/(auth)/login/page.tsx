@@ -7,12 +7,14 @@ import Image from "next/image";
 import omniaLogo from "@/assets/images/omnia_logo.png";
 import { useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { FiLoader } from "react-icons/fi";
+import { FiLoader, FiMail, FiLock, FiLogIn } from "react-icons/fi";
 
 function LoginContent() {
   const [error, setError] = useState("");
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const { loginWithGoogle, isLoading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { loginWithGoogle, login, isLoading } = useAuth();
   const searchParams = useSearchParams();
 
   // Check for OAuth callback errors
@@ -37,6 +39,21 @@ function LoginContent() {
     }
   };
 
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+        setError("Please enter email and password");
+        return;
+    }
+    setError("");
+    
+    try {
+        await login(email, password);
+    } catch (err) {
+        setError(err instanceof Error ? err.message : "Login failed");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
@@ -57,6 +74,61 @@ function LoginContent() {
             </CustomAlert>
           )}
 
+          {/* Email/Password Form */}
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FiMail className="text-gray-400" />
+                    </div>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                        placeholder="your@email.com"
+                        required
+                    />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FiLock className="text-gray-400" />
+                    </div>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                        placeholder="••••••••"
+                        required
+                    />
+                </div>
+            </div>
+            
+            <button
+                type="submit"
+                disabled={isLoading || isGoogleLoading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-brand-600 rounded-xl text-white font-medium hover:bg-brand-700 shadow-sm shadow-brand-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isLoading && !isGoogleLoading ? <FiLoader className="animate-spin" /> : <FiLogIn />}
+                <span>Sign in</span>
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
           {/* Google Sign In Button */}
           <button
             onClick={handleGoogleLogin}
@@ -66,50 +138,20 @@ function LoginContent() {
             {isGoogleLoading ? (
               <>
                 <FiLoader className="w-5 h-5 animate-spin" />
-                <span>Connecting to Google...</span>
+                <span>Connecting...</span>
               </>
             ) : (
               <>
                 <FcGoogle className="w-6 h-6" />
-                <span>Continue with Google</span>
+                <span>Google</span>
               </>
             )}
           </button>
 
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Secure authentication</span>
-            </div>
-          </div>
-
           {/* Info */}
           <div className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Your data is protected with Google&apos;s security</span>
-            </div>
-            
             <p className="text-xs text-gray-400">
               By signing in, you agree to our Terms of Service and Privacy Policy
-            </p>
-          </div>
-
-          {/* Footer */}
-          <div className="pt-4 border-t border-gray-100">
-            <p className="text-center text-sm text-gray-600">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/register"
-                className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
-              >
-                Create one now
-              </Link>
             </p>
           </div>
         </div>

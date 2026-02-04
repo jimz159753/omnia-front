@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import crypto from "crypto";
+import { Resend } from "resend";
 
 export async function GET() {
   try {
@@ -46,9 +48,9 @@ export async function POST(request: NextRequest) {
     const isActive = formData.get("isActive") === "true";
     const avatarData = formData.get("avatar") as string;
 
-    if (!name || !email || !password) {
+    if (!name || !email) {
       return NextResponse.json(
-        { error: "Name, email, and password are required" },
+        { error: "Name and email are required" },
         { status: 400 }
       );
     }
@@ -65,8 +67,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    let hashedPassword = null;
+    let invitationToken = null;
+    let invitationExpires = null;
+
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    } else {
+      // Generate invite token
+      invitationToken = crypto.randomBytes(32).toString("hex");
+      invitationExpires = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+    }
 
     // Handle avatar upload
     let avatarPath = null;
@@ -95,8 +106,47 @@ export async function POST(request: NextRequest) {
         position: position || "",
         isActive,
         avatar: avatarPath,
+        invitationToken,
+        invitationExpires,
       },
     });
+
+    // Send Invitation Email if token generated and user is active
+    if (invitationToken && isActive) {
+      try {
+        const resendApiKey = process.env.RESEND_API_KEY;
+        if (resendApiKey) {
+          const resend = new Resend(resendApiKey);
+          const inviteUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/invite?token=${invitationToken}`;
+          // Try to get company name although not available here directly without DB call, use variable or default
+          const businessName = "Espacio Omnia"; 
+          const businessEmail = process.env.RESEND_FROM_EMAIL || "noreply@resend.dev";
+          
+          await resend.emails.send({
+            from: businessEmail,
+            to: email,
+            subject: `Welcome to ${businessName} - Complete your registration`,
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <h2 style="color: #4b5563;">Welcome to ${businessName}!</h2>
+                <p style="color: #374151;">Hello <strong>${name}</strong>,</p>
+                <p style="color: #374151;">You have been invited to join the team dashboard.</p>
+                <p style="color: #374151;">Please click the button below to set your password and access your account:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${inviteUrl}" style="background-color: #8b5cf6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Set Password & Login</a>
+                </div>
+                <p style="color: #6b7280; font-size: 14px;">This link expires in 48 hours.</p>
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+                <p style="color: #9ca3af; font-size: 12px;">If you didn't expect this invitation, please ignore this email.</p>
+              </div>
+            `
+          });
+        }
+      } catch (emailError) {
+        console.error("Failed to send invitation email:", emailError);
+        // We do not fail the request if email fails, but we log it
+      }
+    }
 
     return NextResponse.json({
       success: true,
