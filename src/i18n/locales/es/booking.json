@@ -34,5 +34,9 @@
   "bookingFailed": "Error al crear la reserva. Por favor intenta de nuevo.",
   "min": "min",
   "serviceNotAvailable": "El servicio no está disponible este día",
-  "businessClosed": "El negocio está cerrado este día"
+  "businessClosed": "El negocio está cerrado este día",
+  "bookingSaved": "¡Información de reserva guardada!",
+  "completePaymentToConfirm": "Por favor completa el pago a continuación para confirmar tu cita.",
+  "paymentFailed": "Error en el pago. Por favor intenta de nuevo.",
+  "paymentError": "Ocurrió un error inesperado durante el pago."
 }

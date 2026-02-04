@@ -34,5 +34,9 @@
   "bookingFailed": "Failed to create booking. Please try again.",
   "min": "min",
   "serviceNotAvailable": "Service is not available on this day",
-  "businessClosed": "Business is closed on this day"
+  "businessClosed": "Business is closed on this day",
+  "bookingSaved": "Booking information saved!",
+  "completePaymentToConfirm": "Please complete the payment below to confirm your appointment.",
+  "paymentFailed": "Payment failed. Please try again.",
+  "paymentError": "An unexpected error occurred during payment."
 }
