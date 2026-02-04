@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const providers = await prisma.provider.findMany({
+    const providers = await (await getPrisma()).provider.findMany({
       orderBy: { name: "asc" },
     });
     return NextResponse.json({ data: providers });
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const provider = await prisma.provider.create({
+    const provider = await (await getPrisma()).provider.create({
       data: {
         name,
       },
@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const provider = await prisma.provider.update({
+    const provider = await (await getPrisma()).provider.update({
       where: { id },
       data: { name },
     });
@@ -87,7 +87,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    await prisma.provider.delete({
+    await (await getPrisma()).provider.delete({
       where: { id },
     });
 

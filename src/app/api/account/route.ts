@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 const uploadDirectory = path.join(process.cwd(), "public", "uploads");
 
@@ -22,7 +22,7 @@ export async function GET() {
   try {
     // TODO: Get user ID from session/auth
     // For now, getting the first user
-    const user = await prisma.user.findFirst({
+    const user = await (await getPrisma()).user.findFirst({
       select: {
         id: true,
         name: true,
@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest) {
     
     // TODO: Get user ID from session/auth
     // For now, getting the first user
-    const existing = await prisma.user.findFirst();
+    const existing = await (await getPrisma()).user.findFirst();
     
     if (!existing) {
       return NextResponse.json(
@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest) {
       data.avatar = avatarUrl;
     }
 
-    const user = await prisma.user.update({
+    const user = await (await getPrisma()).user.update({
       where: { id: existing.id },
       data,
       select: {

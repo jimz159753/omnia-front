@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import {
   createGoogleCalendarEvent,
   GoogleCalendarEvent,
@@ -21,7 +21,7 @@ const generateUniqueTicketId = async () => {
   for (let i = 0; i < 10; i += 1) {
     const segment = randomSegment(6);
     const id = `TK-${year}-${segment}`;
-    const existing = await prisma.ticket.findUnique({ where: { id } });
+    const existing = await (await getPrisma()).ticket.findUnique({ where: { id } });
     if (!existing) return id;
   }
   throw new Error("Could not generate unique ticket ID");
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the booking calendar
-    const calendar = await prisma.bookingCalendar.findUnique({
+    const calendar = await (await getPrisma()).bookingCalendar.findUnique({
       where: { slug },
       include: {
         services: {
@@ -80,12 +80,12 @@ export async function POST(request: NextRequest) {
     const service = calendarService.service;
 
     // Find or create client
-    let client = await prisma.client.findUnique({
+    let client = await (await getPrisma()).client.findUnique({
       where: { email: clientEmail || `${clientPhone}@booking.temp` },
     });
 
     if (!client) {
-      client = await prisma.client.create({
+      client = await (await getPrisma()).client.create({
         data: {
           name: clientName,
           email: clientEmail || `${clientPhone}@booking.temp`,
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get a default staff member (first user)
-    const staff = await prisma.user.findFirst({
+    const staff = await (await getPrisma()).user.findFirst({
       where: { isActive: true },
     });
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     // Check if slot is still available based on calendar's max slots
     // Two appointments overlap if: appt1.start < appt2.end AND appt1.end > appt2.start
     // We only count appointments for the same service to allow different services to have their own slots
-    const existingAppointments = await prisma.ticket.findMany({
+    const existingAppointments = await (await getPrisma()).ticket.findMany({
       where: {
         startTime: { lt: endTime },  // Appointment starts before new booking ends
         endTime: { gt: startTime },  // Appointment ends after new booking starts
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     const ticketId = await generateUniqueTicketId();
 
     // Create the appointment (ticket)
-    const ticket = await prisma.ticket.create({
+    const ticket = await (await getPrisma()).ticket.create({
       data: {
         id: ticketId,
         clientId: client.id,
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
 
       // Save the Google Calendar event ID to the ticket
       if (googleEventId) {
-        await prisma.ticket.update({
+        await (await getPrisma()).ticket.update({
           where: { id: ticket.id },
           data: { googleCalendarEventId: googleEventId },
         });

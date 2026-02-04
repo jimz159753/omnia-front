@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const schedules = await prisma.schedule.findMany({
+    const schedules = await (await getPrisma()).schedule.findMany({
       orderBy: {
         dayOfWeek: "asc",
       },
@@ -52,9 +52,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete all existing schedules and create new ones
-    await prisma.schedule.deleteMany();
+    await (await getPrisma()).schedule.deleteMany();
 
-    const createdSchedules = await prisma.schedule.createMany({
+    const createdSchedules = await (await getPrisma()).schedule.createMany({
       data: schedules.map((schedule: ScheduleInput) => ({
         dayOfWeek: schedule.dayOfWeek,
         isOpen: schedule.isOpen,

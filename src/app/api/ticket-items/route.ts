@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Create either a TicketProduct or TicketService
     if (productId) {
-      ticketItem = await prisma.ticketProduct.create({
+      ticketItem = await (await getPrisma()).ticketProduct.create({
       data: {
         ticketId,
           productId,
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } else {
-      ticketItem = await prisma.ticketService.create({
+      ticketItem = await (await getPrisma()).ticketService.create({
         data: {
           ticketId,
           serviceId: serviceId!,
@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
 
     // Update the ticket total
     const [ticketProducts, ticketServices] = await Promise.all([
-      prisma.ticketProduct.findMany({ where: { ticketId } }),
-      prisma.ticketService.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketProduct.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketService.findMany({ where: { ticketId } }),
     ]);
 
     const ticketTotal =
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       ticketProducts.reduce((sum, item) => sum + item.quantity, 0) +
       ticketServices.reduce((sum, item) => sum + item.quantity, 0);
 
-    await prisma.ticket.update({
+    await (await getPrisma()).ticket.update({
       where: { id: ticketId },
       data: {
         total: ticketTotal,
@@ -114,7 +114,7 @@ export async function DELETE(request: NextRequest) {
 
     // Try to find and delete from both tables
     if (type === "product") {
-      const ticketProduct = await prisma.ticketProduct.findUnique({
+      const ticketProduct = await (await getPrisma()).ticketProduct.findUnique({
         where: { id },
       });
 
@@ -126,9 +126,9 @@ export async function DELETE(request: NextRequest) {
       }
 
       ticketId = ticketProduct.ticketId;
-      await prisma.ticketProduct.delete({ where: { id } });
+      await (await getPrisma()).ticketProduct.delete({ where: { id } });
     } else if (type === "service") {
-      const ticketService = await prisma.ticketService.findUnique({
+      const ticketService = await (await getPrisma()).ticketService.findUnique({
       where: { id },
     });
 
@@ -140,18 +140,18 @@ export async function DELETE(request: NextRequest) {
     }
 
       ticketId = ticketService.ticketId;
-      await prisma.ticketService.delete({ where: { id } });
+      await (await getPrisma()).ticketService.delete({ where: { id } });
     } else {
       // Try both if type is not specified
-      const ticketProduct = await prisma.ticketProduct.findUnique({
+      const ticketProduct = await (await getPrisma()).ticketProduct.findUnique({
         where: { id },
       });
 
       if (ticketProduct) {
         ticketId = ticketProduct.ticketId;
-        await prisma.ticketProduct.delete({ where: { id } });
+        await (await getPrisma()).ticketProduct.delete({ where: { id } });
       } else {
-        const ticketService = await prisma.ticketService.findUnique({
+        const ticketService = await (await getPrisma()).ticketService.findUnique({
       where: { id },
     });
 
@@ -163,14 +163,14 @@ export async function DELETE(request: NextRequest) {
         }
 
         ticketId = ticketService.ticketId;
-        await prisma.ticketService.delete({ where: { id } });
+        await (await getPrisma()).ticketService.delete({ where: { id } });
       }
     }
 
     // Update the ticket total
     const [ticketProducts, ticketServices] = await Promise.all([
-      prisma.ticketProduct.findMany({ where: { ticketId } }),
-      prisma.ticketService.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketProduct.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketService.findMany({ where: { ticketId } }),
     ]);
 
     const ticketTotal =
@@ -181,7 +181,7 @@ export async function DELETE(request: NextRequest) {
       ticketProducts.reduce((sum, item) => sum + item.quantity, 0) +
       ticketServices.reduce((sum, item) => sum + item.quantity, 0);
 
-    await prisma.ticket.update({
+    await (await getPrisma()).ticket.update({
       where: { id: ticketId },
       data: {
         total: ticketTotal,
@@ -247,7 +247,7 @@ export async function PUT(request: NextRequest) {
 
     // Try to find and update from both tables
     if (type === "product") {
-      const ticketProduct = await prisma.ticketProduct.findUnique({
+      const ticketProduct = await (await getPrisma()).ticketProduct.findUnique({
         where: { id },
       });
 
@@ -273,7 +273,7 @@ export async function PUT(request: NextRequest) {
       const discountAmount = (subtotal * finalDiscount) / 100;
       updateData.total = subtotal - discountAmount;
 
-      updatedTicketItem = await prisma.ticketProduct.update({
+      updatedTicketItem = await (await getPrisma()).ticketProduct.update({
         where: { id },
         data: updateData,
         include: {
@@ -281,7 +281,7 @@ export async function PUT(request: NextRequest) {
         },
       });
     } else if (type === "service") {
-      const ticketService = await prisma.ticketService.findUnique({
+      const ticketService = await (await getPrisma()).ticketService.findUnique({
         where: { id },
       });
 
@@ -307,7 +307,7 @@ export async function PUT(request: NextRequest) {
       const discountAmount = (subtotal * finalDiscount) / 100;
       updateData.total = subtotal - discountAmount;
 
-      updatedTicketItem = await prisma.ticketService.update({
+      updatedTicketItem = await (await getPrisma()).ticketService.update({
         where: { id },
         data: updateData,
         include: {
@@ -316,7 +316,7 @@ export async function PUT(request: NextRequest) {
       });
     } else {
       // Try both if type is not specified
-      const ticketProduct = await prisma.ticketProduct.findUnique({
+      const ticketProduct = await (await getPrisma()).ticketProduct.findUnique({
         where: { id },
       });
 
@@ -336,7 +336,7 @@ export async function PUT(request: NextRequest) {
         const discountAmount = (subtotal * finalDiscount) / 100;
         updateData.total = subtotal - discountAmount;
 
-        updatedTicketItem = await prisma.ticketProduct.update({
+        updatedTicketItem = await (await getPrisma()).ticketProduct.update({
       where: { id },
       data: updateData,
       include: {
@@ -344,7 +344,7 @@ export async function PUT(request: NextRequest) {
           },
         });
       } else {
-        const ticketService = await prisma.ticketService.findUnique({
+        const ticketService = await (await getPrisma()).ticketService.findUnique({
           where: { id },
         });
 
@@ -370,7 +370,7 @@ export async function PUT(request: NextRequest) {
         const discountAmount = (subtotal * finalDiscount) / 100;
         updateData.total = subtotal - discountAmount;
 
-        updatedTicketItem = await prisma.ticketService.update({
+        updatedTicketItem = await (await getPrisma()).ticketService.update({
           where: { id },
           data: updateData,
           include: {
@@ -382,15 +382,15 @@ export async function PUT(request: NextRequest) {
 
     // Update the ticket total
     const [ticketProducts, ticketServices] = await Promise.all([
-      prisma.ticketProduct.findMany({ where: { ticketId } }),
-      prisma.ticketService.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketProduct.findMany({ where: { ticketId } }),
+      (await getPrisma()).ticketService.findMany({ where: { ticketId } }),
     ]);
 
     const ticketTotal =
       ticketProducts.reduce((sum, item) => sum + item.total, 0) +
       ticketServices.reduce((sum, item) => sum + item.total, 0);
 
-    await prisma.ticket.update({
+    await (await getPrisma()).ticket.update({
       where: { id: ticketId },
       data: {
         total: ticketTotal,

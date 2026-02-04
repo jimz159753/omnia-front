@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
 export async function PUT(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest) {
 
     // TODO: Get user ID from session/auth
     // For now, getting the first user
-    const user = await prisma.user.findFirst();
+    const user = await (await getPrisma()).user.findFirst();
 
     if (!user) {
       return NextResponse.json(
@@ -26,6 +26,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Verify current password
+    if (!user.password) {
+      return NextResponse.json(
+        { error: "Password not set for this user." },
+        { status: 400 }
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
 
     if (!isPasswordValid) {
@@ -39,7 +46,7 @@ export async function PUT(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password
-    await prisma.user.update({
+    await (await getPrisma()).user.update({
       where: { id: user.id },
       data: { password: hashedPassword },
     });

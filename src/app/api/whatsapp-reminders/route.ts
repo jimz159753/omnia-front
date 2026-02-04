@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // Default reminder templates
 const defaultReminders = [
@@ -70,16 +70,16 @@ Gracias por elegirnos. ¡Te esperamos! ✨`,
 // GET - Fetch all reminders
 export async function GET() {
   try {
-    let reminders = await prisma.whatsAppReminder.findMany({
+    let reminders = await (await getPrisma()).whatsAppReminder.findMany({
       orderBy: { createdAt: "asc" },
     });
 
     // If no reminders exist, create defaults
     if (reminders.length === 0) {
-      await prisma.whatsAppReminder.createMany({
+      await (await getPrisma()).whatsAppReminder.createMany({
         data: defaultReminders,
       });
-      reminders = await prisma.whatsAppReminder.findMany({
+      reminders = await (await getPrisma()).whatsAppReminder.findMany({
         orderBy: { createdAt: "asc" },
       });
     }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const reminder = await prisma.whatsAppReminder.create({
+    const reminder = await (await getPrisma()).whatsAppReminder.create({
       data: {
         type,
         name,
@@ -166,7 +166,7 @@ export async function PUT(request: NextRequest) {
     if (messageTemplate !== undefined)
       updateData.messageTemplate = messageTemplate;
 
-    const reminder = await prisma.whatsAppReminder.update({
+    const reminder = await (await getPrisma()).whatsAppReminder.update({
       where: { id },
       data: updateData,
     });
@@ -197,7 +197,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.whatsAppReminder.delete({
+    await (await getPrisma()).whatsAppReminder.delete({
       where: { id },
     });
 

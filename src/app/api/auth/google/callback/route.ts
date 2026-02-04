@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -56,13 +56,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user exists
-    let user = await prisma.user.findUnique({
+    let user = await (await getPrisma()).user.findUnique({
       where: { email: userInfo.email },
     });
 
     // If user doesn't exist, create one
     if (!user) {
-      user = await prisma.user.create({
+      user = await (await getPrisma()).user.create({
         data: {
           email: userInfo.email,
           // Generate a random password for Google users (they won't use it)
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       });
     } else {
       // Update user info if they logged in with Google
-      await prisma.user.update({
+      await (await getPrisma()).user.update({
         where: { id: user.id },
         data: {
           name: user.name || userInfo.name || "",

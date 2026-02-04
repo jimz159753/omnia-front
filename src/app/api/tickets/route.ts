@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import {
   createGoogleCalendarEvent,
   updateGoogleCalendarEvent,
@@ -21,7 +21,7 @@ const generateUniqueTicketId = async () => {
   for (let i = 0; i < 10; i += 1) {
     const segment = randomSegment(6);
     const id = `TK-${year}-${segment}`;
-    const existing = await prisma.ticket.findUnique({ where: { id } });
+    const existing = await (await getPrisma()).ticket.findUnique({ where: { id } });
     if (!existing) return id;
   }
   throw new Error("Could not generate unique ticket ID");
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // If ID is provided, fetch single ticket with items
     if (id) {
-      const ticket = await prisma.ticket.findUnique({
+      const ticket = await (await getPrisma()).ticket.findUnique({
         where: { id },
         include: {
           client: true,
@@ -198,9 +198,9 @@ export async function GET(request: NextRequest) {
       where.AND = conditions;
     }
 
-    const total = await prisma.ticket.count({ where });
+    const total = await (await getPrisma()).ticket.count({ where });
 
-    const tickets = await prisma.ticket.findMany({
+    const tickets = await (await getPrisma()).ticket.findMany({
       where,
       include: {
         client: true,
@@ -340,7 +340,7 @@ export async function POST(request: NextRequest) {
     const [productsMap, servicesMap] = await Promise.all([
       (async () => {
         if (!productIds.length) return new Map<string, number>();
-        const products = await prisma.product.findMany({
+        const products = await (await getPrisma()).product.findMany({
           where: { id: { in: productIds } },
           select: { id: true, cost: true },
         });
@@ -348,7 +348,7 @@ export async function POST(request: NextRequest) {
       })(),
       (async () => {
         if (!serviceIds.length) return new Map<string, number>();
-        const services = await prisma.service.findMany({
+        const services = await (await getPrisma()).service.findMany({
           where: { id: { in: serviceIds } },
           select: { id: true, price: true },
         });
@@ -411,7 +411,7 @@ export async function POST(request: NextRequest) {
 
     const ticketId = await generateUniqueTicketId();
 
-    const ticket = await prisma.$transaction(async (tx) => {
+    const ticket = await (await getPrisma()).$transaction(async (tx) => {
       if (productQuantityMap.size > 0) {
         const ids = Array.from(productQuantityMap.keys());
         const products = await tx.product.findMany({
@@ -566,7 +566,7 @@ export async function POST(request: NextRequest) {
 
       // Save the Google Calendar event ID to the ticket
       if (googleEventId) {
-        await prisma.ticket.update({
+        await (await getPrisma()).ticket.update({
           where: { id: ticket.id },
           data: { googleCalendarEventId: googleEventId },
         });
@@ -684,7 +684,7 @@ export async function PUT(request: NextRequest) {
       updateData.duration = durationInMinutes;
     } else if (startTime !== undefined || endTime !== undefined) {
       // If only one time is updated, fetch the ticket to calculate with the existing time
-      const existingTicket = await prisma.ticket.findUnique({
+      const existingTicket = await (await getPrisma()).ticket.findUnique({
         where: { id },
         select: { startTime: true, endTime: true },
       });
@@ -703,7 +703,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get the OLD Google Calendar info BEFORE updating (needed for calendar change detection)
-    const oldTicketCalendarInfo = await prisma.ticket.findUnique({
+    const oldTicketCalendarInfo = await (await getPrisma()).ticket.findUnique({
       where: { id },
       select: { 
         googleCalendarId: true, 
@@ -715,14 +715,14 @@ export async function PUT(request: NextRequest) {
     if (items && Array.isArray(items)) {
       // Delete existing items from both tables
       await Promise.all([
-        prisma.ticketProduct.deleteMany({ where: { ticketId: id } }),
-        prisma.ticketService.deleteMany({ where: { ticketId: id } }),
+        (await getPrisma()).ticketProduct.deleteMany({ where: { ticketId: id } }),
+        (await getPrisma()).ticketService.deleteMany({ where: { ticketId: id } }),
       ]);
 
       // Create new items
       for (const item of items) {
         if (item.productId) {
-          await prisma.ticketProduct.create({
+          await (await getPrisma()).ticketProduct.create({
             data: {
               ticketId: id,
               productId: item.productId,
@@ -733,7 +733,7 @@ export async function PUT(request: NextRequest) {
             },
           });
         } else if (item.serviceId) {
-          await prisma.ticketService.create({
+          await (await getPrisma()).ticketService.create({
             data: {
               ticketId: id,
               serviceId: item.serviceId,
@@ -747,7 +747,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const updatedTicket = await prisma.ticket.update({
+    const updatedTicket = await (await getPrisma()).ticket.update({
       where: { id },
       data: updateData,
       include: {
@@ -871,7 +871,7 @@ export async function PUT(request: NextRequest) {
         
         if (newGoogleEventId) {
           // Update the ticket with the new event ID
-          await prisma.ticket.update({
+          await (await getPrisma()).ticket.update({
             where: { id: updatedTicket.id },
             data: { googleCalendarEventId: newGoogleEventId },
           });
@@ -896,7 +896,7 @@ export async function PUT(request: NextRequest) {
         // If no googleCalendarId is set, get the first enabled calendar and save it
         let calendarToUse = updatedTicket.googleCalendarId;
         if (!calendarToUse) {
-          const defaultCalendar = await prisma.googleCalendar.findFirst({
+          const defaultCalendar = await (await getPrisma()).googleCalendar.findFirst({
             where: { isEnabled: true },
             select: { calendarId: true, name: true },
           });
@@ -921,7 +921,7 @@ export async function PUT(request: NextRequest) {
             updatePayload.googleCalendarId = calendarToUse;
           }
           
-          await prisma.ticket.update({
+          await (await getPrisma()).ticket.update({
             where: { id: updatedTicket.id },
             data: updatePayload,
           });
@@ -966,19 +966,19 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get ticket to retrieve Google Calendar event ID and calendar ID
-    const ticket = await prisma.ticket.findUnique({
+    const ticket = await (await getPrisma()).ticket.findUnique({
       where: { id },
       select: { googleCalendarEventId: true, googleCalendarId: true },
     });
 
     // First delete related ticket products and services
     await Promise.all([
-      prisma.ticketProduct.deleteMany({ where: { ticketId: id } }),
-      prisma.ticketService.deleteMany({ where: { ticketId: id } }),
+      (await getPrisma()).ticketProduct.deleteMany({ where: { ticketId: id } }),
+      (await getPrisma()).ticketService.deleteMany({ where: { ticketId: id } }),
     ]);
 
     // Then delete the ticket
-    await prisma.ticket.delete({
+    await (await getPrisma()).ticket.delete({
       where: { id },
     });
 

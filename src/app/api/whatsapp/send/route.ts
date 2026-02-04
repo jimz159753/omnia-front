@@ -5,7 +5,7 @@ import {
   isWhatsAppConfigured,
   getWhatsAppStatus,
 } from "@/services/whatsappService";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // POST - Send a WhatsApp message
 export async function POST(request: NextRequest) {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // If templateType is provided, fetch the template from database
     if (templateType) {
-      const reminder = await prisma.whatsAppReminder.findUnique({
+      const reminder = await (await getPrisma()).whatsAppReminder.findUnique({
         where: { type: templateType },
       });
 

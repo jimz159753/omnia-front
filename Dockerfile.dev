@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 3000
 
 # Start development server with hot reload
-CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss && npm run dev"]
+CMD ["sh", "-c", "npx prisma generate && npx prisma generate --schema prisma/master.prisma && npx prisma db push --skip-generate --accept-data-loss && npx prisma db push --schema prisma/master.prisma --skip-generate --accept-data-loss && npm run dev"]

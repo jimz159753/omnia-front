@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // GET - Get all booking calendars or a specific one by slug
 export async function GET(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
     if (slug) {
       // Get specific calendar by slug (for public access)
-      const calendar = await prisma.bookingCalendar.findUnique({
+      const calendar = await (await getPrisma()).bookingCalendar.findUnique({
         where: { slug },
         include: {
           services: {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     if (id) {
       // Get specific calendar by ID (for editing)
-      const calendar = await prisma.bookingCalendar.findUnique({
+      const calendar = await (await getPrisma()).bookingCalendar.findUnique({
         where: { id },
         include: {
           services: {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all calendars
-    const calendars = await prisma.bookingCalendar.findMany({
+    const calendars = await (await getPrisma()).bookingCalendar.findMany({
       include: {
         services: {
           include: {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       .replace(/(^-|-$)/g, "");
 
     // Check if slug exists and make it unique
-    const existingSlug = await prisma.bookingCalendar.findUnique({
+    const existingSlug = await (await getPrisma()).bookingCalendar.findUnique({
       where: { slug },
     });
 
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the booking calendar
-    const calendar = await prisma.bookingCalendar.create({
+    const calendar = await (await getPrisma()).bookingCalendar.create({
       data: {
         slug,
         name,
@@ -191,7 +191,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if calendar exists
-    const existingCalendar = await prisma.bookingCalendar.findUnique({
+    const existingCalendar = await (await getPrisma()).bookingCalendar.findUnique({
       where: { id },
     });
 
@@ -204,7 +204,7 @@ export async function PUT(request: NextRequest) {
 
     // If setting showOnMainPage to true, unset it from all other calendars first
     if (showOnMainPage === true) {
-      await prisma.bookingCalendar.updateMany({
+      await (await getPrisma()).bookingCalendar.updateMany({
         where: { id: { not: id }, showOnMainPage: true },
         data: { showOnMainPage: false },
       });
@@ -218,7 +218,7 @@ export async function PUT(request: NextRequest) {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
 
-      const existingSlug = await prisma.bookingCalendar.findFirst({
+      const existingSlug = await (await getPrisma()).bookingCalendar.findFirst({
         where: { slug, id: { not: id } },
       });
 
@@ -233,7 +233,7 @@ export async function PUT(request: NextRequest) {
     console.log(`📝 Updating calendar "${existingCalendar.name}": slots received=${slots} (type: ${typeof slots}), parsed=${slotsNumber}, existing=${existingCalendar.slots}, final=${finalSlots}`);
 
     // Update the calendar
-    const calendar = await prisma.bookingCalendar.update({
+    const calendar = await (await getPrisma()).bookingCalendar.update({
       where: { id },
       data: {
         slug,
@@ -258,14 +258,14 @@ export async function PUT(request: NextRequest) {
     // Update services if provided
     if (serviceIds !== undefined) {
       // Delete existing services
-      await prisma.bookingCalendarService.deleteMany({
+      await (await getPrisma()).bookingCalendarService.deleteMany({
         where: { bookingCalendarId: id },
       });
 
       // Create new services - validate that they exist first
       if (serviceIds.length > 0) {
         // Check which services actually exist
-        const existingServices = await prisma.service.findMany({
+        const existingServices = await (await getPrisma()).service.findMany({
           where: { id: { in: serviceIds } },
           select: { id: true },
         });
@@ -279,7 +279,7 @@ export async function PUT(request: NextRequest) {
         }
 
         if (validServiceIds.length > 0) {
-          await prisma.bookingCalendarService.createMany({
+          await (await getPrisma()).bookingCalendarService.createMany({
             data: validServiceIds.map((serviceId: string) => ({
               bookingCalendarId: id,
               serviceId,
@@ -291,7 +291,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Fetch updated calendar with services
-    const updatedCalendar = await prisma.bookingCalendar.findUnique({
+    const updatedCalendar = await (await getPrisma()).bookingCalendar.findUnique({
       where: { id },
       include: {
         services: {
@@ -328,7 +328,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if calendar exists
-    const existingCalendar = await prisma.bookingCalendar.findUnique({
+    const existingCalendar = await (await getPrisma()).bookingCalendar.findUnique({
       where: { id },
     });
 
@@ -340,7 +340,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete the calendar (services will be cascade deleted)
-    await prisma.bookingCalendar.delete({
+    await (await getPrisma()).bookingCalendar.delete({
       where: { id },
     });
 

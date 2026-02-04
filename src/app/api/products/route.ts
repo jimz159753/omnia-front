@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
       : {};
 
     // Get total count for pagination
-    const total = await prisma.product.count({ where });
+    const total = await (await getPrisma()).product.count({ where });
 
     // Get paginated data
-    const products = await prisma.product.findMany({
+    const products = await (await getPrisma()).product.findMany({
       where,
       include: {
         category: {
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate provider (required)
-    const provider = await prisma.provider.findUnique({ where: { id: providerId } });
+    const provider = await (await getPrisma()).provider.findUnique({ where: { id: providerId } });
     if (!provider) {
       return NextResponse.json(
         { error: "Invalid provider. Please select an existing provider." },
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     // Validate category if provided
     if (categoryId) {
-      const category = await prisma.category.findUnique({ where: { id: categoryId } });
+      const category = await (await getPrisma()).category.findUnique({ where: { id: categoryId } });
       if (!category) {
         return NextResponse.json(
           { error: "Invalid category. Please select an existing category." },
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     // Validate subcategory if provided
     if (subCategoryId) {
-      const subCategory = await prisma.subCategory.findUnique({ where: { id: subCategoryId } });
+      const subCategory = await (await getPrisma()).subCategory.findUnique({ where: { id: subCategoryId } });
       if (!subCategory) {
         return NextResponse.json(
           { error: "Invalid subcategory. Please select an existing subcategory." },
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create product
-    const product = await prisma.product.create({
+    const product = await (await getPrisma()).product.create({
       data: {
         name,
         description: description || "",
@@ -220,7 +220,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if product exists
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await (await getPrisma()).product.findUnique({
       where: { id },
     });
 
@@ -247,7 +247,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate provider if provided (required field)
     if (providerId) {
-      const provider = await prisma.provider.findUnique({ where: { id: providerId } });
+      const provider = await (await getPrisma()).provider.findUnique({ where: { id: providerId } });
       if (!provider) {
         return NextResponse.json(
           { error: "Invalid provider. Please select an existing provider." },
@@ -258,7 +258,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate category if provided (optional)
     if (categoryId) {
-      const category = await prisma.category.findUnique({ where: { id: categoryId } });
+      const category = await (await getPrisma()).category.findUnique({ where: { id: categoryId } });
       if (!category) {
         return NextResponse.json(
           { error: "Invalid category. Please select an existing category." },
@@ -269,7 +269,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate subcategory if provided (optional)
     if (subCategoryId) {
-      const subCategory = await prisma.subCategory.findUnique({ where: { id: subCategoryId } });
+      const subCategory = await (await getPrisma()).subCategory.findUnique({ where: { id: subCategoryId } });
       if (!subCategory) {
         return NextResponse.json(
           { error: "Invalid subcategory. Please select an existing subcategory." },
@@ -288,7 +288,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update product
-    const product = await prisma.product.update({
+    const product = await (await getPrisma()).product.update({
       where: { id },
       data: {
         name,
@@ -346,7 +346,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if product exists
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await (await getPrisma()).product.findUnique({
       where: { id },
     });
 
@@ -355,7 +355,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete product
-    await prisma.product.delete({
+    await (await getPrisma()).product.delete({
       where: { id },
     });
 

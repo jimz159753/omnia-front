@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import prisma from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
 
 async function getAuthClient(userId: string) {
-  const googleAccount = await prisma.googleAccount.findUnique({
+  const googleAccount = await (await getPrisma()).googleAccount.findUnique({
     where: { userId },
   });
 
@@ -31,7 +31,7 @@ async function getAuthClient(userId: string) {
     oauth2Client.setCredentials(credentials);
 
     if (credentials.access_token && credentials.expiry_date) {
-      await prisma.googleAccount.update({
+      await (await getPrisma()).googleAccount.update({
         where: { userId },
         data: {
           accessToken: credentials.access_token,
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     // If userId is provided, get calendars for that specific user
     if (userId) {
-      const googleAccount = await prisma.googleAccount.findUnique({
+      const googleAccount = await (await getPrisma()).googleAccount.findUnique({
         where: { userId },
       });
 
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const calendars = await prisma.googleCalendar.findMany({
+      const calendars = await (await getPrisma()).googleCalendar.findMany({
         where: { googleAccountId: googleAccount.id },
         orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
       });
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     // If no userId, get all available calendars from all connected accounts
-    const allCalendars = await prisma.googleCalendar.findMany({
+    const allCalendars = await (await getPrisma()).googleCalendar.findMany({
       where: { isEnabled: true },
       orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
     });
@@ -167,12 +167,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to database
-    const googleAccount = await prisma.googleAccount.findUnique({
+    const googleAccount = await (await getPrisma()).googleAccount.findUnique({
       where: { userId },
     });
 
     if (googleAccount && newCalendar.id) {
-      const savedCalendar = await prisma.googleCalendar.create({
+      const savedCalendar = await (await getPrisma()).googleCalendar.create({
         data: {
           googleAccountId: googleAccount.id,
           calendarId: newCalendar.id,
@@ -255,7 +255,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update in database
-    const updatedCalendar = await prisma.googleCalendar.update({
+    const updatedCalendar = await (await getPrisma()).googleCalendar.update({
       where: { calendarId },
       data: {
         ...(name && { name }),
@@ -289,7 +289,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const googleAccount = await prisma.googleAccount.findUnique({
+    const googleAccount = await (await getPrisma()).googleAccount.findUnique({
       where: { userId },
     });
 
@@ -301,12 +301,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete calendars
-    await prisma.googleCalendar.deleteMany({
+    await (await getPrisma()).googleCalendar.deleteMany({
       where: { googleAccountId: googleAccount.id },
     });
 
     // Delete account
-    await prisma.googleAccount.delete({
+    await (await getPrisma()).googleAccount.delete({
       where: { userId },
     });
 

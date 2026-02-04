@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany({
+    const categories = await (await getPrisma()).category.findMany({
       include: {
         subCategories: true,
       },
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await prisma.category.create({
+    const category = await (await getPrisma()).category.create({
       data: { name, description: description || "" },
     });
 
@@ -67,7 +67,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const category = await prisma.category.update({
+    const category = await (await getPrisma()).category.update({
       where: { id },
       data: { name, description },
     });
@@ -95,11 +95,11 @@ export async function DELETE(request: NextRequest) {
     }
 
     // First delete all subcategories associated with this category
-    await prisma.subCategory.deleteMany({
+    await (await getPrisma()).subCategory.deleteMany({
       where: { categoryId: id },
     });
 
-    await prisma.category.delete({
+    await (await getPrisma()).category.delete({
       where: { id },
     });
 

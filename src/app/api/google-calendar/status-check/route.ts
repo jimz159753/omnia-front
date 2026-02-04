@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const oauthClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
 
     // Check database for connected accounts
-    const googleAccounts = await prisma.googleAccount.findMany({
+    const googleAccounts = await (await getPrisma()).googleAccount.findMany({
       select: {
         id: true,
         userId: true,
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Check database for calendars
-    const googleCalendars = await prisma.googleCalendar.findMany({
+    const googleCalendars = await (await getPrisma()).googleCalendar.findMany({
       select: {
         id: true,
         googleAccountId: true,

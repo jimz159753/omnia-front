@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -8,7 +8,7 @@ import { Resend } from "resend";
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
+    const users = await (await getPrisma()).user.findMany({
       select: {
         id: true,
         name: true,
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if email already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await (await getPrisma()).user.findUnique({
       where: { email },
     });
 
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       avatarPath = `/uploads/${fileName}`;
     }
 
-    const user = await prisma.user.create({
+    const user = await (await getPrisma()).user.create({
       data: {
         name,
         email,
@@ -201,7 +201,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if email already exists for another user
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await (await getPrisma()).user.findFirst({
       where: {
         email,
         id: { not: id },
@@ -245,7 +245,7 @@ export async function PUT(request: NextRequest) {
       updateData.avatar = `/uploads/${fileName}`;
     }
 
-    const user = await prisma.user.update({
+    const user = await (await getPrisma()).user.update({
       where: { id },
       data: updateData,
     });
@@ -286,7 +286,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.user.delete({
+    await (await getPrisma()).user.delete({
       where: { id },
     });
 

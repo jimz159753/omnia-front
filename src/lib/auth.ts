@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { hashPassword, validateEmail, validatePassword } from "@/utils/auth";
@@ -48,6 +48,8 @@ export const auth = {
         };
       }
 
+      const prisma = await getPrisma();
+
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
         where: { email },
@@ -88,6 +90,8 @@ export const auth = {
   // Login user
   async login(email: string, password: string): Promise<AuthResult> {
     try {
+      const prisma = await getPrisma();
+      
       // Find user by email
       const user = await prisma.user.findUnique({
         where: { email },
@@ -173,6 +177,8 @@ export const auth = {
     }
 
     try {
+      const prisma = await getPrisma();
+      
       const user = await prisma.user.findUnique({
         where: { id: session.userId },
         select: {
@@ -182,6 +188,7 @@ export const auth = {
           avatar: true,
           createdAt: true,
           updatedAt: true,
+
         },
       });
 

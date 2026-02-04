@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // Initialize Resend with API key
 const getResendClient = () => {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch ticket details with all related data
-    const ticket = await prisma.ticket.findUnique({
+    const ticket = await (await getPrisma()).ticket.findUnique({
       where: { id: ticketId },
       include: {
         client: true,
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch business info for branding
-    const business = await prisma.business.findFirst();
+    const business = await (await getPrisma()).business.findFirst();
     const businessName = business?.name || "Espacio Omnia";
     const businessEmail = process.env.RESEND_FROM_EMAIL || "noreply@resend.dev";
 

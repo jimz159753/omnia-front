@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 
 export async function POST(request: NextRequest) {
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
       if (ticketId && paymentData.status === "approved") {
         // Update ticket status
-        await prisma.ticket.update({
+        await (await getPrisma()).ticket.update({
           where: { id: ticketId },
           data: { status: "Confirmed" },
         });

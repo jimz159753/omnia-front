@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import prisma from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Save tokens to database
-    await prisma.googleAccount.upsert({
+    await (await getPrisma()).googleAccount.upsert({
       where: { userId },
       update: {
         email,
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     // Get service account email from environment
     const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
 
-    const googleAccount = await prisma.googleAccount.findUnique({
+    const googleAccount = await (await getPrisma()).googleAccount.findUnique({
       where: { userId },
     });
 
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
       for (const cal of calendars) {
         if (cal.id) {
           // Save to database
-          await prisma.googleCalendar.upsert({
+          await (await getPrisma()).googleCalendar.upsert({
             where: { calendarId: cal.id },
             update: {
               name: cal.summary || "",

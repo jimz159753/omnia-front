@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId") || undefined;
 
-    const subCategories = await prisma.subCategory.findMany({
+    const subCategories = await (await getPrisma()).subCategory.findMany({
       where: categoryId ? { categoryId } : undefined,
       include: {
         category: {
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const subCategory = await prisma.subCategory.create({
+    const subCategory = await (await getPrisma()).subCategory.create({
       data: { name, description: description || "", categoryId },
       include: {
         category: {
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const subCategory = await prisma.subCategory.update({
+    const subCategory = await (await getPrisma()).subCategory.update({
       where: { id },
       data: { name, description, categoryId },
       include: {
@@ -117,7 +117,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    await prisma.subCategory.delete({
+    await (await getPrisma()).subCategory.delete({
       where: { id },
     });
 

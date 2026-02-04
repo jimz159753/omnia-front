@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // GET - Fetch transactions with optional filters
 export async function GET(request: NextRequest) {
@@ -31,10 +31,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total count
-    const total = await prisma.cashTransaction.count({ where });
+    const total = await (await getPrisma()).cashTransaction.count({ where });
 
     // Get paginated transactions
-    const transactions = await prisma.cashTransaction.findMany({
+    const transactions = await (await getPrisma()).cashTransaction.findMany({
       where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const todayTransactions = await prisma.cashTransaction.findMany({
+    const todayTransactions = await (await getPrisma()).cashTransaction.findMany({
       where: {
         createdAt: {
           gte: today,
@@ -65,12 +65,12 @@ export async function GET(request: NextRequest) {
       .reduce((sum, t) => sum + t.amount, 0);
 
     // Calculate all-time totals
-    const allIncome = await prisma.cashTransaction.aggregate({
+    const allIncome = await (await getPrisma()).cashTransaction.aggregate({
       where: { type: "income" },
       _sum: { amount: true },
     });
 
-    const allExpenses = await prisma.cashTransaction.aggregate({
+    const allExpenses = await (await getPrisma()).cashTransaction.aggregate({
       where: { type: "expense" },
       _sum: { amount: true },
     });
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const transaction = await prisma.cashTransaction.create({
+    const transaction = await (await getPrisma()).cashTransaction.create({
       data: {
         type,
         amount: parseFloat(amount),
@@ -168,7 +168,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    await prisma.cashTransaction.delete({
+    await (await getPrisma()).cashTransaction.delete({
       where: { id },
     });
 

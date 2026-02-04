@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,10 +21,10 @@ export async function GET(request: NextRequest) {
       : {};
 
     // Get total count for pagination
-    const total = await prisma.service.count({ where });
+    const total = await (await getPrisma()).service.count({ where });
 
     // Get paginated data
-    const services = await prisma.service.findMany({
+    const services = await (await getPrisma()).service.findMany({
       where,
       include: {
         category: {
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
     // Validate that category exists (if provided)
     if (categoryId) {
-      const category = await prisma.category.findUnique({
+      const category = await (await getPrisma()).category.findUnique({
         where: { id: categoryId },
       });
       if (!category) {
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Validate that subcategory exists and belongs to the category (if provided)
     if (subCategoryId) {
-      const subCategory = await prisma.subCategory.findUnique({
+      const subCategory = await (await getPrisma()).subCategory.findUnique({
         where: { id: subCategoryId },
       });
       if (!subCategory) {
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create service with schedules
-    const service = await prisma.service.create({
+    const service = await (await getPrisma()).service.create({
       data: {
         name,
         description: description || "",
@@ -226,7 +226,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if service exists
-    const existingService = await prisma.service.findUnique({
+    const existingService = await (await getPrisma()).service.findUnique({
       where: { id },
     });
 
@@ -236,7 +236,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate category if provided
     if (categoryId) {
-      const category = await prisma.category.findUnique({
+      const category = await (await getPrisma()).category.findUnique({
         where: { id: categoryId },
       });
       if (!category) {
@@ -249,7 +249,7 @@ export async function PUT(request: NextRequest) {
 
     // Validate subcategory if provided
     if (subCategoryId) {
-      const subCategory = await prisma.subCategory.findUnique({
+      const subCategory = await (await getPrisma()).subCategory.findUnique({
         where: { id: subCategoryId },
       });
       if (!subCategory) {
@@ -279,13 +279,13 @@ export async function PUT(request: NextRequest) {
     // Update schedules if provided
     if (schedules !== undefined && Array.isArray(schedules)) {
       // Delete existing schedules
-      await prisma.serviceSchedule.deleteMany({
+      await (await getPrisma()).serviceSchedule.deleteMany({
         where: { serviceId: id },
       });
 
       // Create new schedules if any
       if (schedules.length > 0) {
-        await prisma.serviceSchedule.createMany({
+        await (await getPrisma()).serviceSchedule.createMany({
           data: schedules.map((s: ServiceScheduleInput) => ({
             serviceId: id,
             dayOfWeek: s.dayOfWeek,
@@ -298,7 +298,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update service
-    const service = await prisma.service.update({
+    const service = await (await getPrisma()).service.update({
       where: { id },
       data: {
         name,
@@ -359,7 +359,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if service exists
-    const existingService = await prisma.service.findUnique({
+    const existingService = await (await getPrisma()).service.findUnique({
       where: { id },
     });
 
@@ -368,7 +368,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete service
-    await prisma.service.delete({
+    await (await getPrisma()).service.delete({
       where: { id },
     });
 

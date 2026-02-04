@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,14 +8,14 @@ export async function GET(request: NextRequest) {
 
     if (email) {
       // Fetch single client by email
-      const client = await prisma.client.findUnique({
+      const client = await (await getPrisma()).client.findUnique({
         where: { email },
       });
       return NextResponse.json(client);
     }
 
     // Fetch all clients
-    const clients = await prisma.client.findMany({
+    const clients = await (await getPrisma()).client.findMany({
       include: {
         tickets: {
           include: {
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       birthday: birthday ? new Date(birthday) : null,
     });
 
-    const client = await prisma.client.create({
+    const client = await (await getPrisma()).client.create({
       data: {
         name,
         email,
@@ -169,7 +169,7 @@ export async function PUT(request: NextRequest) {
     if (address !== undefined) data.address = address || "";
     if (birthday !== undefined) data.birthday = birthday ? new Date(birthday) : null;
 
-    const updated = await prisma.client.update({
+    const updated = await (await getPrisma()).client.update({
       where: { id },
       data,
     });

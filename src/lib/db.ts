@@ -1,57 +1,55 @@
 import { PrismaClient } from "../generated/prisma";
+import { headers } from "next/headers";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prismaManager: Map<string, PrismaClient>;
 };
 
-let prismaInstance: PrismaClient | undefined;
+const prismaManager = globalForPrisma.prismaManager || new Map<string, PrismaClient>();
 
-function getPrismaClient(): PrismaClient {
-  if (!prismaInstance) {
-    prismaInstance =
-      globalForPrisma.prisma ??
-      new PrismaClient({
-        log:
-          process.env.NODE_ENV === "development"
-            ? ["query", "error", "warn"]
-            : ["error"],
-        errorFormat: "pretty",
-      });
-
-    if (process.env.NODE_ENV !== "production") {
-      globalForPrisma.prisma = prismaInstance;
-    }
-
-    // Handle connection errors only when actually connecting
-    prismaInstance
-      .$connect()
-      .then(() => {
-        if (process.env.NODE_ENV === "development") {
-          console.log("✅ Database connected successfully");
-        }
-      })
-      .catch((error: Error) => {
-        console.error("❌ Database connection failed:", error);
-        // Don't exit during build time
-        if (process.env.NODE_ENV !== "production") {
-          process.exit(1);
-        }
-      });
-  }
-  return prismaInstance;
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prismaManager = prismaManager;
 }
 
-export const prisma = new Proxy({} as PrismaClient, {
-  get(target, prop) {
-    return getPrismaClient()[prop as keyof PrismaClient];
-  },
-});
+function getTenantClient(tenantSlug: string): PrismaClient {
+  if (!prismaManager.has(tenantSlug)) {
+    const defaultUrl = process.env.DATABASE_URL;
+    if (!defaultUrl) throw new Error("DATABASE_URL not set");
 
-// Graceful shutdown
-process.on("beforeExit", async () => {
-  if (prismaInstance) {
-    await prismaInstance.$disconnect();
+    let dbName = `omnia_tenant_${tenantSlug}`;
+    if (tenantSlug === "dev" || tenantSlug === "localhost" || !tenantSlug) {
+       dbName = "postgres"; 
+    }
+
+    try {
+        const urlObj = new URL(defaultUrl);
+        urlObj.pathname = `/${dbName}`;
+        
+        const client = new PrismaClient({
+          datasources: {
+            db: {
+              url: urlObj.toString(),
+            },
+          },
+          log: process.env.NODE_ENV === "development" ? ["error"] : ["error"],
+        });
+        
+        prismaManager.set(tenantSlug, client);
+    } catch (e) {
+        console.error("Failed to construct tenant DB URL", e);
+        throw e;
+    }
   }
-});
+  return prismaManager.get(tenantSlug)!;
+}
 
-export default prisma;
+export async function getPrisma() {
+    let tenantSlug = "dev";
+    try {
+        const heads = await headers();
+        tenantSlug = heads.get("x-tenant-slug") || "dev";
+    } catch (e) {
+        // Fallback
+    }
+    return getTenantClient(tenantSlug);
+}

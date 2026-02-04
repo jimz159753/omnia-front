@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { auth } from "@/lib/auth";
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ valid: false, error: "Missing token" }, { status: 400 });
     }
 
-    const user = await prisma.user.findFirst({
+    const user = await (await getPrisma()).user.findFirst({
       where: {
         invitationToken: token,
         invitationExpires: {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user with token
-    const user = await prisma.user.findFirst({
+    const user = await (await getPrisma()).user.findFirst({
       where: {
         invitationToken: token,
         invitationExpires: {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update user
-    await prisma.user.update({
+    await (await getPrisma()).user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,

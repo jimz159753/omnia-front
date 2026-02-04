@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 const uploadDirectory = path.join(process.cwd(), "public", "uploads");
 
@@ -27,13 +27,13 @@ async function saveLogo(logoFile: File | null) {
 }
 
 export async function GET() {
-  const business = await prisma.business.findFirst();
+  const business = await (await getPrisma()).business.findFirst();
   return NextResponse.json({ data: business });
 }
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const existing = await prisma.business.findFirst();
+  const existing = await (await getPrisma()).business.findFirst();
   const logoFile =
     formData.get("logo") instanceof File
       ? (formData.get("logo") as File)
@@ -78,11 +78,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const business = existing
-      ? await prisma.business.update({
+      ? await (await getPrisma()).business.update({
           where: { id: existing.id },
           data: finalData,
         })
-      : await prisma.business.create({ data: finalData });
+      : await (await getPrisma()).business.create({ data: finalData });
 
     return NextResponse.json({ data: business });
   } catch (error) {

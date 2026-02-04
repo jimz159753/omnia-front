@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const restTimes = await prisma.restTime.findMany({
+    const restTimes = await (await getPrisma()).restTime.findMany({
       orderBy: {
         dayOfWeek: "asc",
       },
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const restTime = await prisma.restTime.create({
+    const restTime = await (await getPrisma()).restTime.create({
       data: {
         dayOfWeek,
         startTime,
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const restTime = await prisma.restTime.update({
+    const restTime = await (await getPrisma()).restTime.update({
       where: { id },
       data: {
         dayOfWeek,
@@ -116,7 +116,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.restTime.delete({
+    await (await getPrisma()).restTime.delete({
       where: { id },
     });
 

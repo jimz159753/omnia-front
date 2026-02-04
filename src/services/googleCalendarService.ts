@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import prisma from '@/lib/db';
+import { getPrisma } from '@/lib/db';
 
 // Get Service Account auth client
 const getServiceAccountAuthClient = () => {
@@ -18,14 +18,14 @@ const getOAuth2AuthClient = async (calendarId: string) => {
   console.log(`🔐 getOAuth2AuthClient: Looking for calendar ID: ${calendarId}`);
   
   // Find the calendar in the database
-  const calendarRecord = await prisma.googleCalendar.findUnique({
+  const calendarRecord = await (await getPrisma()).googleCalendar.findUnique({
     where: { calendarId },
   });
 
   if (!calendarRecord) {
     console.error(`❌ Calendar ${calendarId} not found in database`);
     // Log all calendars to help debug
-    const allCalendars = await prisma.googleCalendar.findMany({
+    const allCalendars = await (await getPrisma()).googleCalendar.findMany({
       select: { calendarId: true, name: true },
     });
     console.log('Available calendars:', allCalendars.map(c => ({ id: c.calendarId.substring(0, 20) + '...', name: c.name })));
@@ -35,7 +35,7 @@ const getOAuth2AuthClient = async (calendarId: string) => {
   console.log(`✅ Found calendar: ${calendarRecord.name}`);
 
   // Get the associated Google account
-  const googleAccount = await prisma.googleAccount.findUnique({
+  const googleAccount = await (await getPrisma()).googleAccount.findUnique({
     where: { id: calendarRecord.googleAccountId }
   });
 
@@ -76,7 +76,7 @@ const getOAuth2AuthClient = async (calendarId: string) => {
       oauth2Client.setCredentials(credentials);
 
       if (credentials.access_token && credentials.expiry_date) {
-        await prisma.googleAccount.update({
+        await (await getPrisma()).googleAccount.update({
           where: { id: googleAccount.id },
           data: {
             accessToken: credentials.access_token,
@@ -121,7 +121,7 @@ export interface GoogleCalendarEvent {
  */
 const getDefaultOAuth2Calendar = async () => {
   // Find an enabled calendar from any connected Google account
-  const enabledCalendar = await prisma.googleCalendar.findFirst({
+  const enabledCalendar = await (await getPrisma()).googleCalendar.findFirst({
     where: { isEnabled: true },
     select: { calendarId: true, name: true },
   });

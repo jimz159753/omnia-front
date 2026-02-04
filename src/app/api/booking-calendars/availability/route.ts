@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 // GET - Get availability for a booking calendar
 export async function GET(request: NextRequest) {
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get the booking calendar
-    const calendar = await prisma.bookingCalendar.findUnique({
+    const calendar = await (await getPrisma()).bookingCalendar.findUnique({
       where: { slug },
       include: {
         services: {
@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get business schedules
-    const schedules = await prisma.schedule.findMany({
+    const schedules = await (await getPrisma()).schedule.findMany({
       orderBy: { dayOfWeek: "asc" },
     });
 
     // Get rest times
-    const restTimes = await prisma.restTime.findMany();
+    const restTimes = await (await getPrisma()).restTime.findMany();
 
     // If a specific date is requested, calculate available time slots
     if (date && serviceId) {
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       // Find appointments that overlap with this day FOR THE SAME SERVICE
       // An appointment overlaps if: appointment.start < dayEnd AND appointment.end > dayStart
       // We only count appointments for the same service to allow different services to have their own slots
-      const existingAppointments = await prisma.ticket.findMany({
+      const existingAppointments = await (await getPrisma()).ticket.findMany({
         where: {
           startTime: { lt: dayEnd },
           endTime: { gt: dayStart },
