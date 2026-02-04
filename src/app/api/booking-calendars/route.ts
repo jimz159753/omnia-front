@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
       primaryColor,
       slots,
       googleCalendarId,
+      mercadoPagoEnabled,
       serviceIds,
     } = body;
 
@@ -132,6 +133,7 @@ export async function POST(request: NextRequest) {
         primaryColor: primaryColor || "#059669",
         slots: slots || 1,
         googleCalendarId: googleCalendarId || null,
+        mercadoPagoEnabled: mercadoPagoEnabled || false,
         services: {
           create:
             serviceIds?.map((serviceId: string) => ({
@@ -177,6 +179,7 @@ export async function PUT(request: NextRequest) {
       showOnMainPage,
       slots,
       googleCalendarId,
+      mercadoPagoEnabled,
       serviceIds,
     } = body;
 
@@ -246,6 +249,7 @@ export async function PUT(request: NextRequest) {
         showOnMainPage: showOnMainPage !== undefined ? showOnMainPage : existingCalendar.showOnMainPage,
         slots: finalSlots,
         googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : existingCalendar.googleCalendarId,
+        mercadoPagoEnabled: mercadoPagoEnabled !== undefined ? mercadoPagoEnabled : existingCalendar.mercadoPagoEnabled,
       },
     });
 

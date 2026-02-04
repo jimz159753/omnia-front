@@ -17,6 +17,7 @@ import {
 // Translations
 import enTranslations from "@/i18n/locales/en/booking.json";
 import esTranslations from "@/i18n/locales/es/booking.json";
+import { initMercadoPago, CardPayment } from "@mercadopago/sdk-react";
 
 type TranslationKey = keyof typeof enTranslations;
 
@@ -54,6 +55,8 @@ interface CalendarData {
     backgroundImage: string | null;
     logoImage: string | null;
     primaryColor: string;
+    mercadoPagoEnabled: boolean;
+    mercadoPagoPublicKey: string;
   };
   services: Service[];
   schedules: Schedule[];
@@ -84,7 +87,7 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [availability, setAvailability] = useState<AvailabilityData | null>(null);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [step, setStep] = useState<"service" | "datetime" | "confirm">("service");
+  const [step, setStep] = useState<"service" | "datetime" | "confirm" | "payment">("service");
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
   // Contact form
@@ -96,6 +99,8 @@ export default function BookingPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [createdTicketId, setCreatedTicketId] = useState<string | null>(null);
 
   // Language detection and translations
   const [locale, setLocale] = useState<"en" | "es">("es");
@@ -109,6 +114,14 @@ export default function BookingPage() {
       setLocale("en");
     }
   }, []);
+
+  useEffect(() => {
+    if (calendarData?.calendar.mercadoPagoPublicKey) {
+      initMercadoPago(calendarData.calendar.mercadoPagoPublicKey, {
+        locale: locale === "es" ? "es-MX" : "en-US",
+      });
+    }
+  }, [calendarData?.calendar.mercadoPagoPublicKey, locale]);
 
   const translations = useMemo(() => {
     return locale === "es" ? esTranslations : enTranslations;
@@ -231,6 +244,14 @@ export default function BookingPage() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        
+        if (calendarData?.calendar.mercadoPagoEnabled) {
+          setCreatedTicketId(result.booking.id);
+          setStep("payment");
+          return;
+        }
+        
         setBookingComplete(true);
       } else {
         const errorData = await response.json();
@@ -674,10 +695,86 @@ export default function BookingPage() {
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       {t("processing")}
                     </span>
+                  ) : calendarData?.calendar.mercadoPagoEnabled ? (
+                    t("payAndBook") || "Pay and Book"
                   ) : (
                     t("confirmBooking")
                   )}
                 </button>
+              </div>
+            )}
+
+            {step === "payment" && selectedService && createdTicketId && (
+              <div className="space-y-6">
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6">
+                  <div className="flex items-center text-blue-800 mb-2">
+                    <BiCheck className="w-5 h-5 mr-2" />
+                    <span className="font-semibold text-blue-900">{t("bookingSaved") || "Booking information saved!"}</span>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    {t("completePaymentToConfirm") || "Please complete the payment below to confirm your appointment."}
+                  </p>
+                </div>
+
+                <div className="bg-white border rounded-xl overflow-hidden min-h-[400px] p-4">
+                  <CardPayment
+                    initialization={{
+                      amount: selectedService.price,
+                      payer: {
+                        email: contactForm.email || `${contactForm.phone.replace(/[^0-9]/g, "")}@example.com`,
+                      }
+                    }}
+                    onSubmit={async (param: any) => {
+                      try {
+                        const response = await fetch("/api/mercadopago/process-payment", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            ...param,
+                            transaction_amount: selectedService.price,
+                            payer: {
+                              email: contactForm.email || `${contactForm.phone.replace(/[^0-9]/g, "")}@example.com`,
+                            },
+                            ticketId: createdTicketId,
+                          }),
+                        });
+
+                        if (response.ok) {
+                          setBookingComplete(true);
+                        } else {
+                          const errorData = await response.json();
+                          alert(errorData.error || t("paymentFailed") || "Payment failed. Please try again.");
+                        }
+                      } catch (err) {
+                        console.error("Payment error:", err);
+                        alert(t("paymentError") || "An unexpected error occurred during payment.");
+                      }
+                    }}
+                    onReady={() => {
+                      console.log("Card Brick ready");
+                    }}
+                    customization={{
+                      visual: {
+                        style: {
+                          theme: "default",
+                        },
+                      },
+                      paymentMethods: {
+                        maxInstallments: 9,
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={() => setStep("confirm")}
+                    className="text-gray-500 hover:text-gray-700 text-sm flex items-center justify-center mx-auto"
+                  >
+                    <BiLeftArrowAlt className="w-4 h-4 mr-1" />
+                    {t("back")}
+                  </button>
+                </div>
               </div>
             )}
           </div>

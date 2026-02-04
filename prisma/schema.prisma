@@ -341,6 +341,7 @@ model BookingCalendar {
   showOnMainPage   Boolean                  @default(false) // Display this calendar on the public main page
   slots            Int                      @default(1) // Number of concurrent appointments allowed per time slot
   googleCalendarId String? // Google Calendar ID to sync appointments to
+  mercadoPagoEnabled Boolean @default(false)
   services         BookingCalendarService[]
   createdAt        DateTime                 @default(now())
   updatedAt        DateTime                 @updatedAt

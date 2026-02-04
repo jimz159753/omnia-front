@@ -211,6 +211,8 @@ export async function GET(request: NextRequest) {
         backgroundImage: calendar.backgroundImage,
         logoImage: calendar.logoImage,
         primaryColor: calendar.primaryColor,
+        mercadoPagoEnabled: calendar.mercadoPagoEnabled,
+        mercadoPagoPublicKey: process.env.MERCADO_PAGO_PUBLIC_KEY,
       },
       services: calendar.services.map((s) => {
         const serviceWithSchedules = s.service as typeof s.service & {

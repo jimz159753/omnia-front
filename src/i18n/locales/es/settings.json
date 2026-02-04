@@ -300,6 +300,8 @@
   "calendarSetAsMainPage": "Calendario configurado como principal",
   "calendarRemovedFromMainPage": "Calendario removido de la página principal",
   "displayedOnMainPage": "Este calendario se muestra en la página principal",
+  "mercadoPagoIntegration": "Integración con Mercado Pago",
+  "mercadoPagoDescription": "Permite que los clientes paguen en línea antes de finalizar la reserva.",
   "externalCalendarsHeader": "CALENDARIOS EXTERNOS",
   "externalCalendars": "Calendarios Externos",
   "googleCalendarDescription": "Conecta tu cuenta de Google para sincronizar citas y administrar tus calendarios directamente desde aquí.",

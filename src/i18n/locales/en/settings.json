@@ -299,6 +299,8 @@
   "calendarSetAsMainPage": "Calendar set as main page calendar",
   "calendarRemovedFromMainPage": "Calendar removed from main page",
   "displayedOnMainPage": "This calendar is displayed on the main page",
+  "mercadoPagoIntegration": "Mercado Pago Integration",
+  "mercadoPagoDescription": "Allow clients to pay online before finishing the checkout.",
   "externalCalendarsHeader": "EXTERNAL CALENDARS",
   "externalCalendars": "External Calendars",
   "googleCalendarDescription": "Connect your Google account to sync appointments and manage your calendars directly from here.",
