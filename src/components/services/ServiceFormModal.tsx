@@ -81,6 +81,7 @@ export function ServiceFormModal({
   const [subCategories, setSubCategories] = useState<
     { id: string; name: string; categoryId: string }[]
   >([]);
+  const [providers, setProviders] = useState<{ id: string; name: string }[]>([]);
   const [googleCalendars, setGoogleCalendars] = useState<GoogleCalendar[]>([]);
   const [selectedGoogleCalendar, setSelectedGoogleCalendar] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -109,6 +110,10 @@ export function ServiceFormModal({
       price: "",
       commission: "",
       slots: "",
+      classes: "",
+      providerId: "",
+      startDate: "",
+      endDate: "",
       categoryId: "",
       subCategoryId: "",
       image: "",
@@ -122,16 +127,19 @@ export function ServiceFormModal({
     const load = async () => {
       setError("");
       try {
-        const [catRes, subRes, gcalRes] = await Promise.all([
+        const [catRes, subRes, provRes, gcalRes] = await Promise.all([
           fetch("/api/categories"),
           fetch("/api/subcategories"),
+          fetch("/api/providers"),
           fetch("/api/google-calendar/calendars"),
         ]);
         const catData = await catRes.json();
         const subData = await subRes.json();
+        const provData = await provRes.json();
         const gcalData = await gcalRes.json();
         setCategories(catData.data || []);
         setSubCategories(subData.data || []);
+        setProviders(provData.data || []);
         setGoogleCalendars(gcalData.calendars || []);
       } catch (err) {
         console.error(err);
@@ -142,6 +150,13 @@ export function ServiceFormModal({
     load();
 
     if (item) {
+      const serviceItem = item as ServiceWithRelations & { 
+        googleCalendarId?: string;
+        classes?: number;
+        providerId?: string;
+        startDate?: string;
+        endDate?: string;
+      };
       reset({
         name: item.name,
         description: item.description ?? "",
@@ -149,11 +164,15 @@ export function ServiceFormModal({
         price: item.price.toString(),
         commission: item.commission.toString(),
         slots: item.slots ? item.slots.toString() : "",
+        classes: serviceItem.classes ? serviceItem.classes.toString() : "",
+        providerId: serviceItem.providerId ?? "",
+        startDate: serviceItem.startDate ? new Date(serviceItem.startDate).toISOString().split('T')[0] : "",
+        endDate: serviceItem.endDate ? new Date(serviceItem.endDate).toISOString().split('T')[0] : "",
         categoryId: item.categoryId ?? "",
         subCategoryId: item.subCategoryId ?? "",
         image: item.image ?? "",
       });
-      setSelectedGoogleCalendar((item as ServiceWithRelations & { googleCalendarId?: string })?.googleCalendarId || "");
+      setSelectedGoogleCalendar(serviceItem.googleCalendarId || "");
       setImageFile(null);
       
       // Load schedules if service has custom schedules
@@ -189,6 +208,10 @@ export function ServiceFormModal({
         price: "",
         commission: "",
         slots: "",
+        classes: "",
+        providerId: "",
+        startDate: "",
+        endDate: "",
         categoryId: "",
         subCategoryId: "",
         image: "",
@@ -232,6 +255,10 @@ export function ServiceFormModal({
         price: Number(values.price),
         commission: Number(values.commission),
         slots: values.slots ? Number(values.slots) : null,
+        classes: values.classes ? Number(values.classes) : null,
+        providerId: values.providerId || null,
+        startDate: values.startDate || null,
+        endDate: values.endDate || null,
         image: imageUrl,
         googleCalendarId: selectedGoogleCalendar || null,
         useCustomSchedule,
@@ -490,6 +517,119 @@ export function ServiceFormModal({
               {errors.commission && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.commission.message as string}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Classes and Provider Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="classes"
+                className="text-sm font-medium text-gray-700"
+              >
+                {t("classes") || "Number of Classes"}
+              </label>
+              <input
+                id="classes"
+                type="number"
+                {...register("classes")}
+                placeholder={t("classesPlaceholder") || "Single session"}
+                min="1"
+                step="1"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              <p className="text-xs text-gray-500">
+                {t("classesDescription") || "Leave empty for single session, or set the number of classes in a package"}
+              </p>
+              {errors.classes && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.classes.message as string}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("provider") || "Instructor/Provider"}
+              </label>
+              <Controller
+                control={control}
+                name="providerId"
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("selectProvider") || "Select an instructor"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        <span className="text-gray-500">{t("noProvider") || "No instructor assigned"}</span>
+                      </SelectItem>
+                      {providers.map((provider) => (
+                        <SelectItem key={provider.id} value={provider.id}>
+                          {provider.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.providerId && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.providerId.message as string}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Date Range Section - for long-term class packages */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="startDate"
+                className="text-sm font-medium text-gray-700"
+              >
+                {t("startDate") || "Start Date"}
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                {...register("startDate")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              <p className="text-xs text-gray-500">
+                {t("startDateDescription") || "Optional start date for class packages"}
+              </p>
+              {errors.startDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.startDate.message as string}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="endDate"
+                className="text-sm font-medium text-gray-700"
+              >
+                {t("endDate") || "End Date"}
+              </label>
+              <input
+                id="endDate"
+                type="date"
+                {...register("endDate")}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              <p className="text-xs text-gray-500">
+                {t("endDateDescription") || "Optional end date for class packages"}
+              </p>
+              {errors.endDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.endDate.message as string}
                 </p>
               )}
             </div>

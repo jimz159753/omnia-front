@@ -10,8 +10,7 @@ type Props = {
 };
 
 const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
-  const { t, i18n } = useTranslation("clients");
-  const currentLanguage = i18n.language || "en-US";
+  const { t } = useTranslation("clients");
 
   // Get client initials for avatar
   const getInitials = (name: string) => {
@@ -27,7 +26,7 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
     totalTickets: client?.tickets?.length ?? 0,
     totalSpent: client?.tickets?.reduce((sum, ticket) => sum + (ticket.total ?? 0), 0) ?? 0,
     lastVisit: client?.tickets?.[0]?.createdAt 
-      ? new Date(client.tickets[0].createdAt).toLocaleDateString(currentLanguage, {
+      ? new Date(client.tickets[0].createdAt).toLocaleDateString("es-MX", {
           day: "2-digit",
           month: "short",
           year: "numeric",
@@ -99,7 +98,7 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
               <FiDollarSign className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
-              {stats.totalSpent.toLocaleString(currentLanguage, { style: "currency", currency: "USD", minimumFractionDigits: 2 })}
+              ${stats.totalSpent.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </p>
             <p className="text-sm text-gray-500">{t("totalSpent") || "Total Spent"}</p>
           </div>
@@ -135,23 +134,6 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">{t("instagram") || "Instagram"}</p>
                 <p className="text-sm font-medium text-gray-900">@{client.instagram}</p>
-              </div>
-            </div>
-          )}
-
-          {client.birthday && (
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <FiCalendar className="w-4 h-4 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">{t("birthday") || "Birthday"}</p>
-                <p className="text-sm font-medium text-gray-900">
-                  {new Date(client.birthday).toLocaleDateString(currentLanguage, {
-                    day: "2-digit",
-                    month: "long",
-                  })}
-                </p>
               </div>
             </div>
           )}

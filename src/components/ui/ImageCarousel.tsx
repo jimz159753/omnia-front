@@ -13,8 +13,11 @@ interface ImageCarouselProps {
   tags?: {
     name: string;
     icon?: React.ReactNode;
+    // Allow other properties
+    [key: string]: any;
   }[];
   classNameCarousel?: string;
+  gap?: number;
 }
 
 // Extracted styles
@@ -26,13 +29,13 @@ const carouselStyles = {
     height: "100%",
     overflow: "hidden",
   },
-  marqueeContainer: {
+  marqueeContainer: (gap: number) => ({
     width: "100%",
     display: "flex",
     flexDirection: "row" as const,
-    gap: "16px",
+    gap: `${gap}px`,
     height: "100%",
-  },
+  }),
   image: (isMobile: boolean) => ({
     width: isMobile ? "300px" : "450px",
     height: isMobile ? "200px" : "300px",
@@ -92,7 +95,7 @@ const CarouselTag = ({
   index,
   isDuplicate = false,
 }: {
-  tag: { name: string; icon?: React.ReactNode };
+  tag: { name: string; icon?: React.ReactNode; [key: string]: any };
   index: number;
   isDuplicate?: boolean;
 }) => (
@@ -114,6 +117,7 @@ export const ImageCarousel = ({
   speed = 15,
   tags,
   classNameCarousel,
+  gap = 16,
 }: ImageCarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
@@ -127,7 +131,7 @@ export const ImageCarousel = ({
 
     // Calculate dimensions
     const elementWidth = firstElement.offsetWidth;
-    const gap = 16;
+    // gap is now passed from props
     const totalWidth =
       (elementWidth + gap) * (images?.length || tags?.length || 0);
 
@@ -155,7 +159,7 @@ export const ImageCarousel = ({
     return () => {
       animationRef.current?.kill();
     };
-  }, [autoPlay, images?.length, tags?.length, direction, speed]);
+  }, [autoPlay, images?.length, tags?.length, direction, speed, gap]);
 
   const renderImages = () => {
     if (!images?.length) return null;
@@ -227,7 +231,7 @@ export const ImageCarousel = ({
       className={`image-carousel ${classNameCarousel || ""}`}
       style={carouselStyles.container}
     >
-      <div ref={containerRef} style={carouselStyles.marqueeContainer}>
+      <div ref={containerRef} style={carouselStyles.marqueeContainer(gap)}>
         {renderImages()}
         {renderTags()}
       </div>

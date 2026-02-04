@@ -9,7 +9,14 @@ export interface Service {
   name: string;
   price: number;
   duration: number;
-  googleCalendarId?: string | null;
+  classes?: number | null;
+  providerId?: string | null;
+  startDate?: string | Date | null;
+  endDate?: string | Date | null;
+  provider?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 export interface User {
@@ -33,7 +40,6 @@ export interface AppointmentFormValues {
   clientPhone: string;
   clientInstagram: string;
   clientAddress: string;
-  clientBirthday: Date | string;
   existingClientId: string;
   existingClientIds: string[]; // Array of client IDs for multi-select
   googleCalendarId: string; // Selected Google Calendar ID
@@ -143,7 +149,6 @@ export const useAppointmentDetails = ({
       clientPhone: "",
       clientInstagram: "",
       clientAddress: "",
-      clientBirthday: undefined,
       existingClientId: "",
       existingClientIds: [],
       googleCalendarId: "",
@@ -256,7 +261,6 @@ export const useAppointmentDetails = ({
         phone: values.clientPhone || "",
         instagram: values.clientInstagram || null,
         address: values.clientAddress || "",
-        birthday: values.clientBirthday || null,
       };
 
       console.log("Creating client with payload:", clientPayload);
@@ -421,10 +425,6 @@ export const useAppointmentDetails = ({
       const { unitPrice, startTime, endTime, durationInMinutes } =
         appointmentDetails;
 
-      // Get the selected service's googleCalendarId
-      const selectedService = services.find((s) => s.id === values.serviceId);
-      const serviceCalendarId = selectedService?.googleCalendarId || undefined;
-
       const ticketResponse = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -446,7 +446,7 @@ export const useAppointmentDetails = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           duration: durationInMinutes,
-          googleCalendarId: serviceCalendarId, // Use service's calendar instead of form field
+          googleCalendarId: values.googleCalendarId || undefined,
         }),
       });
 
@@ -457,7 +457,7 @@ export const useAppointmentDetails = ({
 
       return await ticketResponse.json();
     },
-    [services]
+    []
   );
 
   /**

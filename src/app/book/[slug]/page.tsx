@@ -14,15 +14,18 @@ import {
   BiCheck,
 } from "react-icons/bi";
 
-// Translations (using standard hook)
-import { useTranslation } from "react-i18next"; // Using direct hook or custom wrapper depending on project consistency
+// Translations
+import enTranslations from "@/i18n/locales/en/booking.json";
+import esTranslations from "@/i18n/locales/es/booking.json";
 
-type ServiceSchedule = {
+type TranslationKey = keyof typeof enTranslations;
+
+interface ServiceSchedule {
   dayOfWeek: string;
   isOpen: boolean;
   startTime: string | null;
   endTime: string | null;
-};
+}
 
 interface Service {
   id: string;
@@ -72,7 +75,6 @@ interface AvailabilityData {
 export default function BookingPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const { t, i18n } = useTranslation("booking");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,17 +97,28 @@ export default function BookingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
 
-  // Auto-detect language on mount if not set specific preference or just generally respect browser
+  // Language detection and translations
+  const [locale, setLocale] = useState<"en" | "es">("es");
+  
   useEffect(() => {
-    // Basic detection: if i18n language is 'en' (default) but browser is 'es', switch to 'es'
-    // This is a simple fallback for public pages
+    // Detect browser language
     const browserLang = navigator.language.toLowerCase();
-    if (browserLang.startsWith("es") && !i18n.language.startsWith("es")) {
-       i18n.changeLanguage("es");
+    if (browserLang.startsWith("es")) {
+      setLocale("es");
+    } else {
+      setLocale("en");
     }
-  }, [i18n]);
+  }, []);
 
-  const dateLocale = i18n.language.startsWith("es") ? es : enUS;
+  const translations = useMemo(() => {
+    return locale === "es" ? esTranslations : enTranslations;
+  }, [locale]);
+
+  const t = useCallback((key: TranslationKey): string => {
+    return translations[key] || key;
+  }, [translations]);
+
+  const dateLocale = locale === "es" ? es : enUS;
 
   const fetchCalendarData = useCallback(async () => {
     try {
@@ -337,7 +350,7 @@ export default function BookingPage() {
             {calendarData.calendar.logoImage && (
               <img
                 src={calendarData.calendar.logoImage}
-                alt={t("logoAlt") || "Logo"}
+                alt="Logo"
                 className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white/50 object-cover"
               />
             )}
@@ -606,7 +619,7 @@ export default function BookingPage() {
                       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
                       style={{ focusRingColor: primaryColor } as React.CSSProperties}
-                      placeholder={t("namePlaceholder")}
+                      placeholder="John Doe"
                     />
                   </div>
                   <div>
@@ -619,7 +632,7 @@ export default function BookingPage() {
                       value={contactForm.phone}
                       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
-                      placeholder={t("phonePlaceholder")}
+                      placeholder="+52 33 1234 5678"
                     />
                   </div>
                   <div>
@@ -632,7 +645,7 @@ export default function BookingPage() {
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
-                      placeholder={t("emailPlaceholder")}
+                      placeholder="email@example.com"
                     />
                   </div>
                   <div>

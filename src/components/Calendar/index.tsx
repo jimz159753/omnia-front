@@ -2,27 +2,29 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery, useTheme } from "@/hooks/useCustomMediaQuery";
 import { calendarStyles } from "./Calendar.styles";
-import ImageCarousel from "@/components/ImageCarousel";
-import cosme_2 from "@/assets/images/cosmetology/2.webp";
-import cosme_3 from "@/assets/images/cosmetology/3.webp";
-import cosme_4 from "@/assets/images/cosmetology/4.webp";
-import cosme_5 from "@/assets/images/cosmetology/5.webp";
-import cosme_6 from "@/assets/images/cosmetology/6.webp";
-import cosme_7 from "@/assets/images/cosmetology/7.webp";
-import cosme_8 from "@/assets/images/cosmetology/8.webp";
-import cosme_9 from "@/assets/images/cosmetology/9.webp";
-import cosme_10 from "@/assets/images/cosmetology/10.webp";
-import cosme_11 from "@/assets/images/cosmetology/11.webp";
-import cosme_12 from "@/assets/images/cosmetology/12.webp";
-import cosme_13 from "@/assets/images/cosmetology/13.webp";
-import holi_2 from "@/assets/images/holistic/2.webp";
-import holi_3 from "@/assets/images/holistic/3.webp";
-import holi_4 from "@/assets/images/holistic/4.webp";
-import holi_5 from "@/assets/images/holistic/5.webp";
-import holi_6 from "@/assets/images/holistic/6.webp";
-import holi_7 from "@/assets/images/holistic/7.webp";
-import holi_8 from "@/assets/images/holistic/8.webp";
-import holi_9 from "@/assets/images/holistic/9.webp";
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
+// Cosmetology images
+import cosmo2 from "@/assets/images/cosmetology/2.webp";
+import cosmo3 from "@/assets/images/cosmetology/3.webp";
+import cosmo4 from "@/assets/images/cosmetology/4.webp";
+import cosmo5 from "@/assets/images/cosmetology/5.webp";
+import cosmo6 from "@/assets/images/cosmetology/6.webp";
+import cosmo7 from "@/assets/images/cosmetology/7.webp";
+import cosmo8 from "@/assets/images/cosmetology/8.webp";
+import cosmo9 from "@/assets/images/cosmetology/9.webp";
+import cosmo10 from "@/assets/images/cosmetology/10.webp";
+import cosmo11 from "@/assets/images/cosmetology/11.webp";
+import cosmo12 from "@/assets/images/cosmetology/12.webp";
+import cosmo13 from "@/assets/images/cosmetology/13.webp";
+// Holistic images
+import hol2 from "@/assets/images/holistic/2.webp";
+import hol3 from "@/assets/images/holistic/3.webp";
+import hol4 from "@/assets/images/holistic/4.webp";
+import hol5 from "@/assets/images/holistic/5.webp";
+import hol6 from "@/assets/images/holistic/6.webp";
+import hol7 from "@/assets/images/holistic/7.webp";
+import hol8 from "@/assets/images/holistic/8.webp";
+import hol9 from "@/assets/images/holistic/9.webp";
 
 interface BookingCalendar {
   id: string;
@@ -31,8 +33,6 @@ interface BookingCalendar {
   isActive: boolean;
   showOnMainPage: boolean;
 }
-
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const Calendar: React.FC = () => {
   const theme = useTheme();
@@ -60,23 +60,26 @@ const Calendar: React.FC = () => {
         console.error("Error fetching calendar:", err);
       } finally {
         setLoading(false);
-        // Delay refresh slightly to allow the DOM to update
-        setTimeout(() => {
-          if (typeof window !== "undefined") {
-            ScrollTrigger.refresh();
-          }
-        }, 100);
       }
     };
 
     fetchCalendar();
   }, []);
 
-
   // Don't render anything if no calendar is toggled for main page
   if (!loading && !calendarSlug) {
     return null;
   }
+
+  // Separate image arrays
+  const cosmetologyImages = [
+    cosmo2.src, cosmo3.src, cosmo4.src, cosmo5.src, cosmo6.src, cosmo7.src,
+    cosmo8.src, cosmo9.src, cosmo10.src, cosmo11.src, cosmo12.src, cosmo13.src,
+  ];
+
+  const holisticImages = [
+    hol2.src, hol3.src, hol4.src, hol5.src, hol6.src, hol7.src, hol8.src, hol9.src,
+  ];
 
   return (
     <section
@@ -91,35 +94,26 @@ const Calendar: React.FC = () => {
           calendario.
         </p>
       </div>
-      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "20px", justifyContent: "center", alignItems: "center", padding: "0 20px" }}>
-        <ImageCarousel
-          images={[
-            cosme_2.src,
-            cosme_3.src,
-            cosme_4.src,
-            cosme_5.src,
-            cosme_6.src,
-            cosme_7.src,
-            cosme_8.src,
-            cosme_9.src,
-            cosme_10.src,
-            cosme_11.src,
-            cosme_12.src,
-            cosme_13.src,
-          ]}
-        />
-        <ImageCarousel
-          images={[
-            holi_2.src,
-            holi_3.src,
-            holi_4.src,
-            holi_5.src,
-            holi_6.src,
-            holi_7.src,
-            holi_8.src,
-            holi_9.src,
-          ]}
-        />
+
+      {/* Services Showcase Section */}
+      <div className="flex flex-col gap-12 w-full pt-12">
+        {/* Cosmetology Section */}
+        <div className="flex flex-col">
+          <div className="mb-6 px-4">
+            <h3 className="text-[#86694B] font-serif text-3xl mb-2 tracking-wide">Cosmetología</h3>
+            <div className="h-0.5 w-16 bg-[#86694B]/30"></div>
+          </div>
+          <ImageCarousel images={cosmetologyImages} speed={30} isMobile={isMobile} />
+        </div>
+
+        {/* Holistic Section */}
+        <div className="flex flex-col">
+          <div className="mb-6 px-4">
+            <h3 className="text-[#86694B] font-serif text-3xl mb-2 tracking-wide">Holística</h3>
+            <div className="h-0.5 w-16 bg-[#86694B]/30"></div>
+          </div>
+          <ImageCarousel images={holisticImages} speed={25} direction="right" isMobile={isMobile} />
+        </div>
       </div>
 
       <div style={styles.calendarContainer}>

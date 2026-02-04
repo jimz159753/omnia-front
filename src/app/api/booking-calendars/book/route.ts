@@ -233,35 +233,19 @@ export async function POST(request: NextRequest) {
         },
       };
 
-      // Use the service's Google Calendar ID if set, otherwise get the default enabled calendar
-      let actualCalendarId = service.googleCalendarId || undefined;
+      // Use the service's Google Calendar ID if set, otherwise use default
+      const targetCalendarId = service.googleCalendarId || undefined;
+      console.log(`📅 Syncing to Google Calendar: ${targetCalendarId ? targetCalendarId.substring(0, 30) + '...' : 'default'} (service: ${service.name})`);
       
-      // If no service-specific calendar, find the default enabled calendar
-      if (!actualCalendarId) {
-        const defaultCalendar = await prisma.googleCalendar.findFirst({
-          where: { isEnabled: true },
-          select: { calendarId: true, name: true },
-        });
-        if (defaultCalendar) {
-          actualCalendarId = defaultCalendar.calendarId;
-          console.log(`📅 Using default calendar: ${defaultCalendar.name}`);
-        }
-      }
-      
-      console.log(`📅 Syncing to Google Calendar: ${actualCalendarId ? actualCalendarId.substring(0, 30) + '...' : 'none'} (service: ${service.name})`);
-      
-      const googleEventId = await createGoogleCalendarEvent(googleEvent, actualCalendarId);
+      const googleEventId = await createGoogleCalendarEvent(googleEvent, targetCalendarId);
 
-      // Save the Google Calendar event ID and calendar ID to the ticket
+      // Save the Google Calendar event ID to the ticket
       if (googleEventId) {
         await prisma.ticket.update({
           where: { id: ticket.id },
-          data: { 
-            googleCalendarEventId: googleEventId,
-            googleCalendarId: actualCalendarId, // Save the actual calendar ID used for color lookup
-          },
+          data: { googleCalendarEventId: googleEventId },
         });
-        console.log(`📅 Created Google Calendar event: ${googleEventId} in calendar: ${actualCalendarId || 'none'}`);
+        console.log(`📅 Created Google Calendar event: ${googleEventId}`);
       }
     }
 

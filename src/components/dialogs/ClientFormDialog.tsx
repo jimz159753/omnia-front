@@ -193,6 +193,8 @@ export function ClientFormDialog({
                   onChange={field.onChange}
                   placeholder={t("birthday")}
                   captionLayout="dropdown"
+                  fromYear={1900}
+                  toYear={new Date().getFullYear()}
                 />
               )}
             />

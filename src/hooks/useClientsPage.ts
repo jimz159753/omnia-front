@@ -124,15 +124,12 @@ export function useClientsPage(ticketCallbacks?: TicketCallbacks): UseClientsPag
     [filteredClients, selectedClientId]
   );
 
-  const { t: tCommon } = useTranslation("common");
-  const { t: tSales } = useTranslation("sales");
-
   const ticketColumns: ColumnDef<TicketRow>[] = useMemo(
-    () => getTicketColumns(tCommon, tSales, i18n.language, {
+    () => getTicketColumns({
       onEdit: ticketCallbacks?.onEditTicket,
       onDelete: ticketCallbacks?.onDeleteTicket,
     }),
-    [tCommon, tSales, i18n.language, ticketCallbacks?.onEditTicket, ticketCallbacks?.onDeleteTicket]
+    [i18n.language, ticketCallbacks?.onEditTicket, ticketCallbacks?.onDeleteTicket]
   );
 
   const allFilteredTickets = useMemo(() => {

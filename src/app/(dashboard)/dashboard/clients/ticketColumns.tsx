@@ -5,15 +5,16 @@ import type { ColumnDef, TicketRow } from "@/types/clients";
 import { FiShoppingBag, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { getStatusBadgeClass, getStatusLabel } from "@/constants/status";
 import { formatCurrency } from "@/utils";
+import i18next from "@/i18n";
 
-const formatDateTime = (iso: string, language: string) => {
+const formatDateTime = (iso: string) => {
   const date = new Date(iso);
-  const dateStr = date.toLocaleDateString(language, {
+  const dateStr = date.toLocaleDateString("es-MX", {
     month: "short",
     day: "2-digit",
     year: "numeric",
   });
-  const timeStr = date.toLocaleTimeString(language, {
+  const timeStr = date.toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -25,12 +26,10 @@ interface ColumnCallbacks {
   onDelete?: (ticket: TicketRow) => void;
 }
 
-export const getTicketColumns = (
-  tCommon: (key: string) => string,
-  tSales: (key: string) => string,
-  language: string,
-  callbacks?: ColumnCallbacks
-): ColumnDef<TicketRow>[] => {
+export const getTicketColumns = (callbacks?: ColumnCallbacks): ColumnDef<TicketRow>[] => {
+  const tCommon = (key: string) => i18next.t(`common:${key}`);
+  const tSales = (key: string) => i18next.t(`sales:${key}`);
+
   const columns: ColumnDef<TicketRow>[] = [
     {
       accessorKey: "id",
@@ -47,7 +46,7 @@ export const getTicketColumns = (
       accessorKey: "createdAt",
       header: tCommon("date"),
       cell: ({ row }) => {
-        const { dateStr, timeStr } = formatDateTime(row.original.createdAt, language);
+        const { dateStr, timeStr } = formatDateTime(row.original.createdAt);
         return (
           <div className="text-sm">
             <p className="text-gray-900 font-medium">{dateStr}</p>

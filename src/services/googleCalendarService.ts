@@ -348,55 +348,45 @@ export const deleteGoogleCalendarEvent = async (
 };
 
 /**
- * Get Access Control List (ACL) for a calendar
- * @param targetCalendarId - The calendar ID (from GoogleCalendar table)
+ * Get the Access Control List (ACL) for a calendar
+ * @param calendarId - Google Calendar ID
  */
-export const getCalendarAcl = async (
-  targetCalendarId: string
-): Promise<any[] | null> => {
+export async function getCalendarAcl(calendarId: string) {
   try {
-    const oauth2Client = await getOAuth2AuthClient(targetCalendarId);
+    const oauth2Client = await getOAuth2AuthClient(calendarId);
     if (!oauth2Client) {
-      console.error(`❌ OAuth2 client not found for ${targetCalendarId}`);
+      console.error(`❌ getCalendarAcl: OAuth2 client not found for calendar ${calendarId}`);
       return null;
     }
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const response = await calendar.acl.list({ calendarId });
     
-    const response = await calendar.acl.list({
-      calendarId: targetCalendarId,
-    });
-
-    console.log(`✅ Fetched ACL for calendar ${targetCalendarId}`);
     return response.data.items || [];
   } catch (error) {
-    console.error('❌ Error fetching ACL:', error);
+    console.error('❌ Error fetching calendar ACL:', error);
     return null;
   }
-};
+}
 
 /**
- * Add a rule to the Access Control List (ACL)
- * @param targetCalendarId - The calendar ID
- * @param email - Email to share with
- * @param role - Role (recieved, freeBusyReader, reader, writer, owner)
+ * Add a new person to the Access Control List (ACL) of a calendar
+ * @param calendarId - Google Calendar ID
+ * @param email - Email address of the user to invite
+ * @param role - Role for the user (owner, writer, reader, freeBusyReader)
  */
-export const addCalendarAcl = async (
-  targetCalendarId: string,
-  email: string,
-  role: 'none' | 'freeBusyReader' | 'reader' | 'writer' | 'owner' = 'reader'
-): Promise<any | null> => {
+export async function addCalendarAcl(calendarId: string, email: string, role: string = 'reader') {
   try {
-    const oauth2Client = await getOAuth2AuthClient(targetCalendarId);
+    const oauth2Client = await getOAuth2AuthClient(calendarId);
     if (!oauth2Client) {
-      console.error(`❌ OAuth2 client not found for ${targetCalendarId}`);
+      console.error(`❌ addCalendarAcl: OAuth2 client not found for calendar ${calendarId}`);
       return null;
     }
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    
     const response = await calendar.acl.insert({
-      calendarId: targetCalendarId,
+      calendarId,
+      sendNotifications: true,
       requestBody: {
         role,
         scope: {
@@ -406,42 +396,36 @@ export const addCalendarAcl = async (
       },
     });
 
-    console.log(`✅ Added ACL rule for ${email} on calendar ${targetCalendarId}`);
     return response.data;
   } catch (error) {
-    console.error('❌ Error adding ACL rule:', error);
+    console.error('❌ Error adding calendar ACL:', error);
     return null;
   }
-};
+}
 
 /**
- * Delete a rule from the Access Control List (ACL)
- * @param targetCalendarId - The calendar ID
- * @param ruleId - The ACL rule ID to delete
+ * Delete a rule from the Access Control List (ACL) of a calendar
+ * @param calendarId - Google Calendar ID
+ * @param ruleId - ACL rule ID to delete
  */
-export const deleteCalendarAcl = async (
-  targetCalendarId: string,
-  ruleId: string
-): Promise<boolean> => {
+export async function deleteCalendarAcl(calendarId: string, ruleId: string) {
   try {
-    const oauth2Client = await getOAuth2AuthClient(targetCalendarId);
+    const oauth2Client = await getOAuth2AuthClient(calendarId);
     if (!oauth2Client) {
-      console.error(`❌ OAuth2 client not found for ${targetCalendarId}`);
+      console.error(`❌ deleteCalendarAcl: OAuth2 client not found for calendar ${calendarId}`);
       return false;
     }
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    
     await calendar.acl.delete({
-      calendarId: targetCalendarId,
+      calendarId,
       ruleId,
     });
 
-    console.log(`✅ Deleted ACL rule ${ruleId} from calendar ${targetCalendarId}`);
     return true;
   } catch (error) {
-    console.error('❌ Error deleting ACL rule:', error);
+    console.error('❌ Error deleting calendar ACL:', error);
     return false;
   }
-};
+}
 

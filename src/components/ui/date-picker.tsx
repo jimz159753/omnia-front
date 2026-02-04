@@ -19,6 +19,8 @@ interface DatePickerProps {
   disabled?: boolean;
   className?: string;
   captionLayout?: "label" | "dropdown" | "dropdown-months" | "dropdown-years";
+  fromYear?: number;
+  toYear?: number;
 }
 
 export function DatePicker({
@@ -28,6 +30,8 @@ export function DatePicker({
   disabled = false,
   className,
   captionLayout,
+  fromYear,
+  toYear,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -58,8 +62,8 @@ export function DatePicker({
           }}
           initialFocus
           captionLayout={captionLayout}
-          startMonth={new Date(1900, 0)}
-          endMonth={new Date(2100, 11)}
+          fromYear={fromYear}
+          toYear={toYear}
         />
       </PopoverContent>
     </Popover>

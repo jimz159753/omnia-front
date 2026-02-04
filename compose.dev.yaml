@@ -19,10 +19,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Standard volumes for assets and config
+      # Mount source code for hot reload
       - ./src:/app/src:cached
       - ./public:/app/public:cached
       - ./prisma:/app/prisma:cached
+      # Mount config files
       - ./next.config.ts:/app/next.config.ts:cached
       - ./tailwind.config.ts:/app/tailwind.config.ts:cached
       - ./tsconfig.json:/app/tsconfig.json:cached
@@ -53,19 +54,6 @@ services:
       - db
     networks:
       - omnia_network
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./package.json
-        - action: rebuild
-          path: ./next.config.ts
-        - action: rebuild
-          path: ./tailwind.config.ts
 
 volumes:
   postgres_data:

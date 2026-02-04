@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Service, Category, SubCategory } from "@/generated/prisma";
+import { Service, Category, SubCategory, Provider } from "@/generated/prisma";
 
 import { FiEdit, FiTrash2, FiClock, FiTag } from "react-icons/fi";
 import i18next from "@/i18n";
@@ -21,12 +21,13 @@ const formatDateTime = (iso: string) => {
   return { dateStr, timeStr };
 };
 
-// Extended type to include the category and subcategory relations
+// Extended type to include the category, subcategory, and provider relations
 export type ServiceWithRelations = Service & {
   category: Category & {
     subCategory: SubCategory | null;
   };
   subCategory: SubCategory;
+  provider?: Provider | null;
 };
 
 type CellInfo = {

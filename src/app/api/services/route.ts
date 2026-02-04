@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
           },
         },
         subCategory: true,
+        provider: true,
         schedules: true,
       },
       orderBy: {
@@ -77,6 +78,10 @@ export async function POST(request: NextRequest) {
       commission,
       duration,
       slots,
+      classes,
+      providerId,
+      startDate,
+      endDate,
       categoryId,
       subCategoryId,
       image,
@@ -142,6 +147,10 @@ export async function POST(request: NextRequest) {
         commission: parseFloat(commission),
         duration: parseInt(duration),
         slots: slots && parseInt(slots) > 0 ? parseInt(slots) : null,
+        classes: classes && parseInt(classes) > 0 ? parseInt(classes) : null,
+        providerId: providerId || null,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,
         image: image || "",
@@ -165,6 +174,7 @@ export async function POST(request: NextRequest) {
           },
         },
         subCategory: true,
+        provider: true,
         schedules: true,
       },
     });
@@ -195,6 +205,10 @@ export async function PUT(request: NextRequest) {
       commission,
       duration,
       slots,
+      classes,
+      providerId,
+      startDate,
+      endDate,
       categoryId,
       subCategoryId,
       image,
@@ -259,7 +273,8 @@ export async function PUT(request: NextRequest) {
 
     // Calculate slots value
     const slotsValue = slots !== undefined ? (parseInt(String(slots)) > 0 ? parseInt(String(slots)) : null) : undefined;
-    console.log(`📝 Updating service "${name || existingService.name}": slots received=${slots} (type: ${typeof slots}), saving as=${slotsValue}`);
+    const classesValue = classes !== undefined ? (parseInt(String(classes)) > 0 ? parseInt(String(classes)) : null) : undefined;
+    console.log(`📝 Updating service "${name || existingService.name}": slots received=${slots}, classes received=${classes}`);
 
     // Update schedules if provided
     if (schedules !== undefined && Array.isArray(schedules)) {
@@ -292,6 +307,10 @@ export async function PUT(request: NextRequest) {
         commission: commission !== undefined ? parseFloat(commission) : undefined,
         duration: duration !== undefined ? parseInt(duration) : undefined,
         slots: slotsValue,
+        classes: classesValue,
+        providerId: providerId !== undefined ? (providerId || null) : undefined,
+        startDate: startDate !== undefined ? (startDate ? new Date(startDate) : null) : undefined,
+        endDate: endDate !== undefined ? (endDate ? new Date(endDate) : null) : undefined,
         categoryId: categoryId || null,
         subCategoryId: subCategoryId || null,
         image: image || "",
@@ -305,6 +324,7 @@ export async function PUT(request: NextRequest) {
           },
         },
         subCategory: true,
+        provider: true,
         schedules: true,
       },
     });

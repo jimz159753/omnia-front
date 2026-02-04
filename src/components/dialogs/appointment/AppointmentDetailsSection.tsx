@@ -148,6 +148,52 @@ export const AppointmentDetailsSection = ({
         </div>
       </div>
 
+      {/* Package Info - Show classes and provider if service is a package */}
+      {selectedService && (selectedService.classes || selectedService.provider) && (
+        <div className="grid grid-cols-2 gap-3 bg-blue-50 p-4 rounded-md border border-blue-200">
+          {selectedService.classes && (
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-blue-700">
+                {t("classes") || "Classes"}
+              </label>
+              <p className="text-sm text-blue-900">
+                {selectedService.classes} {t("sessions") || "sessions"}
+              </p>
+            </div>
+          )}
+          {selectedService.provider && (
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-blue-700">
+                {t("instructor") || "Instructor"}
+              </label>
+              <p className="text-sm text-blue-900">
+                {selectedService.provider.name}
+              </p>
+            </div>
+          )}
+          {selectedService.startDate && (
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-blue-700">
+                {t("startDate") || "Start Date"}
+              </label>
+              <p className="text-sm text-blue-900">
+                {new Date(selectedService.startDate).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+          {selectedService.endDate && (
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-blue-700">
+                {t("endDate") || "End Date"}
+              </label>
+              <p className="text-sm text-blue-900">
+                {new Date(selectedService.endDate).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Notes Checkbox */}
       <div className="border-t p-4">
         <div

@@ -9,7 +9,6 @@ import {
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
 import ClientMultiCombobox from "@/components/clients/ClientMultiCombobox";
-import { DatePicker } from "@/components/ui/date-picker";
 import { useTranslation } from "@/hooks/useTranslation";
 import type {
   Client,
@@ -238,21 +237,15 @@ export const ClientDetailsSection = ({
                   )}
                 </div>
 
+                {/* Birthday */}
                 <div className="space-y-2">
                   <label className="text-sm font-normal text-gray-700">
                     {t("birthday")}
                   </label>
-                  <Controller
-                    control={control}
-                    name="clientBirthday"
-                    render={({ field }) => (
-                      <DatePicker
-                        value={field.value as Date | undefined}
-                        onChange={field.onChange}
-                        placeholder={t("birthday")}
-                        captionLayout="dropdown"
-                      />
-                    )}
+                  <input
+                    type="text"
+                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    placeholder="DD/MM/YYYY"
                   />
                 </div>
               </div>

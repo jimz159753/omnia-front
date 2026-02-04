@@ -34,6 +34,15 @@ export const serviceSchema = z.object({
     .refine((val) => !val || (!isNaN(Number(val)) && Number(val) >= 1), {
       message: "Slots must be at least 1",
     }),
+  classes: z
+    .string()
+    .optional()
+    .refine((val) => !val || (!isNaN(Number(val)) && Number(val) >= 1), {
+      message: "Classes must be at least 1",
+    }),
+  providerId: z.string().optional().or(z.literal("")),
+  startDate: z.string().optional().or(z.literal("")),
+  endDate: z.string().optional().or(z.literal("")),
   categoryId: z.string().optional().or(z.literal("")),
   subCategoryId: z.string().optional().or(z.literal("")),
   image: z.string().optional().or(z.literal("")),

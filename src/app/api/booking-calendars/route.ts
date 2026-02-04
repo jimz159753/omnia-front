@@ -106,15 +106,8 @@ export async function POST(request: NextRequest) {
     // Generate unique slug from name
     let slug = name
       .toLowerCase()
-      .normalize("NFD") // Handle accented characters
-      .replace(/[\u0300-\u036f]/g, "") // Remove accents
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-
-    // Fallback if slug is empty
-    if (!slug) {
-      slug = `calendar-${Math.random().toString(36).substring(2, 7)}`;
-    }
 
     // Check if slug exists and make it unique
     const existingSlug = await prisma.bookingCalendar.findUnique({
@@ -122,13 +115,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingSlug) {
-      slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
+      slug = `${slug}-${Date.now().toString(36)}`;
     }
-
-
-    // Ensure slots is a number
-    const parsedSlots = slots !== undefined && slots !== "" ? parseInt(String(slots), 10) : 1;
-    const finalSlots = !isNaN(parsedSlots) ? parsedSlots : 1;
 
     // Create the booking calendar
     const calendar = await prisma.bookingCalendar.create({
@@ -142,17 +130,15 @@ export async function POST(request: NextRequest) {
         backgroundImage: backgroundImage || null,
         logoImage: logoImage || null,
         primaryColor: primaryColor || "#059669",
-        slots: finalSlots,
+        slots: slots || 1,
         googleCalendarId: googleCalendarId || null,
         services: {
           create:
-            Array.from(new Set(serviceIds as string[] || [])).map((serviceId: string) => ({
+            serviceIds?.map((serviceId: string) => ({
               serviceId,
               isEnabled: true,
-            })),
-
+            })) || [],
         },
-
       },
       include: {
         services: {
@@ -164,18 +150,14 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(calendar, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating booking calendar:", error);
     return NextResponse.json(
-      { 
-        error: "Failed to create booking calendar",
-        details: error?.message || String(error)
-      },
+      { error: "Failed to create booking calendar" },
       { status: 500 }
     );
   }
 }
-
 
 // PUT - Update a booking calendar
 export async function PUT(request: NextRequest) {

@@ -52,15 +52,15 @@ model Ticket {
 }
 
 model Client {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  email     String    @unique
+  email     String   @unique
   phone     String
-  instagram String?   @unique
-  address   String    @default("")
+  instagram String?  @unique
+  address   String   @default("")
   birthday  DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   tickets   Ticket[]
 }
 
@@ -95,6 +95,7 @@ model Provider {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
+  services    Service[] @relation("ServiceProvider")
 }
 
 model Product {
@@ -131,6 +132,11 @@ model Service {
   price            Float
   commission       Float
   slots            Int? // Number of clients that can be scheduled simultaneously (null = use calendar default)
+  classes          Int? // Number of classes/sessions in a package (null = single session service)
+  providerId       String? // Instructor/provider who offers this service
+  provider         Provider?                @relation("ServiceProvider", fields: [providerId], references: [id])
+  startDate        DateTime? // Start date for long-term class packages
+  endDate          DateTime? // End date for long-term class packages
   googleCalendarId String? // Google Calendar ID to sync appointments for this service
   useCustomSchedule Boolean                 @default(false) // Whether to use service-specific schedule
   createdAt        DateTime                 @default(now())
