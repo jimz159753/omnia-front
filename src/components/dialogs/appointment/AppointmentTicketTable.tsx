@@ -11,7 +11,7 @@ import {
 } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddProductDialog } from "./AddProductDialog";
-import { GoogleCalendarSelector } from "./GoogleCalendarSelector";
+
 import { toast } from "sonner";
 
 interface TicketItem {
@@ -566,16 +566,7 @@ export function AppointmentTicketTable({
             />
           </div>
         )}
-        {/* Google Calendar Selector */}
-        {userId && onGoogleCalendarChange && (
-          <div className="border-t pt-4 mt-4">
-            <GoogleCalendarSelector
-              value={googleCalendarId}
-              onChange={onGoogleCalendarChange}
-              userId={userId}
-            />
-          </div>
-        )}
+
       </div>
 
       {/* Add Product Dialog */}

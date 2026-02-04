@@ -8,7 +8,7 @@ import { useAppointmentDetails } from "@/hooks/useAppointmentDetails";
 import { AppointmentDetailsSection } from "./appointment/AppointmentDetailsSection";
 import { ClientDetailsSection } from "./appointment/ClientDetailsSection";
 import { AppointmentHeader } from "./appointment/AppointmentHeader";
-import { GoogleCalendarSelector } from "./appointment/GoogleCalendarSelector";
+
 import {
   AppointmentTicketTable,
   type NewTicketItem,
@@ -160,7 +160,7 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 [&>button]:hidden">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 [&>button]:hidden rounded-2xl overflow-hidden">
         {/* Hidden DialogTitle for accessibility */}
         <DialogTitle className="sr-only">
           {initialData ? t("editAppointment") : t("createAppointment")}
@@ -284,17 +284,7 @@ export function AppointmentFormDialog({
                         setIncludeNotes={setIncludeNotes}
                         selectedServiceId={watch("serviceId")}
                       />
-                      {/* Google Calendar Selector for new appointments */}
-                      <div className="border-t pt-4 px-4 pb-4">
-                        <GoogleCalendarSelector
-                          value={watch("googleCalendarId")}
-                          onChange={(calendarId) =>
-                            setValue("googleCalendarId", calendarId)
-                          }
-                          userId={user?.id || ""}
-                          error={errors.googleCalendarId?.message}
-                        />
-                      </div>
+
                     </>
                   )}
                 </div>
