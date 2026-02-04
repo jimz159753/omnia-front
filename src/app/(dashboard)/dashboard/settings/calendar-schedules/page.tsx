@@ -36,6 +36,7 @@ interface Service {
   description: string;
   image: string;
   slots: number | null;
+  classes?: number | null; // Class packages have classes > 0
 }
 
 interface BookingCalendarService {
@@ -111,7 +112,12 @@ export default function CalendarSchedulesPage() {
       const response = await fetch("/api/services?pageSize=100");
       if (response.ok) {
         const data = await response.json();
-        setServices(data.data || []);
+        // Filter out class packages (services with classes > 0)
+        // Class packages are sold as products, not booked through calendars
+        const regularServices = (data.data || []).filter(
+          (s: Service) => !s.classes || s.classes <= 0
+        );
+        setServices(regularServices);
       }
     } catch (error) {
       console.error("Error fetching services:", error);

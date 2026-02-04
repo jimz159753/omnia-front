@@ -57,6 +57,20 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
-  "closed": "Closed"
+  "closed": "Closed",
+  "classes": "Number of Classes",
+  "classesPlaceholder": "e.g. 8, 12, 16",
+  "classesDescription": "Number of classes to schedule between start and end dates",
+  "provider": "Instructor/Provider",
+  "selectProvider": "Select an instructor",
+  "noProvider": "No instructor assigned",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "startDateDescription": "When the class package begins",
+  "endDateDescription": "When the class package ends",
+  "selectStartDate": "Select start date",
+  "selectEndDate": "Select end date",
+  "classPackage": "Class Package",
+  "classPackageDescription": "Enable this if the service is a package of multiple classes with a date range. Class packages are sold as packages and won't appear in the appointment calendar."
 }
 

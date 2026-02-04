@@ -262,15 +262,31 @@ export async function PUT(request: NextRequest) {
         where: { bookingCalendarId: id },
       });
 
-      // Create new services
+      // Create new services - validate that they exist first
       if (serviceIds.length > 0) {
-        await prisma.bookingCalendarService.createMany({
-          data: serviceIds.map((serviceId: string) => ({
-            bookingCalendarId: id,
-            serviceId,
-            isEnabled: true,
-          })),
+        // Check which services actually exist
+        const existingServices = await prisma.service.findMany({
+          where: { id: { in: serviceIds } },
+          select: { id: true },
         });
+        const existingServiceIds = existingServices.map(s => s.id);
+        
+        // Filter to only valid service IDs
+        const validServiceIds = serviceIds.filter((id: string) => existingServiceIds.includes(id));
+        
+        if (validServiceIds.length !== serviceIds.length) {
+          console.warn(`⚠️ Some service IDs were not found. Requested: ${serviceIds.length}, Found: ${validServiceIds.length}`);
+        }
+
+        if (validServiceIds.length > 0) {
+          await prisma.bookingCalendarService.createMany({
+            data: validServiceIds.map((serviceId: string) => ({
+              bookingCalendarId: id,
+              serviceId,
+              isEnabled: true,
+            })),
+          });
+        }
       }
     }
 
@@ -289,8 +305,10 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(updatedCalendar);
   } catch (error) {
     console.error("Error updating booking calendar:", error);
+    // Provide more detailed error info
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to update booking calendar" },
+      { error: "Failed to update booking calendar", details: errorMessage },
       { status: 500 }
     );
   }

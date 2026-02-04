@@ -440,25 +440,35 @@ export default function GoogleCalendarPage() {
 
       {/* Create Calendar Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <BiPlus className="w-5 h-5 text-brand-500" />
-              {t("createNewCalendar") || "Create New Calendar"}
-            </DialogTitle>
-            <DialogDescription>
-              {t("createCalendarDescription") || "Create a new calendar in your Google account"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-5 py-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700">
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden rounded-2xl">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-white">
+                  {t("createNewCalendar") || "Create New Calendar"}
+                </DialogTitle>
+                <DialogDescription className="text-white/70">
+                  {t("createCalendarDescription") || "Create a new calendar in your Google account"}
+                </DialogDescription>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Calendar Name */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 {t("calendarName") || "Calendar Name"} <span className="text-red-500">*</span>
               </label>
               <input
-                id="name"
                 type="text"
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
                 value={newCalendar.name}
                 onChange={(e) =>
                   setNewCalendar({ ...newCalendar, name: e.target.value })
@@ -466,14 +476,15 @@ export default function GoogleCalendarPage() {
                 placeholder={t("calendarNamePlaceholder") || "e.g., Work Calendar"}
               />
             </div>
-            <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium text-gray-700">
+
+            {/* Description */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 {t("description") || "Description"}
               </label>
               <input
-                id="description"
                 type="text"
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
                 value={newCalendar.description}
                 onChange={(e) =>
                   setNewCalendar({
@@ -484,60 +495,68 @@ export default function GoogleCalendarPage() {
                 placeholder={t("descriptionPlaceholder") || "Optional description"}
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">
+
+            {/* Color Selection */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 {t("color") || "Color"}
               </label>
-              <div className="flex gap-2 flex-wrap">
-                {predefinedColors.map(({ color, name }) => (
-                  <button
-                    key={color}
-                    type="button"
-                    title={name}
-                    className={`w-10 h-10 rounded-full transition-all hover:scale-110 ${
-                      newCalendar.backgroundColor === color
-                        ? "ring-2 ring-offset-2 ring-brand-500"
-                        : "ring-1 ring-gray-200"
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() =>
-                      setNewCalendar({
-                        ...newCalendar,
-                        backgroundColor: color,
-                      })
-                    }
-                  />
-                ))}
+              <div className="bg-gray-50 rounded-xl p-3">
+                <div className="flex gap-2 flex-wrap justify-between">
+                  {predefinedColors.map(({ color, name }) => (
+                    <button
+                      key={color}
+                      type="button"
+                      title={name}
+                      className={`w-10 h-10 rounded-full transition-all hover:scale-110 ${
+                        newCalendar.backgroundColor === color
+                          ? "ring-2 ring-offset-2 ring-brand-500 scale-110"
+                          : "ring-1 ring-gray-200 hover:ring-gray-300"
+                      }`}
+                      style={{ backgroundColor: color }}
+                      onClick={() =>
+                        setNewCalendar({
+                          ...newCalendar,
+                          backgroundColor: color,
+                        })
+                      }
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
+
+          {/* Footer */}
+          <div className="flex justify-end gap-3 p-5 border-t bg-gray-50">
+            <button
+              type="button"
               onClick={() => setIsCreateDialogOpen(false)}
+              className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300 transition-all font-medium"
             >
               {t("cancel") || "Cancel"}
-            </Button>
-            <Button 
-              onClick={handleCreateCalendar} 
+            </button>
+            <button
+              onClick={handleCreateCalendar}
               disabled={loading || !newCalendar.name.trim()}
-              className="bg-brand-500 hover:bg-brand-600"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-brand-500/25 flex items-center gap-2"
             >
               {loading ? (
                 <>
-                  <FiLoader className="w-4 h-4 mr-2 animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   {t("creating") || "Creating..."}
                 </>
               ) : (
                 <>
-                  <BiPlus className="w-4 h-4 mr-1" />
+                  <BiPlus className="w-4 h-4" />
                   {t("createCalendar") || "Create Calendar"}
                 </>
               )}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }

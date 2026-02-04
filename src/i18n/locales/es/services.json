@@ -57,6 +57,20 @@
   "friday": "Viernes",
   "saturday": "Sábado",
   "sunday": "Domingo",
-  "closed": "Cerrado"
+  "closed": "Cerrado",
+  "classes": "Número de Clases",
+  "classesPlaceholder": "ej. 8, 12, 16",
+  "classesDescription": "Número de clases a programar entre las fechas de inicio y fin",
+  "provider": "Instructor/Proveedor",
+  "selectProvider": "Seleccionar instructor",
+  "noProvider": "Sin instructor asignado",
+  "startDate": "Fecha de Inicio",
+  "endDate": "Fecha de Fin",
+  "startDateDescription": "Cuando inicia el paquete de clases",
+  "endDateDescription": "Cuando termina el paquete de clases",
+  "selectStartDate": "Seleccionar fecha de inicio",
+  "selectEndDate": "Seleccionar fecha de fin",
+  "classPackage": "Paquete de Clases",
+  "classPackageDescription": "Habilita esto si el servicio es un paquete de múltiples clases con un rango de fechas. Los paquetes de clases se venden como paquetes y no aparecerán en el calendario de citas."
 }
 

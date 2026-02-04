@@ -110,31 +110,41 @@ export const ClientDetailsSection = ({
   );
 
   return (
-    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gray-50">
+    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="flex-1 overflow-y-auto">
         <div
-          className={`flex p-6 ${ticketId ? "justify-between" : "justify-end"}`}
+          className={`flex p-5 ${ticketId ? "justify-between" : "justify-end"}`}
         >
           {/* Show trash icon only if there's a ticket (editing mode) */}
           {ticketId && onDelete && (
             <button
               type="button"
               onClick={onDelete}
-              className="rounded-sm opacity-70 text-gray-500 hover:bg-gray-100 p-2 rounded-md  transition-opacity hover:opacity-100 hover:text-red-600 focus:outline-none"
+              className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors group"
               title="Delete ticket"
             >
-              <FiTrash2 className="h-5 w-5" />
+              <FiTrash2 className="h-5 w-5 text-red-400 group-hover:text-red-600 transition-colors" />
             </button>
           )}
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2"
+            className="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
           >
-            <FiX className="h-6 w-6" />
+            <FiX className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="p-4">
+        <div className="px-5 pb-5">
+          {/* Section Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800">{t("client")}</h3>
+          </div>
+
           {/* Client Tabs */}
           <ClientDetailsTabs
             existingCount={clients.length}
@@ -143,7 +153,7 @@ export const ClientDetailsSection = ({
           />
 
           {/* Existing Client Selection or New Client Form */}
-          <div>
+          <div className="mt-4">
             {existingClientId ? (
               <Controller
                 control={control}
@@ -167,18 +177,18 @@ export const ClientDetailsSection = ({
               />
             ) : (
               /* New Client Form */
-              <div className="space-y-4">
+              <div className="space-y-4 bg-white rounded-xl p-4 border border-gray-100">
                 {/* Name */}
-                <div className="space-y-2">
-                  <label className="text-sm font-normal text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("name")}
                   </label>
                   <input
                     {...register("clientName", {
                       required: "Client name is required",
                     })}
-                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("name")}
+                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="Nombre del cliente"
                   />
                   {errors.clientName && (
                     <p className="text-xs text-red-600">
@@ -188,27 +198,27 @@ export const ClientDetailsSection = ({
                 </div>
 
                 {/* Last Name */}
-                <div className="space-y-2">
-                  <label className="text-sm font-normal text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("lastName")}
                   </label>
                   <input
-                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("lastName")}
+                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="Apellido"
                   />
                 </div>
 
                 {/* Phone */}
-                <div className="space-y-2">
-                  <label className="text-sm font-normal text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("phone")}
                   </label>
                   <input
                     {...register("clientPhone", {
                       required: "Client phone is required",
                     })}
-                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("phone")}
+                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="+52 33 1234 5678"
                   />
                   {errors.clientPhone && (
                     <p className="text-xs text-red-600">
@@ -218,8 +228,8 @@ export const ClientDetailsSection = ({
                 </div>
 
                 {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-sm font-normal text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("email")}
                   </label>
                   <input
@@ -227,8 +237,8 @@ export const ClientDetailsSection = ({
                     {...register("clientEmail", {
                       required: "Client email is required",
                     })}
-                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder={t("email")}
+                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="correo@ejemplo.com"
                   />
                   {errors.clientEmail && (
                     <p className="text-xs text-red-600">
@@ -238,13 +248,13 @@ export const ClientDetailsSection = ({
                 </div>
 
                 {/* Birthday */}
-                <div className="space-y-2">
-                  <label className="text-sm font-normal text-gray-700">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("birthday")}
                   </label>
                   <input
                     type="text"
-                    className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     placeholder="DD/MM/YYYY"
                   />
                 </div>
@@ -253,13 +263,16 @@ export const ClientDetailsSection = ({
           </div>
         </div>
       </div>
-      {/* Total Section */}
-      <div className="flex justify-between items-center text-lg border-t p-4">
-        <span className="font-semibold">{t("total")}:</span>
-        <span className="font-bold text-2xl">${totalPrice.toFixed(2)}</span>
+      {/* Total Section with gradient */}
+      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-5">
+        <div className="flex justify-between items-center">
+          <span className="text-white font-medium text-lg">{t("total")}</span>
+          <span className="font-black text-3xl text-white">${totalPrice.toFixed(2)}</span>
+        </div>
       </div>
       {/* Form Actions */}
       <FormActions isSubmitting={isSubmitting} onCancel={onCancel} />
     </div>
   );
 };
+

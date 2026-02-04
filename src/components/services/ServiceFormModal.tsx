@@ -27,6 +27,8 @@ import { BiLogoGoogle } from "react-icons/bi";
 import { Switch } from "@/components/ui/switch";
 import { BiCalendar, BiChevronDown, BiChevronUp } from "react-icons/bi";
 import { toast } from "sonner";
+import { DatePicker } from "@/components/ui/date-picker";
+import { format, parseISO } from "date-fns";
 
 interface GoogleCalendar {
   calendarId: string;
@@ -92,6 +94,9 @@ export function ServiceFormModal({
   const [useCustomSchedule, setUseCustomSchedule] = useState(false);
   const [schedules, setSchedules] = useState<ServiceSchedule[]>(DEFAULT_SCHEDULES);
   const [scheduleExpanded, setScheduleExpanded] = useState(false);
+  
+  // Class package state
+  const [isClassPackage, setIsClassPackage] = useState(false);
 
   const {
     control,
@@ -200,6 +205,9 @@ export function ServiceFormModal({
         setSchedules(DEFAULT_SCHEDULES);
         setScheduleExpanded(false);
       }
+      
+      // Set isClassPackage based on whether service has classes
+      setIsClassPackage(!!serviceItem.classes && serviceItem.classes > 0);
     } else {
       reset({
         name: "",
@@ -221,6 +229,7 @@ export function ServiceFormModal({
       setUseCustomSchedule(false);
       setSchedules(DEFAULT_SCHEDULES);
       setScheduleExpanded(false);
+      setIsClassPackage(false);
     }
   }, [open, item, reset, t]);
 
@@ -522,117 +531,151 @@ export function ServiceFormModal({
             </div>
           </div>
 
-          {/* Classes and Provider Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label
-                htmlFor="classes"
-                className="text-sm font-medium text-gray-700"
-              >
-                {t("classes") || "Number of Classes"}
-              </label>
-              <input
-                id="classes"
-                type="number"
-                {...register("classes")}
-                placeholder={t("classesPlaceholder") || "Single session"}
-                min="1"
-                step="1"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-              <p className="text-xs text-gray-500">
-                {t("classesDescription") || "Leave empty for single session, or set the number of classes in a package"}
-              </p>
-              {errors.classes && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.classes.message as string}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                {t("provider") || "Instructor/Provider"}
-              </label>
-              <Controller
-                control={control}
-                name="providerId"
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("selectProvider") || "Select an instructor"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">
-                        <span className="text-gray-500">{t("noProvider") || "No instructor assigned"}</span>
+          {/* Provider/Instructor Section */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              {t("provider") || "Instructor/Provider"}
+            </label>
+            <Controller
+              control={control}
+              name="providerId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("selectProvider") || "Select an instructor"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">
+                      <span className="text-gray-500">{t("noProvider") || "No instructor assigned"}</span>
+                    </SelectItem>
+                    {providers.map((provider) => (
+                      <SelectItem key={provider.id} value={provider.id}>
+                        {provider.name}
                       </SelectItem>
-                      {providers.map((provider) => (
-                        <SelectItem key={provider.id} value={provider.id}>
-                          {provider.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.providerId && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.providerId.message as string}
-                </p>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
-            </div>
+            />
+            {errors.providerId && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.providerId.message as string}
+              </p>
+            )}
           </div>
 
-          {/* Date Range Section - for long-term class packages */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label
-                htmlFor="startDate"
-                className="text-sm font-medium text-gray-700"
-              >
-                {t("startDate") || "Start Date"}
-              </label>
-              <input
-                id="startDate"
-                type="date"
-                {...register("startDate")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          {/* Class Package Toggle */}
+          <div className="space-y-3 border rounded-lg p-4 bg-blue-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BiCalendar className="w-5 h-5 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  {t("classPackage") || "Class Package"}
+                </span>
+              </div>
+              <Switch
+                checked={isClassPackage}
+                onCheckedChange={(checked) => {
+                  setIsClassPackage(checked);
+                  if (!checked) {
+                    // Clear class package fields when disabled
+                    setValue("classes", "");
+                    setValue("startDate", "");
+                    setValue("endDate", "");
+                  }
+                }}
               />
-              <p className="text-xs text-gray-500">
-                {t("startDateDescription") || "Optional start date for class packages"}
-              </p>
-              {errors.startDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.startDate.message as string}
-                </p>
-              )}
             </div>
+            <p className="text-xs text-gray-500">
+              {t("classPackageDescription") || "Enable this if the service is a package of multiple classes with a date range. Class packages are sold as packages and won't appear in the appointment calendar."}
+            </p>
 
-            <div className="space-y-2">
-              <label
-                htmlFor="endDate"
-                className="text-sm font-medium text-gray-700"
-              >
-                {t("endDate") || "End Date"}
-              </label>
-              <input
-                id="endDate"
-                type="date"
-                {...register("endDate")}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-              <p className="text-xs text-gray-500">
-                {t("endDateDescription") || "Optional end date for class packages"}
-              </p>
-              {errors.endDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.endDate.message as string}
-                </p>
-              )}
-            </div>
+            {isClassPackage && (
+              <div className="space-y-4 pt-3 border-t border-blue-200">
+                {/* Classes Input */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="classes"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    {t("classes") || "Number of Classes"} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="classes"
+                    type="number"
+                    {...register("classes")}
+                    placeholder={t("classesPlaceholder") || "e.g. 8, 12, 16"}
+                    min="1"
+                    step="1"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                  <p className="text-xs text-gray-500">
+                    {t("classesDescription") || "Number of classes to schedule between start and end dates"}
+                  </p>
+                  {errors.classes && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.classes.message as string}
+                    </p>
+                  )}
+                </div>
+
+                {/* Date Range */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      {t("startDate") || "Start Date"}
+                    </label>
+                    <Controller
+                      control={control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value ? parseISO(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
+                          placeholder={t("selectStartDate") || "Select start date"}
+                        />
+                      )}
+                    />
+                    <p className="text-xs text-gray-500">
+                      {t("startDateDescription") || "When the class package begins"}
+                    </p>
+                    {errors.startDate && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.startDate.message as string}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      {t("endDate") || "End Date"}
+                    </label>
+                    <Controller
+                      control={control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value ? parseISO(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
+                          placeholder={t("selectEndDate") || "Select end date"}
+                        />
+                      )}
+                    />
+                    <p className="text-xs text-gray-500">
+                      {t("endDateDescription") || "When the class package ends"}
+                    </p>
+                    {errors.endDate && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.endDate.message as string}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

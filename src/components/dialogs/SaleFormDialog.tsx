@@ -23,6 +23,7 @@ interface Product {
   id: string;
   name: string;
   cost: number;
+  isClassPackage?: boolean; // True if this is a class package (service with classes)
 }
 
 interface User {
@@ -126,17 +127,39 @@ export function SaleFormDialog({
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [productsRes, usersRes, clientsRes] = await Promise.all([
+      const [productsRes, usersRes, clientsRes, servicesRes] = await Promise.all([
         fetch("/api/products"),
         fetch("/api/users"),
         fetch("/api/clients"),
+        fetch("/api/services"),
       ]);
 
       const productsData = await productsRes.json();
       const usersData = await usersRes.json();
       const clientsData = await clientsRes.json();
+      const servicesData = await servicesRes.json();
 
-      setProducts(productsData.data || []);
+      // Get regular products
+      const regularProducts: Product[] = (productsData.data || []).map((p: { id: string; name: string; cost: number }) => ({
+        id: p.id,
+        name: p.name,
+        cost: p.cost,
+        isClassPackage: false,
+      }));
+
+      // Get class packages (services with classes > 0)
+      const allServices = servicesData.data || [];
+      const classPackages: Product[] = allServices
+        .filter((s: { classes?: number | null }) => s.classes && s.classes > 0)
+        .map((s: { id: string; name: string; price: number; classes?: number | null }) => ({
+          id: s.id,
+          name: `${s.name} (${s.classes} clases)`,
+          cost: s.price,
+          isClassPackage: true,
+        }));
+
+      // Combine products and class packages
+      setProducts([...regularProducts, ...classPackages]);
       setUsers(Array.isArray(usersData) ? usersData : usersData.data || []);
       setClients(
         Array.isArray(clientsData) ? clientsData : clientsData.data || []
@@ -271,7 +294,8 @@ export function SaleFormDialog({
 
         toast.success(tSales("ticketUpdatedSuccess") || "Venta actualizada exitosamente");
       } else {
-        // Create new ticket
+        // Create new ticket - handle both products and class packages
+        const isClassPackage = selectedProduct?.isClassPackage || false;
         const ticketResponse = await fetch("/api/tickets", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -279,12 +303,19 @@ export function SaleFormDialog({
             clientId,
             staffId: values.staffId,
             items: [
-              {
-                productId: values.productId,
-                quantity,
-                unitPrice,
-                total,
-              },
+              isClassPackage
+                ? {
+                    serviceId: values.productId, // Class packages are services
+                    quantity,
+                    unitPrice,
+                    total,
+                  }
+                : {
+                    productId: values.productId,
+                    quantity,
+                    unitPrice,
+                    total,
+                  },
             ],
             quantity,
             total,
@@ -315,159 +346,240 @@ export function SaleFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl h-[90vh] p-0 gap-0 [&>button]:hidden">
+      <DialogContent className="max-w-5xl h-[85vh] p-0 gap-0 [&>button]:hidden overflow-hidden rounded-2xl">
         <DialogTitle className="sr-only">
           {isEditing ? tSales("editSale") : t("createSale")}
         </DialogTitle>
 
         {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-gray-500">{t("loading")}</p>
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-brand-200 rounded-full"></div>
+              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-brand-500 rounded-full animate-spin border-t-transparent"></div>
+            </div>
+            <p className="text-sm text-gray-500 font-medium">{t("loading")}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="h-full flex">
-            {/* Left Side - Sale Table */}
-            <div className="flex-1 flex flex-col h-full border-r">
-              {/* Header */}
-              <div className="p-6 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">
-                  {isEditing ? tSales("editSale") : t("createSale")}
-                </h2>
+            {/* Left Side - Sale Details */}
+            <div className="flex-[2] flex flex-col h-full bg-white">
+              {/* Header with gradient */}
+              <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">
+                      {isEditing ? tSales("editSale") : "Nueva Venta"}
+                    </h2>
+                    <p className="text-white/70 text-sm">Registra la venta de productos o paquetes</p>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                 >
-                  <FiX className="w-6 h-6" />
+                  <FiX className="w-5 h-5 text-white" />
                 </button>
               </div>
 
               {/* Sale Details Section */}
-              <div className="p-6">
-                <h3 className="text-sm font-semibold mb-3">
-                  Detalles de la venta
-                </h3>
-
-                {/* Sale details in horizontal layout */}
-                <div className={`grid ${isEditing ? 'grid-cols-5' : 'grid-cols-4'} gap-3 bg-gray-50 p-4 rounded-md`}>
-                  {/* Staff */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Personal
-                    </label>
-                    <Controller
-                      control={control}
-                      name="staffId"
-                      rules={{ required: "Staff is required" }}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger className="h-10 bg-white">
-                            <SelectValue placeholder="Selecciona al staff" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {users.map((user) => (
-                              <SelectItem key={user.id} value={user.id}>
-                                {user.name || user.email}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.staffId && (
-                      <p className="text-xs text-red-600">
-                        {errors.staffId.message as string}
-                      </p>
-                    )}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Product Selection Card */}
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-800">Producto o Paquete</h3>
                   </div>
 
-                  {/* Product */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Producto
-                    </label>
-                    <Controller
-                      control={control}
-                      name="productId"
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger className="h-10 bg-white">
-                            <SelectValue placeholder="Selecciona un producto" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {products.map((product) => (
-                              <SelectItem key={product.id} value={product.id}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Product */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Seleccionar Item
+                      </label>
+                      <Controller
+                        control={control}
+                        name="productId"
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger className="h-12 bg-white border-gray-200 hover:border-brand-300 transition-colors">
+                              <SelectValue placeholder="Elige un producto o paquete..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {products.filter(p => !p.isClassPackage).length > 0 && (
+                                <>
+                                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase">Productos</div>
+                                  {products.filter(p => !p.isClassPackage).map((product) => (
+                                    <SelectItem key={product.id} value={product.id}>
+                                      <div className="flex items-center gap-2">
+                                        <span>{product.name}</span>
+                                        <span className="text-gray-400">•</span>
+                                        <span className="text-brand-600 font-medium">{formatCurrency(product.cost)}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </>
+                              )}
+                              {products.filter(p => p.isClassPackage).length > 0 && (
+                                <>
+                                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase mt-2">Paquetes de Clases</div>
+                                  {products.filter(p => p.isClassPackage).map((product) => (
+                                    <SelectItem key={product.id} value={product.id}>
+                                      <div className="flex items-center gap-2">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                          Paquete
+                                        </span>
+                                        <span>{product.name}</span>
+                                        <span className="text-gray-400">•</span>
+                                        <span className="text-brand-600 font-medium">{formatCurrency(product.cost)}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
 
-                  {/* Quantity */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Cantidad
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      step="1"
-                      {...register("quantity")}
-                      className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
-                      placeholder="1"
-                    />
-                  </div>
-
-                  {/* Unit Price (read-only) */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Precio
-                    </label>
-                    <div className="h-10 rounded-md border border-gray-300 px-3 py-2 text-sm bg-gray-100 flex items-center text-gray-500">
-                      {formatCurrency(unitPrice)}
+                    {/* Quantity */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Cantidad
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        {...register("quantity")}
+                        className="w-full h-12 rounded-lg border border-gray-200 px-4 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white hover:border-brand-300 transition-colors"
+                        placeholder="1"
+                      />
                     </div>
                   </div>
 
-                  {/* Status (only when editing) */}
-                  {isEditing && (
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        {t("status")}
-                      </label>
-                      <Select
-                        value={selectedStatus}
-                        onValueChange={(value) => setSelectedStatus(value as TicketStatus)}
-                      >
-                        <SelectTrigger className="h-10 bg-white">
-                          <SelectValue placeholder={tSales("selectStatus")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TICKET_STATUSES.map((status) => (
-                            <SelectItem key={status.value} value={status.value}>
-                              {getStatusLabel(status.value)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  {/* Selected Product Info */}
+                  {selectedProduct && (
+                    <div className="mt-4 p-4 bg-brand-50 rounded-lg border border-brand-100 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedProduct.isClassPackage ? 'bg-blue-100' : 'bg-brand-100'}`}>
+                            {selectedProduct.isClassPackage ? (
+                              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                              </svg>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800">{selectedProduct.name}</p>
+                            {selectedProduct.isClassPackage && (
+                              <span className="text-xs text-blue-600 font-medium">Paquete de clases</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-500">Precio unitario</p>
+                          <p className="text-xl font-bold text-brand-600">{formatCurrency(unitPrice)}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Notes Section */}
-              <div className="flex-1 overflow-y-auto p-6 pt-0">
-                <div className="border-t pt-4">
+                {/* Staff Selection Card */}
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="font-semibold text-gray-800">Vendedor</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Asignar a
+                      </label>
+                      <Controller
+                        control={control}
+                        name="staffId"
+                        rules={{ required: "Staff is required" }}
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger className="h-12 bg-white border-gray-200 hover:border-purple-300 transition-colors">
+                              <SelectValue placeholder="Selecciona un vendedor..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-medium text-purple-600">
+                                      {(user.name || user.email).charAt(0).toUpperCase()}
+                                    </div>
+                                    <span>{user.name || user.email}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.staffId && (
+                        <p className="text-xs text-red-600 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          {errors.staffId.message as string}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Status (only when editing) */}
+                    {isEditing && (
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t("status")}
+                        </label>
+                        <Select
+                          value={selectedStatus}
+                          onValueChange={(value) => setSelectedStatus(value as TicketStatus)}
+                        >
+                          <SelectTrigger className="h-12 bg-white border-gray-200">
+                            <SelectValue placeholder={tSales("selectStatus")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TICKET_STATUSES.map((status) => (
+                              <SelectItem key={status.value} value={status.value}>
+                                {getStatusLabel(status.value)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Notes Section */}
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
                   <div
-                    className="flex items-center gap-3"
+                    className="flex items-center gap-3 cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Controller
@@ -480,40 +592,50 @@ export function SaleFormDialog({
                           onCheckedChange={(checked) => {
                             field.onChange(Boolean(checked));
                           }}
+                          className="data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
                         />
                       )}
                     />
-                    <label
-                      htmlFor="include-notes"
-                      className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {t("addSaleNote")}
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </div>
+                      <label
+                        htmlFor="include-notes"
+                        className="font-semibold text-gray-800 cursor-pointer select-none"
+                      >
+                        Agregar notas a la venta
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {/* Notes Textarea */}
-                {includeNotes && (
-                  <div className="space-y-2 mt-4 animate-in slide-in-from-top-2 fade-in duration-200">
-                    <label className="text-sm font-semibold text-gray-700">
-                      {t("notesLabel")}
-                    </label>
-                    <textarea
-                      {...register("notes")}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none"
-                      placeholder={t("notesPlaceholder")}
-                      rows={4}
-                    />
-                  </div>
-                )}
+                  {includeNotes && (
+                    <div className="mt-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                      <textarea
+                        {...register("notes")}
+                        className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                        placeholder="Escribe las notas de la venta aquí..."
+                        rows={3}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Right Side - Client Details */}
-            <div className="flex flex-col justify-between w-1/3 h-full space-y-4 bg-gray-50">
+            <div className="flex-1 flex flex-col h-full bg-gradient-to-b from-gray-50 to-gray-100 border-l">
               <div className="flex-1 overflow-y-auto p-6">
-                <h3 className="text-lg font-semibold mb-4">{t("client")}</h3>
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-800">{t("client")}</h3>
+                </div>
 
                 {/* Client Tabs */}
                 <ClientDetailsTabs
@@ -547,15 +669,15 @@ export function SaleFormDialog({
                   ) : (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-normal text-gray-700">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("name")}
                         </label>
                         <input
                           {...register("clientName", {
                             required: "Client name is required",
                           })}
-                          className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                          placeholder={t("name")}
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
+                          placeholder="Nombre del cliente"
                         />
                         {errors.clientName && (
                           <p className="text-xs text-red-600">
@@ -565,7 +687,7 @@ export function SaleFormDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-normal text-gray-700">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("email")}
                         </label>
                         <input
@@ -573,8 +695,8 @@ export function SaleFormDialog({
                           {...register("clientEmail", {
                             required: "Client email is required",
                           })}
-                          className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                          placeholder={t("email")}
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
+                          placeholder="correo@ejemplo.com"
                         />
                         {errors.clientEmail && (
                           <p className="text-xs text-red-600">
@@ -584,15 +706,15 @@ export function SaleFormDialog({
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-normal text-gray-700">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("phone")}
                         </label>
                         <input
                           {...register("clientPhone", {
                             required: "Client phone is required",
                           })}
-                          className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                          placeholder={t("phone")}
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
+                          placeholder="+52 33 1234 5678"
                         />
                         {errors.clientPhone && (
                           <p className="text-xs text-red-600">
@@ -605,31 +727,47 @@ export function SaleFormDialog({
                 </div>
               </div>
 
-              {/* Total Section */}
-              <div className="flex justify-between items-center text-lg border-t p-6">
-                <span className="font-semibold">{t("total")}:</span>
-                <span className="font-bold text-2xl">
-                  {formatCurrency(calculateTotal())}
-                </span>
+              {/* Total Section with gradient */}
+              <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-white/80 font-medium">Subtotal</span>
+                  <span className="text-white font-semibold">{formatCurrency(unitPrice)} × {watch("quantity") || 1}</span>
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t border-white/20">
+                  <span className="text-white font-bold text-lg">Total</span>
+                  <span className="font-black text-3xl text-white">
+                    {formatCurrency(calculateTotal())}
+                  </span>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 p-6 border-t bg-white">
+              <div className="flex gap-3 p-4 bg-white border-t">
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="flex-1 px-4 py-2.5 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   type="submit"
-                  disabled={
-                    isSubmitting || !watch("staffId") || !watch("productId")
-                  }
-                  className="flex-1 px-4 py-2.5 rounded-md bg-brand-500 hover:bg-brand-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  disabled={isSubmitting || !watch("staffId") || !watch("productId")}
+                  className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? t("saving") : isEditing ? t("save") : t("create")}
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      {t("saving")}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {isEditing ? t("save") : "Completar Venta"}
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -639,3 +777,4 @@ export function SaleFormDialog({
     </Dialog>
   );
 }
+

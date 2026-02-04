@@ -181,18 +181,35 @@ export function UserDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
-            {editingUser ? t("editUser") : t("addUser")}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden rounded-2xl max-h-[90vh]">
+        {/* Header with gradient */}
+        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 p-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold text-white">
+                {editingUser ? t("editUser") : t("addUser")}
+              </DialogTitle>
+              <p className="text-white/70 text-sm">Gestiona los usuarios del sistema</p>
+            </div>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userAvatar")}
-            </label>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-120px)]">
+          {/* Avatar Upload Card */}
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-md bg-purple-100 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("userAvatar")}</span>
+            </div>
             <Controller
               name="avatar"
               control={control}
@@ -215,127 +232,175 @@ export function UserDialog({
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userName")}
-            </label>
-            <input
-              {...register("name")}
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("userName")}
-            />
-            {errors.name && (
-              <p className="text-xs text-red-500">{errors.name.message}</p>
-            )}
-          </div>
+          {/* Basic Info Card */}
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-md bg-indigo-100 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Información básica</span>
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userEmail")}
-            </label>
-            <input
-              {...register("email")}
-              type="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("userEmail")}
-            />
-            {errors.email && (
-              <p className="text-xs text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userPassword")} {editingUser && `(${t("leaveBlankToKeep")})`}
-            </label>
-            <input
-              {...register("password")}
-              type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("userPassword")}
-            />
-            {errors.password && (
-              <p className="text-xs text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userRole")}
-            </label>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("selectRole")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">{t("roleUser")}</SelectItem>
-                    <SelectItem value="admin">{t("roleAdmin")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.role && (
-              <p className="text-xs text-red-500">{errors.role.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              {t("userPosition")}
-            </label>
-            <input
-              {...register("position")}
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder={t("userPositionPlaceholder")}
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Controller
-              name="isActive"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("userName")}
+                </label>
+                <input
+                  {...register("name")}
+                  type="text"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="Nombre completo"
                 />
+                {errors.name && (
+                  <p className="text-xs text-red-500">{errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("userEmail")}
+                </label>
+                <input
+                  {...register("email")}
+                  type="email"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="correo@email.com"
+                />
+                {errors.email && (
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t("userPassword")} {editingUser && <span className="text-gray-400 normal-case">({t("leaveBlankToKeep")})</span>}
+              </label>
+              <input
+                {...register("password")}
+                type="password"
+                className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                placeholder="••••••••"
+              />
+              {errors.password && (
+                <p className="text-xs text-red-500">{errors.password.message}</p>
               )}
-            />
-            <label className="text-sm font-medium text-gray-700">
-              {t("userActive")}
-            </label>
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          {/* Role & Settings Card */}
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-md bg-violet-100 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Rol y configuración</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("userRole")}
+                </label>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
+                        <SelectValue placeholder={t("selectRole")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                            {t("roleUser")}
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="admin">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                            {t("roleAdmin")}
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t("userPosition")}
+                </label>
+                <input
+                  {...register("position")}
+                  type="text"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="Ej: Gerente"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
+              <Controller
+                name="isActive"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                  />
+                )}
+              />
+              <div>
+                <label className="font-medium text-gray-800 text-sm">
+                  {t("userActive")}
+                </label>
+                <p className="text-xs text-gray-500">El usuario puede acceder al sistema</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
                 reset();
                 onOpenChange(false);
               }}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
             >
               {tCommon("cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-purple-500/25 flex items-center gap-2"
             >
-              <BiSave className="w-5 h-5" />
-              <span>
-                {isSubmitting
-                  ? tCommon("loading") ?? "Saving..."
-                  : editingUser
-                  ? t("updateUser")
-                  : t("addUser")}
-              </span>
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  {tCommon("loading") ?? "Saving..."}
+                </>
+              ) : (
+                <>
+                  <BiSave className="w-5 h-5" />
+                  <span>
+                    {editingUser
+                      ? t("updateUser")
+                      : t("addUser")}
+                  </span>
+                </>
+              )}
             </button>
           </div>
         </form>

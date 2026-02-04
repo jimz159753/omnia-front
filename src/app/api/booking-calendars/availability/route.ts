@@ -214,7 +214,10 @@ export async function GET(request: NextRequest) {
         mercadoPagoEnabled: calendar.mercadoPagoEnabled,
         mercadoPagoPublicKey: process.env.MERCADO_PAGO_PUBLIC_KEY,
       },
-      services: calendar.services.map((s) => {
+      services: calendar.services
+        // Filter out class packages - they should be sold as packages, not booked through the calendar
+        .filter((s) => !s.service.classes || s.service.classes <= 0)
+        .map((s) => {
         const serviceWithSchedules = s.service as typeof s.service & {
           useCustomSchedule?: boolean;
           schedules?: Array<{ dayOfWeek: string; isOpen: boolean; startTime: string | null; endTime: string | null }>;

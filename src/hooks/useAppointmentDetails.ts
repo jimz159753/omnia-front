@@ -178,14 +178,34 @@ export const useAppointmentDetails = ({
       const clientsData = await clientsRes.json();
       const productsData = await productsRes.json();
 
-      setServices(servicesData.data || []);
+      const allServices = servicesData.data || [];
+      
+      // Filter out class packages from appointment services
+      // Services with classes > 0 are class packages and should not appear in the calendar
+      const appointmentServices = allServices.filter(
+        (s: Service) => !s.classes || s.classes <= 0
+      );
+      
+      // Include class packages as "products" for selling
+      // Map services with classes to a product-like structure
+      const classPackages = allServices
+        .filter((s: Service) => s.classes && s.classes > 0)
+        .map((s: Service) => ({
+          id: s.id,
+          name: `${s.name} (${s.classes} classes)`,
+          cost: s.price,
+          isClassPackage: true,
+        }));
+      
+      const regularProducts = Array.isArray(productsData) ? productsData : productsData.data || [];
+
+      setServices(appointmentServices);
       setUsers(Array.isArray(usersData) ? usersData : usersData.data || []);
       setClients(
         Array.isArray(clientsData) ? clientsData : clientsData.data || []
       );
-      setProducts(
-        Array.isArray(productsData) ? productsData : productsData.data || []
-      );
+      // Combine regular products with class packages
+      setProducts([...regularProducts, ...classPackages]);
     } catch (err) {
       console.error("Failed to load form data:", err);
       const errorMessage = t("formDataLoadError");
