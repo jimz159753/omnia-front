@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { token, password } = await request.json();
+    const { token, password, tenantSlug } = await request.json();
 
     if (!token || !password) {
       return NextResponse.json(
@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user with token
-    const user = await (await getPrisma()).user.findFirst({
+    const prisma = await getPrisma();
+    const user = await prisma.user.findFirst({
       where: {
         invitationToken: token,
         invitationExpires: {
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update user
-    await (await getPrisma()).user.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
@@ -74,8 +75,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Auto-login logic
-    const jwtToken = auth.createToken(user.id, user.email);
+    // Auto-login logic (with tenant context)
+    const jwtToken = auth.createToken(user.id, user.email, tenantSlug || "dev");
 
     const response = NextResponse.json({
         success: true,

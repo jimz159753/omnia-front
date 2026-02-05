@@ -55,10 +55,11 @@ function InviteContent() {
     setError("");
 
     try {
+      const tenantSlug = searchParams.get("company") || "dev";
       const res = await fetch("/api/auth/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token, password, tenantSlug }),
       });
       const data = await res.json();
 

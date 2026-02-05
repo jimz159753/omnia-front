@@ -117,27 +117,39 @@ export async function POST(request: NextRequest) {
         const resendApiKey = process.env.RESEND_API_KEY;
         if (resendApiKey) {
           const resend = new Resend(resendApiKey);
-          const inviteUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/invite?token=${invitationToken}`;
-          // Try to get company name although not available here directly without DB call, use variable or default
-          const businessName = "Espacio Omnia"; 
+          
+          // Get tenant context
+          const tenantSlug = request.headers.get("x-tenant-slug") || "dev";
+          const prisma = await getPrisma();
+          
+          // Get business name from tenant DB
+          const business = await prisma.business.findFirst({
+            select: { name: true }
+          });
+          const businessName = business?.name || "Espacio Omnia";
+          
+          const inviteUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/invite?token=${invitationToken}&company=${tenantSlug}`;
           const businessEmail = process.env.RESEND_FROM_EMAIL || "noreply@resend.dev";
           
           await resend.emails.send({
             from: businessEmail,
             to: email,
-            subject: `Welcome to ${businessName} - Complete your registration`,
+            subject: `Invitation to join ${businessName}`,
             html: `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
-                <h2 style="color: #4b5563;">Welcome to ${businessName}!</h2>
+                <h2 style="color: #4b5563;">You've been invited!</h2>
                 <p style="color: #374151;">Hello <strong>${name}</strong>,</p>
-                <p style="color: #374151;">You have been invited to join the team dashboard.</p>
+                <p style="color: #374151;">You have been invited to join <strong>${businessName}</strong> on Omnia.</p>
+                <p style="color: #374151;"><strong>Important Information:</strong></p>
+                <p style="color: #374151;">Your company name (to login later) is: <strong>${tenantSlug}</strong></p>
                 <p style="color: #374151;">Please click the button below to set your password and access your account:</p>
                 <div style="text-align: center; margin: 30px 0;">
                   <a href="${inviteUrl}" style="background-color: #8b5cf6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Set Password & Login</a>
                 </div>
                 <p style="color: #6b7280; font-size: 14px;">This link expires in 48 hours.</p>
                 <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
-                <p style="color: #9ca3af; font-size: 12px;">If you didn't expect this invitation, please ignore this email.</p>
+                <p style="color: #9ca3af; font-size: 12px;">Company Slug: ${tenantSlug}</p>
+                <p style="color: #9ca3af; font-size: 11px;">If you didn't expect this invitation, please ignore this email.</p>
               </div>
             `
           });

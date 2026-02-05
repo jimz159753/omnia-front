@@ -18,13 +18,18 @@ function LoginContent() {
   const { loginWithGoogle, login, isLoading } = useAuth();
   const searchParams = useSearchParams();
 
-  // Check for OAuth callback errors
+  // Check for OAuth callback errors and pre-fill company
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam) {
       setError(decodeURIComponent(errorParam));
       // Clear the error from URL
       window.history.replaceState({}, "", "/login");
+    }
+
+    const companyParam = searchParams.get("company");
+    if (companyParam) {
+        setCompany(companyParam);
     }
   }, [searchParams]);
 
