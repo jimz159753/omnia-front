@@ -10,7 +10,7 @@ interface ImageCarouselProps {
   className?: string;
 }
 
-const ImageCarousel: React.FC<ImageCarouselProps> = ({
+const ImageCatalog: React.FC<ImageCarouselProps> = ({
   images,
   className = "",
 }) => {
@@ -81,4 +81,4 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   );
 };
 
-export default ImageCarousel;
+export default ImageCatalog;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import {
@@ -77,7 +77,9 @@ interface AvailabilityData {
 
 export default function BookingPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
+  const isEmbedded = searchParams.get('embedded') === 'true';
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -297,7 +299,7 @@ export default function BookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`${isEmbedded ? 'h-full' : 'min-h-screen'} flex items-center justify-center bg-gray-50`}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: primaryColor }}></div>
       </div>
     );
@@ -305,7 +307,7 @@ export default function BookingPage() {
 
   if (error || !calendarData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`${isEmbedded ? 'h-full' : 'min-h-screen'} flex items-center justify-center bg-gray-50`}>
         <div className="text-center">
           <BiCalendar className="w-16 h-16 mx-auto text-gray-300 mb-4" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("calendarNotFound")}</h1>
@@ -317,7 +319,7 @@ export default function BookingPage() {
 
   if (bookingComplete) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`${isEmbedded ? 'h-full' : 'min-h-screen'} flex items-center justify-center bg-gray-50`}>
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
           <div
             className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
@@ -349,7 +351,7 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`${isEmbedded ? 'h-full' : 'min-h-screen'} bg-gray-50`}>
       {/* Header with background */}
       <div
         className="h-48 md:h-64 relative"
