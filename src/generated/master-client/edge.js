@@ -127,7 +127,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Luis Jimenez\\repos\\omnia-front\\src\\generated\\master-client",
+      "value": "/app/src/generated/master-client",
       "fromEnvVar": null
     },
     "config": {
@@ -136,7 +136,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "linux-musl-openssl-3.0.x",
         "native": true
       },
       {
@@ -149,12 +149,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Luis Jimenez\\repos\\omnia-front\\prisma\\master.prisma",
+    "sourceFilePath": "/app/prisma/master.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "6.14.0",
