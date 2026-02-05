@@ -17,6 +17,13 @@ export interface AuthResult {
   user?: User;
   error?: string;
   token?: string;
+  tenantSlug?: string;
+}
+
+export interface TokenPayload {
+  userId: string;
+  email: string;
+  tenantSlug: string;
 }
 
 // JWT secret key (in production, use environment variable)
@@ -25,8 +32,8 @@ const JWT_SECRET =
 const JWT_EXPIRES_IN = "24h";
 
 export const auth = {
-  // Register a new user
-  async register(email: string, password: string): Promise<AuthResult> {
+  // Register a new user (requires tenant context)
+  async register(email: string, password: string, tenantSlug: string): Promise<AuthResult> {
     try {
       // Validate input
       if (!email || !password) {
@@ -48,7 +55,8 @@ export const auth = {
         };
       }
 
-      const prisma = await getPrisma();
+      const { getPrismaForTenant } = await import("@/lib/db");
+      const prisma = getPrismaForTenant(tenantSlug);
 
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
@@ -80,17 +88,18 @@ export const auth = {
         },
       });
 
-      return { success: true, user };
+      return { success: true, user, tenantSlug };
     } catch (error) {
       console.error("Registration error:", error);
       return { success: false, error: "Registration failed" };
     }
   },
 
-  // Login user
-  async login(email: string, password: string): Promise<AuthResult> {
+  // Login user with tenant context
+  async login(email: string, password: string, tenantSlug: string): Promise<AuthResult> {
     try {
-      const prisma = await getPrisma();
+      const { getPrismaForTenant } = await import("@/lib/db");
+      const prisma = getPrismaForTenant(tenantSlug);
       
       // Find user by email
       const user = await prisma.user.findUnique({
@@ -121,8 +130,8 @@ export const auth = {
         return { success: false, error: "Invalid email or password" };
       }
 
-      // Create JWT token
-      const token = this.createToken(user.id, user.email);
+      // Create JWT token with tenant info
+      const token = this.createToken(user.id, user.email, tenantSlug);
 
       return {
         success: true,
@@ -135,6 +144,7 @@ export const auth = {
           updatedAt: user.updatedAt,
         },
         token,
+        tenantSlug,
       };
     } catch (error) {
       console.error("Login error:", error);
@@ -142,20 +152,17 @@ export const auth = {
     }
   },
 
-  // Create a JWT token
-  createToken(userId: string, email: string): string {
-    return jwt.sign({ userId, email }, JWT_SECRET, {
+  // Create a JWT token with tenant info
+  createToken(userId: string, email: string, tenantSlug: string = "dev"): string {
+    return jwt.sign({ userId, email, tenantSlug }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
   },
 
-  // Verify JWT token
-  verifyToken(token: string): { userId: string; email: string } | null {
+  // Verify JWT token and return full payload including tenant
+  verifyToken(token: string): TokenPayload | null {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as {
-        userId: string;
-        email: string;
-      };
+      const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
       return decoded;
     } catch {
       return null;
@@ -168,16 +175,17 @@ export const auth = {
     // The client should remove the token from cookies
   },
 
-  // Get user by token
-  async getUserByToken(token: string): Promise<User | null> {
+  // Get user by token (uses tenant from token)
+  async getUserByToken(token: string): Promise<{ user: User | null; tenantSlug: string | null }> {
     const session = this.verifyToken(token);
 
     if (!session) {
-      return null;
+      return { user: null, tenantSlug: null };
     }
 
     try {
-      const prisma = await getPrisma();
+      const { getPrismaForTenant } = await import("@/lib/db");
+      const prisma = getPrismaForTenant(session.tenantSlug);
       
       const user = await prisma.user.findUnique({
         where: { id: session.userId },
@@ -192,10 +200,10 @@ export const auth = {
         },
       });
 
-      return user;
+      return { user, tenantSlug: session.tenantSlug };
     } catch (error) {
       console.error("Error fetching user:", error);
-      return null;
+      return { user: null, tenantSlug: null };
     }
   },
 };

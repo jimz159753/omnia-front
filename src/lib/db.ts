@@ -11,13 +11,19 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prismaManager = prismaManager;
 }
 
-function getTenantClient(tenantSlug: string): PrismaClient {
+/**
+ * Get a Prisma client for a specific tenant.
+ * This is the main function to use when you know the tenant slug.
+ */
+export function getPrismaForTenant(tenantSlug: string): PrismaClient {
   if (!prismaManager.has(tenantSlug)) {
     const defaultUrl = process.env.DATABASE_URL;
     if (!defaultUrl) throw new Error("DATABASE_URL not set");
 
     let dbName = `omnia_tenant_${tenantSlug}`;
+    // For development/localhost, use the standard database
     if (tenantSlug === "dev" || tenantSlug === "localhost" || !tenantSlug) {
+       // Note: In previous steps we used omnia_master, but the user's latest compose uses 'postgres'
        dbName = "postgres"; 
     }
 
@@ -31,7 +37,7 @@ function getTenantClient(tenantSlug: string): PrismaClient {
               url: urlObj.toString(),
             },
           },
-          log: process.env.NODE_ENV === "development" ? ["error"] : ["error"],
+          log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
         });
         
         prismaManager.set(tenantSlug, client);
@@ -43,6 +49,10 @@ function getTenantClient(tenantSlug: string): PrismaClient {
   return prismaManager.get(tenantSlug)!;
 }
 
+/**
+ * Get a Prisma client using the tenant from request headers.
+ * This is used when the tenant is resolved from middleware via x-tenant-slug header.
+ */
 export async function getPrisma() {
     let tenantSlug = "dev";
     try {
@@ -51,5 +61,5 @@ export async function getPrisma() {
     } catch (e) {
         // Fallback
     }
-    return getTenantClient(tenantSlug);
+    return getPrismaForTenant(tenantSlug);
 }

@@ -75,7 +75,7 @@ export const useAuth = () => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, tenantSlug: string) => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/auth/login", {
@@ -83,7 +83,7 @@ export const useAuth = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, tenantSlug }),
       });
 
       const data = await response.json();
@@ -106,7 +106,7 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, tenantSlug: string) => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/auth/register", {
@@ -114,7 +114,7 @@ export const useAuth = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, tenantSlug }),
       });
 
       const data = await response.json();
@@ -124,7 +124,7 @@ export const useAuth = () => {
       }
 
       // Auto login after successful registration
-      return await login(email, password);
+      return await login(email, password, tenantSlug);
     } catch (error) {
       throw error;
     } finally {

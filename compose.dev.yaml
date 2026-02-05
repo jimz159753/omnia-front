@@ -36,6 +36,7 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      MASTER_DATABASE_URL: postgresql://postgres:postgres@db:5432/omnia_master
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
       # Google Calendar OAuth

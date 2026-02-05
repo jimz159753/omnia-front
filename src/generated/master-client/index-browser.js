@@ -122,6 +122,9 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.AccountScalarFieldEnum = {
   id: 'id',
+  googleId: 'googleId',
+  email: 'email',
+  ownerName: 'ownerName',
   slug: 'slug',
   name: 'name',
   dbName: 'dbName',
@@ -138,6 +141,11 @@ exports.Prisma.SortOrder = {
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 
 

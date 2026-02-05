@@ -32,6 +32,7 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      MASTER_DATABASE_URL: postgresql://postgres:postgres@db:5432/omnia_master
       # Google Calendar API (Service Account - for appointment sync)
       # See GOOGLE_CALENDAR_SETUP.md for setup instructions
       GOOGLE_SERVICE_ACCOUNT_EMAIL: ${GOOGLE_SERVICE_ACCOUNT_EMAIL:-}

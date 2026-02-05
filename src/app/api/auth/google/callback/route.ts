@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import { getPrisma } from "@/lib/db";
+import { getPrismaForTenant } from "@/lib/db";
+import { masterPrisma } from "@/lib/master-db";
 import { auth } from "@/lib/auth";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -49,31 +50,87 @@ export async function GET(request: NextRequest) {
     const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
     const { data: userInfo } = await oauth2.userinfo.get();
 
-    if (!userInfo.email) {
+    if (!userInfo.email || !userInfo.id) {
       return NextResponse.redirect(
-        `${baseUrl}/login?error=${encodeURIComponent("Could not get email from Google")}`
+        `${baseUrl}/login?error=${encodeURIComponent("Could not get user information from Google")}`
       );
     }
 
-    // Check if user exists
-    let user = await (await getPrisma()).user.findUnique({
+    // --- SaaS Tenant Resolution ---
+    
+    // 1. Check if account exists in master database by Google ID
+    let account = await masterPrisma.account.findUnique({
+      where: { googleId: userInfo.id },
+    });
+
+    let tenantSlug: string;
+
+    if (!account) {
+      // 1.1 Check by email if they are an existing owner not yet linked by Google ID
+      account = await masterPrisma.account.findFirst({
+        where: { email: userInfo.email },
+      });
+
+      if (account) {
+        // Link Google ID to existing account
+        account = await masterPrisma.account.update({
+          where: { id: account.id },
+          data: { googleId: userInfo.id },
+        });
+        tenantSlug = account.slug;
+      } else {
+        // 1.2 New business owner - create account in master DB
+        const emailPrefix = userInfo.email.split("@")[0];
+        const baseSlug = emailPrefix.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+        
+        let uniqueSlug = baseSlug;
+        let counter = 1;
+        while (await masterPrisma.account.findUnique({ where: { slug: uniqueSlug } })) {
+          uniqueSlug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+
+        tenantSlug = uniqueSlug;
+        const dbName = `omnia_tenant_${tenantSlug}`;
+
+        account = await masterPrisma.account.create({
+          data: {
+            googleId: userInfo.id,
+            email: userInfo.email,
+            ownerName: userInfo.name || "",
+            slug: tenantSlug,
+            name: userInfo.name || userInfo.email,
+            dbName: dbName,
+          },
+        });
+      }
+    } else {
+      tenantSlug = account.slug;
+    }
+
+    // 2. Ensure the tenant database exists and is migrated
+    const { bootstrapTenantDatabase } = await import("@/lib/master-db");
+    await bootstrapTenantDatabase(tenantSlug);
+
+    // 3. Get/Create User in the Tenant Database
+    const prisma = getPrismaForTenant(tenantSlug);
+    let user = await prisma.user.findUnique({
       where: { email: userInfo.email },
     });
 
-    // If user doesn't exist, create one
     if (!user) {
-      user = await (await getPrisma()).user.create({
+      user = await prisma.user.create({
         data: {
           email: userInfo.email,
-          // Generate a random password for Google users (they won't use it)
           password: await generateRandomPassword(),
           name: userInfo.name || "",
           avatar: userInfo.picture || null,
+          role: "admin", // Owner gets admin role
         },
       });
     } else {
-      // Update user info if they logged in with Google
-      await (await getPrisma()).user.update({
+      // Update user info
+      user = await prisma.user.update({
         where: { id: user.id },
         data: {
           name: user.name || userInfo.name || "",
@@ -82,8 +139,8 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Create JWT token
-    const token = auth.createToken(user.id, user.email);
+    // 3. Create JWT token with tenant info
+    const token = auth.createToken(user.id, user.email, tenantSlug);
 
     // Redirect to dashboard with token in cookie
     const response = NextResponse.redirect(`${baseUrl}/dashboard/analytics`);

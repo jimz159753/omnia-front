@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify the token and get user
-    const user = await auth.getUserByToken(token);
+    // Verify the token and get user (returns { user, tenantSlug })
+    const { user, tenantSlug } = await auth.getUserByToken(token);
 
     if (!user) {
       return NextResponse.json(
@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user,
+      tenantSlug,
     });
   } catch (error) {
     console.error("Auth check error:", error);

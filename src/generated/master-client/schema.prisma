@@ -11,6 +11,9 @@ datasource db {
 
 model Account {
   id        String   @id @default(cuid())
+  googleId  String?  @unique // Google user ID - links to owner's Google account
+  email     String? // Owner's Google email
+  ownerName String   @default("") // Owner's display name from Google
   slug      String   @unique
   name      String
   dbName    String
