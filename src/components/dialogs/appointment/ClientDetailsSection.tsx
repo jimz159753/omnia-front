@@ -9,6 +9,7 @@ import {
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
 import ClientMultiCombobox from "@/components/clients/ClientMultiCombobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useTranslation } from "@/hooks/useTranslation";
 import type {
   Client,
@@ -187,8 +188,8 @@ export const ClientDetailsSection = ({
                     {...register("clientName", {
                       required: "Client name is required",
                     })}
-                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="Nombre del cliente"
+                    className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="Nombre completo"
                   />
                   {errors.clientName && (
                     <p className="text-xs text-red-600">
@@ -197,65 +198,94 @@ export const ClientDetailsSection = ({
                   )}
                 </div>
 
-                {/* Last Name */}
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t("lastName")}
-                  </label>
-                  <input
-                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="Apellido"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                    {/* Phone */}
+                    <div className="space-y-1">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {t("phone")}
+                    </label>
+                    <input
+                        {...register("clientPhone", {
+                        required: "Client phone is required",
+                        })}
+                        className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        placeholder="+52 33 1234 5678"
+                    />
+                    {errors.clientPhone && (
+                        <p className="text-xs text-red-600">
+                        {errors.clientPhone.message as string}
+                        </p>
+                    )}
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-1">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {t("email")}
+                    </label>
+                    <input
+                        type="email"
+                        {...register("clientEmail", {
+                        required: "Client email is required",
+                        })}
+                        className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        placeholder="correo@ejemplo.com"
+                    />
+                    {errors.clientEmail && (
+                        <p className="text-xs text-red-600">
+                        {errors.clientEmail.message as string}
+                        </p>
+                    )}
+                    </div>
                 </div>
 
-                {/* Phone */}
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t("phone")}
-                  </label>
-                  <input
-                    {...register("clientPhone", {
-                      required: "Client phone is required",
-                    })}
-                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="+52 33 1234 5678"
-                  />
-                  {errors.clientPhone && (
-                    <p className="text-xs text-red-600">
-                      {errors.clientPhone.message as string}
-                    </p>
-                  )}
+                <div className="grid grid-cols-2 gap-3">
+                    {/* Instagram */}
+                    <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Instagram
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">@</span>
+                            <input
+                                {...register("clientInstagram")}
+                                className="w-full h-11 rounded-lg border border-gray-200 pl-7 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                                placeholder="usuario"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Birthday */}
+                    <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t("birthday")}
+                        </label>
+                        <Controller
+                            control={control}
+                            name="clientBirthday"
+                            render={({ field }) => (
+                                <DatePicker
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder={t("birthday")}
+                                    captionLayout="dropdown"
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear()}
+                                />
+                            )}
+                        />
+                    </div>
                 </div>
 
-                {/* Email */}
+                {/* Address */}
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t("email")}
+                    {t("address")}
                   </label>
                   <input
-                    type="email"
-                    {...register("clientEmail", {
-                      required: "Client email is required",
-                    })}
-                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="correo@ejemplo.com"
-                  />
-                  {errors.clientEmail && (
-                    <p className="text-xs text-red-600">
-                      {errors.clientEmail.message as string}
-                    </p>
-                  )}
-                </div>
-
-                {/* Birthday */}
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t("birthday")}
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full h-11 rounded-lg border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="DD/MM/YYYY"
+                    {...register("clientAddress")}
+                    className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    placeholder="Dirección completa"
                   />
                 </div>
               </div>

@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import OmniaTitle from "@/assets/images/omnia_title.png";
 import { useAuth } from "@/hooks/useAuth";
+import { useBusiness } from "@/hooks/useBusiness";
 import { FiLogOut, FiDollarSign, FiUser, FiSettings, FiChevronDown } from "react-icons/fi";
 import { CashRegisterDialog } from "@/components/dialogs/CashRegisterDialog";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const { business } = useBusiness();
   const [cashRegisterOpen, setCashRegisterOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,12 +52,21 @@ const Header = () => {
       <div className="bg-white flex items-center px-8 py-4 sticky top-0 z-50 w-full border-b border-gray-100">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">
-            <Image
-              src={OmniaTitle}
-              alt="Omnia"
-              height={36}
-              className="transition-transform duration-200 ease-in-out hover:scale-105"
-            />
+            {business?.logo ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={business.logo}
+                alt={business.name || "Business Logo"}
+                className="h-9 w-auto object-contain transition-transform duration-200 ease-in-out hover:scale-105"
+              />
+            ) : (
+              <Image
+                src={OmniaTitle}
+                alt="Omnia"
+                height={36}
+                className="transition-transform duration-200 ease-in-out hover:scale-105"
+              />
+            )}
           </div>
 
           {user && (

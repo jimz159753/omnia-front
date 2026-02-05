@@ -82,7 +82,7 @@ export const AppointmentDetailsSection = ({
                   <SelectContent>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
-                        {user.email}
+                        {user.name || user.email}
                       </SelectItem>
                     ))}
                   </SelectContent>

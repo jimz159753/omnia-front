@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils";
@@ -75,6 +76,9 @@ type FormValues = {
   clientName: string;
   clientEmail: string;
   clientPhone: string;
+  clientInstagram: string;
+  clientAddress: string;
+  clientBirthday: Date | undefined;
   existingClientId: string;
 };
 
@@ -114,6 +118,9 @@ export function SaleFormDialog({
       clientName: "",
       clientEmail: "",
       clientPhone: "",
+      clientInstagram: "",
+      clientAddress: "",
+      clientBirthday: undefined,
       existingClientId: "",
     },
   });
@@ -234,6 +241,9 @@ export function SaleFormDialog({
           name: values.clientName,
           email: values.clientEmail,
           phone: values.clientPhone,
+          instagram: values.clientInstagram || null,
+          address: values.clientAddress || "",
+          birthday: values.clientBirthday || null,
         };
 
         const clientResponse = await fetch("/api/clients", {
@@ -346,7 +356,7 @@ export function SaleFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl h-[85vh] p-0 gap-0 [&>button]:hidden overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] p-0 gap-0 [&>button]:hidden overflow-hidden rounded-2xl">
         <DialogTitle className="sr-only">
           {isEditing ? tSales("editSale") : t("createSale")}
         </DialogTitle>
@@ -667,7 +677,7 @@ export function SaleFormDialog({
                       )}
                     />
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 bg-white/50 p-4 rounded-xl border border-gray-100">
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("name")}
@@ -676,8 +686,8 @@ export function SaleFormDialog({
                           {...register("clientName", {
                             required: "Client name is required",
                           })}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
-                          placeholder="Nombre del cliente"
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                          placeholder="Nombre completo"
                         />
                         {errors.clientName && (
                           <p className="text-xs text-red-600">
@@ -686,41 +696,90 @@ export function SaleFormDialog({
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("email")}
-                        </label>
-                        <input
-                          type="email"
-                          {...register("clientEmail", {
-                            required: "Client email is required",
-                          })}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
-                          placeholder="correo@ejemplo.com"
-                        />
-                        {errors.clientEmail && (
-                          <p className="text-xs text-red-600">
-                            {errors.clientEmail.message as string}
-                          </p>
-                        )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t("email")}
+                            </label>
+                            <input
+                            type="email"
+                            {...register("clientEmail", {
+                                required: "Client email is required",
+                            })}
+                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                            placeholder="correo@ejemplo.com"
+                            />
+                            {errors.clientEmail && (
+                            <p className="text-xs text-red-600">
+                                {errors.clientEmail.message as string}
+                            </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t("phone")}
+                            </label>
+                            <input
+                            {...register("clientPhone", {
+                                required: "Client phone is required",
+                            })}
+                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                            placeholder="+52 33 1234 5678"
+                            />
+                            {errors.clientPhone && (
+                            <p className="text-xs text-red-600">
+                                {errors.clientPhone.message as string}
+                            </p>
+                            )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Instagram
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">@</span>
+                                <input
+                                {...register("clientInstagram")}
+                                className="w-full h-11 rounded-lg border border-gray-200 pl-7 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                                placeholder="usuario"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t("birthday")}
+                            </label>
+                            <Controller
+                                control={control}
+                                name="clientBirthday"
+                                render={({ field }) => (
+                                    <DatePicker
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        placeholder={t("birthday")}
+                                        captionLayout="dropdown"
+                                        fromYear={1900}
+                                        toYear={new Date().getFullYear()}
+                                    />
+                                )}
+                            />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("phone")}
+                          {t("address")}
                         </label>
                         <input
-                          {...register("clientPhone", {
-                            required: "Client phone is required",
-                          })}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
-                          placeholder="+52 33 1234 5678"
+                          {...register("clientAddress")}
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                          placeholder="Dirección completa"
                         />
-                        {errors.clientPhone && (
-                          <p className="text-xs text-red-600">
-                            {errors.clientPhone.message as string}
-                          </p>
-                        )}
                       </div>
                     </div>
                   )}
