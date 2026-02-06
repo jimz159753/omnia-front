@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 
 // Types
 export interface Service {
@@ -123,6 +124,10 @@ export const useAppointmentDetails = ({
   quantityUpdates = {},
 }: UseAppointmentDetailsProps) => {
   const { t } = useTranslation("common");
+  const { user } = useAuth();
+  
+  // Check if user is admin
+  const isAdmin = user?.role === "admin";
 
   // State
   const [services, setServices] = useState<Service[]>([]);
@@ -828,14 +833,19 @@ export const useAppointmentDetails = ({
 
   /**
    * Populate form with initial slot data
+   * For non-admin users, always set staffId to current user's ID
    */
   useEffect(() => {
-    if (initialSlot && open) {
-      if (initialSlot.resourceId) {
+    if (open) {
+      if (!isAdmin && user?.id) {
+        // For non-admin users, always set staffId to their own ID
+        setValue("staffId", user.id);
+      } else if (initialSlot?.resourceId) {
+        // For admin users, use the selected slot's resourceId
         setValue("staffId", initialSlot.resourceId);
       }
     }
-  }, [initialSlot, open, setValue]);
+  }, [initialSlot, open, setValue, isAdmin, user?.id]);
 
   /**
    * Populate form with initial ticket data when editing

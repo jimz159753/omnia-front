@@ -20,7 +20,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
   useEffect(() => {
     // Only redirect after loading is complete and we have user data
     if (!isLoading && user && user.role !== "admin") {
-      router.replace("/dashboard/calendar");
+      router.replace("/dashboard/settings/schedules");
     }
   }, [user, isLoading, router]);
 

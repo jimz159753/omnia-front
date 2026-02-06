@@ -16,6 +16,7 @@ import ClientDetailsTabs from "@/components/clients/ClientDetailsTabs";
 import ClientCombobox from "@/components/clients/ClientCombobox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatCurrency } from "@/utils";
 import { TICKET_STATUSES, getStatusLabel } from "@/constants/status";
@@ -92,6 +93,12 @@ export function SaleFormDialog({
 }: SaleFormDialogProps) {
   const { t } = useTranslation("common");
   const { t: tSales } = useTranslation("sales");
+  const { user } = useAuth();
+  
+  // Check if user is admin
+  const isAdmin = user?.role === "admin";
+  const currentUserName = user?.name || user?.email || "";
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -182,13 +189,17 @@ export function SaleFormDialog({
   useEffect(() => {
     if (open) {
       fetchData();
+      // For non-admin users, set staffId to their own ID
+      if (!isAdmin && user?.id) {
+        setValue("staffId", user.id);
+      }
     } else {
       // Reset form when dialog closes
       reset();
       setSelectedStatus("Completed");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, reset]);
+  }, [open, reset, isAdmin, user?.id]);
 
   // Populate form with edit data when editing
   useEffect(() => {
@@ -526,30 +537,40 @@ export function SaleFormDialog({
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Asignar a
                       </label>
-                      <Controller
-                        control={control}
-                        name="staffId"
-                        rules={{ required: "Staff is required" }}
-                        render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger className="h-12 bg-white border-gray-200 hover:border-purple-300 transition-colors">
-                              <SelectValue placeholder="Selecciona un vendedor..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {users.map((user) => (
-                                <SelectItem key={user.id} value={user.id}>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-medium text-purple-600">
-                                      {(user.name || user.email).charAt(0).toUpperCase()}
+                      {isAdmin ? (
+                        <Controller
+                          control={control}
+                          name="staffId"
+                          rules={{ required: "Staff is required" }}
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <SelectTrigger className="h-12 bg-white border-gray-200 hover:border-purple-300 transition-colors">
+                                <SelectValue placeholder="Selecciona un vendedor..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {users.map((u) => (
+                                  <SelectItem key={u.id} value={u.id}>
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-medium text-purple-600">
+                                        {(u.name || u.email).charAt(0).toUpperCase()}
+                                      </div>
+                                      <span>{u.name || u.email}</span>
                                     </div>
-                                    <span>{user.name || user.email}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          readOnly
+                          disabled
+                          value={currentUserName}
+                          className="h-12 w-full rounded-lg border border-gray-100 px-4 text-sm bg-gray-50 text-gray-600 font-medium cursor-not-allowed"
+                        />
+                      )}
                       {errors.staffId && (
                         <p className="text-xs text-red-600 flex items-center gap-1">
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

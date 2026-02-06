@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 import type {
   Service,
   User,
@@ -45,6 +46,13 @@ export const AppointmentDetailsSection = ({
   selectedServiceId,
 }: AppointmentDetailsSectionProps) => {
   const { t } = useTranslation("common");
+  const { user } = useAuth();
+  
+  // Check if user is admin
+  const isAdmin = user?.role === "admin";
+  
+  // Get current user's display name
+  const currentUserName = user?.name || user?.email || "";
 
   // Calculate derived values
   const selectedService = services.find((s) => s.id === selectedServiceId);
@@ -70,25 +78,35 @@ export const AppointmentDetailsSection = ({
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               {t("staffLabel")}
             </label>
-            <Controller
-              control={control}
-              name="staffId"
-              rules={{ required: "Staff is required" }}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full h-11 rounded-xl border-2 border-gray-200">
-                    <SelectValue placeholder={t("selectStaff")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.name || user.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
+            {isAdmin ? (
+              <Controller
+                control={control}
+                name="staffId"
+                rules={{ required: "Staff is required" }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full h-11 rounded-xl border-2 border-gray-200">
+                      <SelectValue placeholder={t("selectStaff")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name || user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            ) : (
+              <input
+                type="text"
+                readOnly
+                disabled
+                value={currentUserName}
+                className="w-full h-11 rounded-xl border-2 border-gray-100 px-4 text-sm bg-gray-50 text-gray-600 font-medium cursor-not-allowed"
+              />
+            )}
             {errors.staffId && (
               <p className="text-xs text-red-600">
                 {errors.staffId.message as string}

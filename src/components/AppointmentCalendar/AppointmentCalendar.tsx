@@ -5,6 +5,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS, es } from "date-fns/locale";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 import {
   useAppointmentCalendar,
   formatDateWithCapitalization,
@@ -75,6 +76,10 @@ const CustomResourceHeader = ({ resource }: { resource: StaffMember }) => {
 
 export function AppointmentCalendar() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  
+  // Check if user is admin
+  const isAdmin = user?.role === "admin";
 
   // Use custom hook for all calendar logic
   const {
@@ -176,13 +181,15 @@ export function AppointmentCalendar() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsUserDialogOpen(true)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-brand-500 rounded-md hover:bg-brand-600 transition-colors flex items-center gap-2"
-              >
-                <FiUserPlus className="w-4 h-4" />
-                {t("addStaff")}
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsUserDialogOpen(true)}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-brand-500 rounded-md hover:bg-brand-600 transition-colors flex items-center gap-2"
+                >
+                  <FiUserPlus className="w-4 h-4" />
+                  {t("addStaff")}
+                </button>
+              )}
             </div>
           </div>
         </div>
