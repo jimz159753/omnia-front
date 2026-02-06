@@ -223,7 +223,7 @@ const Clients = () => {
                             onClick={() => setActiveTab(tab.value as typeof activeTab)}
                             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
                               isActive
-                                ? "text-brand-600 border-brand-500"
+                                ? "text-omnia-blue border-omnia-blue"
                                 : "text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300"
                             }`}
                           >
@@ -231,7 +231,7 @@ const Clients = () => {
                             {count > 0 && (
                               <span className={`px-2 py-0.5 rounded-full text-xs ${
                                 isActive
-                                  ? "bg-brand-100 text-brand-700"
+                                  ? "bg-omnia-blue/10 text-omnia-blue"
                                   : "bg-gray-100 text-gray-600"
                               }`}>
                                 {count}

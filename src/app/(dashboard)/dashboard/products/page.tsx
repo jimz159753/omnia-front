@@ -271,7 +271,7 @@ const Products = () => {
               setEditingItem(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-omnia-blue text-white font-medium hover:bg-omnia-blue/90 transition-all shadow-lg shadow-omnia-blue/25 hover:shadow-xl hover:shadow-omnia-blue/30 hover:-translate-y-0.5"
           >
             <FiPlus className="w-5 h-5" />
             {tProducts("addProduct")}
@@ -285,14 +285,14 @@ const Products = () => {
           <button
             key={action.title}
             onClick={action.onClick}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all group"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-omnia-blue/50 transition-all group"
           >
-            <span className="text-gray-500 group-hover:text-brand-500 transition-colors">
+            <span className="text-gray-500 group-hover:text-omnia-blue transition-colors">
               {action.icon}
             </span>
             {action.title}
             {action.count > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors">
+              <span className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full group-hover:bg-omnia-blue/10 group-hover:text-omnia-blue transition-colors">
                 {action.count}
               </span>
             )}

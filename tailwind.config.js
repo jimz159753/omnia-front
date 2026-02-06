@@ -49,6 +49,13 @@ module.exports = {
           800: "#234237",
           900: "#1e372f",
         },
+        // Custom Omnia palette
+        omnia: {
+          light: "#f6f0f1",      // Cream/light pink background
+          navy: "#1c3058",       // Dark navy secondary
+          dark: "#0f1933",       // Very dark navy primary
+          blue: "#1e8bf8",       // Bright blue accent
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

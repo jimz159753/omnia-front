@@ -69,14 +69,14 @@ const ClientSidebar: React.FC<Props> = ({
   // Generate consistent color based on name
   const getAvatarColor = useCallback((name: string) => {
     const colors = [
+      "bg-omnia-blue",
+      "bg-omnia-navy",
       "bg-blue-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-pink-500",
       "bg-indigo-500",
-      "bg-teal-500",
-      "bg-orange-500",
       "bg-cyan-500",
+      "bg-teal-500",
+      "bg-sky-500",
+      "bg-blue-600",
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
@@ -91,13 +91,13 @@ const ClientSidebar: React.FC<Props> = ({
       const isSelected = client.id === selectedClientId;
 
       return (
-        <div style={style} className="px-1 py-1">
+        <div style={style} className="px-2 py-1">
           <button
             onClick={() => onSelectClient(client.id)}
-            className={`w-full text-left p-3 rounded-xl transition-all ${
+            className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
               isSelected
-                ? "bg-brand-500 text-white shadow-md shadow-brand-500/25"
-                : "bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200"
+                ? "bg-omnia-blue text-white shadow-lg shadow-omnia-blue/25"
+                : "bg-omnia-navy/30 hover:bg-omnia-navy/60 border border-omnia-navy/50 hover:border-omnia-navy"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -114,14 +114,14 @@ const ClientSidebar: React.FC<Props> = ({
               <div className="flex-1 min-w-0">
                 <div
                   className={`font-medium truncate ${
-                    isSelected ? "text-white" : "text-gray-900"
+                    isSelected ? "text-white" : "text-omnia-light"
                   }`}
                 >
                   {client.name}
                 </div>
                 <div
                   className={`text-sm truncate flex items-center gap-1 ${
-                    isSelected ? "text-white/80" : "text-gray-500"
+                    isSelected ? "text-white/80" : "text-omnia-light/60"
                   }`}
                 >
                   <FiMail className="w-3 h-3 flex-shrink-0" />
@@ -130,7 +130,7 @@ const ClientSidebar: React.FC<Props> = ({
                 {client.phone && (
                   <div
                     className={`text-xs truncate flex items-center gap-1 mt-0.5 ${
-                      isSelected ? "text-white/70" : "text-gray-400"
+                      isSelected ? "text-white/70" : "text-omnia-light/50"
                     }`}
                   >
                     <FiPhone className="w-3 h-3 flex-shrink-0" />
@@ -145,7 +145,7 @@ const ClientSidebar: React.FC<Props> = ({
                   className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     isSelected
                       ? "bg-white/20 text-white"
-                      : "bg-brand-100 text-brand-700"
+                      : "bg-omnia-blue/20 text-omnia-blue"
                   }`}
                 >
                   {client.tickets?.length}
@@ -160,35 +160,35 @@ const ClientSidebar: React.FC<Props> = ({
   );
 
   return (
-    <div className="flex flex-col w-80 h-[calc(100vh-80px)] border-r border-gray-200 bg-gray-50/50">
+    <div className="flex flex-col w-80 h-[calc(100vh-80px)] border-r border-omnia-navy/50 bg-omnia-dark">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="p-4 border-b border-omnia-navy/50">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-white">
               {t("title") || "Clients"}
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-omnia-light/60">
               {filteredClients.length} {t("of") || "of"} {clients.length}
             </p>
           </div>
           <button
             onClick={onAddClient}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm"
+            className="group flex items-center justify-center w-10 h-10 rounded-xl bg-omnia-blue text-white hover:bg-omnia-blue/90 transition-all shadow-lg shadow-omnia-blue/25 hover:shadow-omnia-blue/40 hover:scale-105"
             title={t("addClient") || "Add Client"}
           >
-            <FiPlus className="w-5 h-5" />
+            <FiPlus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </div>
 
         {/* Search */}
         <div className="relative mb-3">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-omnia-light/50" />
           <input
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t("searchPlaceholder") || "Search clients..."}
-            className="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-gray-50 text-sm"
+            className="w-full pl-10 pr-3 py-2.5 border border-omnia-navy rounded-xl focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-omnia-navy/50 text-sm text-omnia-light placeholder-omnia-light/40"
           />
         </div>
 
@@ -197,13 +197,13 @@ const ClientSidebar: React.FC<Props> = ({
           value={filter}
           onValueChange={(value) => onFilterChange(value as ClientFilter)}
         >
-          <SelectTrigger className="w-full bg-white">
+          <SelectTrigger className="w-full bg-omnia-navy/50 border-omnia-navy text-omnia-light focus:ring-omnia-blue">
             <SelectValue placeholder={t("filterAll") || "All clients"} />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("filterAll") || "All clients"}</SelectItem>
-            <SelectItem value="recent">{t("filterRecent") || "Recent"}</SelectItem>
-            <SelectItem value="inactive">
+          <SelectContent className="bg-omnia-dark border-omnia-navy">
+            <SelectItem value="all" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">{t("filterAll") || "All clients"}</SelectItem>
+            <SelectItem value="recent" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">{t("filterRecent") || "Recent"}</SelectItem>
+            <SelectItem value="inactive" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">
               {t("filterInactive") || "Inactive"}
             </SelectItem>
           </SelectContent>
@@ -214,10 +214,10 @@ const ClientSidebar: React.FC<Props> = ({
       <div ref={listContainerRef} className="flex-1 overflow-hidden">
         {filteredClients.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-              <FiUser className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 rounded-full bg-omnia-navy flex items-center justify-center mb-4">
+              <FiUser className="w-8 h-8 text-omnia-light/50" />
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-omnia-light/60">
               {t("noClientsFound") || "No clients found"}
             </p>
           </div>
@@ -227,7 +227,7 @@ const ClientSidebar: React.FC<Props> = ({
             itemCount={filteredClients.length}
             itemSize={ITEM_HEIGHT}
             width="100%"
-            className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="scrollbar-thin scrollbar-thumb-omnia-navy scrollbar-track-transparent"
           >
             {ClientRow}
           </List>

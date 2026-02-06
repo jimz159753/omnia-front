@@ -181,7 +181,7 @@ const Services = () => {
               setEditingItem(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-omnia-blue text-white font-medium hover:bg-omnia-blue/90 transition-all shadow-lg shadow-omnia-blue/25 hover:shadow-xl hover:shadow-omnia-blue/30 hover:-translate-y-0.5"
           >
             <FiPlus className="w-5 h-5" />
             {tServicesTranslation("addService")}

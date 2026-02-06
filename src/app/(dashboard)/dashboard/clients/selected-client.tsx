@@ -48,7 +48,7 @@ const SelectedClient: React.FC<Props> = ({ client, onEdit }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6 text-white">
+      <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6 text-white">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar */}
