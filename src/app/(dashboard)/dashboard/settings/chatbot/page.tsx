@@ -2,8 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/useTranslation";
+import { AdminGuard } from "@/components/guards/AdminGuard";
 
-export default function ChatBotPage() {
+function ChatBotPageContent() {
   const { t } = useTranslation("settings");
 
   return (
@@ -20,3 +21,10 @@ export default function ChatBotPage() {
   );
 }
 
+export default function ChatBotPage() {
+  return (
+    <AdminGuard>
+      <ChatBotPageContent />
+    </AdminGuard>
+  );
+}

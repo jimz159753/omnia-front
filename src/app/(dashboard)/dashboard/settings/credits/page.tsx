@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
+import { AdminGuard } from "@/components/guards/AdminGuard";
 import {
   BiCreditCard,
   BiMessageDetail,
@@ -74,7 +75,7 @@ const statusLabels: Record<string, string> = {
   undelivered: "Undelivered",
 };
 
-export default function CreditsPage() {
+function CreditsPageContent() {
   const { t } = useTranslation("settings");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -479,5 +480,13 @@ export default function CreditsPage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function CreditsPage() {
+  return (
+    <AdminGuard>
+      <CreditsPageContent />
+    </AdminGuard>
   );
 }

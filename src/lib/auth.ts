@@ -8,6 +8,7 @@ export interface User {
   email: string;
   name?: string | null;
   avatar?: string | null;
+  role: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -83,6 +84,7 @@ export const auth = {
           email: true,
           name: true,
           avatar: true,
+          role: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -140,6 +142,7 @@ export const auth = {
           email: user.email,
           name: user.name || undefined,
           avatar: user.avatar || undefined,
+          role: user.role,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -194,9 +197,9 @@ export const auth = {
           email: true,
           name: true,
           avatar: true,
+          role: true,
           createdAt: true,
           updatedAt: true,
-
         },
       });
 

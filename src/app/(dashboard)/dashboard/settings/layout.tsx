@@ -2,11 +2,22 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { BiBuilding, BiLogoWhatsapp, BiUser, BiCalendarEvent } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
+
+// Define paths that are restricted for "user" role
+const ADMIN_ONLY_PATHS = [
+  "/dashboard/settings/business-details",
+  "/dashboard/settings/users",
+  "/dashboard/settings/account",
+  "/dashboard/settings/credits",
+  "/dashboard/settings/chatbot",
+  "/dashboard/settings/google-calendar",
+];
 
 export default function SettingsLayout({
   children,
@@ -15,6 +26,10 @@ export default function SettingsLayout({
 }) {
   const { t } = useTranslation("settings");
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // Check if user has admin role
+  const isAdmin = user?.role === "admin";
 
   const menuSections = [
     {
@@ -73,6 +88,16 @@ export default function SettingsLayout({
     },
   ];
 
+  // Filter sections based on user role
+  const filteredMenuSections = menuSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter(
+        (item) => isAdmin || !ADMIN_ONLY_PATHS.includes(item.path)
+      ),
+    }))
+    .filter((section) => section.items.length > 0);
+
   return (
     <div className="p-6 space-y-6">
       <div className="grid gap-6 lg:grid-cols-5">
@@ -83,7 +108,7 @@ export default function SettingsLayout({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {menuSections.map((section, idx) => (
+                {filteredMenuSections.map((section, idx) => (
                   <div key={idx}>
                     <p className="text-sm font-semibold text-gray-800 flex items-center gap-2 mb-3">
                       {section.icon}

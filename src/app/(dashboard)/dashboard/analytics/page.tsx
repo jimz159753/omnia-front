@@ -19,8 +19,9 @@ import {
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminGuard } from "@/components/guards/AdminGuard";
 
-const Analytics = () => {
+const AnalyticsContent = () => {
   const { t } = useTranslation("analytics");
   const { metrics, loading, error } = useAnalytics();
 
@@ -301,6 +302,14 @@ const Analytics = () => {
         </CardFooter>
       </Card>
     </div>
+  );
+};
+
+const Analytics = () => {
+  return (
+    <AdminGuard>
+      <AnalyticsContent />
+    </AdminGuard>
   );
 };
 

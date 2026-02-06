@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/hooks/useAuth";
+import { AdminGuard } from "@/components/guards/AdminGuard";
 import { FcGoogle } from "react-icons/fc";
 import { BiPlus, BiCalendar, BiLinkExternal, BiCheck } from "react-icons/bi";
 import { FiLoader, FiTrash2 } from "react-icons/fi";
@@ -36,7 +37,7 @@ interface CalendarData {
   calendars: GoogleCalendar[];
 }
 
-export default function GoogleCalendarPage() {
+function GoogleCalendarPageContent() {
   const { t } = useTranslation("settings");
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -558,5 +559,13 @@ export default function GoogleCalendarPage() {
       </Dialog>
 
     </div>
+  );
+}
+
+export default function GoogleCalendarPage() {
+  return (
+    <AdminGuard>
+      <GoogleCalendarPageContent />
+    </AdminGuard>
   );
 }
