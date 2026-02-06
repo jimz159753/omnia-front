@@ -367,7 +367,7 @@ export function SaleFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] p-0 gap-0 [&>button]:hidden overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] p-0 gap-0 [&>button]:hidden overflow-hidden rounded-2xl bg-omnia-light border-omnia-navy/20">
         <DialogTitle className="sr-only">
           {isEditing ? tSales("editSale") : t("createSale")}
         </DialogTitle>
@@ -385,7 +385,7 @@ export function SaleFormDialog({
             {/* Left Side - Sale Details */}
             <div className="flex-[2] flex flex-col h-full bg-white">
               {/* Header with gradient */}
-              <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                     <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -411,14 +411,14 @@ export function SaleFormDialog({
               {/* Sale Details Section */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Product Selection Card */}
-                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="w-8 h-8 rounded-lg bg-omnia-blue/10 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
-                    <h3 className="font-semibold text-gray-800">Producto o Paquete</h3>
+                    <h3 className="font-semibold text-omnia-navy">Producto o Paquete</h3>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -478,12 +478,12 @@ export function SaleFormDialog({
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Cantidad
                       </label>
-                      <input
+                        <input
                         type="number"
                         min="1"
                         step="1"
                         {...register("quantity")}
-                        className="w-full h-12 rounded-lg border border-gray-200 px-4 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white hover:border-brand-300 transition-colors"
+                        className="w-full h-12 rounded-xl border-2 border-omnia-navy/10 px-4 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white hover:border-omnia-blue transition-colors text-omnia-dark"
                         placeholder="1"
                       />
                     </div>
@@ -522,14 +522,14 @@ export function SaleFormDialog({
                 </div>
 
                 {/* Staff Selection Card */}
-                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="w-8 h-8 rounded-lg bg-omnia-navy/10 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-omnia-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
-                    <h3 className="font-semibold text-gray-800">Vendedor</h3>
+                    <h3 className="font-semibold text-omnia-navy">Vendedor</h3>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -608,7 +608,7 @@ export function SaleFormDialog({
                 </div>
 
                 {/* Notes Section */}
-                <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 shadow-sm">
                   <div
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
@@ -657,7 +657,7 @@ export function SaleFormDialog({
             </div>
 
             {/* Right Side - Client Details */}
-            <div className="flex-1 flex flex-col h-full bg-gradient-to-b from-gray-50 to-gray-100 border-l">
+            <div className="flex-1 flex flex-col h-full bg-omnia-light/50 border-l border-omnia-navy/10">
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
@@ -665,7 +665,7 @@ export function SaleFormDialog({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800">{t("client")}</h3>
+                  <h3 className="text-lg font-bold text-omnia-navy">{t("client")}</h3>
                 </div>
 
                 {/* Client Tabs */}
@@ -707,7 +707,7 @@ export function SaleFormDialog({
                           {...register("clientName", {
                             required: "Client name is required",
                           })}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white shadow-sm transition-all"
                           placeholder="Nombre completo"
                         />
                         {errors.clientName && (
@@ -727,7 +727,7 @@ export function SaleFormDialog({
                             {...register("clientEmail", {
                                 required: "Client email is required",
                             })}
-                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white shadow-sm transition-all"
                             placeholder="correo@ejemplo.com"
                             />
                             {errors.clientEmail && (
@@ -745,7 +745,7 @@ export function SaleFormDialog({
                             {...register("clientPhone", {
                                 required: "Client phone is required",
                             })}
-                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                            className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white shadow-sm transition-all"
                             placeholder="+52 33 1234 5678"
                             />
                             {errors.clientPhone && (
@@ -765,7 +765,7 @@ export function SaleFormDialog({
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">@</span>
                                 <input
                                 {...register("clientInstagram")}
-                                className="w-full h-11 rounded-lg border border-gray-200 pl-7 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                                className="w-full h-11 rounded-lg border border-gray-200 pl-7 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white shadow-sm transition-all"
                                 placeholder="usuario"
                                 />
                             </div>
@@ -798,7 +798,7 @@ export function SaleFormDialog({
                         </label>
                         <input
                           {...register("clientAddress")}
-                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white shadow-sm transition-all"
+                          className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white shadow-sm transition-all"
                           placeholder="Dirección completa"
                         />
                       </div>
@@ -808,7 +808,7 @@ export function SaleFormDialog({
               </div>
 
               {/* Total Section with gradient */}
-              <div className="bg-gradient-to-r from-brand-500 to-brand-600 p-6">
+              <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-white/80 font-medium">Subtotal</span>
                   <span className="text-white font-semibold">{formatCurrency(unitPrice)} × {watch("quantity") || 1}</span>
@@ -833,7 +833,7 @@ export function SaleFormDialog({
                 <button
                   type="submit"
                   disabled={isSubmitting || !watch("staffId") || !watch("productId")}
-                  className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-3 rounded-xl bg-omnia-blue hover:bg-omnia-blue/90 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg shadow-omnia-blue/25 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

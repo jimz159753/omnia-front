@@ -40,7 +40,7 @@ export function AppointmentHeader({
   };
 
   return (
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-5 flex items-center justify-between">
+    <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-5 flex items-center justify-between">
       {initialData ? (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">

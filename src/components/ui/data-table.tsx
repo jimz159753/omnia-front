@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
           </div>
         )}
         <Table>
-          <TableHeader className="bg-brand-500/10 h-14 rounded-t-md">
+          <TableHeader className="bg-omnia-navy/5 h-14 rounded-t-xl overflow-hidden border-b border-omnia-navy/10">
             {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header: Header<TData, unknown>) => {
@@ -177,7 +177,7 @@ export function DataTable<TData, TValue>({
                     ))}
                   </TableRow>
                   {renderSubComponent && expanded[row.id] && (
-                    <TableRow className="bg-gray-50">
+                    <TableRow className="bg-omnia-navy/5">
                       <TableCell colSpan={columns.length}>
                         {renderSubComponent(row.original)}
                       </TableCell>

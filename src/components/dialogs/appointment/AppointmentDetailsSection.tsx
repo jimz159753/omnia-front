@@ -62,16 +62,16 @@ export const AppointmentDetailsSection = ({
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
-          <svg className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-8 h-8 rounded-lg bg-omnia-navy/10 flex items-center justify-center">
+          <svg className="w-4 h-4 text-omnia-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <h3 className="text-lg font-bold text-gray-800">{t("appointmentDetails")}</h3>
+        <h3 className="text-lg font-bold text-omnia-navy">{t("appointmentDetails")}</h3>
       </div>
 
       {/* Service details in card layout */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
+      <div className="bg-white rounded-xl border border-omnia-navy/10 shadow-sm p-5 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           {/* Staff */}
           <div className="space-y-1">
@@ -183,53 +183,53 @@ export const AppointmentDetailsSection = ({
 
       {/* Package Info */}
       {selectedService && (selectedService.classes || selectedService.provider) && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 flex flex-col gap-3 animate-in slide-in-from-top-2">
+        <div className="bg-omnia-blue/5 p-4 rounded-xl border border-omnia-blue/10 flex flex-col gap-3 animate-in slide-in-from-top-2">
            <div className="flex items-center gap-2 mb-1">
-            <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h4 className="text-sm font-bold text-blue-900 uppercase tracking-wide">Detalles del Paquete</h4>
+            <h4 className="text-sm font-bold text-omnia-navy uppercase tracking-wide">Detalles del Paquete</h4>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             {selectedService.classes && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-blue-700/70 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("classes") || "Classes"}
                 </label>
-                <p className="text-sm font-bold text-blue-900">
+                <p className="text-sm font-bold text-omnia-dark">
                   {selectedService.classes} {t("sessions") || "sessions"}
                 </p>
               </div>
             )}
             {selectedService.provider && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-blue-700/70 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("instructor") || "Instructor"}
                 </label>
-                <p className="text-sm font-bold text-blue-900">
+                <p className="text-sm font-bold text-omnia-dark">
                   {selectedService.provider.name}
                 </p>
               </div>
             )}
             {selectedService.startDate && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-blue-700/70 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("startDate") || "Start Date"}
                 </label>
-                <p className="text-sm font-bold text-blue-900">
+                <p className="text-sm font-bold text-omnia-dark">
                   {new Date(selectedService.startDate).toLocaleDateString()}
                 </p>
               </div>
             )}
             {selectedService.endDate && (
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-blue-700/70 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("endDate") || "End Date"}
                 </label>
-                <p className="text-sm font-bold text-blue-900">
+                <p className="text-sm font-bold text-omnia-dark">
                   {new Date(selectedService.endDate).toLocaleDateString()}
                 </p>
               </div>

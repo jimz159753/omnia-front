@@ -202,9 +202,9 @@ export function ProductFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden rounded-2xl max-h-[90vh]">
+      <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden rounded-2xl max-h-[90vh] bg-omnia-light border-omnia-navy/20">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-rose-500 to-pink-500 p-6">
+        <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,69 +230,69 @@ export function ProductFormModal({
           {success && <CustomAlert severity="success">{success}</CustomAlert>}
 
           {/* Basic Info Card */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-md bg-rose-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Información básica</span>
+              <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Información básica</span>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("sku") || "SKU"}
                 </label>
                 <input
                   {...register("sku")}
                   placeholder={t("enterSku") || "Enter SKU"}
-                  className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
                 />
                 {errors.sku && <p className="text-red-500 text-xs">{errors.sku.message as string}</p>}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("name") || "Name"} <span className="text-red-500">*</span>
                 </label>
                 <input
                   {...register("name")}
                   placeholder={t("enterProductName") || "Enter product name"}
-                  className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
                 />
                 {errors.name && <p className="text-red-500 text-xs">{errors.name.message as string}</p>}
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                 {t("productDescription") || "Description"}
               </label>
               <textarea
                 {...register("description")}
                 placeholder={t("enterProductDescription") || "Enter product description"}
-                className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                className="w-full rounded-xl border-2 border-omnia-navy/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all resize-none bg-white text-omnia-dark"
                 rows={2}
               />
             </div>
           </div>
 
           {/* Categories Card */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-md bg-pink-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Categorías y proveedor</span>
+              <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Categorías y proveedor</span>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t("category") || "Category"}</label>
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">{t("category") || "Category"}</label>
                 <Controller
                   control={control}
                   name="categoryId"
@@ -304,10 +304,10 @@ export function ProductFormModal({
                         setValue("subCategoryId", "");
                       }}
                     >
-                      <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
+                      <SelectTrigger className="w-full h-11 border-2 border-omnia-navy/10 rounded-xl bg-white text-omnia-dark">
                         <SelectValue placeholder={t("selectCategory") || "Select category"} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white border-omnia-navy/10">
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
@@ -320,16 +320,16 @@ export function ProductFormModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t("subcategory") || "Subcategory"}</label>
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">{t("subcategory") || "Subcategory"}</label>
                 <Controller
                   control={control}
                   name="subCategoryId"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange} disabled={!watchedCategoryId}>
-                      <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
+                      <SelectTrigger className="w-full h-11 border-2 border-omnia-navy/10 rounded-xl bg-white text-omnia-dark">
                         <SelectValue placeholder={t("selectSubcategory") || "Select"} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white border-omnia-navy/10">
                         {filteredSubCategories.map((sub) => (
                           <SelectItem key={sub.id} value={sub.id}>
                             {sub.name}
@@ -342,7 +342,7 @@ export function ProductFormModal({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("provider") || "Provider"} <span className="text-red-500">*</span>
                 </label>
                 <Controller
@@ -350,10 +350,10 @@ export function ProductFormModal({
                   name="providerId"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
+                      <SelectTrigger className="w-full h-11 border-2 border-omnia-navy/10 rounded-xl bg-white text-omnia-dark">
                         <SelectValue placeholder={t("selectProvider") || "Select"} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white border-omnia-navy/10">
                         {providers.map((provider) => (
                           <SelectItem key={provider.id} value={provider.id}>
                             {provider.name}
@@ -369,19 +369,19 @@ export function ProductFormModal({
           </div>
 
           {/* Inventory & Pricing Card */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-md bg-green-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Inventario y precios</span>
+              <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Inventario y precios</span>
             </div>
 
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("stock") || "Stock"} <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -389,13 +389,13 @@ export function ProductFormModal({
                   {...register("stock")}
                   placeholder="0"
                   min="0"
-                  className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-center font-semibold"
+                  className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all text-center font-semibold bg-white text-omnia-dark"
                 />
                 {errors.stock && <p className="text-red-500 text-xs">{errors.stock.message as string}</p>}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("minStock") || "Min Stock"}
                 </label>
                 <input
@@ -403,41 +403,41 @@ export function ProductFormModal({
                   {...register("minStock")}
                   placeholder="0"
                   min="0"
-                  className="w-full h-11 rounded-xl border-2 border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-center font-semibold"
+                  className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all text-center font-semibold bg-white text-omnia-dark"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("cost") || "Cost"} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-omnia-navy/40 font-medium">$</span>
                   <input
                     type="number"
                     {...register("cost")}
                     placeholder="0.00"
                     min="0"
                     step="0.01"
-                    className="w-full h-11 rounded-xl border-2 border-gray-200 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all font-semibold"
+                    className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all font-semibold bg-white text-omnia-dark"
                   />
                 </div>
                 {errors.cost && <p className="text-red-500 text-xs">{errors.cost.message as string}</p>}
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("price") || "Price"} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-omnia-navy/40 font-medium">$</span>
                   <input
                     type="number"
                     {...register("price")}
                     placeholder="0.00"
                     min="0"
                     step="0.01"
-                    className="w-full h-11 rounded-xl border-2 border-gray-200 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all font-semibold"
+                    className="w-full h-11 rounded-xl border-2 border-omnia-navy/10 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all font-semibold bg-white text-omnia-dark"
                   />
                 </div>
                 {errors.price && <p className="text-red-500 text-xs">{errors.price.message as string}</p>}
@@ -446,14 +446,14 @@ export function ProductFormModal({
           </div>
 
           {/* Image Upload Card */}
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-5">
+          <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-md bg-purple-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("productImage") || "Product Image"}</span>
+              <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("productImage") || "Product Image"}</span>
             </div>
             <ImageDropzone
               value={watch("image")}
@@ -468,14 +468,14 @@ export function ProductFormModal({
               type="button"
               onClick={() => onOpenChange(false)}
               disabled={loading || isSubmitting}
-              className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+              className="px-5 py-2.5 rounded-xl border-2 border-omnia-navy/10 text-omnia-dark hover:bg-omnia-navy/5 transition-all font-medium"
             >
               {t("cancel") || "Cancel"}
             </button>
             <button
               type="submit"
               disabled={loading || isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-rose-500/25 flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-omnia-blue hover:bg-omnia-blue/90 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-omnia-blue/25 flex items-center gap-2"
             >
               {loading || isSubmitting ? (
                 <>
@@ -497,4 +497,3 @@ export function ProductFormModal({
     </Dialog>
   );
 }
-

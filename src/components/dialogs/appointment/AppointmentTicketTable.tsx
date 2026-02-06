@@ -439,7 +439,7 @@ export function AppointmentTicketTable({
           {/* Table */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-[2fr,1.5fr,1.5fr,0.8fr,1fr,1fr,1fr,auto] gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+            <div className="grid grid-cols-[2fr,1.5fr,1.5fr,0.8fr,1fr,1fr,1fr,auto] gap-4 px-4 py-3 bg-omnia-navy/5 border-b border-omnia-navy/10 text-[10px] font-bold text-omnia-navy/70 uppercase tracking-wider">
               <div>Servicio</div>
               <div>Cliente</div>
               <div>Empleado</div>

@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/hooks/useTranslation";
+import { FiUser, FiMail, FiPhone, FiInstagram, FiMapPin, FiCalendar, FiCheck } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 
 interface ClientFormDialogProps {
   open: boolean;
@@ -68,11 +70,7 @@ export function ClientFormDialog({
     }
   }, [open, client, reset]);
 
-  const handleClientSubmit = async (values: {
-    instagram: string;
-    address: string;
-    birthday?: Date;
-  }) => {
+  const handleClientSubmit = async (values: any) => {
     setClientError("");
     setClientSuccess("");
     try {
@@ -108,14 +106,12 @@ export function ClientFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 gap-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-md p-0 gap-0 overflow-hidden rounded-2xl bg-omnia-light border-omnia-navy/20">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6">
+        <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <FiUser className="w-6 h-6 text-white" />
             </div>
             <div>
               <DialogTitle className="text-xl font-bold text-white">
@@ -128,116 +124,114 @@ export function ClientFormDialog({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 bg-omnia-light/50">
           {/* Status messages */}
           {clientError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2">
               <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              <p className="text-sm text-red-700">{clientError}</p>
+              <p className="text-sm text-red-700 font-medium">{clientError}</p>
             </div>
           )}
           {clientSuccess && (
             <div className="mb-4 p-3 rounded-lg bg-green-50 border border-green-200 flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <p className="text-sm text-green-700">{clientSuccess}</p>
+              <FiCheck className="w-5 h-5 text-green-500" />
+              <p className="text-sm text-green-700 font-medium">{clientSuccess}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit(handleClientSubmit)} className="space-y-4">
             {/* Required fields card */}
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
+            <div className="bg-white rounded-xl border border-omnia-navy/10 p-4 space-y-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                  <FiCheck className="w-3.5 h-3.5 text-omnia-blue" />
                 </div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Información requerida</span>
+                <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Información requerida</span>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("name")}
                 </label>
-                <input
-                  {...register("name", { required: "Name is required" })}
-                  className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                  placeholder="Nombre completo"
-                />
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-omnia-navy/30 w-4 h-4" />
+                  <input
+                    {...register("name", { required: "Name is required" })}
+                    className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
+                    placeholder="Nombre completo"
+                  />
+                </div>
                 {errors.name && (
-                  <p className="text-xs text-red-600 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    {errors.name.message}
-                  </p>
+                  <p className="text-[10px] text-red-600 font-medium">{errors.name.message as string}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                     {t("email")}
                   </label>
-                  <input
-                    type="email"
-                    {...register("email", { required: "Email is required" })}
-                    className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="correo@email.com"
-                  />
+                  <div className="relative">
+                    <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-omnia-navy/30 w-4 h-4" />
+                    <input
+                      type="email"
+                      {...register("email", { required: "Email is required" })}
+                      className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
+                      placeholder="correo@email.com"
+                    />
+                  </div>
                   {errors.email && (
-                    <p className="text-xs text-red-600">{errors.email.message}</p>
+                    <p className="text-[10px] text-red-600 font-medium">{errors.email.message as string}</p>
                   )}
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                     {t("phone")}
                   </label>
-                  <input
-                    {...register("phone", { required: "Phone is required" })}
-                    className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                    placeholder="+52 33 1234 5678"
-                  />
+                  <div className="relative">
+                    <FiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-omnia-navy/30 w-4 h-4" />
+                    <input
+                      {...register("phone", { required: "Phone is required" })}
+                      className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
+                      placeholder="+52 33..."
+                    />
+                  </div>
                   {errors.phone && (
-                    <p className="text-xs text-red-600">{errors.phone.message}</p>
+                    <p className="text-[10px] text-red-600 font-medium">{errors.phone.message as string}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Optional fields card */}
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
+            <div className="bg-white rounded-xl border border-omnia-navy/10 p-4 space-y-4 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="w-6 h-6 rounded-md bg-omnia-navy/10 flex items-center justify-center">
+                  <FiMapPin className="w-3.5 h-3.5 text-omnia-navy" />
                 </div>
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Información opcional</span>
+                <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Información opcional</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                     {t("instagramOptional")}
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">@</span>
+                    <FiInstagram className="absolute left-3 top-1/2 -translate-y-1/2 text-omnia-navy/30 w-4 h-4" />
                     <input
                       {...register("instagram")}
-                      className="w-full h-11 rounded-lg border border-gray-200 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
                       placeholder="usuario"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                     {t("birthday")}
                   </label>
                   <Controller
@@ -251,37 +245,42 @@ export function ClientFormDialog({
                         captionLayout="dropdown"
                         fromYear={1900}
                         toYear={new Date().getFullYear()}
+                        className="w-full h-10 border-omnia-navy/10 rounded-xl"
                       />
                     )}
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
                   {t("address")}
                 </label>
-                <input
-                  {...register("address")}
-                  className="w-full h-11 rounded-lg border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Dirección completa"
-                />
+                <div className="relative">
+                  <FiMapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-omnia-navy/30 w-4 h-4" />
+                  <input
+                    {...register("address")}
+                    className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
+                    placeholder="Dirección completa"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Action buttons */}
             <div className="flex justify-end gap-3 pt-2">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+                className="h-11 px-6 rounded-xl border-2 border-omnia-navy/10 text-omnia-dark hover:bg-omnia-navy/5 font-medium transition-all"
               >
                 {t("cancel")}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/25 flex items-center gap-2"
+                className="h-11 px-6 rounded-xl bg-omnia-blue hover:bg-omnia-blue/90 text-white font-bold shadow-lg shadow-omnia-blue/25 transition-all flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -290,13 +289,11 @@ export function ClientFormDialog({
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <FiCheck className="w-4 h-4" />
                     {t("saveClient")}
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -304,4 +301,3 @@ export function ClientFormDialog({
     </Dialog>
   );
 }
-

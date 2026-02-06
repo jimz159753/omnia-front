@@ -97,7 +97,7 @@ const ClientSidebar: React.FC<Props> = ({
             className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
               isSelected
                 ? "bg-omnia-blue text-white shadow-lg shadow-omnia-blue/25"
-                : "bg-omnia-navy/30 hover:bg-omnia-navy/60 border border-omnia-navy/50 hover:border-omnia-navy"
+                : "bg-white hover:bg-omnia-navy/5 border border-omnia-navy/10 hover:border-omnia-navy/20"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -114,14 +114,14 @@ const ClientSidebar: React.FC<Props> = ({
               <div className="flex-1 min-w-0">
                 <div
                   className={`font-medium truncate ${
-                    isSelected ? "text-white" : "text-omnia-light"
+                    isSelected ? "text-white" : "text-omnia-navy"
                   }`}
                 >
                   {client.name}
                 </div>
                 <div
                   className={`text-sm truncate flex items-center gap-1 ${
-                    isSelected ? "text-white/80" : "text-omnia-light/60"
+                    isSelected ? "text-white/80" : "text-omnia-navy/60"
                   }`}
                 >
                   <FiMail className="w-3 h-3 flex-shrink-0" />
@@ -130,7 +130,7 @@ const ClientSidebar: React.FC<Props> = ({
                 {client.phone && (
                   <div
                     className={`text-xs truncate flex items-center gap-1 mt-0.5 ${
-                      isSelected ? "text-white/70" : "text-omnia-light/50"
+                      isSelected ? "text-white/70" : "text-omnia-navy/40"
                     }`}
                   >
                     <FiPhone className="w-3 h-3 flex-shrink-0" />
@@ -160,15 +160,15 @@ const ClientSidebar: React.FC<Props> = ({
   );
 
   return (
-    <div className="flex flex-col w-80 h-[calc(100vh-80px)] border-r border-omnia-navy/50 bg-omnia-dark">
+    <div className="flex flex-col w-80 h-[calc(100vh-80px)] border-r border-omnia-navy/10 bg-omnia-light/50">
       {/* Header */}
-      <div className="p-4 border-b border-omnia-navy/50">
+      <div className="p-4 border-b border-omnia-navy/10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-omnia-navy">
               {t("title") || "Clients"}
             </h2>
-            <p className="text-sm text-omnia-light/60">
+            <p className="text-sm text-omnia-navy/50">
               {filteredClients.length} {t("of") || "of"} {clients.length}
             </p>
           </div>
@@ -183,12 +183,12 @@ const ClientSidebar: React.FC<Props> = ({
 
         {/* Search */}
         <div className="relative mb-3">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-omnia-light/50" />
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-omnia-navy/30" />
           <input
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t("searchPlaceholder") || "Search clients..."}
-            className="w-full pl-10 pr-3 py-2.5 border border-omnia-navy rounded-xl focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-omnia-navy/50 text-sm text-omnia-light placeholder-omnia-light/40"
+            className="w-full pl-10 pr-3 py-2.5 border border-omnia-navy/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent bg-white text-sm text-omnia-navy placeholder-omnia-navy/30"
           />
         </div>
 
@@ -197,13 +197,13 @@ const ClientSidebar: React.FC<Props> = ({
           value={filter}
           onValueChange={(value) => onFilterChange(value as ClientFilter)}
         >
-          <SelectTrigger className="w-full bg-omnia-navy/50 border-omnia-navy text-omnia-light focus:ring-omnia-blue">
+          <SelectTrigger className="w-full bg-white border-omnia-navy/10 text-omnia-navy focus:ring-omnia-blue">
             <SelectValue placeholder={t("filterAll") || "All clients"} />
           </SelectTrigger>
-          <SelectContent className="bg-omnia-dark border-omnia-navy">
-            <SelectItem value="all" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">{t("filterAll") || "All clients"}</SelectItem>
-            <SelectItem value="recent" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">{t("filterRecent") || "Recent"}</SelectItem>
-            <SelectItem value="inactive" className="text-omnia-light focus:bg-omnia-blue/20 focus:text-omnia-blue">
+          <SelectContent className="bg-white border-omnia-navy/10">
+            <SelectItem value="all" className="text-omnia-navy focus:bg-omnia-blue/5 focus:text-omnia-blue">{t("filterAll") || "All clients"}</SelectItem>
+            <SelectItem value="recent" className="text-omnia-navy focus:bg-omnia-blue/5 focus:text-omnia-blue">{t("filterRecent") || "Recent"}</SelectItem>
+            <SelectItem value="inactive" className="text-omnia-navy focus:bg-omnia-blue/5 focus:text-omnia-blue">
               {t("filterInactive") || "Inactive"}
             </SelectItem>
           </SelectContent>
@@ -214,10 +214,10 @@ const ClientSidebar: React.FC<Props> = ({
       <div ref={listContainerRef} className="flex-1 overflow-hidden">
         {filteredClients.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-            <div className="w-16 h-16 rounded-full bg-omnia-navy flex items-center justify-center mb-4">
-              <FiUser className="w-8 h-8 text-omnia-light/50" />
+            <div className="w-16 h-16 rounded-full bg-omnia-navy/5 flex items-center justify-center mb-4">
+              <FiUser className="w-8 h-8 text-omnia-navy/20" />
             </div>
-            <p className="text-sm text-omnia-light/60">
+            <p className="text-sm text-omnia-navy/40">
               {t("noClientsFound") || "No clients found"}
             </p>
           </div>

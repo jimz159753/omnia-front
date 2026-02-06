@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { ProductWithCategory } from "@/app/(dashboard)/dashboard/products/columns";
 import { useTranslation } from "@/hooks/useTranslation";
+import { FiAlertTriangle } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
@@ -30,29 +32,40 @@ export function DeleteConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("deleteProduct") || "Delete Product"}</DialogTitle>
-          <DialogDescription>
-            {t("confirmDeleteProduct") || `Are you sure you want to delete the product "${item.name}"? This action cannot be undone.`}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="gap-2">
-          <button
+      <DialogContent className="max-w-md bg-omnia-light border-omnia-navy/20 p-0 overflow-hidden">
+        <div className="p-6">
+          <DialogHeader className="flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+              <FiAlertTriangle className="w-8 h-8" />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold text-omnia-dark">
+                {t("deleteProduct") || "Delete Product"}
+              </DialogTitle>
+              <DialogDescription className="text-omnia-navy/70 mt-2">
+                {t("confirmDeleteProduct") || `Are you sure you want to delete the product "${item.name}"? This action cannot be undone.`}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+        </div>
+
+        <DialogFooter className="bg-gray-50/50 p-4 gap-3 flex flex-row justify-center sm:justify-center border-t border-omnia-navy/10">
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
-            className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors"
+            className="flex-1 max-w-[140px] h-11 rounded-xl border-omnia-navy/10 text-omnia-dark hover:bg-white"
           >
             {t("cancel") || "Cancel"}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="destructive"
             onClick={onConfirm}
-            className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors"
+            className="flex-1 max-w-[140px] h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
           >
             {t("deleteProduct") || "Delete"}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

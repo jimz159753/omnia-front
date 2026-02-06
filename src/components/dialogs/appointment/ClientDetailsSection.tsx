@@ -111,7 +111,7 @@ export const ClientDetailsSection = ({
   );
 
   return (
-    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="flex flex-col justify-between w-1/3 h-full space-y-4 border-l bg-omnia-light/50">
       <div className="flex-1 overflow-y-auto">
         <div
           className={`flex p-5 ${ticketId ? "justify-between" : "justify-end"}`}
@@ -138,12 +138,12 @@ export const ClientDetailsSection = ({
         <div className="px-5 pb-5">
           {/* Section Header */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-8 h-8 rounded-lg bg-omnia-blue/10 flex items-center justify-center">
+              <svg className="w-4 h-4 text-omnia-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-800">{t("client")}</h3>
+            <h3 className="text-lg font-bold text-omnia-navy">{t("client")}</h3>
           </div>
 
           {/* Client Tabs */}
@@ -294,9 +294,9 @@ export const ClientDetailsSection = ({
         </div>
       </div>
       {/* Total Section with gradient */}
-      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-5">
+      <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-5">
         <div className="flex justify-between items-center">
-          <span className="text-white font-medium text-lg">{t("total")}</span>
+          <span className="text-white/80 font-medium text-lg">{t("total")}</span>
           <span className="font-black text-3xl text-white">${totalPrice.toFixed(2)}</span>
         </div>
       </div>

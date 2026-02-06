@@ -193,42 +193,52 @@ export function CashRegisterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-            <FiCreditCard className="w-5 h-5 text-brand-500" />
-            Caja Registradora
-          </DialogTitle>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl bg-omnia-light border-omnia-navy/20 shadow-2xl">
+        <DialogHeader className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6 shrink-0">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-white flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                <FiCreditCard className="w-5 h-5 text-white" />
+              </div>
+              Caja Registradora
+            </DialogTitle>
+          </div>
         </DialogHeader>
 
         {/* Summary Cards */}
         {summary && (
-          <div className="px-6 py-4 bg-gray-50 border-b">
+          <div className="px-6 py-6 bg-omnia-light/50 border-b border-omnia-navy/10">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-green-100">
-                <div className="flex items-center gap-2 text-green-600 mb-1">
-                  <FiTrendingUp className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Ingresos Hoy</span>
+              <div className="bg-white rounded-2xl p-5 shadow-sm border border-omnia-navy/5 transition-all hover:shadow-md">
+                <div className="flex items-center gap-2 text-omnia-blue mb-2">
+                  <div className="w-7 h-7 rounded-lg bg-omnia-blue/10 flex items-center justify-center">
+                    <FiTrendingUp className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider">Ingresos Hoy</span>
                 </div>
-                <p className="text-2xl font-bold text-green-700">
+                <p className="text-2xl font-black text-omnia-dark">
                   {formatCurrency(summary.todayIncome)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-red-100">
-                <div className="flex items-center gap-2 text-red-600 mb-1">
-                  <FiTrendingDown className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Egresos Hoy</span>
+              <div className="bg-white rounded-2xl p-5 shadow-sm border border-omnia-navy/5 transition-all hover:shadow-md">
+                <div className="flex items-center gap-2 text-rose-500 mb-2">
+                  <div className="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                    <FiTrendingDown className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider">Egresos Hoy</span>
                 </div>
-                <p className="text-2xl font-bold text-red-700">
+                <p className="text-2xl font-black text-omnia-dark">
                   {formatCurrency(summary.todayExpenses)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-brand-100">
-                <div className="flex items-center gap-2 text-brand-600 mb-1">
-                  <FiDollarSign className="w-4 h-4" />
-                  <span className="text-xs font-medium uppercase">Balance Total</span>
+              <div className="bg-gradient-to-br from-omnia-dark to-omnia-navy rounded-2xl p-5 shadow-lg shadow-omnia-dark/10 border border-white/10 transition-all hover:scale-[1.02]">
+                <div className="flex items-center gap-2 text-white/70 mb-2">
+                  <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                    <FiDollarSign className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider">Balance Total</span>
                 </div>
-                <p className={`text-2xl font-bold ${summary.balance >= 0 ? "text-brand-700" : "text-red-700"}`}>
+                <p className="text-2xl font-black text-white">
                   {formatCurrency(summary.balance)}
                 </p>
               </div>
@@ -237,14 +247,14 @@ export function CashRegisterDialog({
         )}
 
         {/* Tabs */}
-        <div className="px-6 pt-4 border-b">
-          <div className="flex gap-1">
+        <div className="px-6 pt-4 bg-white border-b border-omnia-navy/10">
+          <div className="flex gap-2">
             <button
               onClick={() => setActiveTab("summary")}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              className={`px-6 py-3 text-sm font-bold rounded-t-xl transition-all duration-300 ${
                 activeTab === "summary"
-                  ? "bg-white border border-b-white -mb-px text-brand-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-omnia-light border-x border-t border-omnia-navy/10 -mb-px text-omnia-navy shadow-[0_-4px_10px_rgba(0,0,0,0.03)]"
+                  : "text-omnia-navy/40 hover:text-omnia-navy hover:bg-omnia-navy/5"
               }`}
             >
               Movimientos
@@ -255,14 +265,14 @@ export function CashRegisterDialog({
                 setFormType("income");
                 setCategory("");
               }}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 ${
+              className={`px-6 py-3 text-sm font-bold rounded-t-xl transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "income"
-                  ? "bg-white border border-b-white -mb-px text-green-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-omnia-light border-x border-t border-omnia-navy/10 -mb-px text-omnia-blue shadow-[0_-4px_10px_rgba(0,0,0,0.03)]"
+                  : "text-omnia-navy/40 hover:text-omnia-blue hover:bg-omnia-blue/5"
               }`}
             >
               <FiPlus className="w-4 h-4" />
-              Registrar Ingreso
+              Ingreso
             </button>
             <button
               onClick={() => {
@@ -270,14 +280,14 @@ export function CashRegisterDialog({
                 setFormType("expense");
                 setCategory("");
               }}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 ${
+              className={`px-6 py-3 text-sm font-bold rounded-t-xl transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "expense"
-                  ? "bg-white border border-b-white -mb-px text-red-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-omnia-light border-x border-t border-omnia-navy/10 -mb-px text-rose-500 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]"
+                  : "text-omnia-navy/40 hover:text-rose-500 hover:bg-rose-500/5"
               }`}
             >
               <FiPlus className="w-4 h-4" />
-              Registrar Egreso
+              Egreso
             </button>
           </div>
         </div>
@@ -286,68 +296,69 @@ export function CashRegisterDialog({
         <div className="flex-1 overflow-auto p-6">
           {activeTab === "summary" ? (
             <div>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-semibold text-gray-700">Últimos Movimientos</h3>
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-sm font-bold text-omnia-navy uppercase tracking-wider">Últimos Movimientos</h3>
                 <button
                   onClick={fetchTransactions}
-                  className="text-sm text-gray-500 hover:text-brand-600 flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-lg bg-omnia-navy/5 text-xs font-bold text-omnia-navy hover:bg-omnia-navy/10 transition-all flex items-center gap-2"
                 >
-                  <FiRefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                  <FiRefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                   Actualizar
                 </button>
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center py-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
+                <div className="flex items-center justify-center py-20">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-omnia-blue"></div>
                 </div>
               ) : transactions.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
                   No hay movimientos registrados
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {transactions.map((tx) => (
                     <div
                       key={tx.id}
-                      className={`flex items-center justify-between p-3 rounded-lg border ${
-                        tx.type === "income"
-                          ? "bg-green-50 border-green-100"
-                          : "bg-red-50 border-red-100"
-                      }`}
+                      className="flex items-center justify-between p-4 rounded-2xl bg-white border border-omnia-navy/5 shadow-sm transition-all hover:bg-omnia-light/40 group/item"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          className={`w-11 h-11 rounded-xl flex items-center justify-center ${
                             tx.type === "income"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-red-100 text-red-600"
+                              ? "bg-omnia-blue/10 text-omnia-blue"
+                              : "bg-rose-500/10 text-rose-500"
                           }`}
                         >
                           {tx.type === "income" ? (
-                            <FiTrendingUp className="w-5 h-5" />
+                            <FiTrendingUp className="w-5 h-5 transition-transform group-hover/item:scale-110" />
                           ) : (
-                            <FiTrendingDown className="w-5 h-5" />
+                            <FiTrendingDown className="w-5 h-5 transition-transform group-hover/item:scale-110" />
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{tx.description}</p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(tx.createdAt)} • {tx.paymentMethod === "cash" ? "Efectivo" : tx.paymentMethod === "card" ? "Tarjeta" : "Transferencia"}
-                          </p>
+                          <p className="font-bold text-omnia-navy">{tx.description}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] items-center px-1.5 py-0.5 rounded bg-omnia-navy/5 text-omnia-navy/60 font-bold uppercase tracking-wider">
+                              {tx.paymentMethod === "cash" ? "Efectivo" : tx.paymentMethod === "card" ? "Tarjeta" : "Transferencia"}
+                            </span>
+                            <span className="text-xs text-omnia-navy/40">
+                              {formatDate(tx.createdAt)}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-5">
                         <p
-                          className={`text-lg font-bold ${
-                            tx.type === "income" ? "text-green-700" : "text-red-700"
+                          className={`text-lg font-black ${
+                            tx.type === "income" ? "text-omnia-blue" : "text-rose-600"
                           }`}
                         >
                           {tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
                         </p>
                         <button
                           onClick={() => handleDelete(tx.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          className="p-2 text-omnia-navy/20 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
                         >
                           <FiTrash2 className="w-4 h-4" />
                         </button>
@@ -358,39 +369,42 @@ export function CashRegisterDialog({
               )}
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className={`p-4 rounded-lg ${formType === "income" ? "bg-green-50" : "bg-red-50"}`}>
-                <h3 className={`text-lg font-semibold mb-4 ${formType === "income" ? "text-green-700" : "text-red-700"}`}>
-                  {formType === "income" ? "Nuevo Ingreso" : "Nuevo Egreso"}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="p-6 rounded-2xl bg-white border border-omnia-navy/10 shadow-sm">
+                <h3 className={`text-lg font-bold mb-6 flex items-center gap-2 ${formType === "income" ? "text-omnia-blue" : "text-rose-600"}`}>
+                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${formType === "income" ? "bg-omnia-blue/10" : "bg-rose-500/10"}`}>
+                    {formType === "income" ? <FiTrendingUp className="w-4 h-4" /> : <FiTrendingDown className="w-4 h-4" />}
+                   </div>
+                  {formType === "income" ? "Registrar Nuevo Ingreso" : "Registrar Nuevo Egreso"}
                 </h3>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Monto <span className="text-red-500">*</span>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-omnia-navy/60 uppercase tracking-wider">
+                      Monto <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-omnia-navy/40 font-bold">$</span>
                       <input
                         type="number"
                         step="0.01"
                         min="0"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-omnia-navy/10 focus:outline-none focus:ring-2 focus:ring-omnia-blue bg-omnia-light/30 font-bold text-omnia-navy placeholder-omnia-navy/30 transition-all"
                         placeholder="0.00"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Categoría <span className="text-red-500">*</span>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-omnia-navy/60 uppercase tracking-wider">
+                      Categoría <span className="text-rose-500">*</span>
                     </label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="w-full px-4 py-3 rounded-xl border border-omnia-navy/10 focus:outline-none focus:ring-2 focus:ring-omnia-blue bg-omnia-light/30 font-semibold text-omnia-navy transition-all appearance-none"
                     >
                       <option value="">Seleccionar categoría</option>
                       {(formType === "income" ? incomeCategories : expenseCategories).map((cat) => (
@@ -401,27 +415,27 @@ export function CashRegisterDialog({
                     </select>
                   </div>
 
-                  <div className="col-span-2 space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Descripción <span className="text-red-500">*</span>
+                  <div className="col-span-2 space-y-2">
+                    <label className="text-xs font-bold text-omnia-navy/60 uppercase tracking-wider">
+                      Descripción <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      placeholder="Descripción del movimiento"
+                      className="w-full px-4 py-3 rounded-xl border border-omnia-navy/10 focus:outline-none focus:ring-2 focus:ring-omnia-blue bg-omnia-light/30 font-semibold text-omnia-navy placeholder-omnia-navy/30 transition-all"
+                      placeholder="Ej: Insumos de limpieza, Venta de productos..."
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-omnia-navy/60 uppercase tracking-wider">
                       Método de Pago
                     </label>
                     <select
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="w-full px-4 py-3 rounded-xl border border-omnia-navy/10 focus:outline-none focus:ring-2 focus:ring-omnia-blue bg-omnia-light/30 font-semibold text-omnia-navy transition-all appearance-none"
                     >
                       {paymentMethods.map((method) => (
                         <option key={method.value} value={method.value}>
@@ -431,46 +445,46 @@ export function CashRegisterDialog({
                     </select>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-omnia-navy/60 uppercase tracking-wider">
                       Notas
                     </label>
                     <input
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      placeholder="Notas adicionales (opcional)"
+                      className="w-full px-4 py-3 rounded-xl border border-omnia-navy/10 focus:outline-none focus:ring-2 focus:ring-omnia-blue bg-omnia-light/30 font-semibold text-omnia-navy placeholder-omnia-navy/30 transition-all"
+                      placeholder="Detalles adicionales..."
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2 mt-6">
+                <div className="flex justify-end gap-3 mt-8">
                   <button
                     type="button"
                     onClick={() => {
                       resetForm();
                       setActiveTab("summary");
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    className="px-6 py-3 text-sm font-bold text-omnia-navy/60 bg-white border-2 border-omnia-navy/5 rounded-xl hover:bg-omnia-navy/5 transition-all"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors flex items-center gap-2 ${
+                    className={`px-8 py-3 text-sm font-bold text-white rounded-xl transition-all shadow-lg flex items-center gap-3 ${
                       formType === "income"
-                        ? "bg-green-600 hover:bg-green-700"
-                        : "bg-red-600 hover:bg-red-700"
+                        ? "bg-omnia-blue hover:bg-omnia-blue/90 shadow-omnia-blue/20"
+                        : "bg-rose-600 hover:bg-rose-700 shadow-rose-600/20"
                     } disabled:opacity-50`}
                   >
                     {submitting ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <FiPlus className="w-4 h-4" />
+                      <FiPlus className="w-5 h-5" />
                     )}
-                    {formType === "income" ? "Registrar Ingreso" : "Registrar Egreso"}
+                    {formType === "income" ? "Completar Registro" : "Registrar Gasto"}
                   </button>
                 </div>
               </div>

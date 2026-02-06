@@ -160,7 +160,7 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 [&>button]:hidden rounded-2xl overflow-hidden">
+      <DialogContent className="max-w-7xl w-[95vw] h-[85vh] flex flex-col p-0 gap-0 [&>button]:hidden rounded-2xl overflow-hidden bg-omnia-light border-omnia-navy/20">
         {/* Hidden DialogTitle for accessibility */}
         <DialogTitle className="sr-only">
           {initialData ? t("editAppointment") : t("createAppointment")}

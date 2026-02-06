@@ -298,23 +298,29 @@ const Clients = () => {
 
       {/* Delete Ticket Confirmation Dialog */}
       <Dialog open={!!ticketToDelete} onOpenChange={(open) => !open && setTicketToDelete(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-red-100">
-                <FiAlertTriangle className="w-5 h-5 text-red-600" />
+        <DialogContent className="max-w-md bg-omnia-light border-omnia-navy/20 p-0 overflow-hidden">
+          <div className="p-6">
+            <DialogHeader className="flex flex-col items-center text-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                <FiAlertTriangle className="w-8 h-8" />
               </div>
-              <DialogTitle>{tSales("confirmDelete")}</DialogTitle>
-            </div>
-            <DialogDescription className="pt-2">
-              {tSales("confirmDeleteMessage")}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
+              <div>
+                <DialogTitle className="text-xl font-bold text-omnia-dark">
+                  {tSales("confirmDelete")}
+                </DialogTitle>
+                <DialogDescription className="text-omnia-navy/70 mt-2">
+                  {tSales("confirmDeleteMessage")}
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+          </div>
+
+          <DialogFooter className="bg-gray-50/50 p-4 gap-3 flex flex-row justify-center sm:justify-center border-t border-omnia-navy/10">
             <Button
               variant="outline"
               onClick={() => setTicketToDelete(null)}
               disabled={isDeleting}
+              className="flex-1 max-w-[140px] h-11 rounded-xl border-omnia-navy/10 text-omnia-dark hover:bg-white"
             >
               {tSales("cancel")}
             </Button>
@@ -322,6 +328,7 @@ const Clients = () => {
               variant="destructive"
               onClick={confirmDeleteTicket}
               disabled={isDeleting}
+              className="flex-1 max-w-[140px] h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
             >
               {isDeleting ? tSales("deleting") : tSales("delete")}
             </Button>

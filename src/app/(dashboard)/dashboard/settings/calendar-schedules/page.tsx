@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,12 +18,18 @@ import {
   BiX,
   BiUpload,
   BiImage,
+  BiUser,
+  BiPalette,
+  BiCog,
+  BiInfoCircle,
+  BiIdCard,
 } from "react-icons/bi";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -77,6 +83,16 @@ export default function CalendarSchedulesPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingBackground, setUploadingBackground] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [calendarToDelete, setCalendarToDelete] = useState<BookingCalendar | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Refs for hidden inputs
+  const colorPickerRef = useRef<HTMLInputElement>(null);
+  const backgroundUploadRef = useRef<HTMLInputElement>(null);
+  const logoUploadRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -203,25 +219,33 @@ export default function CalendarSchedulesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t("confirmDeleteCalendar") || "Are you sure you want to delete this calendar?")) {
-      return;
-    }
+  const openDeleteDialog = (calendar: BookingCalendar) => {
+    setCalendarToDelete(calendar);
+    setDeleteDialogOpen(true);
+  };
 
+  const handleDelete = async () => {
+    if (!calendarToDelete) return;
+
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/booking-calendars?id=${id}`, {
+      const response = await fetch(`/api/booking-calendars?id=${calendarToDelete.id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
         toast.success(t("calendarDeleted") || "Calendar deleted");
         fetchCalendars();
+        setDeleteDialogOpen(false);
+        setCalendarToDelete(null);
       } else {
         toast.error("Failed to delete calendar");
       }
     } catch (error) {
       console.error("Error deleting calendar:", error);
       toast.error("Failed to delete calendar");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -329,7 +353,7 @@ export default function CalendarSchedulesPage() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-40">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-omnia-blue"></div>
           </div>
         </CardContent>
       </Card>
@@ -343,10 +367,10 @@ export default function CalendarSchedulesPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <BiCalendar className="w-6 h-6 text-emerald-500" />
+              <BiCalendar className="w-6 h-6 text-omnia-blue" />
               {t("calendarSchedules") || "Calendar Schedules"}
             </CardTitle>
-            <Button onClick={openCreateDialog} className="bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={openCreateDialog} className="bg-omnia-blue hover:bg-omnia-blue/90">
               <BiPlus className="w-4 h-4 mr-2" />
               {t("createCalendar") || "Create Calendar"}
             </Button>
@@ -370,7 +394,7 @@ export default function CalendarSchedulesPage() {
               {t("createFirstCalendar") ||
                 "Create your first shareable booking calendar to start receiving appointments."}
             </p>
-            <Button onClick={openCreateDialog} className="bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={openCreateDialog} className="bg-omnia-blue hover:bg-omnia-blue/90">
               <BiPlus className="w-4 h-4 mr-2" />
               {t("createCalendar") || "Create Calendar"}
             </Button>
@@ -385,7 +409,7 @@ export default function CalendarSchedulesPage() {
             >
               {/* Background Preview */}
               <div
-                className="h-24 bg-gradient-to-br from-emerald-500 to-teal-600 relative"
+                className="h-24 bg-gradient-to-br from-omnia-dark to-omnia-navy relative"
                 style={
                   calendar.backgroundImage
                     ? {
@@ -435,7 +459,7 @@ export default function CalendarSchedulesPage() {
                       title={t("copyLink") || "Copy link"}
                     >
                       {copiedId === calendar.id ? (
-                        <BiCheck className="w-4 h-4 text-green-500" />
+                        <BiCheck className="w-4 h-4 text-omnia-blue" />
                       ) : (
                         <BiCopy className="w-4 h-4" />
                       )}
@@ -459,7 +483,7 @@ export default function CalendarSchedulesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(calendar.id)}
+                      onClick={() => openDeleteDialog(calendar)}
                       title={t("delete") || "Delete"}
                       className="text-red-500 hover:text-red-700"
                     >
@@ -472,7 +496,7 @@ export default function CalendarSchedulesPage() {
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <BiCalendar className="w-4 h-4 text-emerald-500" />
+                      <BiCalendar className="w-4 h-4 text-omnia-blue" />
                       <span className="text-sm font-medium text-gray-700">
                         {t("showOnMainPage") || "Show on Main Page"}
                       </span>
@@ -483,7 +507,7 @@ export default function CalendarSchedulesPage() {
                     />
                   </div>
                   {calendar.showOnMainPage && (
-                    <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                    <p className="text-xs text-omnia-blue mt-2 flex items-center gap-1">
                       <BiCheck className="w-3 h-3" />
                       {t("displayedOnMainPage") || "This calendar is displayed on the main page"}
                     </p>
@@ -505,272 +529,329 @@ export default function CalendarSchedulesPage() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-w-4xl p-0 gap-0 overflow-hidden rounded-2xl max-h-[90vh] bg-omnia-light border-omnia-navy/20 flex flex-col">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-6 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <BiCalendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-white">
+                  {editingCalendar
+                    ? t("editCalendar") || "Edit Calendar"
+                    : t("createCalendar") || "Create Calendar"}
+                </DialogTitle>
+                <DialogDescription className="text-white/70 text-sm">
+                  {editingCalendar
+                    ? t("editCalendarDescription") || "Update the settings and appearance of your booking calendar."
+                    : t("createCalendarDescription") || "Configure your new booking calendar to start receiving appointments."}
+                </DialogDescription>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-5 overflow-y-auto flex-1 bg-omnia-light/50">
+            {/* Information Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Basic Info Section */}
+              <div className="space-y-5">
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                      <BiIdCard className="w-3.5 h-3.5 text-omnia-blue" />
+                    </div>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Detalles del Calendario</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
+                        {t("calendarName") || "Calendar Name"} *
+                      </label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder={t("calendarNamePlaceholder") || "e.g., Main Booking"}
+                        className="h-10 rounded-xl border-2 border-omnia-navy/10 focus:ring-omnia-blue text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">
+                        {t("description") || "Description"}
+                      </label>
+                      <Textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        placeholder={t("descriptionPlaceholder") || "Brief description..."}
+                        className="rounded-xl border-2 border-omnia-navy/10 focus:ring-omnia-blue min-h-[80px] text-sm resize-none"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Personal Info Section */}
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                      <BiUser className="w-3.5 h-3.5 text-omnia-blue" />
+                    </div>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Información de Contacto</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">{t("fullName") || "Full Name"} *</label>
+                      <Input
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        placeholder="John Doe"
+                        className="h-10 rounded-xl border-2 border-omnia-navy/10 focus:ring-omnia-blue text-sm"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">{t("email") || "Email"} *</label>
+                        <Input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="email@example.com"
+                          className="h-10 rounded-xl border-2 border-omnia-navy/10 focus:ring-omnia-blue text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider">{t("phone") || "Phone"} *</label>
+                        <Input
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          placeholder="+52 33..."
+                          className="h-10 rounded-xl border-2 border-omnia-navy/10 focus:ring-omnia-blue text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Appearance and Config Column */}
+              <div className="space-y-5">
+                {/* Visual Section */}
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                      <BiPalette className="w-3.5 h-3.5 text-omnia-blue" />
+                    </div>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Apariencia y Marca</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider mb-2 block">{t("primaryColor") || "Primary Color"}</label>
+                      <div className="flex items-center gap-3 relative">
+                        <div 
+                          className="w-10 h-10 rounded-xl border shadow-sm cursor-pointer relative z-10" 
+                          style={{ backgroundColor: formData.primaryColor }}
+                          onClick={() => colorPickerRef.current?.click()}
+                        />
+                        <input
+                          ref={colorPickerRef}
+                          type="color"
+                          value={formData.primaryColor}
+                          onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                          className="absolute pointer-events-none opacity-0 w-10 h-10 left-0"
+                        />
+                        <Input
+                          value={formData.primaryColor}
+                          onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                          className="h-9 w-28 text-xs font-mono rounded-lg border-2 border-omnia-navy/10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider mb-2 block">{t("backgroundImage") || "Background"}</label>
+                        <div
+                          className="relative h-24 rounded-xl border-2 border-dashed border-omnia-navy/10 hover:border-omnia-blue transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center bg-omnia-light/30"
+                          onClick={() => backgroundUploadRef.current?.click()}
+                        >
+                          {formData.backgroundImage ? (
+                            <img src={formData.backgroundImage} alt="BG" className="w-full h-full object-cover" />
+                          ) : (
+                            <BiImage className="w-6 h-6 text-omnia-navy/20" />
+                          )}
+                          {uploadingBackground && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-omnia-blue"></div></div>}
+                        </div>
+                        <input ref={backgroundUploadRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], "background")} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-omnia-navy/70 uppercase tracking-wider mb-2 block">{t("logoImage") || "Logo"}</label>
+                        <div
+                          className="relative h-24 rounded-xl border-2 border-dashed border-omnia-navy/10 hover:border-omnia-blue transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center bg-omnia-light/30"
+                          onClick={() => logoUploadRef.current?.click()}
+                        >
+                          {formData.logoImage ? (
+                            <img src={formData.logoImage} alt="Logo" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                          ) : (
+                            <BiUpload className="w-6 h-6 text-omnia-navy/20" />
+                          )}
+                          {uploadingLogo && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-omnia-blue"></div></div>}
+                        </div>
+                        <input ref={logoUploadRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], "logo")} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Settings Section */}
+                <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                      <BiCog className="w-3.5 h-3.5 text-omnia-blue" />
+                    </div>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Configuración Avanzada</span>
+                  </div>
+
+                  <div className="p-3 bg-omnia-blue/5 border border-omnia-blue/10 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-omnia-dark font-medium text-xs">
+                        <BiCheck className="w-4 h-4 text-omnia-blue" />
+                        {t("mercadoPagoIntegration") || "Mercado Pago"}
+                      </div>
+                      <Switch
+                        checked={formData.mercadoPagoEnabled}
+                        onCheckedChange={(checked) => setFormData({ ...formData, mercadoPagoEnabled: checked })}
+                        className="scale-90"
+                      />
+                    </div>
+                    <p className="text-[10px] text-omnia-navy/60 leading-tight">
+                      {t("mercadoPagoDescription") || "Allow clients to pay online before finishing the checkout."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Services Selection Section */}
+            <div className="bg-white rounded-xl border border-omnia-navy/10 p-5 space-y-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
+                  <BiCheck className="w-3.5 h-3.5 text-omnia-blue" />
+                </div>
+                <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Servicios Disponibles</span>
+              </div>
+
+              <div className="border border-omnia-navy/5 rounded-xl overflow-hidden bg-omnia-light/20">
+                <div className="max-h-[200px] overflow-y-auto divide-y divide-omnia-navy/5">
+                  {services.length === 0 ? (
+                    <div className="p-8 text-center text-omnia-navy/40 italic text-sm">
+                      {t("noServicesAvailable") || "No hay servicios disponibles"}
+                    </div>
+                  ) : (
+                    services.map((service) => (
+                      <label
+                        key={service.id}
+                        className="flex items-center gap-4 p-3 hover:bg-omnia-blue/5 cursor-pointer transition-colors"
+                      >
+                        <Checkbox
+                          checked={formData.serviceIds.includes(service.id)}
+                          onCheckedChange={() => toggleService(service.id)}
+                          className="border-omnia-navy/20 data-[state=checked]:bg-omnia-blue data-[state=checked]:border-omnia-blue"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-omnia-dark text-sm truncate">{service.name}</p>
+                          <p className="text-xs text-omnia-navy/60 flex items-center gap-2">
+                            <span>{service.duration} min</span>
+                            <span className="w-1 h-1 rounded-full bg-omnia-navy/20" />
+                            <span className="font-semibold text-omnia-blue">${service.price}</span>
+                          </p>
+                        </div>
+                        {service.slots != null && service.slots > 1 && (
+                          <span className="text-[10px] bg-omnia-blue/10 text-omnia-blue font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                            {service.slots} {t("slots") || "slots"}
+                          </span>
+                        )}
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div className="flex justify-between items-center px-1">
+                <p className="text-[10px] font-bold text-omnia-navy/40 uppercase tracking-widest">
+                  {formData.serviceIds.length} {t("servicesSelected") || "servicios seleccionados"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="p-4 bg-white border-t border-omnia-navy/10 shrink-0 flex justify-end gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDialogOpen(false)} 
+              className="h-11 px-6 rounded-xl border-2 border-omnia-navy/10 text-omnia-dark hover:bg-omnia-navy/5 font-medium transition-all"
+            >
+              {t("cancel") || "Cancelar"}
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={saving}
+              className="h-11 px-8 rounded-xl bg-omnia-blue hover:bg-omnia-blue/90 text-white font-bold shadow-lg shadow-omnia-blue/25 transition-all flex items-center gap-2"
+            >
+              {saving ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white mr-2"></div>
+              ) : (
+                <BiCheck className="w-5 h-5" />
+              )}
               {editingCalendar
-                ? t("editCalendar") || "Edit Calendar"
-                : t("createCalendar") || "Create Calendar"}
+                ? t("saveChanges") || "Guardar Cambios"
+                : t("createCalendar") || "Crear Calendario"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-md bg-omnia-light border-omnia-navy/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-red-600">
+              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                <BiTrash className="w-5 h-5 text-red-600" />
+              </div>
+              {t("confirmDeleteCalendar") || "Delete Calendar"}
             </DialogTitle>
+            <DialogDescription className="text-omnia-navy mt-2">
+              {t("confirmDeleteCalendarDesc") || 
+                "Are you sure you want to delete this calendar? This action cannot be undone and clients will no longer be able to book through its link."}
+              {calendarToDelete && (
+                <span className="block mt-2 font-semibold text-omnia-dark">
+                  Calendar: {calendarToDelete.name}
+                </span>
+              )}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6 mt-4">
-            {/* Basic Info */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("calendarName") || "Calendar Name"} *
-                </label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder={t("calendarNamePlaceholder") || "e.g., Main Booking"}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("fullName") || "Full Name"} *
-                </label>
-                <Input
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder={t("fullNamePlaceholder") || "e.g., John Doe"}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("email") || "Email"} *
-                </label>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder={t("emailPlaceholder") || "email@example.com"}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("phone") || "Phone"} *
-                </label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder={t("phonePlaceholder") || "+52 33 1234 5678"}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("description") || "Description"}
-              </label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder={t("descriptionPlaceholder") || "Brief description of your services..."}
-                rows={3}
-              />
-            </div>
-
-            {/* Images */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Background Image */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("backgroundImage") || "Background Image"}
-                </label>
-                <div
-                  className="relative h-32 rounded-lg border-2 border-dashed border-gray-300 hover:border-emerald-400 transition-colors cursor-pointer overflow-hidden"
-                  onClick={() => document.getElementById("background-upload")?.click()}
-                >
-                  {formData.backgroundImage ? (
-                    <img
-                      src={formData.backgroundImage}
-                      alt="Background"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                      <BiImage className="w-8 h-8 mb-2" />
-                      <span className="text-sm">{t("uploadBackground") || "Upload background"}</span>
-                    </div>
-                  )}
-                  {uploadingBackground && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                    </div>
-                  )}
-                </div>
-                <input
-                  id="background-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file, "background");
-                  }}
-                />
-                {formData.backgroundImage && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-1 text-red-500"
-                    onClick={() => setFormData({ ...formData, backgroundImage: "" })}
-                  >
-                    <BiX className="w-4 h-4 mr-1" />
-                    {t("remove") || "Remove"}
-                  </Button>
-                )}
-              </div>
-
-              {/* Logo Image */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("logoImage") || "Logo Image"}
-                </label>
-                <div
-                  className="relative h-32 rounded-lg border-2 border-dashed border-gray-300 hover:border-emerald-400 transition-colors cursor-pointer overflow-hidden flex items-center justify-center"
-                  onClick={() => document.getElementById("logo-upload")?.click()}
-                >
-                  {formData.logoImage ? (
-                    <img
-                      src={formData.logoImage}
-                      alt="Logo"
-                      className="w-24 h-24 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                      <BiUpload className="w-8 h-8 mb-2" />
-                      <span className="text-sm">{t("uploadLogo") || "Upload logo"}</span>
-                    </div>
-                  )}
-                  {uploadingLogo && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                    </div>
-                  )}
-                </div>
-                <input
-                  id="logo-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file, "logo");
-                  }}
-                />
-                {formData.logoImage && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-1 text-red-500"
-                    onClick={() => setFormData({ ...formData, logoImage: "" })}
-                  >
-                    <BiX className="w-4 h-4 mr-1" />
-                    {t("remove") || "Remove"}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Primary Color */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("primaryColor") || "Primary Color"}
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={formData.primaryColor}
-                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                  className="w-12 h-10 rounded cursor-pointer border-0"
-                />
-                <Input
-                  value={formData.primaryColor}
-                  onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                  className="w-32"
-                />
-              </div>
-            </div>
-
-            {/* Mercado Pago Integration */}
-            <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-semibold text-blue-900">
-                    {t("mercadoPagoIntegration") || "Mercado Pago Integration"}
-                  </h4>
-                  <p className="text-xs text-blue-700">
-                    {t("mercadoPagoDescription") || "Allow clients to pay online before finishing the checkout."}
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.mercadoPagoEnabled}
-                  onCheckedChange={(checked) => setFormData({ ...formData, mercadoPagoEnabled: checked })}
-                />
-              </div>
-            </div>
-
-            {/* Services Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("selectServices") || "Select Services"}
-              </label>
-              <div className="border rounded-lg max-h-48 overflow-y-auto">
-                {services.length === 0 ? (
-                  <div className="p-4 text-center text-gray-500">
-                    {t("noServicesAvailable") || "No services available"}
-                  </div>
-                ) : (
-                  services.map((service) => (
-                    <label
-                      key={service.id}
-                      className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                    >
-                      <Checkbox
-                        checked={formData.serviceIds.includes(service.id)}
-                        onCheckedChange={() => toggleService(service.id)}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{service.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {service.duration} min • ${service.price}
-                        </p>
-                      </div>
-                      {service.slots != null && service.slots > 1 && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                          {service.slots} {t("slots") || "slots"}
-                        </span>
-                      )}
-                    </label>
-                  ))
-                )}
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {formData.serviceIds.length} {t("servicesSelected") || "services selected"}
-              </p>
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                {t("cancel") || "Cancel"}
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={saving}
-                className="bg-emerald-600 hover:bg-emerald-700"
-              >
-                {saving ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                ) : null}
-                {editingCalendar
-                  ? t("saveChanges") || "Save Changes"
-                  : t("createCalendar") || "Create Calendar"}
-              </Button>
-            </div>
+          <div className="flex justify-end gap-3 pt-6 border-t border-omnia-navy/10 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)}
+              className="border-omnia-navy/20 hover:bg-omnia-navy/5"
+            >
+              {t("cancel") || "Cancel"}
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/25"
+            >
+              {deleting ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              ) : null}
+              {t("delete") || "Delete"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

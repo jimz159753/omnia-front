@@ -34,7 +34,7 @@ export default function SettingsLayout({
   const menuSections = [
     {
       header: t("businessHeader"),
-      icon: <BiBuilding className="w-5 h-5 text-brand-500" />,
+      icon: <BiBuilding className="w-5 h-5 text-omnia-blue" />,
       items: [
         {
           path: "/dashboard/settings/business-details",
@@ -45,7 +45,7 @@ export default function SettingsLayout({
     },
     {
       header: t("externalCalendarsHeader") || "EXTERNAL CALENDARS",
-      icon: <BiCalendarEvent className="w-5 h-5 text-brand-500" />,
+      icon: <BiCalendarEvent className="w-5 h-5 text-omnia-blue" />,
       items: [
         {
           path: "/dashboard/settings/schedules",
@@ -59,14 +59,14 @@ export default function SettingsLayout({
     },
     {
       header: t("accountHeader"),
-      icon: <BiUser className="w-5 h-5 text-brand-500" />,
+      icon: <BiUser className="w-5 h-5 text-omnia-blue" />,
       items: [
         { path: "/dashboard/settings/account", label: t("accountDetailsItem") },
       ],
     },
     {
       header: t("whatsappHeader"),
-      icon: <BiLogoWhatsapp className="w-5 h-5 text-brand-500" />,
+      icon: <BiLogoWhatsapp className="w-5 h-5 text-omnia-blue" />,
       items: [
         {
           path: "/dashboard/settings/reminders",
@@ -102,7 +102,7 @@ export default function SettingsLayout({
     <div className="p-6 space-y-6">
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-4 lg:col-span-1">
-          <Card className="shadow-none">
+          <Card className="shadow-none border-omnia-navy/10 bg-omnia-light/30">
             <CardHeader>
               <CardTitle>{t("configurationHeader")}</CardTitle>
             </CardHeader>
@@ -124,8 +124,8 @@ export default function SettingsLayout({
                             className={cn(
                               "block text-sm px-8 py-1 rounded-md transition-colors h-10 flex items-center justify-start cursor-pointer",
                               pathname === item.path
-                                ? "bg-brand-50 !text-brand-700 font-medium"
-                                : "text-gray-600 hover:bg-gray-50 hover:text-brand-700"
+                                ? "bg-omnia-blue/10 !text-omnia-blue font-bold shadow-sm"
+                                : "text-omnia-navy/60 hover:bg-omnia-navy/5 hover:text-omnia-navy"
                             )}
                           >
                             {item.label}

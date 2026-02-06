@@ -74,7 +74,7 @@ const Header = () => {
               {/* Cash Register Button */}
               <button
                 onClick={() => setCashRegisterOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-700 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 hover:border-brand-300 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-omnia-blue bg-omnia-blue/10 border border-omnia-blue/20 rounded-xl hover:bg-omnia-blue/20 transition-all font-display shadow-sm"
               >
                 <FiDollarSign className="w-4 h-4" />
                 <span>Caja</span>
@@ -96,7 +96,7 @@ const Header = () => {
                       className="rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-omnia-navy flex items-center justify-center text-white font-bold text-sm shadow-md shadow-omnia-navy/20">
                       {getUserInitials()}
                     </div>
                   )}
@@ -120,7 +120,7 @@ const Header = () => {
                             className="rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-11 h-11 rounded-full bg-brand-500 flex items-center justify-center text-white font-semibold">
+                          <div className="w-11 h-11 rounded-full bg-omnia-navy flex items-center justify-center text-white font-bold">
                             {getUserInitials()}
                           </div>
                         )}

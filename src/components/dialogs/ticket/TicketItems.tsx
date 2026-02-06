@@ -85,8 +85,8 @@ const TicketItemRow: React.FC<TicketItemRowProps> = ({
       <div
         className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
           isService
-            ? "bg-blue-100 text-blue-600"
-            : "bg-amber-100 text-amber-600"
+            ? "bg-omnia-blue/10 text-omnia-blue"
+            : "bg-omnia-navy/10 text-omnia-navy"
         }`}
       >
         {isService ? (

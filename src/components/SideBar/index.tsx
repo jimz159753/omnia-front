@@ -10,7 +10,7 @@ interface SideBarProps {
 
 const SideBar = ({ items, setIsDialogOpen }: SideBarProps) => {
   return (
-    <div className="w-28 bg-omnia-dark h-screen sticky top-0 flex flex-col items-center gap-6 pt-6 border-r border-omnia-navy/50 shadow-xl">
+    <div className="w-28 bg-omnia-light h-screen sticky top-0 flex flex-col items-center gap-6 pt-6 border-r border-omnia-navy/10 shadow-xl">
       {/* Add Button */}
       <button
         onClick={() => setIsDialogOpen((prev) => !prev)}
@@ -20,7 +20,7 @@ const SideBar = ({ items, setIsDialogOpen }: SideBarProps) => {
       </button>
       
       {/* Divider */}
-      <div className="w-12 h-px bg-omnia-navy" />
+      <div className="w-12 h-px bg-omnia-navy/10" />
       
       {/* Navigation Items */}
       <ListSection items={items} />

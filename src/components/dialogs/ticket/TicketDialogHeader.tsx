@@ -24,9 +24,9 @@ export const TicketDialogHeader: React.FC<TicketDialogHeaderProps> = ({
   isEmailLoading = false,
 }) => {
   return (
-    <DialogHeader className="bg-gradient-to-r from-brand-500 to-brand-600 p-5 rounded-t-2xl">
+    <DialogHeader className="bg-gradient-to-r from-omnia-dark to-omnia-navy p-5 rounded-t-2xl">
       <div className="flex items-center justify-between">
-        <DialogTitle className="text-white font-semibold text-lg">
+        <DialogTitle className="text-white font-bold text-lg">
           {title}
         </DialogTitle>
         <div className="flex items-center gap-2">
@@ -77,19 +77,19 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   label,
   onClick,
   disabled = false,
-  variant = "primary",
+  variant = "secondary",
 }) => {
   const baseClasses =
-    "text-sm font-medium flex gap-2 items-center justify-center rounded-lg px-3 py-2 transition-all";
+    "text-sm font-bold flex gap-2 items-center justify-center rounded-xl px-4 py-2 transition-all shadow-sm";
 
   const variantClasses =
     variant === "secondary"
       ? disabled
-        ? "bg-white/10 text-white/50 cursor-not-allowed"
-        : "bg-white/20 text-white hover:bg-white/30"
+        ? "bg-white/10 text-white/50 cursor-not-allowed opacity-50"
+        : "bg-white/20 text-white hover:bg-white/30 border border-white/10"
       : disabled
-      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-      : "bg-white text-brand-600 hover:bg-gray-50 shadow-sm";
+      ? "bg-omnia-navy/5 text-omnia-navy/20 cursor-not-allowed"
+      : "bg-omnia-blue text-white hover:bg-omnia-blue/90 shadow-omnia-blue/20";
 
   return (
     <button
@@ -102,3 +102,4 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     </button>
   );
 };
+

@@ -162,7 +162,7 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
   // 4. Render
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 max-w-lg rounded-2xl [&>button:first-of-type]:hidden overflow-hidden">
+      <DialogContent className="p-0 max-w-lg rounded-2xl [&>button:first-of-type]:hidden overflow-hidden bg-omnia-light border-omnia-navy/20">
         <TicketDialogHeader
           title={t("ticketDetails")}
           onDownloadPdf={handleDownloadPdf}
@@ -188,7 +188,7 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center">
-                  <FiHash className="w-5 h-5 text-brand-500" />
+                  <FiHash className="w-5 h-5 text-omnia-blue" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider">
@@ -264,9 +264,9 @@ export const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
           )}
 
           {/* Total Section */}
-          <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between">
-            <span className="text-white font-medium">{t("totalLabel")}</span>
-            <span className="text-2xl font-bold text-white">
+          <div className="bg-gradient-to-r from-omnia-dark to-omnia-navy rounded-xl p-4 flex items-center justify-between shadow-lg shadow-omnia-dark/20">
+            <span className="text-white/80 font-medium">{t("totalLabel")}</span>
+            <span className="text-2xl font-black text-white">
               {formatCurrency(ticket.total || 0)}
             </span>
           </div>

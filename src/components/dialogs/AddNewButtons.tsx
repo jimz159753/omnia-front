@@ -17,34 +17,34 @@ type AddNewButtonItem = {
 
 const addNewButtonItems: AddNewButtonItem[] = [
   {
+    value: "client",
+    labelKey: "client",
+    icon: FiUserPlus,
+    className: "rounded-l-2xl",
+    colorBg: "bg-omnia-blue/10",
+    hoverBg: "hover:bg-omnia-blue/20",
+    iconColor: "text-omnia-blue",
+    hoverRing: "hover:ring-omnia-blue",
+  },
+  {
     value: "appointment",
     labelKey: "appointment",
     icon: FiCalendar,
-    className: "rounded-r-none",
-    colorBg: "bg-blue-500/20",
-    hoverBg: "hover:bg-blue-500/30",
-    iconColor: "text-blue-500",
-    hoverRing: "hover:ring-blue-500",
+    className: "rounded-none",
+    colorBg: "bg-omnia-navy/10",
+    hoverBg: "hover:bg-omnia-navy/20",
+    iconColor: "text-omnia-navy",
+    hoverRing: "hover:ring-omnia-navy",
   },
   {
     value: "sale",
     labelKey: "sale",
     icon: FiShoppingBag,
-    className: "rounded-none",
-    colorBg: "bg-green-500/20",
-    hoverBg: "hover:bg-green-500/30",
-    iconColor: "text-green-500",
-    hoverRing: "hover:ring-green-500",
-  },
-  {
-    value: "client",
-    labelKey: "client",
-    icon: FiUserPlus,
-    className: "rounded-l-none",
-    colorBg: "bg-purple-500/20",
-    hoverBg: "hover:bg-purple-500/30",
-    iconColor: "text-purple-500",
-    hoverRing: "hover:ring-purple-500",
+    className: "rounded-r-2xl",
+    colorBg: "bg-amber-500/10",
+    hoverBg: "hover:bg-amber-500/20",
+    iconColor: "text-amber-600",
+    hoverRing: "hover:ring-amber-500",
   },
 ];
 
@@ -56,7 +56,7 @@ export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
   const { t } = useTranslation("common");
 
   return (
-    <div className="flex justify-center mx-auto gap-0">
+    <div className="flex justify-center mx-auto gap-1">
       {addNewButtonItems.map((item) => {
         const Icon = item.icon;
 
@@ -67,20 +67,21 @@ export function AddNewButtons({ onSelect }: AddNewButtonsProps) {
             onClick={() => onSelect(item.value)}
             className={`
               ${item.className}
-              h-48 w-36 flex flex-col items-center justify-between py-10 
-              rounded-lg transition-all duration-300 
+              h-44 w-36 flex flex-col items-center justify-center gap-6
+              bg-white border border-omnia-navy/5 shadow-sm
+              transition-all duration-300 
               ring-0 ring-transparent hover:ring-2 hover:ring-offset-2
               ${item.hoverRing}
-              ${item.hoverBg}
+              hover:shadow-md hover:-translate-y-1
             `}
           >
             <div
-              className={`${item.colorBg} rounded-full h-14 w-14 flex items-center justify-center`}
+              className={`${item.colorBg} rounded-2xl h-16 w-16 flex items-center justify-center transition-transform group-hover:scale-110`}
             >
-              <Icon className={`${item.iconColor}`} size={24} />
+              <Icon className={`${item.iconColor}`} size={28} />
             </div>
 
-            <p className="text-sm font-semibold">{t(item.labelKey)}</p>
+            <p className="text-sm font-bold text-omnia-dark uppercase tracking-wide">{t(item.labelKey)}</p>
           </button>
         );
       })}
