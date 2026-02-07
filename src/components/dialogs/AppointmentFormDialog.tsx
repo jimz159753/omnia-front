@@ -266,11 +266,6 @@ export function AppointmentFormDialog({
                       errors={errors}
                       users={users}
                       products={products}
-                      userId={user?.id}
-                      googleCalendarId={watch("googleCalendarId")}
-                      onGoogleCalendarChange={(calendarId) =>
-                        setValue("googleCalendarId", calendarId)
-                      }
                     />
                   ) : (
                     <>

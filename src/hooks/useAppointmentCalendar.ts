@@ -148,7 +148,7 @@ export const useAppointmentCalendar = () => {
               client?: { name: string };
               items?: Array<{
                 serviceId?: string;
-                service?: { name: string };
+                service?: { name: string; googleCalendarId?: string };
                 product?: { name: string };
               }>;
               notes?: string;
@@ -170,8 +170,10 @@ export const useAppointmentCalendar = () => {
               const itemName = serviceName || productName || "Item";
 
               // Get calendar color if available
-              const backgroundColor = ticket.googleCalendarId
-                ? calendarColorMap[ticket.googleCalendarId]
+              // Try ticket's googleCalendarId first, then fallback to service's googleCalendarId
+              const effectiveCalendarId = ticket.googleCalendarId || serviceItem?.service?.googleCalendarId;
+              const backgroundColor = effectiveCalendarId
+                ? calendarColorMap[effectiveCalendarId]
                 : undefined;
 
               // Debug logging

@@ -179,10 +179,11 @@ export const AppointmentDetailsSection = ({
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Package Info */}
-      {selectedService && (selectedService.classes || selectedService.provider) && (
+      {selectedService && (selectedService?.classes || selectedService?.provider) && (
         <div className="bg-omnia-blue/5 p-4 rounded-xl border border-omnia-blue/10 flex flex-col gap-3 animate-in slide-in-from-top-2">
            <div className="flex items-center gap-2 mb-1">
             <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
@@ -194,7 +195,7 @@ export const AppointmentDetailsSection = ({
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            {selectedService.classes && (
+            {selectedService?.classes && (
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("classes") || "Classes"}
@@ -204,7 +205,7 @@ export const AppointmentDetailsSection = ({
                 </p>
               </div>
             )}
-            {selectedService.provider && (
+            {selectedService?.provider && (
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("instructor") || "Instructor"}
@@ -214,7 +215,7 @@ export const AppointmentDetailsSection = ({
                 </p>
               </div>
             )}
-            {selectedService.startDate && (
+            {selectedService?.startDate && (
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("startDate") || "Start Date"}
@@ -224,7 +225,7 @@ export const AppointmentDetailsSection = ({
                 </p>
               </div>
             )}
-            {selectedService.endDate && (
+            {selectedService?.endDate && (
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-omnia-blue/70 uppercase tracking-wider">
                   {t("endDate") || "End Date"}

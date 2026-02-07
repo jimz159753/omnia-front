@@ -18,6 +18,7 @@ export interface Service {
     id: string;
     name: string;
   } | null;
+  googleCalendarId?: string | null;
 }
 
 export interface User {
@@ -223,6 +224,17 @@ export const useAppointmentDetails = ({
       setLoading(false);
     }
   }, [t]);
+
+  // Sync googleCalendarId when service changes
+  const watchedServiceId = watch("serviceId");
+  useEffect(() => {
+    if (watchedServiceId && services.length > 0) {
+      const selectedService = services.find((s) => s.id === watchedServiceId);
+      if (selectedService?.googleCalendarId) {
+        setValue("googleCalendarId", selectedService.googleCalendarId);
+      }
+    }
+  }, [watchedServiceId, services, setValue]);
 
   /**
    * Fetch ticket details for editing

@@ -81,7 +81,6 @@ interface AppointmentTicketTableProps {
   errors?: FieldErrors<any>;
   // Google Calendar props
   userId?: string;
-  googleCalendarId?: string;
   onGoogleCalendarChange?: (calendarId: string) => void;
 }
 
@@ -152,8 +151,8 @@ export function AppointmentTicketTable({
   onDiscountUpdates,
   onQuantityUpdates,
   userId,
-  googleCalendarId,
   onGoogleCalendarChange,
+  errors,
 }: AppointmentTicketTableProps) {
   const { t } = useTranslation("common");
 
