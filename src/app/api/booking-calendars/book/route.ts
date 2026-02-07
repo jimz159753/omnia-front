@@ -169,12 +169,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`✅ Slot available: ${overlappingCount}/${maxSlots} booked, creating appointment`);
-
     // Generate unique ticket ID in format TK-YYYY-XXXXXX
     const ticketId = await generateUniqueTicketId();
 
-    // Create the appointment (ticket)
+    // IF MERCADO PAGO IS ENABLED, DO NOT CREATE THE TICKET YET
+    if (calendar.mercadoPagoEnabled) {
+      console.log(`💳 Mercado Pago enabled for ${calendar.name}. Skipping ticket creation until payment.`);
+      
+      return NextResponse.json(
+        {
+          success: true,
+          paymentRequired: true,
+          booking: {
+            id: ticketId,
+            serviceId: service.id,
+            serviceName: service.name,
+            startTime: startTime.toISOString(),
+            endTime: endTime.toISOString(),
+            duration: service.duration,
+            total: service.price,
+            staffId: staff.id,
+            googleCalendarId: service.googleCalendarId,
+            calendarName: calendar.name,
+            client: {
+              name: clientName,
+              email: clientEmail,
+              phone: clientPhone,
+            },
+            notes: notes,
+          },
+          message: "Redirecting to payment",
+        },
+        { status: 200 }
+      );
+    }
+
+    // Create the appointment (ticket) - Standard Flow
     const ticket = await (await getPrisma()).ticket.create({
       data: {
         id: ticketId,
@@ -187,6 +217,7 @@ export async function POST(request: NextRequest) {
         startTime,
         endTime,
         duration: service.duration,
+        googleCalendarId: service.googleCalendarId || null,
         services: {
           create: {
             serviceId: service.id,
@@ -208,7 +239,6 @@ export async function POST(request: NextRequest) {
     });
 
     // ✅ SYNC TO GOOGLE CALENDAR
-    // Use the service's Google Calendar if specified, otherwise use default
     if (ticket.startTime && ticket.endTime) {
       const googleEvent: GoogleCalendarEvent = {
         summary: `${service.name} - ${client.name}`,

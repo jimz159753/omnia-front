@@ -428,4 +428,80 @@ export async function deleteCalendarAcl(calendarId: string, ruleId: string) {
     return false;
   }
 }
+/**
+ * Sync a ticket to Google Calendar
+ * @param ticketId - ID of the ticket to sync
+ */
+export async function syncTicketToGoogleCalendar(ticketId: string): Promise<string | null> {
+  try {
+    const prisma = await getPrisma();
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: {
+        client: true,
+        staff: true,
+        services: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    if (!ticket || !ticket.startTime || !ticket.endTime) {
+      console.log(`⚠️ syncTicketToGoogleCalendar: Ticket ${ticketId} not found or missing times`);
+      return null;
+    }
+
+    const serviceItem = ticket.services[0];
+    const service = serviceItem?.service;
+    if (!service) {
+      console.log(`⚠️ syncTicketToGoogleCalendar: No service found for ticket ${ticketId}`);
+      return null;
+    }
+
+    const googleEvent: GoogleCalendarEvent = {
+      summary: `${service.name} - ${ticket.client.name}`,
+      description: `Staff: ${ticket.staff.name}\nStatus: ${ticket.status}\nNotes: ${ticket.notes || "N/A"}\nPhone: ${ticket.client.phone}`,
+      start: {
+        dateTime: ticket.startTime.toISOString(),
+        timeZone: "America/Mexico_City",
+      },
+      end: {
+        dateTime: ticket.endTime.toISOString(),
+        timeZone: "America/Mexico_City",
+      },
+      // Add client email as attendee
+      attendees: ticket.client.email && !ticket.client.email.includes('@booking.temp')
+        ? [{ email: ticket.client.email }]
+        : undefined,
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "popup", minutes: 30 }, // 30 min before
+        ],
+      },
+    };
+
+    // Use the service's Google Calendar ID if set, otherwise use ticket's googleCalendarId or default
+    const targetCalendarId = ticket.googleCalendarId || service.googleCalendarId || undefined;
+    console.log(`📅 Syncing ticket ${ticketId} to Google Calendar: ${targetCalendarId ? targetCalendarId.substring(0, 30) + '...' : 'default'}`);
+
+    const googleEventId = await createGoogleCalendarEvent(googleEvent, targetCalendarId);
+
+    // Save the Google Calendar event ID to the ticket
+    if (googleEventId) {
+      await prisma.ticket.update({
+        where: { id: ticket.id },
+        data: { googleCalendarEventId: googleEventId },
+      });
+      console.log(`📅 Created Google Calendar event: ${googleEventId}`);
+    }
+
+    return googleEventId;
+  } catch (error) {
+    console.error("❌ Error in syncTicketToGoogleCalendar:", error);
+    return null;
+  }
+}
 

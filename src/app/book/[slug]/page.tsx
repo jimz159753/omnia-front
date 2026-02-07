@@ -103,6 +103,7 @@ export default function BookingPage() {
   const [bookingComplete, setBookingComplete] = useState(false);
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [createdTicketId, setCreatedTicketId] = useState<string | null>(null);
+  const [bookingData, setBookingData] = useState<any | null>(null);
 
   // Language detection and translations
   const [locale, setLocale] = useState<"en" | "es">("es");
@@ -248,8 +249,9 @@ export default function BookingPage() {
       if (response.ok) {
         const result = await response.json();
         
-        if (calendarData?.calendar.mercadoPagoEnabled) {
+        if (result.paymentRequired) {
           setCreatedTicketId(result.booking.id);
+          setBookingData(result.booking);
           setStep("payment");
           return;
         }
@@ -738,6 +740,7 @@ export default function BookingPage() {
                               email: contactForm.email || `${contactForm.phone.replace(/[^0-9]/g, "")}@example.com`,
                             },
                             ticketId: createdTicketId,
+                            bookingData: bookingData,
                           }),
                         });
 

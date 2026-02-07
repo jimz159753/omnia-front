@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
 import { MercadoPagoConfig, Payment } from "mercadopago";
+import { syncTicketToGoogleCalendar } from "@/services/googleCalendarService";
+import { finalizeBooking } from "@/services/bookingService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,6 +43,10 @@ export async function POST(request: NextRequest) {
       external_reference: ticketId,
       description: `Omnia Booking - ${ticketId}`,
       binary_mode: true,
+      metadata: {
+        ticket_id: ticketId,
+        booking_data: JSON.stringify(body.bookingData),
+      }
     };
 
     console.log("💳 Sending to MP with Unique Idempotency Key");
@@ -73,10 +79,22 @@ export async function POST(request: NextRequest) {
     };
 
     if (result.status === "approved") {
-      await (await getPrisma()).ticket.update({
-        where: { id: ticketId },
-        data: { status: "Confirmed" },
-      });
+      // Create the ticket ONLY after payment is approved
+      if (body.bookingData) {
+        await finalizeBooking(ticketId, body.bookingData);
+        console.log(`✅ Ticket created via finalizeBooking for ${ticketId}`);
+      } else {
+        // Fallback for cases where bookingData might be missing (direct ticket update)
+        await (await getPrisma()).ticket.update({
+          where: { id: ticketId },
+          data: { status: "Completed" },
+        });
+        
+        // Sync to Google Calendar after payment update
+        const { syncTicketToGoogleCalendar } = await import("@/services/googleCalendarService");
+        await syncTicketToGoogleCalendar(ticketId);
+      }
+
       return NextResponse.json({ status: "approved", ticketId });
     } else {
       const detail = result.status_detail || "general_rejection";
