@@ -179,7 +179,7 @@ export function UserDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden rounded-2xl max-h-[90vh]">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 p-6">
+        <div className="bg-[#0f1933] p-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,8 +199,8 @@ export function UserDialog({
           {/* Avatar Upload Card */}
           <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-md bg-purple-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-[#1e8bf8]/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-[#1e8bf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -231,8 +231,8 @@ export function UserDialog({
           {/* Basic Info Card */}
           <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-md bg-indigo-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-[#1c3058]/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-[#1c3058]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -247,7 +247,7 @@ export function UserDialog({
                 <input
                   {...register("name")}
                   type="text"
-                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e8bf8] focus:border-transparent transition-all"
                   placeholder="Nombre completo"
                 />
                 {errors.name && (
@@ -262,7 +262,7 @@ export function UserDialog({
                 <input
                   {...register("email")}
                   type="email"
-                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e8bf8] focus:border-transparent transition-all"
                   placeholder="correo@email.com"
                 />
                 {errors.email && (
@@ -279,7 +279,7 @@ export function UserDialog({
                 <input
                   {...register("password")}
                   type="password"
-                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e8bf8] focus:border-transparent transition-all"
                   placeholder="••••••••"
                 />
                 {errors.password && (
@@ -287,16 +287,16 @@ export function UserDialog({
                 )}
               </div>
             ) : (
-              <div className="p-4 bg-purple-50 border border-purple-100 rounded-xl">
+              <div className="p-4 bg-[#1e8bf8]/5 border border-[#1e8bf8]/20 rounded-xl">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-5 h-5 rounded-full bg-[#1e8bf8]/20 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-[#1e8bf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <p className="text-sm text-purple-900 font-bold">Invitation via Email</p>
+                  <p className="text-sm text-[#0f1933] font-bold">Invitation via Email</p>
                 </div>
-                <p className="text-xs text-purple-700">An invitation will be sent to <strong>{validationEmail || "the user"}</strong> to complete registration and set their password.</p>
+                <p className="text-xs text-[#1c3058]">An invitation will be sent to <strong>{validationEmail || "the user"}</strong> to complete registration and set their password.</p>
               </div>
             )}
           </div>
@@ -304,8 +304,8 @@ export function UserDialog({
           {/* Role & Settings Card */}
           <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-md bg-violet-100 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-6 h-6 rounded-md bg-[#1c3058]/10 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-[#1c3058]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -335,7 +335,7 @@ export function UserDialog({
                         </SelectItem>
                         <SelectItem value="admin">
                           <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                            <span className="w-2 h-2 rounded-full bg-[#1e8bf8]"></span>
                             {t("roleAdmin")}
                           </div>
                         </SelectItem>
@@ -352,7 +352,7 @@ export function UserDialog({
                 <input
                   {...register("position")}
                   type="text"
-                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e8bf8] focus:border-transparent transition-all"
                   placeholder="Ej: Gerente"
                 />
               </div>
@@ -366,7 +366,7 @@ export function UserDialog({
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                    className="data-[state=checked]:bg-[#1e8bf8] data-[state=checked]:border-[#1e8bf8]"
                   />
                 )}
               />
@@ -394,7 +394,7 @@ export function UserDialog({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-purple-500/25 flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-[#0f1933] hover:bg-[#1c3058] text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-[#0f1933]/25 flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>
