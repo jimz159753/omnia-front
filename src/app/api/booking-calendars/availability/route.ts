@@ -213,7 +213,7 @@ export async function GET(request: NextRequest) {
         logoImage: calendar.logoImage,
         primaryColor: calendar.primaryColor,
         mercadoPagoEnabled: calendar.mercadoPagoEnabled,
-        mercadoPagoPublicKey: process.env.MERCADO_PAGO_PUBLIC_KEY,
+        mercadoPagoPublicKey: (await (await getPrisma()).business.findFirst())?.mercadoPagoPublicKey,
       },
       services: calendar.services
         // Filter out class packages - they should be sold as packages, not booked through the calendar

@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { BiBuilding, BiLogoWhatsapp, BiUser, BiCalendarEvent } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
+import { SiMercadopago } from "react-icons/si";
 
 // Define paths that are restricted for "user" role
 const ADMIN_ONLY_PATHS = [
@@ -17,6 +18,7 @@ const ADMIN_ONLY_PATHS = [
   "/dashboard/settings/credits",
   "/dashboard/settings/chatbot",
   "/dashboard/settings/google-calendar",
+  "/dashboard/settings/mercado-pago",
 ];
 
 export default function SettingsLayout({
@@ -79,6 +81,16 @@ export default function SettingsLayout({
         {
           path: "/dashboard/settings/google-calendar",
           label: t("googleCalendar"),
+        },
+      ],
+    },
+    {
+      header: t("mercadoPagoHeader") || "MERCADO PAGO",
+      icon: <SiMercadopago className="w-5 h-5 text-[#009EE3]" />,
+      items: [
+        {
+          path: "/dashboard/settings/mercado-pago",
+          label: t("mercadoPagoItem") || "Mercado Pago",
         },
       ],
     },

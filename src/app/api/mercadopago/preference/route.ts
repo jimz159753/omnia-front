@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import { getPrisma } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { ticketId, serviceName, price, clientEmail } = body;
 
-    const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
+    const business = await (await getPrisma()).business.findFirst({
+      select: { mercadoPagoAccessToken: true }
+    });
+    
+    const accessToken = business?.mercadoPagoAccessToken;
 
     if (!accessToken) {
       return NextResponse.json(
