@@ -46,6 +46,12 @@ export const serviceSchema = z.object({
   categoryId: z.string().optional().or(z.literal("")),
   subCategoryId: z.string().optional().or(z.literal("")),
   image: z.string().optional().or(z.literal("")),
+  minAdvanceBookingHours: z
+    .string()
+    .optional()
+    .refine((val) => !val || (!isNaN(Number(val)) && Number(val) >= 0), {
+      message: "Advance booking hours must be at least 0",
+    }),
 });
 
 export type ServiceFormData = z.infer<typeof serviceSchema>;

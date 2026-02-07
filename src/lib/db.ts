@@ -21,10 +21,10 @@ export function getPrismaForTenant(tenantSlug: string): PrismaClient {
     if (!defaultUrl) throw new Error("DATABASE_URL not set");
 
     let dbName = `omnia_tenant_${tenantSlug}`;
-    // For development/localhost, use the standard database
+    // For development/localhost, use the standard database name from the URL
     if (tenantSlug === "dev" || tenantSlug === "localhost" || !tenantSlug) {
-       // Note: In previous steps we used omnia_master, but the user's latest compose uses 'postgres'
-       dbName = "postgres"; 
+      const urlObj = new URL(defaultUrl);
+      dbName = urlObj.pathname.substring(1) || "postgres"; 
     }
 
     try {

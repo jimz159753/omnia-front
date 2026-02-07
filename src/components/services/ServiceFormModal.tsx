@@ -123,6 +123,7 @@ export function ServiceFormModal({
       categoryId: "",
       subCategoryId: "",
       image: "",
+      minAdvanceBookingHours: "0",
     },
   });
 
@@ -177,6 +178,7 @@ export function ServiceFormModal({
         categoryId: item.categoryId ?? "",
         subCategoryId: item.subCategoryId ?? "",
         image: item.image ?? "",
+        minAdvanceBookingHours: item.minAdvanceBookingHours?.toString() || "0",
       });
       setSelectedGoogleCalendar(serviceItem.googleCalendarId || "");
       setImageFile(null);
@@ -224,6 +226,7 @@ export function ServiceFormModal({
         categoryId: "",
         subCategoryId: "",
         image: "",
+        minAdvanceBookingHours: "0",
       });
       setSelectedGoogleCalendar("");
       setImageFile(null);
@@ -751,6 +754,35 @@ export function ServiceFormModal({
                       <p className="text-xs text-omnia-navy/40">No calendars connected</p>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Advance Booking Configuration */}
+              <div className="bg-white rounded-xl border border-omnia-navy/10 shadow-sm p-5 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-omnia-blue/10 flex items-center justify-center">
+                    <BiCog className="w-4 h-4 text-omnia-blue" />
+                  </div>
+                  <h3 className="text-sm font-bold text-omnia-navy uppercase tracking-wide">Configuración Adicional</h3>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-omnia-navy/50 uppercase tracking-wider">
+                    {t("minAdvanceBooking") || "Minimum advance booking (hours)"}
+                  </label>
+                  <input
+                    type="number"
+                    {...register("minAdvanceBookingHours")}
+                    placeholder={t("minAdvanceBookingPlaceholder") || "e.g. 2"}
+                    min="0"
+                    className="w-full h-10 rounded-xl border-2 border-omnia-navy/10 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-omnia-blue focus:border-transparent transition-all bg-white text-omnia-dark"
+                  />
+                  {errors.minAdvanceBookingHours && (
+                    <p className="text-red-500 text-xs">{errors.minAdvanceBookingHours.message as string}</p>
+                  )}
+                  <p className="text-[10px] text-omnia-navy/40 italic mt-1">
+                    {t("minAdvanceBookingDescription") || "Minimum hours of advance notice required to book this service"}
+                  </p>
                 </div>
               </div>
             </div>

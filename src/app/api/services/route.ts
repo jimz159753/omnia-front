@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching services:", error);
     return NextResponse.json(
-      { error: "Failed to fetch services" },
+      { error: "Failed to fetch services", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
       googleCalendarId,
       useCustomSchedule,
       schedules,
+      minAdvanceBookingHours,
     } = body;
 
     // Validate required fields
@@ -156,6 +157,7 @@ export async function POST(request: NextRequest) {
         image: image || "",
         googleCalendarId: googleCalendarId || null,
         useCustomSchedule: useCustomSchedule || false,
+        minAdvanceBookingHours: minAdvanceBookingHours ? parseInt(minAdvanceBookingHours) : 0,
         schedules: schedules && Array.isArray(schedules) && schedules.length > 0
           ? {
               create: schedules.map((s: ServiceScheduleInput) => ({
@@ -215,6 +217,7 @@ export async function PUT(request: NextRequest) {
       googleCalendarId,
       useCustomSchedule,
       schedules,
+      minAdvanceBookingHours,
     } = body;
 
     // Validate required fields
@@ -274,6 +277,7 @@ export async function PUT(request: NextRequest) {
     // Calculate slots value
     const slotsValue = slots !== undefined ? (parseInt(String(slots)) > 0 ? parseInt(String(slots)) : null) : undefined;
     const classesValue = classes !== undefined ? (parseInt(String(classes)) > 0 ? parseInt(String(classes)) : null) : undefined;
+    const minAdvanceValue = minAdvanceBookingHours !== undefined ? parseInt(String(minAdvanceBookingHours)) : undefined;
     console.log(`📝 Updating service "${name || existingService.name}": slots received=${slots}, classes received=${classes}`);
 
     // Update schedules if provided
@@ -316,6 +320,7 @@ export async function PUT(request: NextRequest) {
         image: image || "",
         googleCalendarId: googleCalendarId !== undefined ? (googleCalendarId || null) : undefined,
         useCustomSchedule: useCustomSchedule !== undefined ? useCustomSchedule : undefined,
+        minAdvanceBookingHours: minAdvanceValue,
       },
       include: {
         category: {

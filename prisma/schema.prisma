@@ -16,19 +16,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String   @default("")
-  email     String   @unique
-  password  String?
-  invitationToken   String? @unique
+  id                String    @id @default(uuid())
+  name              String    @default("")
+  email             String    @unique
+  password          String?
+  invitationToken   String?   @unique
   invitationExpires DateTime?
-  avatar    String?
-  role      String   @default("user") // admin, user
-  position  String   @default("")
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tickets   Ticket[]
+  avatar            String?
+  role              String    @default("user") // admin, user
+  position          String    @default("")
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  tickets           Ticket[]
 }
 
 model Ticket {
@@ -54,15 +54,15 @@ model Ticket {
 }
 
 model Client {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   phone     String
-  instagram String?  @unique
-  address   String   @default("")
+  instagram String?   @unique
+  address   String    @default("")
   birthday  DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   tickets   Ticket[]
 }
 
@@ -122,40 +122,41 @@ model Product {
 }
 
 model Service {
-  id               String                   @id @default(uuid())
-  image            String
-  name             String
-  categoryId       String?
-  category         Category?                @relation("ServiceCategory", fields: [categoryId], references: [id])
-  subCategoryId    String?
-  subCategory      SubCategory?             @relation("ServiceSubCategory", fields: [subCategoryId], references: [id])
-  duration         Int
-  description      String
-  price            Float
-  commission       Float
-  slots            Int? // Number of clients that can be scheduled simultaneously (null = use calendar default)
-  classes          Int? // Number of classes/sessions in a package (null = single session service)
-  providerId       String? // Instructor/provider who offers this service
-  provider         Provider?                @relation("ServiceProvider", fields: [providerId], references: [id])
-  startDate        DateTime? // Start date for long-term class packages
-  endDate          DateTime? // End date for long-term class packages
-  googleCalendarId String? // Google Calendar ID to sync appointments for this service
-  useCustomSchedule Boolean                 @default(false) // Whether to use service-specific schedule
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
-  tickets          TicketService[]
-  bookingCalendars BookingCalendarService[]
-  schedules        ServiceSchedule[]
+  id                     String                   @id @default(uuid())
+  image                  String
+  name                   String
+  categoryId             String?
+  category               Category?                @relation("ServiceCategory", fields: [categoryId], references: [id])
+  subCategoryId          String?
+  subCategory            SubCategory?             @relation("ServiceSubCategory", fields: [subCategoryId], references: [id])
+  duration               Int
+  description            String
+  price                  Float
+  commission             Float
+  slots                  Int? // Number of clients that can be scheduled simultaneously (null = use calendar default)
+  classes                Int? // Number of classes/sessions in a package (null = single session service)
+  providerId             String? // Instructor/provider who offers this service
+  provider               Provider?                @relation("ServiceProvider", fields: [providerId], references: [id])
+  startDate              DateTime? // Start date for long-term class packages
+  endDate                DateTime? // End date for long-term class packages
+  googleCalendarId       String? // Google Calendar ID to sync appointments for this service
+  useCustomSchedule      Boolean                  @default(false) // Whether to use service-specific schedule
+  minAdvanceBookingHours Int                      @default(0) // Minimum hours of advance booking required
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  tickets                TicketService[]
+  bookingCalendars       BookingCalendarService[]
+  schedules              ServiceSchedule[]
 }
 
 model ServiceSchedule {
   id        String   @id @default(uuid())
   serviceId String
   service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  dayOfWeek String   // "Monday", "Tuesday", etc.
+  dayOfWeek String // "Monday", "Tuesday", etc.
   isOpen    Boolean  @default(false)
-  startTime String?  // "09:00"
-  endTime   String?  // "18:00"
+  startTime String? // "09:00"
+  endTime   String? // "18:00"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -316,37 +317,37 @@ model WhatsAppCreditTransaction {
 }
 
 model WhatsAppMessageLog {
-  id            String   @id @default(uuid())
+  id             String   @id @default(uuid())
   recipientPhone String
   recipientName  String?
-  messageType   String // "reminder", "confirmation", "followup", "birthday", "manual"
-  templateId    String? // Reference to WhatsAppReminder
-  status        String   @default("sent") // "sent", "delivered", "read", "failed"
-  messageSid    String? // Twilio message SID
-  creditsUsed   Int      @default(1)
-  errorMessage  String?
-  createdAt     DateTime @default(now())
+  messageType    String // "reminder", "confirmation", "followup", "birthday", "manual"
+  templateId     String? // Reference to WhatsAppReminder
+  status         String   @default("sent") // "sent", "delivered", "read", "failed"
+  messageSid     String? // Twilio message SID
+  creditsUsed    Int      @default(1)
+  errorMessage   String?
+  createdAt      DateTime @default(now())
 }
 
 model BookingCalendar {
-  id               String                   @id @default(uuid())
-  slug             String                   @unique // Unique URL slug for sharing
-  name             String // Display name for the calendar
-  fullName         String // Full name of the person/business
-  email            String
-  phone            String
-  description      String?                  @db.Text
-  backgroundImage  String? // URL to the background image
-  logoImage        String? // Logo image
-  primaryColor     String                   @default("#059669") // Brand color
-  isActive         Boolean                  @default(true)
-  showOnMainPage   Boolean                  @default(false) // Display this calendar on the public main page
-  slots            Int                      @default(1) // Number of concurrent appointments allowed per time slot
-  googleCalendarId String? // Google Calendar ID to sync appointments to
-  mercadoPagoEnabled Boolean @default(false)
-  services         BookingCalendarService[]
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
+  id                 String                   @id @default(uuid())
+  slug               String                   @unique // Unique URL slug for sharing
+  name               String // Display name for the calendar
+  fullName           String // Full name of the person/business
+  email              String
+  phone              String
+  description        String?                  @db.Text
+  backgroundImage    String? // URL to the background image
+  logoImage          String? // Logo image
+  primaryColor       String                   @default("#059669") // Brand color
+  isActive           Boolean                  @default(true)
+  showOnMainPage     Boolean                  @default(false) // Display this calendar on the public main page
+  slots              Int                      @default(1) // Number of concurrent appointments allowed per time slot
+  googleCalendarId   String? // Google Calendar ID to sync appointments to
+  mercadoPagoEnabled Boolean                  @default(false)
+  services           BookingCalendarService[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 }
 
 model BookingCalendarService {

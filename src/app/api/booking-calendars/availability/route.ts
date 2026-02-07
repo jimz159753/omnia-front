@@ -184,7 +184,8 @@ export async function GET(request: NextRequest) {
         ),
         dayStart, // Pass the UTC day start
         timezoneOffset, // Pass timezone offset
-        maxSlots // Pass max concurrent slots allowed
+        maxSlots, // Pass max concurrent slots allowed
+        (service as any).minAdvanceBookingHours || 0 // Pass min advance booking hours
       );
 
       return NextResponse.json({
@@ -257,7 +258,8 @@ function calculateAvailableSlots(
   restTimes: Array<{ startTime: string; endTime: string }>,
   dayStartUTC: Date, // The UTC start of the day
   timezoneOffset: number, // Timezone offset in minutes
-  maxSlots: number = 1 // Maximum concurrent appointments allowed
+  maxSlots: number = 1, // Maximum concurrent appointments allowed
+  minAdvanceBookingHours: number = 0 // Minimum hours of advance booking required
 ): Array<{ time: string; available: boolean; remainingSlots?: number }> {
   const slots: Array<{ time: string; available: boolean; remainingSlots?: number }> = [];
 
@@ -267,6 +269,11 @@ function calculateAvailableSlots(
 
   const startMinutes = startHour * 60 + startMin;
   const endMinutes = endHour * 60 + endMin;
+
+  // Calculate the cutoff time for advance booking
+  const now = new Date();
+  const advanceBookingCutoff = new Date(now.getTime() + minAdvanceBookingHours * 60 * 60 * 1000);
+  console.log(`⏱️ Advance booking check: minHours=${minAdvanceBookingHours}, cutoff=${advanceBookingCutoff.toISOString()}`);
 
   // Generate 30-minute slots
   for (let minutes = startMinutes; minutes + serviceDuration <= endMinutes; minutes += 30) {
@@ -293,14 +300,14 @@ function calculateAvailableSlots(
       }
     }
 
-    // Check if slot is available (still has remaining slots)
-    // Important: overlappingCount must be LESS THAN maxSlots for slot to be available
-    let isAvailable = overlappingCount < maxSlots;
+    // Check if slot is available (still has remaining slots and meets advance booking)
+    const meetsAdvanceBooking = slotStartDate >= advanceBookingCutoff;
+    let isAvailable = overlappingCount < maxSlots && meetsAdvanceBooking;
     const remainingSlots = Math.max(0, maxSlots - overlappingCount);
 
-    // Log for debugging - always log when maxSlots > 1 to debug multi-slot issues
-    if (maxSlots > 1 || overlappingCount > 0) {
-      console.log(`📊 Slot ${slotTime}: overlapping=${overlappingCount}, maxSlots=${maxSlots}, available=${isAvailable}, remaining=${remainingSlots}`);
+    // Log for debugging - always log when maxSlots > 1 or advance booking is an issue
+    if (maxSlots > 1 || overlappingCount > 0 || !meetsAdvanceBooking) {
+      console.log(`📊 Slot ${slotTime}: overlapping=${overlappingCount}, maxSlots=${maxSlots}, meetsAdvance=${meetsAdvanceBooking}, available=${isAvailable}, remaining=${remainingSlots}`);
     }
 
     // Check if slot conflicts with rest times (rest times always block all slots)

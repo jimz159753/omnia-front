@@ -71,6 +71,9 @@
   "selectStartDate": "Select start date",
   "selectEndDate": "Select end date",
   "classPackage": "Class Package",
-  "classPackageDescription": "Enable this if the service is a package of multiple classes with a date range. Class packages are sold as packages and won't appear in the appointment calendar."
+  "classPackageDescription": "Enable this if the service is a package of multiple classes with a date range. Class packages are sold as packages and won't appear in the appointment calendar.",
+  "minAdvanceBooking": "Minimum advance booking",
+  "minAdvanceBookingPlaceholder": "e.g. 2",
+  "minAdvanceBookingDescription": "Minimum hours of advance notice required to book this service"
 }
 

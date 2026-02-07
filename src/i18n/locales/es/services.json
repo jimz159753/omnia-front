@@ -71,6 +71,9 @@
   "selectStartDate": "Seleccionar fecha de inicio",
   "selectEndDate": "Seleccionar fecha de fin",
   "classPackage": "Paquete de Clases",
-  "classPackageDescription": "Habilita esto si el servicio es un paquete de múltiples clases con un rango de fechas. Los paquetes de clases se venden como paquetes y no aparecerán en el calendario de citas."
+  "classPackageDescription": "Habilita esto si el servicio es un paquete de múltiples clases con un rango de fechas. Los paquetes de clases se venden como paquetes y no aparecerán en el calendario de citas.",
+  "minAdvanceBooking": "Anticipación mínima de reserva",
+  "minAdvanceBookingPlaceholder": "ej. 2",
+  "minAdvanceBookingDescription": "Horas mínimas de anticipación requeridas para reservar este servicio"
 }
 
