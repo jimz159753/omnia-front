@@ -162,13 +162,15 @@ export const getUsersColumns = ({
           >
             <FiEdit2 className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => onDelete(user.id)}
-            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-            title={t("delete")}
-          >
-            <FiTrash2 className="w-4 h-4" />
-          </button>
+          {user.role !== "admin" && (
+            <button
+              onClick={() => onDelete(user.id)}
+              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              title={t("delete")}
+            >
+              <FiTrash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       );
     },

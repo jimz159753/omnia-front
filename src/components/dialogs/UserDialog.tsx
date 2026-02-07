@@ -318,31 +318,40 @@ export function UserDialog({
                 <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t("userRole")}
                 </label>
-                <Controller
-                  name="role"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
-                        <SelectValue placeholder={t("selectRole")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="user">
-                          <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                            {t("roleUser")}
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="admin">
-                          <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-[#1e8bf8]"></span>
-                            {t("roleAdmin")}
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
+                {editingUser?.role === "admin" ? (
+                  <input
+                    type="text"
+                    value={t("roleAdmin")}
+                    disabled
+                    className="w-full h-11 px-4 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed font-medium"
+                  />
+                ) : (
+                  <Controller
+                    name="role"
+                    control={control}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full h-11 border-2 border-gray-200 rounded-xl">
+                          <SelectValue placeholder={t("selectRole")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="user">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                              {t("roleUser")}
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="admin">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-[#1e8bf8]"></span>
+                              {t("roleAdmin")}
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                )}
               </div>
 
               <div className="space-y-1">
