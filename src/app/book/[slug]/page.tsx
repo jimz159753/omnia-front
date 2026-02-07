@@ -340,7 +340,7 @@ export default function BookingPage() {
             </p>
             <p className="text-sm">
               <span className="text-gray-500">{t("date")}:</span>{" "}
-              <span className="font-medium">{selectedDate && format(selectedDate, "MMMM d, yyyy", { locale: dateLocale })}</span>
+              <span className="font-medium">{selectedDate && format(selectedDate, t("dateFormat") as any, { locale: dateLocale })}</span>
             </p>
             <p className="text-sm">
               <span className="text-gray-500">{t("time")}:</span>{" "}
@@ -553,7 +553,7 @@ export default function BookingPage() {
                 {selectedDate && (
                   <div>
                     <h3 className="font-semibold mb-3">
-                      {t("availableTimes")} - {format(selectedDate, "MMMM d", { locale: dateLocale })}
+                      {t("availableTimes")} - {format(selectedDate, t("dayMonthFormat") as any, { locale: dateLocale })}
                     </h3>
                     {loadingSlots ? (
                       <div className="flex justify-center py-8">
@@ -612,7 +612,7 @@ export default function BookingPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">{t("date")}</span>
-                      <span className="font-medium">{format(selectedDate, "MMMM d, yyyy", { locale: dateLocale })}</span>
+                      <span className="font-medium">{format(selectedDate, t("dateFormat") as any, { locale: dateLocale })}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">{t("time")}</span>
@@ -644,7 +644,7 @@ export default function BookingPage() {
                       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
                       style={{ focusRingColor: primaryColor } as React.CSSProperties}
-                      placeholder="John Doe"
+                      placeholder={t("namePlaceholder")}
                     />
                   </div>
                   <div>
@@ -657,7 +657,7 @@ export default function BookingPage() {
                       value={contactForm.phone}
                       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
-                      placeholder="+52 33 1234 5678"
+                      placeholder={t("phonePlaceholder")}
                     />
                   </div>
                   <div>
@@ -670,7 +670,7 @@ export default function BookingPage() {
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-opacity-50 focus:outline-none"
-                      placeholder="email@example.com"
+                      placeholder={t("emailPlaceholder")}
                     />
                   </div>
                   <div>

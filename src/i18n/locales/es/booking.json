@@ -38,5 +38,16 @@
   "bookingSaved": "¡Información de reserva guardada!",
   "completePaymentToConfirm": "Por favor completa el pago a continuación para confirmar tu cita.",
   "paymentFailed": "Error en el pago. Por favor intenta de nuevo.",
-  "paymentError": "Ocurrió un error inesperado durante el pago."
+  "paymentError": "Ocurrió un error inesperado durante el pago.",
+  "instructor": "Instructor",
+  "classes": "Clases",
+  "sessions": "sesiones",
+  "packageInfo": "Información del Paquete",
+  "startDate": "Fecha de Inicio",
+  "endDate": "Fecha de Fin",
+  "namePlaceholder": "Ej. Juan Pérez",
+  "phonePlaceholder": "Ej. +52 33 1234 5678",
+  "emailPlaceholder": "correo@ejemplo.com",
+  "dateFormat": "d 'de' MMMM, yyyy",
+  "dayMonthFormat": "d 'de' MMMM"
 }

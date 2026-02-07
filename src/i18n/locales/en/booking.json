@@ -38,5 +38,16 @@
   "bookingSaved": "Booking information saved!",
   "completePaymentToConfirm": "Please complete the payment below to confirm your appointment.",
   "paymentFailed": "Payment failed. Please try again.",
-  "paymentError": "An unexpected error occurred during payment."
+  "paymentError": "An unexpected error occurred during payment.",
+  "instructor": "Instructor",
+  "classes": "Classes",
+  "sessions": "sessions",
+  "packageInfo": "Package Info",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "namePlaceholder": "e.g. John Doe",
+  "phonePlaceholder": "e.g. +1 123 456 7890",
+  "emailPlaceholder": "email@example.com",
+  "dateFormat": "MMMM d, yyyy",
+  "dayMonthFormat": "MMMM d"
 }

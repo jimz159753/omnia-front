@@ -561,7 +561,7 @@ export default function CalendarSchedulesPage() {
                     <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
                       <BiIdCard className="w-3.5 h-3.5 text-omnia-blue" />
                     </div>
-                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Detalles del Calendario</span>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("calendarDetails")}</span>
                   </div>
 
                   <div className="space-y-4">
@@ -597,7 +597,7 @@ export default function CalendarSchedulesPage() {
                     <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
                       <BiUser className="w-3.5 h-3.5 text-omnia-blue" />
                     </div>
-                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Información de Contacto</span>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("contactInformation")}</span>
                   </div>
 
                   <div className="space-y-4">
@@ -643,7 +643,7 @@ export default function CalendarSchedulesPage() {
                     <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
                       <BiPalette className="w-3.5 h-3.5 text-omnia-blue" />
                     </div>
-                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Apariencia y Marca</span>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("appearanceAndBranding")}</span>
                   </div>
 
                   <div className="space-y-4">
@@ -711,7 +711,7 @@ export default function CalendarSchedulesPage() {
                     <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
                       <BiCog className="w-3.5 h-3.5 text-omnia-blue" />
                     </div>
-                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Configuración Avanzada</span>
+                    <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("advancedConfiguration")}</span>
                   </div>
 
                   <div className="p-3 bg-omnia-blue/5 border border-omnia-blue/10 rounded-xl space-y-2">
@@ -740,7 +740,7 @@ export default function CalendarSchedulesPage() {
                 <div className="w-6 h-6 rounded-md bg-omnia-blue/10 flex items-center justify-center">
                   <BiCheck className="w-3.5 h-3.5 text-omnia-blue" />
                 </div>
-                <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">Servicios Disponibles</span>
+                <span className="text-xs font-semibold text-omnia-navy uppercase tracking-wider">{t("availableServices")}</span>
               </div>
 
               <div className="border border-omnia-navy/5 rounded-xl overflow-hidden bg-omnia-light/20">
