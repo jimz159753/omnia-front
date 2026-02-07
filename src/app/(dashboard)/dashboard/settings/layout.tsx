@@ -48,10 +48,6 @@ export default function SettingsLayout({
       icon: <BiCalendarEvent className="w-5 h-5 text-omnia-blue" />,
       items: [
         {
-          path: "/dashboard/settings/schedules",
-          label: t("businessSchedules"),
-        },
-        {
           path: "/dashboard/settings/calendar-schedules",
           label: t("calendarSchedules") || "Calendar Schedules",
         },
